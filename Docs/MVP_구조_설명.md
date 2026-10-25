@@ -32,6 +32,15 @@
 
 > 도구를 다시 누르면 Game 씬을 **새로 덮어씁니다.** 씬을 손으로 고친 뒤에는 누르지 마세요.
 
+### 자동 플레이 테스트
+메뉴 **Tools → 찾아라도깨비 → 자동 플레이 테스트** 를 누르면 Unity 가 혼자 게임을 한 바퀴 돌려 봅니다.
+(도입 → 관찰 → 그리기 → 부분 성공 → 다시 그리기 → 성공 → 비교 → 처음부터 → 간식 다 쓰기)
+
+- 31가지를 확인하고 Console 에 `[SelfTest] 전체 PASS` 또는 `FAIL n개` 를 띄웁니다.
+- 결과와 화면별 스크린샷은 `Temp/SelfTest/` 폴더에 저장됩니다. (Temp 는 Git 에 안 올라감)
+- 코드를 고친 뒤 이걸 한 번 돌리면 "어디가 망가졌는지" 바로 알 수 있습니다.
+- 확인하지 않는 것: 60초가 다 지나 자동 제출되는 경우 (테스트가 1분 넘게 걸려서 뺐어요)
+
 ---
 
 ## 3. 폴더 구조
@@ -45,7 +54,8 @@ FindDokkaebi/
 │  │  └─ StageData.cs       ← 단계 데이터의 "양식"
 │  ├─ Editor/               ← 에디터 전용 도구 (게임 빌드에는 안 들어감)
 │  │  ├─ MvpSceneBuilder.cs ← 씬 자동 조립 도구 (Tools 메뉴)
-│  │  └─ MvpAutoBuild.cs    ← Game 씬이 없으면 Unity 가 켜질 때 자동으로 한 번 조립
+│  │  ├─ MvpAutoBuild.cs    ← Game 씬이 없으면 Unity 가 켜질 때 자동으로 한 번 조립
+│  │  └─ MvpSelfTest.cs     ← 자동 플레이 테스트 (Tools 메뉴)
 │  ├─ Data/
 │  │  └─ Stage1_Bat.asset   ← 1단계 방망이 데이터 (StageData 양식으로 만든 파일)
 │  ├─ Sprites/
