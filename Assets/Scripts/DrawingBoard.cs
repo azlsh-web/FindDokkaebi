@@ -47,9 +47,20 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler
     static readonly Color32 Paper = new Color32(255, 255, 255, 255); // 쪽지 색(흰색)
     static readonly Color32 Ink = new Color32(0, 0, 0, 255);         // 펜 색(검정)
 
-    // Awake : 게임이 시작될 때 가장 먼저 한 번 실행돼요.
+    // Awake : 이 오브젝트가 "처음 켜질 때" 한 번 실행돼요.
+    // ※ 주의 : 그림판은 꺼져 있는 DrawPanel 안에 있어서, 게임 시작 때는 Awake 가 아직 안 불려요.
+    //   GameManager 가 패널을 켜기 전에 Clear() 를 부르면 준비가 안 된 상태라 에러가 났어요.
+    //   그래서 준비 작업을 Init() 으로 빼고, Clear() 에서도 먼저 Init() 을 부르게 했어요.
     void Awake()
     {
+        Init();
+    }
+
+    // 텍스처 준비. 이미 준비됐으면 아무것도 안 해요. (여러 번 불러도 안전)
+    void Init()
+    {
+        if (Texture != null) return;
+
         rawImage = GetComponent<RawImage>();
         rect = GetComponent<RectTransform>();
 
@@ -67,6 +78,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler
     /// <summary>모두 지우기 : 쪽지를 다시 흰색으로.</summary>
     public void Clear()
     {
+        Init(); // 아직 준비 전이면 먼저 준비
         for (int i = 0; i < pixels.Length; i++) pixels[i] = Paper;
         ApplyPixels();
         HasDrawn = false;
