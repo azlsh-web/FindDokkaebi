@@ -46,10 +46,14 @@ public static class MvpSceneBuilder
         font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
         uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
 
-        StageData stage = CreateStageData();
+        CreateStageData();
 
         // ── 새 빈 씬 ──
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+        // 새 씬을 열면 Unity 가 안 쓰는 에셋을 메모리에서 내려버려서,
+        // 위에서 만든 데이터 파일을 씬을 연 "뒤에" 다시 불러와야 연결이 끊기지 않아요.
+        StageData stage = AssetDatabase.LoadAssetAtPath<StageData>(StagePath);
 
         // 카메라 (UI 는 Canvas 가 그리지만, 카메라가 하나는 있어야 해요)
         var cam = new GameObject("Main Camera").AddComponent<Camera>();
@@ -200,12 +204,13 @@ public static class MvpSceneBuilder
         // ── 저장 + Build Settings 의 첫 번째 씬으로 등록 ──
         EditorSceneManager.SaveScene(scene, ScenePath);
         EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+        AssetDatabase.SaveAssets(); // Build Settings 변경도 디스크에 저장
         Debug.Log("[찾아라도깨비] MVP 씬을 만들었어요: " + ScenePath);
     }
 
     // ───────────── 데이터 파일 만들기 ─────────────
 
-    static StageData CreateStageData()
+    static void CreateStageData()
     {
         MakeSprite(OriginalPath);
         MakeSprite(WrongPath);
@@ -224,7 +229,6 @@ public static class MvpSceneBuilder
         stage.wrongSprite = AssetDatabase.LoadAssetAtPath<Sprite>(WrongPath);
         EditorUtility.SetDirty(stage);
         AssetDatabase.SaveAssets();
-        return stage;
     }
 
     // PNG 를 UI 에서 쓸 수 있는 Sprite 로 설정
