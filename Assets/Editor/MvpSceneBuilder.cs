@@ -73,7 +73,8 @@ public static class MvpSceneBuilder
         var scaler = canvasGo.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1080, 1920);
-        scaler.matchWidthOrHeight = 0.5f;
+        // 0 = 가로 폭 기준. 세로가 더 긴 폰(예: 1080x2340)에서도 좌우가 잘리지 않고 아래쪽 여백만 늘어나요.
+        scaler.matchWidthOrHeight = 0f;
         Transform canvas = canvasGo.transform;
 
         // 배경 (방)
@@ -84,9 +85,13 @@ public static class MvpSceneBuilder
 
         // ── HUD (항상 보임) ──
         var hud = NewEmpty("HUD", canvas);
-        var snackText = NewText("SnackText", hud, "간식 3개", 48, new Vector2(-280, 40), new Vector2(460, 80), TextAlignmentOptions.Left);
-        var stageText = NewText("StageText", hud, stage.stageTitle, 48, new Vector2(280, 40), new Vector2(460, 80), TextAlignmentOptions.Right);
-        var timerText = NewText("TimerText", hud, "", 44, new Vector2(280, 120), new Vector2(460, 70), TextAlignmentOptions.Right);
+        // HUD 글자는 화면 "모서리"에 붙여서, 화면 비율이 달라도 안쪽으로 40만큼 떨어져 있게 해요.
+        var snackText = NewText("SnackText", hud, "간식 3개", 48, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left);
+        PlaceCorner(snackText.rectTransform, false, 40, new Vector2(460, 80));
+        var stageText = NewText("StageText", hud, stage.stageTitle, 48, Vector2.zero, Vector2.zero, TextAlignmentOptions.Right);
+        PlaceCorner(stageText.rectTransform, true, 40, new Vector2(460, 80));
+        var timerText = NewText("TimerText", hud, "", 44, Vector2.zero, Vector2.zero, TextAlignmentOptions.Right);
+        PlaceCorner(timerText.rectTransform, true, 120, new Vector2(460, 70));
 
         // ── 1. 도입 화면 ──
         var intro = NewEmpty("IntroPanel", canvas);
@@ -339,6 +344,16 @@ public static class MvpSceneBuilder
         rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 1f);
         rt.pivot = new Vector2(0.5f, 1f);
         rt.anchoredPosition = new Vector2(pos.x, -pos.y);
+        rt.sizeDelta = size;
+    }
+
+    // 왼쪽 위(right=false) 또는 오른쪽 위(right=true) 모서리에 붙이기. top = 위에서 떨어진 거리
+    static void PlaceCorner(RectTransform rt, bool right, float top, Vector2 size)
+    {
+        float x = right ? 1f : 0f;
+        rt.anchorMin = rt.anchorMax = new Vector2(x, 1f);
+        rt.pivot = new Vector2(x, 1f);
+        rt.anchoredPosition = new Vector2(right ? -40f : 40f, -top);
         rt.sizeDelta = size;
     }
 
