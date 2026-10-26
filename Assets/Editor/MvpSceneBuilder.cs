@@ -159,11 +159,11 @@ public static class MvpSceneBuilder
         Stretch(titleArt.rectTransform);
         var titleFit = titleArt.gameObject.AddComponent<AspectRatioFitter>();
         titleFit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
-        titleFit.aspectRatio = 690f / 1204f;
+        titleFit.aspectRatio = 674f / 1182f;   // 시작 화면 그림 비율
         var startImg = NewImage("StartButton", titleArt.transform, new Color(1f, 1f, 1f, 0f)); // 그림 속 버튼과 같은 자리
         var srt = startImg.rectTransform;
-        srt.anchorMin = new Vector2(64f / 690f, 1f - 1091f / 1204f);
-        srt.anchorMax = new Vector2(626f / 690f, 1f - 977f / 1204f);
+        srt.anchorMin = new Vector2(63f / 674f, 1f - 1072f / 1182f);   // 그림 속 "소풍 준비하러 가기" 버튼 자리
+        srt.anchorMax = new Vector2(612f / 674f, 1f - 958f / 1182f);
         srt.offsetMin = srt.offsetMax = Vector2.zero;
         var startGameButton = startImg.gameObject.AddComponent<Button>();
         var startColors = startGameButton.colors;
