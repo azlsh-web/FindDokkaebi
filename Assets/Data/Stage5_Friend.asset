@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76559bebd3ca412438493db7848d8f3b, type: 3}
+  m_Name: Stage5_Friend
+  m_EditorClassIdentifier: Assembly-CSharp::StageData
+  stageNumber: 5
+  targetName: "\uCE5C\uAD6C"
+  introStory: "\uC18C\uD48D \uC900\uBE44\uBB3C\uC744 \uB2E4 \uCC3E\uC558\uC5B4\uC694!\n\uADF8\uB7F0\uB370
+    \uAC19\uC774 \uAC00\uAE30\uB85C \uD55C \uCE5C\uAD6C\uAC00 \uC548 \uBCF4\uC5EC\uC694.\n\uB3C4\uAE68\uBE44\uAC00
+    \uCE5C\uAD6C\uB3C4 \uCC3E\uC544 \uC900\uB300\uC694.\n\uCE5C\uAD6C \uC637\uC758
+    \uBB34\uB2AC\uC640 \uC0C9\uC744 \uC798 \uBCF4\uC138\uC694."
+  newRule: "\uB450 \uAC00\uC9C0 \uC774\uC0C1 \uC0C9\uC744 \uC790\uC720\uB86D\uAC8C
+    \uC11E\uC5B4\uC694.\n\uC608) \uBE68\uAC15 + \uB178\uB791 + \uD30C\uB791 = \uAC08\uC0C9"
+  learnedRules: "\uBAA8\uC591 \xB7 \uBB34\uB2AC \xB7 \uC0BC\uC6D0\uC0C9 \xB7 \uB450
+    \uC0C9 \uD63C\uD569"
+  colorMode: 3
+  originalSprite: {fileID: 21300000, guid: cfd53b1f86548564799c0534cef16c02, type: 3}
+  targetDescription: "\uC815\uBA74\uC5D0\uC11C \uBCF8 \uCE5C\uAD6C\uC785\uB2C8\uB2E4.
+    \uBA38\uB9AC, \uBAB8\uD1B5, \uD314, \uB2E4\uB9AC\uAC00 \uC788\uB294 \uC0AC\uB78C
+    \uBAA8\uC2B5\uC785\uB2C8\uB2E4. \uC0C1\uC758\uB294 \uCD08\uB85D\uC0C9\uC774\uACE0
+    \uAC00\uB85C \uC904\uBB34\uB2AC\uAC00 \uC788\uC2B5\uB2C8\uB2E4. \uD558\uC758(\uBC14\uC9C0)\uB294
+    \uAC08\uC0C9\uC785\uB2C8\uB2E4. \uCD08\uB85D\uC740 \uB450 \uC0C9 \uD63C\uD569,
+    \uAC08\uC0C9\uC740 \uC138 \uC0C9 \uD63C\uD569\uC73C\uB85C \uB9CC\uB4DC\uB294
+    \uC0C9\uC785\uB2C8\uB2E4."
+  features:
+  - id: F1
+    name: "\uC0AC\uB78C \uBAA8\uC2B5"
+    criteria: "\uBA38\uB9AC\uC640 \uBAB8\uD1B5\uC774 \uC788\uACE0 \uD314\uC774\uB098
+      \uB2E4\uB9AC\uAC00 \uBD99\uC740 \uC0AC\uB78C \uD615\uD0DC\uB85C \uC2DD\uBCC4\uB418\uC5B4\uC57C
+      \uD569\uB2C8\uB2E4. \uB9C9\uB300 \uC778\uAC04\uCC98\uB7FC \uB2E8\uC21C\uD574\uB3C4
+      \uC778\uC815\uD569\uB2C8\uB2E4. \uC0AC\uB78C\uC774 \uC544\uB2CC \uBB3C\uCCB4\uB098
+      \uBA38\uB9AC\uB9CC \uC788\uB294 \uADF8\uB9BC\uC740 \uC778\uC815\uD558\uC9C0
+      \uC54A\uC2B5\uB2C8\uB2E4."
+    wrongSprite: {fileID: 21300000, guid: d8f23b7dbfffbe7429015582b7ec89e8, type: 3}
+  - id: F2
+    name: "\uC0C1\uC758 \uAC00\uB85C \uC904\uBB34\uB2AC"
+    criteria: "\uC0C1\uC758(\uBAB8\uD1B5 \uC717\uBD80\uBD84) \uC548\uC5D0 \uAC00\uB85C
+      \uBC29\uD5A5 \uC904\uC774 \uB450 \uC904 \uC774\uC0C1 \uBC18\uBCF5\uB418\uC5B4\uC57C
+      \uD569\uB2C8\uB2E4. \uC138\uB85C\uC904\uC774\uB098 \uC810, \uD558\uC758\uC5D0\uB9CC
+      \uC788\uB294 \uC904\uC740 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    wrongSprite: {fileID: 21300000, guid: d79b3ec9f1f9d0948af44fbf20b6d6ab, type: 3}
+  - id: F3
+    name: "\uCD08\uB85D \uC0C1\uC758"
+    criteria: "\uC0C1\uC758\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774 \uCD08\uB85D\uC0C9
+      \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uD30C\uB791\uC774\uB098
+      \uB178\uB791\uC774\uBA74 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    wrongSprite: {fileID: 21300000, guid: af06560e14b72a74fab519a6593221cd, type: 3}
+  - id: F4
+    name: "\uAC08\uC0C9 \uD558\uC758"
+    criteria: "\uD558\uC758(\uBC14\uC9C0)\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774 \uAC08\uC0C9
+      \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uBE68\uAC15, \uC8FC\uD669,
+      \uBCF4\uB77C \uB4F1 \uBA85\uD655\uD788 \uB2E4\uB978 \uC0C9\uC774\uBA74 \uC778\uC815\uD558\uC9C0
+      \uC54A\uC2B5\uB2C8\uB2E4."
+    wrongSprite: {fileID: 21300000, guid: e6da4080360795f4bb46e32fd6a266c1, type: 3}
