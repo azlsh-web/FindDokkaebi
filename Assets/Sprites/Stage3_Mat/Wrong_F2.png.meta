@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a6a6a3b15c81c7a4cbb908dc673e805b
+guid: 2fb62462e52e319429f4693fa1bf59e6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2703543860821513802
-    second: Bat_Wrong_0
+      213: -463039765994303844
+    second: Wrong_F2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Bat_Wrong_0
+      name: Wrong_F2_0
       rect:
         serializedVersion: 2
-        x: 145
-        y: 30
-        width: 223
-        height: 423
+        x: 49
+        y: 118
+        width: 415
+        height: 275
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a4654f241dae48520800000000000000
-      internalID: 2703543860821513802
+      spriteID: c9e870f39c3f299f0800000000000000
+      internalID: -463039765994303844
       vertices: []
       indices: 
       edges: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Bat_Wrong_0: 2703543860821513802
+      Wrong_F2_0: -463039765994303844
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
