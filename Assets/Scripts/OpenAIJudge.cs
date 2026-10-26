@@ -17,7 +17,7 @@ using UnityEngine.Networking;
 // API 키 넣는 곳 (Git 에 올라가지 않는 폴더예요)
 //   FindDokkaebi/UserSettings/OpenAI.json
 //   { "apiKey": "sk-...", "model": "gpt-6-luna" }
-//   - 키가 비어 있으면 IsReady = false → GameManager 가 체크박스(테스트 입력)로 판정해요.
+//   - 키가 비어 있으면 IsReady = false → GameManager 가 LocalJudge(Unity 안 자동 판정)로 판정해요.
 //   - model 은 이미지 입력이 되는 OpenAI 모델 이름이면 바꿔도 돼요.
 //
 // 오류가 나면 (인터넷 끊김, 키 오류, 이상한 JSON …) onError 를 불러요.
@@ -27,8 +27,8 @@ public class OpenAIJudge : MonoBehaviour
     [Tooltip("응답을 기다리는 최대 시간(초)")]
     [SerializeField] int timeoutSeconds = 40;
 
-    /// <summary>자동 플레이 테스트처럼 AI 를 쓰면 안 될 때 true (키가 있어도 테스트 입력 사용)</summary>
-    public static bool ForceTestInput;
+    /// <summary>자동 플레이 테스트처럼 AI 를 부르면 안 될 때 true (키가 있어도 LocalJudge 로 판정)</summary>
+    public static bool DisableAI;
 
     /// <summary>판정 결과 : 특징마다 그렸는지(present) + AI 가 본 근거(notes)</summary>
     public class Verdict
@@ -58,7 +58,7 @@ public class OpenAIJudge : MonoBehaviour
         get
         {
             LoadSettings();
-            return !ForceTestInput && !string.IsNullOrWhiteSpace(settings.apiKey);
+            return !DisableAI && !string.IsNullOrWhiteSpace(settings.apiKey);
         }
     }
 

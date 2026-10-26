@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,9 +25,9 @@ using UnityEngine.UI;
 //
 // 간식 규칙 : 단계마다 3개로 시작, 제출할 때마다 1개. 다 쓰면 다시 그리기 불가 → 포기하고 비교.
 //
-// 판정 (OpenAIJudge)
-//   - UserSettings/OpenAI.json 에 키가 있으면 : AI 가 판정 (기다리는 동안 도깨비가 고민하는 모습)
-//   - 키가 없으면 : 판정 화면의 체크박스로 직접 고르는 "테스트 입력"
+// 판정 (기획서 6장) : 항상 자동이에요. 기다리는 동안 도깨비가 쪽지를 들여다보며 고민해요.
+//   - UserSettings/OpenAI.json 에 키가 있으면 : OpenAIJudge (멀티모달 LLM → JSON)
+//   - 키가 없으면 : LocalJudge (기획서의 대체 기술 : HSV 색 분석 + 모양 계산, Unity 안에서)
 //   - AI 오류 : 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
 public class GameManager : MonoBehaviour
 {
@@ -85,9 +86,7 @@ public class GameManager : MonoBehaviour
     [Header("판정 화면")]
     [SerializeField] RawImage judgeDrawing;         // 도깨비에게 건넨 쪽지
     [SerializeField] TMP_Text judgeStatusText;      // "도깨비가 쪽지를 들여다보는 중..."
-    [SerializeField] GameObject testInputGroup;     // 테스트 입력 (체크박스 + 확인 버튼)
-    [SerializeField] Toggle[] featureToggles;       // 최대 5개 (단계 특징 수만큼만 보임)
-    [SerializeField] TMP_Text[] featureToggleLabels;
+    [SerializeField] float thinkSeconds = 1.5f;     // 자동 판정 때 도깨비가 고민하는 시간
     [SerializeField] GameObject backToDrawButton;   // AI 오류 때만 보임
 
     [Header("결과 화면")]
@@ -102,6 +101,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text compareButtonLabel;
     [SerializeField] Sprite boyHappy;
     [SerializeField] Sprite boySurprised;
+    [SerializeField] GameObject boySurprisedMark;   // 당황했을 때 소년 옆에 뜨는 "!?"
 
     [Header("비교 화면")]
     [SerializeField] RawImage compareMyDrawing;
@@ -120,6 +120,8 @@ public class GameManager : MonoBehaviour
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;         // 단계별 제출 횟수 (이야기 종료 화면 기록용)
     bool[] cleared;         // 단계별 성공 여부
+    int[] snacksLeft;       // 단계별 남은 간식 (이야기 종료 화면 기록용)
+    int judgeTicket;        // 제출할 때마다 +1. 늦게 도착한 옛 판정 결과를 버리는 데 써요.
 
     StageData Stage => stages[stageIndex];
 
@@ -163,6 +165,7 @@ public class GameManager : MonoBehaviour
     {
         attempts = new int[stages.Length];
         cleared = new bool[stages.Length];
+        snacksLeft = new int[stages.Length];
         StartStage(0);
     }
 
@@ -185,8 +188,8 @@ public class GameManager : MonoBehaviour
         string learned = string.IsNullOrEmpty(Stage.learnedRules) ? "없음 (첫 단계예요)" : Stage.learnedRules;
         introRules.text =
             $"<b>새로 배울 규칙</b>\n{Stage.newRule}\n\n" +
-            $"<b>앞에서 배운 규칙</b>\n{learned}\n\n" +
-            $"관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 제출할 때 간식 1개 (간식 {snacksPerStage}개)";
+            $"<b>앞에서 배운 규칙</b>  <color=#7A6A5A>{learned}</color>\n\n" +
+            $"<size=90%><color=#7A6A5A>관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 간식 {snacksPerStage}개 (제출할 때 1개)</color></size>";
         ShowPanel(stageIntroPanel);
     }
 
@@ -234,41 +237,36 @@ public class GameManager : MonoBehaviour
         backToDrawButton.SetActive(false);
         ShowPanel(judgePanel);
 
+        // 기다리는 동안 도깨비가 갸웃갸웃 (SimpleAnim)
+        judgeStatusText.text = "쪽지와 간식 1개를 도깨비에게 건넸어요.\n도깨비가 쪽지를 들여다보는 중...";
+        int ticket = ++judgeTicket;
         if (judge.IsReady)
         {
-            // AI 판정 : 기다리는 동안 도깨비가 갸웃갸웃 (SimpleAnim)
-            testInputGroup.SetActive(false);
-            judgeStatusText.text = "쪽지와 간식 1개를 건넸어요.\n도깨비가 쪽지를 들여다보는 중...";
-            StartCoroutine(judge.Judge(Stage, board.Texture, OnVerdict, OnJudgeError));
+            // AI 판정 (OpenAI) : 응답이 오면 OnVerdict, 문제가 생기면 OnJudgeError
+            StartCoroutine(judge.Judge(Stage, board.Texture,
+                v => { if (ticket == judgeTicket) OnVerdict(v); },
+                e => { if (ticket == judgeTicket) OnJudgeError(e); }));
         }
         else
         {
-            // 테스트 입력 : 특징 수만큼 체크박스를 보여주고 직접 고르게
-            testInputGroup.SetActive(true);
-            judgeStatusText.text = "쪽지와 간식 1개를 건넸어요.\n[테스트 입력] 그림에 들어간 특징을 체크하세요";
-            for (int i = 0; i < featureToggles.Length; i++)
-            {
-                bool used = i < Stage.features.Length;
-                featureToggles[i].gameObject.SetActive(used);
-                featureToggles[i].isOn = false;
-                if (used) featureToggleLabels[i].text = $"{Stage.features[i].id}  {Stage.features[i].name}";
-            }
+            // 자동 판정 (Unity 안에서 계산) : 도깨비가 잠깐 고민한 뒤 결과
+            StartCoroutine(LocalJudgeRoutine(ticket));
         }
     }
 
-    /// <summary>[버튼] (테스트 입력) 판정 결과 보내기</summary>
-    public void OnJudgeConfirmed()
+    // 도깨비가 고민하는 시간만큼 기다렸다가 LocalJudge 로 판정
+    IEnumerator LocalJudgeRoutine(int ticket)
     {
-        if (state != State.Judge) return;
-        bool[] present = new bool[Stage.features.Length];
-        for (int i = 0; i < present.Length; i++) present[i] = featureToggles[i].isOn;
-        ShowResult(present, null);
+        yield return new WaitForSeconds(thinkSeconds);
+        if (ticket != judgeTicket || state != State.Judge) yield break; // 그 사이 다른 화면으로 갔으면 무시
+        OnVerdict(LocalJudge.Judge(Stage, board.Texture));
     }
 
-    // AI 판정이 도착했을 때 (OpenAIJudge 가 불러요)
+    // 판정 결과가 도착했을 때 (AI 든 자동 판정이든 같은 모양)
     void OnVerdict(OpenAIJudge.Verdict verdict)
     {
         if (state != State.Judge) return;
+        SaveSubmission(verdict);
         ShowResult(verdict.present, verdict.notes);
     }
 
@@ -278,6 +276,7 @@ public class GameManager : MonoBehaviour
         if (state != State.Judge) return;
         snacks++;
         attempts[stageIndex]--;
+        judgeTicket++;      // 이 제출은 끝난 것으로 (늦게 오는 결과는 무시)
         UpdateSnackText();
         judgeStatusText.text = $"판정 중에 문제가 생겼어요. 간식을 돌려줬어요.\n<size=70%>{message}</size>";
         backToDrawButton.SetActive(true);
@@ -304,6 +303,7 @@ public class GameManager : MonoBehaviour
         }
         bool success = count == present.Length;
         cleared[stageIndex] = success;
+        boySurprisedMark.SetActive(!success);
 
         // 기획서 규칙
         //   전부 맞음     → 진짜 물건 (성공)
@@ -338,7 +338,8 @@ public class GameManager : MonoBehaviour
         {
             string mark = present[i] ? "<color=#2E7D32>[O] 그림</color>" : "<color=#C62828>[X] 빠뜨림</color>";
             lines += $"{mark}  {Stage.features[i].name}\n";
-            if (notes != null && !string.IsNullOrEmpty(notes[i])) lines += $"<size=70%><color=#7A6A5A>      {notes[i]}</color></size>\n";
+            // 빠뜨린 특징만 "왜 빠뜨렸다고 봤는지" 작게 덧붙여요 (화면이 너무 빽빽하지 않게)
+            if (!present[i] && notes != null && !string.IsNullOrEmpty(notes[i])) lines += $"<size=70%><color=#7A6A5A>      {notes[i]}</color></size>\n";
         }
         resultFeatureText.text = lines;
 
@@ -350,6 +351,9 @@ public class GameManager : MonoBehaviour
         // 실패했고 간식이 남아 있을 때만 다시 그리기
         retryButton.gameObject.SetActive(!success && snacks > 0);
         compareButtonLabel.text = success ? "내 그림과 비교하기" : "포기하고 비교하기";
+        // 성공이면 비교하기가 주된 버튼(진한 색), 아니면 다시 그리기가 주된 버튼이라 비교하기는 밝은 색
+        compareButtonLabel.transform.parent.GetComponent<Image>().color = success ? new Color(0.55f, 0.36f, 0.22f) : new Color(1f, 0.97f, 0.9f);
+        compareButtonLabel.color = success ? Color.white : new Color(0.55f, 0.36f, 0.22f);
 
         ShowPanel(resultPanel);
     }
@@ -370,6 +374,8 @@ public class GameManager : MonoBehaviour
         string hint = "<b>원본의 특징</b>\n";
         foreach (Feature f in Stage.features) hint += "- " + f.name + "\n";
         compareFeatureText.text = hint;
+
+        snacksLeft[stageIndex] = snacks;   // 이야기 종료 화면 기록용
 
         bool last = stageIndex == stages.Length - 1;
         nextButtonLabel.text = last ? "오늘의 이야기 마치기" : "다음 단계로";
@@ -393,7 +399,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < stages.Length; i++)
         {
             string result = cleared[i] ? "<color=#2E7D32>찾았어요</color>" : "<color=#C62828>포기했어요</color>";
-            record += $"{stages[i].Title}  -  {result}  (제출 {attempts[i]}번)\n";
+            record += $"{stages[i].Title}  -  {result}  (제출 {attempts[i]}번, 남은 간식 {snacksLeft[i]}개)\n";
         }
         endingRecordText.text = record;
         ShowPanel(endingPanel);
@@ -406,6 +412,22 @@ public class GameManager : MonoBehaviour
     }
 
     // ───────────── 도우미 함수 ─────────────
+
+    // (에디터에서만) 제출한 그림과 판정 결과를 Temp/Submissions 에 저장 → 판정 기준을 조절할 때 참고해요.
+    // Temp 폴더는 Git 에 올라가지 않고, 실제 게임 빌드에서는 이 코드가 아예 빠져요.
+    void SaveSubmission(OpenAIJudge.Verdict verdict)
+    {
+#if UNITY_EDITOR
+        string dir = System.IO.Path.Combine(Application.dataPath, "..", "Temp", "Submissions");
+        System.IO.Directory.CreateDirectory(dir);
+        string name = $"{System.DateTime.Now:MMdd_HHmmss}_stage{Stage.stageNumber}";
+        System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, name + ".png"), board.Texture.EncodeToPNG());
+        string log = "";
+        for (int i = 0; i < verdict.present.Length; i++)
+            log += $"{Stage.features[i].id} {(verdict.present[i] ? "O" : "X")} {Stage.features[i].name} : {verdict.notes?[i]}\n";
+        System.IO.File.WriteAllText(System.IO.Path.Combine(dir, name + ".txt"), log);
+#endif
+    }
 
     // 패널 하나만 켜고 나머지는 끄기
     void ShowPanel(GameObject panel)
