@@ -253,10 +253,19 @@ public class GameManager : MonoBehaviour
         int ticket = ++judgeTicket;
         if (judge.IsReady)
         {
-            // AI 판정 (OpenAI) : 응답이 오면 OnVerdict, 문제가 생기면 OnJudgeError
+            // AI 판정 (OpenAI 또는 판정 중계 서버) : 응답이 오면 OnVerdict, 문제가 생기면 OnJudgeError
+            //   웹 게임에서 서버가 안 되면(인터넷·서버 문제) 게임이 멈추지 않게 자동 판정으로 넘어가요.
+            bool viaServer = judge.UsesServer;
             StartCoroutine(judge.Judge(Stage, board.Texture,
                 v => { if (ticket == judgeTicket) OnVerdict(v); },
-                e => { if (ticket == judgeTicket) OnJudgeError(e); }));
+                e =>
+                {
+                    if (ticket != judgeTicket) return;
+                    if (!viaServer) { OnJudgeError(e); return; }
+                    Debug.LogWarning("[OpenAIJudge] 서버 판정 실패 → 자동 판정 : " + e);
+                    judgeStatusText.text = "AI 서버에 닿지 않아서\n도깨비가 직접 쪽지를 들여다보는 중...";
+                    StartCoroutine(LocalJudgeRoutine(ticket));
+                }));
         }
         else
         {

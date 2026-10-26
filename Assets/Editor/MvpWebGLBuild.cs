@@ -46,6 +46,7 @@ static class MvpWebGLBuild
         PlayerSettings.WebGL.decompressionFallback = true;   // 서버가 gzip 헤더를 안 붙여도 열리게
         PlayerSettings.WebGL.dataCaching = false;
         PlayerSettings.runInBackground = true;
+        MvpJudgeServer.ExportPrompts();   // 판정 서버가 쓸 프롬프트도 같이 최신으로
 
         var options = new BuildPlayerOptions
         {

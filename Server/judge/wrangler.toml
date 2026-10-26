@@ -1,0 +1,17 @@
+# Cloudflare Worker 설정 : 찾아라! 도깨비 AI 판정 중계 서버
+# 배포 : npx wrangler deploy   (이 폴더에서)
+# 키 넣기 : npx wrangler secret put OPENAI_API_KEY   (키는 이 파일이 아니라 Cloudflare 비밀값으로만!)
+name = "finddokkaebi-judge"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# 웹 게임 주소 (GitHub Pages). 여러 개면 쉼표로
+ALLOWED_ORIGINS = "https://azlsh-web.github.io"
+MODEL = "gpt-6-luna"
+
+# 같은 IP 가 1분(60초)에 20번 넘게 보내면 거절
+[[ratelimits]]
+name = "JUDGE_LIMIT"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }

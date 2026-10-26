@@ -1,0 +1,12 @@
+{
+  "name": "finddokkaebi-judge",
+  "private": true,
+  "description": "찾아라! 도깨비 웹 게임용 AI 판정 중계 서버 (Cloudflare Worker)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.149.0"
+  }
+}

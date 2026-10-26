@@ -554,6 +554,11 @@ public static class MvpSceneBuilder
         Set(tso, "clearButton", clearButton);
         tso.ApplyModifiedPropertiesWithoutUndo();
 
+        // 웹 게임용 AI 판정 중계 서버 주소 (Server/judge/server_url.txt, 없으면 빈 칸 = 서버 안 씀)
+        var jso = new SerializedObject(judge);
+        jso.FindProperty("serverUrl").stringValue = MvpJudgeServer.ServerUrl;
+        jso.ApplyModifiedPropertiesWithoutUndo();
+
         var mso = new SerializedObject(mixer);
         SetArray(mso, "materialFrames", materialFrames);
         Set(mso, "previewSwatch", swatch);

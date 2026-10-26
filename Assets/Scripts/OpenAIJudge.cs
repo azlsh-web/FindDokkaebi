@@ -17,8 +17,14 @@ using UnityEngine.Networking;
 // API 키 넣는 곳 (Git 에 올라가지 않는 폴더예요)
 //   FindDokkaebi/UserSettings/OpenAI.json
 //   { "apiKey": "sk-...", "model": "gpt-6-luna" }
-//   - 키가 비어 있으면 IsReady = false → GameManager 가 LocalJudge(Unity 안 자동 판정)로 판정해요.
 //   - model 은 이미지 입력이 되는 OpenAI 모델 이름이면 바꿔도 돼요.
+//
+// 웹(WebGL) 게임에서는 키를 게임 안에 넣으면 누구나 꺼내 갈 수 있어서,
+//   키를 가진 "판정 중계 서버"(Server/judge, Cloudflare Worker)에 그림만 보내요. → serverUrl
+//   서버는 단계 번호로 같은 프롬프트(stages.json)를 골라 OpenAI 에 묻고, AI 가 쓴 JSON 만 돌려줘요.
+//
+// 어떤 판정을 쓰나
+//   키 있음 → OpenAI 에 바로 / 키 없음 + serverUrl 있음 → 서버 / 둘 다 없음 → LocalJudge(Unity 안 자동 판정)
 //
 // 오류가 나면 (인터넷 끊김, 키 오류, 이상한 JSON …) onError 를 불러요.
 //   → GameManager 가 간식을 돌려주고 다시 제출하게 안내해요. (기획서 6장 "오류 처리")
@@ -26,6 +32,9 @@ public class OpenAIJudge : MonoBehaviour
 {
     [Tooltip("응답을 기다리는 최대 시간(초)")]
     [SerializeField] int timeoutSeconds = 40;
+
+    [Tooltip("판정 중계 서버 주소 (예: https://finddokkaebi-judge.xxx.workers.dev/judge). 비우면 서버를 안 써요")]
+    [SerializeField] string serverUrl = "";
 
     /// <summary>자동 플레이 테스트처럼 AI 를 부르면 안 될 때 true (키가 있어도 LocalJudge 로 판정)</summary>
     public static bool DisableAI;
@@ -52,13 +61,25 @@ public class OpenAIJudge : MonoBehaviour
         ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "UserSettings", "OpenAI.json"))
         : Path.Combine(Application.persistentDataPath, "OpenAI.json");
 
-    /// <summary>AI 판정을 쓸 수 있는지 (키가 있고, 테스트 강제 모드가 아닐 때)</summary>
+    /// <summary>AI 판정을 쓸 수 있는지 (키나 서버가 있고, 테스트 강제 모드가 아닐 때)</summary>
     public bool IsReady
     {
         get
         {
             LoadSettings();
-            return !DisableAI && !string.IsNullOrWhiteSpace(settings.apiKey);
+            return !DisableAI && (HasKey || UsesServer);
+        }
+    }
+
+    bool HasKey => !string.IsNullOrWhiteSpace(settings.apiKey);
+
+    /// <summary>키 없이 판정 중계 서버로 보내는지 (웹 게임)</summary>
+    public bool UsesServer
+    {
+        get
+        {
+            if (settings == null) LoadSettings();
+            return !HasKey && !string.IsNullOrWhiteSpace(serverUrl);
         }
     }
 
@@ -80,6 +101,12 @@ public class OpenAIJudge : MonoBehaviour
         // 1) 보낼 내용 만들기 : 프롬프트 글 + 그림(PNG 를 base64 글자로 바꾼 것)
         string prompt = BuildPrompt(stage);
         string imageUrl = "data:image/png;base64," + Convert.ToBase64String(drawing.EncodeToPNG());
+
+        if (UsesServer)
+        {
+            yield return JudgeByServer(stage, imageUrl, onDone, onError);
+            yield break;
+        }
 
         // OpenAI Responses API 요청 모양
         //   input  : [ { role:user, content:[ 글, 그림 ] } ]
@@ -122,6 +149,39 @@ public class OpenAIJudge : MonoBehaviour
             {
                 parseError = "응답을 읽지 못했어요: " + e.Message;
             }
+
+            if (parseError != null) onError?.Invoke(parseError);
+            else onDone?.Invoke(verdict);
+        }
+    }
+
+    // 판정 중계 서버로 보내기 : { stage, image } → { ok, text | error }
+    [Serializable] class ServerReply { public bool ok; public string text; public string error; }
+
+    IEnumerator JudgeByServer(StageData stage, string imageUrl, Action<Verdict> onDone, Action<string> onError)
+    {
+        string body = "{\"stage\":" + stage.stageNumber + ",\"image\":" + Quote(imageUrl) + "}";
+        using (var request = new UnityWebRequest(serverUrl, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(body));
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.timeout = timeoutSeconds;
+
+            yield return request.SendWebRequest();
+
+            ServerReply reply = null;
+            try { reply = JsonUtility.FromJson<ServerReply>(request.downloadHandler.text); } catch { }
+            if (request.result != UnityWebRequest.Result.Success || reply == null || !reply.ok)
+            {
+                onError?.Invoke($"판정 서버 오류 ({request.responseCode}) {reply?.error ?? request.error}");
+                yield break;
+            }
+
+            Verdict verdict = null;
+            string parseError = null;
+            try { verdict = ParseVerdict(stage, reply.text); }
+            catch (Exception e) { parseError = "응답을 읽지 못했어요: " + e.Message; }
 
             if (parseError != null) onError?.Invoke(parseError);
             else onDone?.Invoke(verdict);
