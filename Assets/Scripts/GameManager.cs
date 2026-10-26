@@ -5,246 +5,404 @@ using UnityEngine.UI;
 // ─────────────────────────────────────────────────────────────
 // GameManager : 게임 진행(흐름)을 책임지는 "사회자" 스크립트
 // ─────────────────────────────────────────────────────────────
-// 기획서의 플레이 흐름을 그대로 따라가요.
+// 기획서 2장 플레이 흐름을 5단계 동안 반복해요.
 //
-//   [도입] → [관찰 3초] → [그리기 60초] → [제출: 간식 -1] → [판정] → [결과]
-//                                ↑                                   │
-//                                └──────── 다시 그리기 ───────────────┤
-//                                                                    ↓
-//                                                       [원본 비교] → 처음으로
+//   [시작 화면]
+//       ↓ 소풍 준비하러 가기
+//   [단계 도입] → [관찰 3초] → [그리기 60초] → [제출: 간식 -1] → [판정] → [결과]
+//                                   ↑                                       │
+//                                   └──────────── 다시 그리기 ───────────────┤ (실패 + 간식 남음)
+//                                                                            ↓ 비교하기 / 포기하고 비교
+//                                                                      [원본 비교]
+//                                                                            ↓ 다음 단계 (5단계 뒤엔)
+//                                                                     [이야기 종료]
 //
 // 화면 구조
 //   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요.
-//   - 한 번에 패널 하나만 켜고(SetActive(true)) 나머지는 꺼요. → ShowPanel() 함수
-//   - 위쪽 HUD(간식 수, 남은 시간)는 항상 켜져 있어요.
+//   - 한 번에 패널 하나만 켜요. → ShowPanel()
+//   - 위쪽 HUD(간식, 단계, 향 타이머)는 게임 중에만 보여요.
 //
-// 판정
-//   - 기획서는 AI(LLM)가 그림을 보고 F1~F3 을 판정해요.
-//   - MVP 에서는 AI 대신 "테스트 입력": 판정 화면의 체크박스(Toggle)로
-//     어떤 특징이 그려졌는지 사람이 직접 고르게 했어요.
-//   - 나중에 AI 를 붙일 때는 판정 결과(bool[])를 만드는 부분만 바꾸면 돼요. → OnJudgeConfirmed()
+// 간식 규칙 : 단계마다 3개로 시작, 제출할 때마다 1개. 다 쓰면 다시 그리기 불가 → 포기하고 비교.
+//
+// 판정 (OpenAIJudge)
+//   - UserSettings/OpenAI.json 에 키가 있으면 : AI 가 판정 (기다리는 동안 도깨비가 고민하는 모습)
+//   - 키가 없으면 : 판정 화면의 체크박스로 직접 고르는 "테스트 입력"
+//   - AI 오류 : 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
 public class GameManager : MonoBehaviour
 {
-    // 지금 어떤 화면(단계)에 있는지 나타내는 목록
-    enum State { Intro, Observe, Draw, Judge, Result, Compare }
+    // 지금 어떤 화면에 있는지
+    enum State { Title, StageIntro, Observe, Draw, Judge, Result, Compare, Ending }
 
     // ───────────── Inspector 에서 연결하는 것들 ─────────────
     // [SerializeField] = private 이지만 Inspector 창에 보이게 해서 드래그로 연결할 수 있게 함
 
-    [Header("데이터")]
-    [Tooltip("이번 단계 데이터 파일 (Assets/Data/Stage1_Bat)")]
-    [SerializeField] StageData stage;
+    [Header("데이터 (순서대로 1~5단계)")]
+    [SerializeField] StageData[] stages;
 
     [Header("규칙 (기획서 수치)")]
-    [SerializeField] int startSnacks = 3;           // 시작 간식 수
-    [SerializeField] float observeSeconds = 3f;     // 관찰 시간
-    [SerializeField] float drawSeconds = 60f;       // 그리기 시간 (향이 타는 시간)
+    [SerializeField] int snacksPerStage = 3;
+    [SerializeField] float observeSeconds = 3f;
+    [SerializeField] float drawSeconds = 60f;
 
-    [Header("항상 보이는 HUD")]
+    [Header("다른 스크립트")]
+    [SerializeField] DrawingBoard board;
+    [SerializeField] ToolBar toolBar;
+    [SerializeField] OpenAIJudge judge;
+
+    [Header("HUD")]
+    [SerializeField] GameObject hud;
     [SerializeField] TMP_Text snackText;            // 왼쪽 위 "간식 3개"
     [SerializeField] TMP_Text stageText;            // 오른쪽 위 "1단계 방망이"
-    [SerializeField] TMP_Text timerText;            // 오른쪽 위 "향 58초"
+    [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
+    [SerializeField] TMP_Text timerText;            // "향 58초"
+    [SerializeField] Image incenseBar;              // 타들어 가는 향 막대
 
-    [Header("패널(화면) 6개")]
-    [SerializeField] GameObject introPanel;
+    [Header("패널(화면)")]
+    [SerializeField] GameObject titlePanel;
+    [SerializeField] GameObject stageIntroPanel;
     [SerializeField] GameObject observePanel;
     [SerializeField] GameObject drawPanel;
     [SerializeField] GameObject judgePanel;
     [SerializeField] GameObject resultPanel;
     [SerializeField] GameObject comparePanel;
+    [SerializeField] GameObject endingPanel;
 
-    [Header("도입 화면")]
-    [SerializeField] TMP_Text introStoryText;
+    [Header("단계 도입 화면")]
+    [SerializeField] TMP_Text introStageNumber;
+    [SerializeField] TMP_Text introTargetName;
+    [SerializeField] TMP_Text introStory;
+    [SerializeField] TMP_Text introRules;
 
     [Header("관찰 화면")]
-    [SerializeField] Image observeImage;            // 원본 그림
-    [SerializeField] TMP_Text observeCountText;     // "3", "2", "1"
+    [SerializeField] TMP_Text observeTitle;
+    [SerializeField] Image observeImage;
+    [SerializeField] TMP_Text observeCountText;
 
     [Header("그리기 화면")]
-    [SerializeField] DrawingBoard board;            // 쪽지(그림판)
-    [SerializeField] Button submitButton;           // 제출 버튼 (빈 쪽지면 비활성)
+    [SerializeField] TMP_Text drawTitle;
+    [SerializeField] Button submitButton;
 
-    [Header("판정 화면 (테스트 입력)")]
-    [SerializeField] Toggle[] featureToggles;       // F1, F2, F3 체크박스
+    [Header("판정 화면")]
+    [SerializeField] RawImage judgeDrawing;         // 도깨비에게 건넨 쪽지
+    [SerializeField] TMP_Text judgeStatusText;      // "도깨비가 쪽지를 들여다보는 중..."
+    [SerializeField] GameObject testInputGroup;     // 테스트 입력 (체크박스 + 확인 버튼)
+    [SerializeField] Toggle[] featureToggles;       // 최대 5개 (단계 특징 수만큼만 보임)
     [SerializeField] TMP_Text[] featureToggleLabels;
+    [SerializeField] GameObject backToDrawButton;   // AI 오류 때만 보임
 
     [Header("결과 화면")]
-    [SerializeField] TMP_Text resultTitleText;      // "방망이를 찾았다!"
+    [SerializeField] TMP_Text resultTitleText;
     [SerializeField] Image resultItemImage;         // 도깨비가 가져온 물건
-    [SerializeField] TMP_Text resultFeatureText;    // 특징별 맞음/빠뜨림 목록
-    [SerializeField] Button retryButton;            // 다시 그리기
-    [SerializeField] TMP_Text compareButtonLabel;   // "비교하기" / "포기하고 비교"
+    [SerializeField] RawImage resultMyDrawing;      // 내 그림
+    [SerializeField] TMP_Text resultFeatureText;    // 특징별 [O]/[X]
+    [SerializeField] Image boyFace;                 // 소년 표정
+    [SerializeField] TMP_Text boyLineText;          // 소년 대사
+    [SerializeField] TMP_Text resultSnackText;      // "남은 간식 2개"
+    [SerializeField] Button retryButton;
+    [SerializeField] TMP_Text compareButtonLabel;
+    [SerializeField] Sprite boyHappy;
+    [SerializeField] Sprite boySurprised;
 
     [Header("비교 화면")]
-    [SerializeField] RawImage compareMyDrawing;     // 왼쪽: 내 그림
-    [SerializeField] Image compareOriginal;         // 오른쪽: 원본
+    [SerializeField] RawImage compareMyDrawing;
+    [SerializeField] Image compareOriginal;
+    [SerializeField] TMP_Text compareFeatureText;
+    [SerializeField] TMP_Text nextButtonLabel;
+
+    [Header("이야기 종료 화면")]
+    [SerializeField] TMP_Text endingRecordText;
 
     // ───────────── 게임 도중 바뀌는 값들 ─────────────
     State state;
-    int snacks;         // 남은 간식
-    float timeLeft;     // 관찰/그리기 남은 시간
+    int stageIndex;         // 지금 단계 번호 (0부터)
+    int snacks;             // 이번 단계 남은 간식
+    float timeLeft;         // 관찰/그리기 남은 시간
+    float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
+    int[] attempts;         // 단계별 제출 횟수 (이야기 종료 화면 기록용)
+    bool[] cleared;         // 단계별 성공 여부
+
+    StageData Stage => stages[stageIndex];
 
     // Start : 게임이 시작되면 한 번 실행
     void Start()
     {
-        snacks = startSnacks;
-        stageText.text = stage.stageTitle;
-
-        // 판정 화면 체크박스 글자를 데이터 파일의 특징 이름으로 채우기
-        for (int i = 0; i < featureToggleLabels.Length; i++)
-        {
-            featureToggleLabels[i].text = $"F{i + 1}  {stage.features[i]}";
-        }
-
-        ShowIntro();
+        ShowTitle();
     }
 
-    // Update : 매 프레임(1초에 수십 번) 실행. 여기서는 타이머만 처리해요.
+    // Update : 매 프레임 실행. 타이머만 처리해요.
     void Update()
     {
         if (state == State.Observe)
         {
-            timeLeft -= Time.deltaTime;                         // 지난 시간만큼 빼기
+            timeLeft -= Time.deltaTime;                             // 지난 시간만큼 빼기
             observeCountText.text = Mathf.CeilToInt(timeLeft).ToString();
-            if (timeLeft <= 0f) StartDraw();                    // 3초 끝 → 그리기
+            if (timeLeft <= 0f) StartDraw(false);                   // 3초 끝 → 그리기
         }
         else if (state == State.Draw)
         {
             timeLeft -= Time.deltaTime;
-            timerText.text = $"향 {Mathf.CeilToInt(timeLeft)}초";
-            submitButton.interactable = board.HasDrawn;         // 그린 게 있어야 제출 가능
-            if (timeLeft <= 0f) Submit();                       // 향이 다 타면 자동 제출
+            timerText.text = $"향 {Mathf.CeilToInt(Mathf.Max(0f, timeLeft))}초";
+            incenseBar.fillAmount = timeLeft / drawSeconds;         // 향이 타들어 감
+            submitButton.interactable = board.HasDrawn;             // 빈 쪽지면 제출 불가
+            if (timeLeft <= 0f) Submit();                           // 향이 다 타면 자동 제출
         }
     }
 
-    // ───────────── 각 화면으로 넘어가는 함수들 ─────────────
-    // public 함수는 버튼의 OnClick 에 연결돼 있어요.
+    // ───────────── 화면 넘기기 (public = 버튼 OnClick 에 연결) ─────────────
 
-    /// <summary>도입 화면 : 이야기와 "기억할 모습 보기" 버튼</summary>
-    void ShowIntro()
+    /// <summary>시작 화면</summary>
+    void ShowTitle()
     {
-        state = State.Intro;
-        introStoryText.text = stage.introStory;
-        timerText.text = "";
-        UpdateSnackText();
-        ShowPanel(introPanel);
+        state = State.Title;
+        hud.SetActive(false);
+        ShowPanel(titlePanel);
     }
 
-    /// <summary>[버튼] 기억할 모습 보기 → 3초 관찰 시작</summary>
+    /// <summary>[버튼] 소풍 준비하러 가기</summary>
+    public void StartGame()
+    {
+        attempts = new int[stages.Length];
+        cleared = new bool[stages.Length];
+        StartStage(0);
+    }
+
+    /// <summary>단계 도입 화면 : 이야기 + 새 규칙 + 앞에서 배운 규칙</summary>
+    void StartStage(int index)
+    {
+        state = State.StageIntro;
+        stageIndex = index;
+        snacks = snacksPerStage;
+        toolBar.Setup(Stage.colorMode);
+
+        hud.SetActive(true);
+        timerGroup.SetActive(false);
+        stageText.text = Stage.Title;
+        UpdateSnackText();
+
+        introStageNumber.text = $"{Stage.stageNumber}단계";
+        introTargetName.text = Stage.targetName;
+        introStory.text = Stage.introStory;
+        string learned = string.IsNullOrEmpty(Stage.learnedRules) ? "없음 (첫 단계예요)" : Stage.learnedRules;
+        introRules.text =
+            $"<b>새로 배울 규칙</b>\n{Stage.newRule}\n\n" +
+            $"<b>앞에서 배운 규칙</b>\n{learned}\n\n" +
+            $"관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 제출할 때 간식 1개 (간식 {snacksPerStage}개)";
+        ShowPanel(stageIntroPanel);
+    }
+
+    /// <summary>[버튼] 기억할 모습 보기 → 3초 관찰</summary>
     public void StartObserve()
     {
         state = State.Observe;
         timeLeft = observeSeconds;
-        observeImage.sprite = stage.originalSprite;
+        observeTitle.text = $"{Stage.targetName}{Josa(Stage.targetName, "을", "를")} 잘 기억하세요!";
+        observeImage.sprite = Stage.originalSprite;
         ShowPanel(observePanel);
     }
 
-    /// <summary>그리기 시작 : 빈 쪽지, 60초. (다시 그리기도 여기로 와요)</summary>
-    void StartDraw()
+    /// <summary>그리기 시작. keepDrawing = true 면 그리던 그림을 그대로 (AI 오류로 돌아올 때)</summary>
+    void StartDraw(bool keepDrawing)
     {
         state = State.Draw;
-        timeLeft = drawSeconds;
-        board.Clear();
-        board.UsePen();
+        if (keepDrawing)
+        {
+            timeLeft = savedDrawTime;
+        }
+        else
+        {
+            timeLeft = drawSeconds;
+            board.ResetBoard();
+        }
+        drawTitle.text = $"기억한 {Stage.targetName}{Josa(Stage.targetName, "을", "를")} 그려주세요 (원본은 볼 수 없어요)";
+        timerGroup.SetActive(true);
         ShowPanel(drawPanel);
     }
 
-    /// <summary>[버튼] 제출 (또는 시간 초과로 자동 제출) : 간식 1개 사용</summary>
+    /// <summary>[버튼] 제출 (또는 시간 초과로 자동 제출) : 쪽지 + 간식 1개를 도깨비에게</summary>
     public void Submit()
     {
         if (state != State.Draw) return;    // 두 번 눌림 방지
 
-        snacks--;
-        UpdateSnackText();
-        timerText.text = "";
-
-        // 판정 화면으로. 체크박스는 모두 꺼진 상태로 시작
         state = State.Judge;
-        foreach (Toggle t in featureToggles) t.isOn = false;
+        savedDrawTime = Mathf.Max(timeLeft, 10f);
+        snacks--;
+        attempts[stageIndex]++;
+        UpdateSnackText();
+        timerGroup.SetActive(false);
+
+        judgeDrawing.texture = board.Texture;
+        backToDrawButton.SetActive(false);
         ShowPanel(judgePanel);
+
+        if (judge.IsReady)
+        {
+            // AI 판정 : 기다리는 동안 도깨비가 갸웃갸웃 (SimpleAnim)
+            testInputGroup.SetActive(false);
+            judgeStatusText.text = "쪽지와 간식 1개를 건넸어요.\n도깨비가 쪽지를 들여다보는 중...";
+            StartCoroutine(judge.Judge(Stage, board.Texture, OnVerdict, OnJudgeError));
+        }
+        else
+        {
+            // 테스트 입력 : 특징 수만큼 체크박스를 보여주고 직접 고르게
+            testInputGroup.SetActive(true);
+            judgeStatusText.text = "쪽지와 간식 1개를 건넸어요.\n[테스트 입력] 그림에 들어간 특징을 체크하세요";
+            for (int i = 0; i < featureToggles.Length; i++)
+            {
+                bool used = i < Stage.features.Length;
+                featureToggles[i].gameObject.SetActive(used);
+                featureToggles[i].isOn = false;
+                if (used) featureToggleLabels[i].text = $"{Stage.features[i].id}  {Stage.features[i].name}";
+            }
+        }
     }
 
-    /// <summary>[버튼] 판정 결과 보내기 → 결과 계산</summary>
+    /// <summary>[버튼] (테스트 입력) 판정 결과 보내기</summary>
     public void OnJudgeConfirmed()
     {
-        // ★ 판정 결과 = 특징마다 그렸는지(true) / 빠뜨렸는지(false)
-        //   MVP : 체크박스 값을 그대로 사용 (테스트 입력)
-        //   나중 : AI 가 보내준 JSON 의 status == "present" 인지로 바꾸면 됨
-        bool[] present = new bool[featureToggles.Length];
+        if (state != State.Judge) return;
+        bool[] present = new bool[Stage.features.Length];
         for (int i = 0; i < present.Length; i++) present[i] = featureToggles[i].isOn;
-
-        ShowResult(present);
+        ShowResult(present, null);
     }
 
-    /// <summary>결과 화면 : 몇 개 맞혔는지에 따라 가져오는 물건이 달라져요.</summary>
-    void ShowResult(bool[] present)
+    // AI 판정이 도착했을 때 (OpenAIJudge 가 불러요)
+    void OnVerdict(OpenAIJudge.Verdict verdict)
+    {
+        if (state != State.Judge) return;
+        ShowResult(verdict.present, verdict.notes);
+    }
+
+    // AI 판정이 실패했을 때 : 간식 돌려주고 다시 제출하게 (기획서 6장 오류 처리)
+    void OnJudgeError(string message)
+    {
+        if (state != State.Judge) return;
+        snacks++;
+        attempts[stageIndex]--;
+        UpdateSnackText();
+        judgeStatusText.text = $"판정 중에 문제가 생겼어요. 간식을 돌려줬어요.\n<size=70%>{message}</size>";
+        backToDrawButton.SetActive(true);
+        Debug.LogWarning("[OpenAIJudge] " + message);
+    }
+
+    /// <summary>[버튼] (AI 오류 후) 그림으로 돌아가서 다시 제출</summary>
+    public void BackToDraw()
+    {
+        StartDraw(true);
+    }
+
+    /// <summary>결과 화면 : 맞힌 특징 수에 따라 도깨비가 가져오는 물건이 달라져요.</summary>
+    void ShowResult(bool[] present, string[] notes)
     {
         state = State.Result;
 
-        // 맞힌 특징 개수 세기
         int count = 0;
-        foreach (bool p in present) if (p) count++;
-
-        bool success = count == present.Length;   // 전부 맞혀야 성공
+        int firstMissing = -1;
+        for (int i = 0; i < present.Length; i++)
+        {
+            if (present[i]) count++;
+            else if (firstMissing < 0) firstMissing = i;
+        }
+        bool success = count == present.Length;
+        cleared[stageIndex] = success;
 
         // 기획서 규칙
-        //   전부 맞음     → 진짜 방망이 (성공)
-        //   일부만 맞음   → 엉뚱한 방망이 (부분 성공)
-        //   하나도 없음   → 아무것도 안 가져옴 (실패)
+        //   전부 맞음     → 진짜 물건 (성공)
+        //   일부만 맞음   → 엉뚱한 물건 : "처음 빠뜨린 특징"이 빠진 물건이 와요
+        //   하나도 없음   → 아무것도 안 가져옴
+        string name = Stage.targetName;
         if (success)
         {
-            resultTitleText.text = $"도깨비가 {stage.targetName}를 찾아왔다!";
-            ShowItem(stage.originalSprite);
+            resultTitleText.text = $"도깨비가 {name}{Josa(name, "을", "를")} 찾아왔다!";
+            ShowItem(Stage.originalSprite);
+            boyFace.sprite = boyHappy;
+            boyLineText.text = $"찾았다! 바로 이 {name}{Josa(name, "이야", "야")}!\n고마워 도깨비야!";
         }
         else if (count > 0)
         {
-            resultTitleText.text = $"엉뚱한 {stage.targetName}를 가져왔다...";
-            ShowItem(stage.wrongSprite);
+            resultTitleText.text = $"엉뚱한 {name}{Josa(name, "을", "를")} 가져왔다...";
+            ShowItem(Stage.features[firstMissing].wrongSprite);
+            boyFace.sprite = boySurprised;
+            boyLineText.text = $"어? 이 {name}{Josa(name, "은", "는")} 좀 이상한데...\n<size=80%>'{Stage.features[firstMissing].name}' 부분이 달라!</size>";
         }
         else
         {
             resultTitleText.text = "도깨비가 아무것도 찾지 못했다...";
             ShowItem(null);
+            boyFace.sprite = boySurprised;
+            boyLineText.text = "도깨비가 빈손으로 왔어...\n특징을 더 그려줘야겠다.";
         }
 
-        // 특징별 결과 목록 만들기 (줄바꿈 \n 으로 한 줄씩)
+        // 특징별 결과 목록 (AI 판정이면 근거도 작게)
         string lines = "";
         for (int i = 0; i < present.Length; i++)
         {
-            string mark = present[i] ? "<color=#2E7D32>[O] 그림</color>"
-                                     : "<color=#C62828>[X] 빠뜨림</color>";
-            lines += $"{mark}   F{i + 1} {stage.features[i]}\n";
+            string mark = present[i] ? "<color=#2E7D32>[O] 그림</color>" : "<color=#C62828>[X] 빠뜨림</color>";
+            lines += $"{mark}  {Stage.features[i].name}\n";
+            if (notes != null && !string.IsNullOrEmpty(notes[i])) lines += $"<size=70%><color=#7A6A5A>      {notes[i]}</color></size>\n";
         }
-        if (!success && snacks <= 0) lines += "\n간식이 다 떨어졌어요.";
         resultFeatureText.text = lines;
 
-        // 버튼 정리 : 실패했고 간식이 남아 있을 때만 다시 그리기 가능
+        resultMyDrawing.texture = board.Texture;
+        resultSnackText.text = (!success && snacks <= 0)
+            ? "간식이 다 떨어졌어요. 원본과 비교하고 넘어가요."
+            : $"남은 간식 {snacks}개";
+
+        // 실패했고 간식이 남아 있을 때만 다시 그리기
         retryButton.gameObject.SetActive(!success && snacks > 0);
         compareButtonLabel.text = success ? "내 그림과 비교하기" : "포기하고 비교하기";
 
         ShowPanel(resultPanel);
     }
 
-    /// <summary>[버튼] 다시 그리기 : 원본은 다시 안 보여주고 바로 빈 쪽지로</summary>
+    /// <summary>[버튼] 다시 그리기 : 원본은 다시 안 보여주고 빈 쪽지로, 시간은 다시 60초</summary>
     public void Retry()
     {
-        StartDraw();
+        StartDraw(false);
     }
 
-    /// <summary>[버튼] 비교하기 : 왼쪽 내 그림, 오른쪽 원본</summary>
+    /// <summary>[버튼] 비교하기 : 왼쪽 내 그림, 오른쪽 원본, 아래 특징 설명</summary>
     public void ShowCompare()
     {
         state = State.Compare;
         compareMyDrawing.texture = board.Texture;
-        compareOriginal.sprite = stage.originalSprite;
+        compareOriginal.sprite = Stage.originalSprite;
+
+        string hint = "<b>원본의 특징</b>\n";
+        foreach (Feature f in Stage.features) hint += "- " + f.name + "\n";
+        compareFeatureText.text = hint;
+
+        bool last = stageIndex == stages.Length - 1;
+        nextButtonLabel.text = last ? "오늘의 이야기 마치기" : "다음 단계로";
         ShowPanel(comparePanel);
     }
 
-    /// <summary>[버튼] 처음부터 다시 : 간식을 채우고 도입 화면으로</summary>
-    public void Restart()
+    /// <summary>[버튼] 다음 단계로 / 오늘의 이야기 마치기</summary>
+    public void NextStage()
     {
-        snacks = startSnacks;
-        ShowIntro();
+        if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
+        else ShowEnding();
+    }
+
+    /// <summary>이야기 종료 : 단계별 기록</summary>
+    void ShowEnding()
+    {
+        state = State.Ending;
+        hud.SetActive(false);
+
+        string record = "";
+        for (int i = 0; i < stages.Length; i++)
+        {
+            string result = cleared[i] ? "<color=#2E7D32>찾았어요</color>" : "<color=#C62828>포기했어요</color>";
+            record += $"{stages[i].Title}  -  {result}  (제출 {attempts[i]}번)\n";
+        }
+        endingRecordText.text = record;
+        ShowPanel(endingPanel);
+    }
+
+    /// <summary>[버튼] 처음으로</summary>
+    public void BackToTitle()
+    {
+        ShowTitle();
     }
 
     // ───────────── 도우미 함수 ─────────────
@@ -252,12 +410,8 @@ public class GameManager : MonoBehaviour
     // 패널 하나만 켜고 나머지는 끄기
     void ShowPanel(GameObject panel)
     {
-        introPanel.SetActive(panel == introPanel);
-        observePanel.SetActive(panel == observePanel);
-        drawPanel.SetActive(panel == drawPanel);
-        judgePanel.SetActive(panel == judgePanel);
-        resultPanel.SetActive(panel == resultPanel);
-        comparePanel.SetActive(panel == comparePanel);
+        GameObject[] all = { titlePanel, stageIntroPanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel };
+        foreach (GameObject p in all) p.SetActive(p == panel);
     }
 
     // 결과 그림 칸에 물건 보여주기 (null 이면 숨김)
@@ -270,5 +424,18 @@ public class GameManager : MonoBehaviour
     void UpdateSnackText()
     {
         snackText.text = $"간식 {snacks}개";
+    }
+
+    /// <summary>
+    /// 한국어 조사 고르기. 마지막 글자에 받침이 있으면 withBatchim, 없으면 withoutBatchim.
+    /// 예) Josa("가방","을","를") → "을",  Josa("방망이","을","를") → "를"
+    /// </summary>
+    public static string Josa(string word, string withBatchim, string withoutBatchim)
+    {
+        if (string.IsNullOrEmpty(word)) return withoutBatchim;
+        char last = word[word.Length - 1];
+        if (last < 0xAC00 || last > 0xD7A3) return withoutBatchim;      // 한글이 아니면
+        bool hasBatchim = (last - 0xAC00) % 28 != 0;                     // 한글 글자 번호 규칙
+        return hasBatchim ? withBatchim : withoutBatchim;
     }
 }
