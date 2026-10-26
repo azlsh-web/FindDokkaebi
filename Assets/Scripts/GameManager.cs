@@ -102,6 +102,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Sprite boyHappy;
     [SerializeField] Sprite boySurprised;
     [SerializeField] GameObject boySurprisedMark;   // 당황했을 때 소년 옆에 뜨는 "!?"
+    [SerializeField] Sprite primaryButtonSprite;    // 주 버튼 그림 (코랄)
+    [SerializeField] Sprite secondaryButtonSprite;  // 보조 버튼 그림 (크림)
 
     [Header("비교 화면")]
     [SerializeField] RawImage compareMyDrawing;
@@ -351,9 +353,8 @@ public class GameManager : MonoBehaviour
         // 실패했고 간식이 남아 있을 때만 다시 그리기
         retryButton.gameObject.SetActive(!success && snacks > 0);
         compareButtonLabel.text = success ? "내 그림과 비교하기" : "포기하고 비교하기";
-        // 성공이면 비교하기가 주된 버튼(진한 색), 아니면 다시 그리기가 주된 버튼이라 비교하기는 밝은 색
-        compareButtonLabel.transform.parent.GetComponent<Image>().color = success ? new Color(0.55f, 0.36f, 0.22f) : new Color(1f, 0.97f, 0.9f);
-        compareButtonLabel.color = success ? Color.white : new Color(0.55f, 0.36f, 0.22f);
+        // 성공이면 비교하기가 주된 버튼(코랄), 아니면 다시 그리기가 주된 버튼이라 비교하기는 보조(크림)
+        compareButtonLabel.transform.parent.GetComponent<Image>().sprite = success ? primaryButtonSprite : secondaryButtonSprite;
 
         ShowPanel(resultPanel);
     }
