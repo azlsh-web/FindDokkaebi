@@ -114,6 +114,10 @@ public static class LocalJudge
         public readonly bool[] silhouette;              // 잉크 + 선으로 닫힌 안쪽 (속을 채운 모양)
         public readonly List<Blob> inkHoles;            // 잉크 선으로 닫힌 안쪽 영역들 (큰 것부터, 틈 메운 선 기준)
         public readonly List<Blob> rawHoles;            // 같은 것, 원래 선 기준 (틈이 있으면 안 닫혀요)
+        public readonly float strokeWidth;              // 선의 평균 굵기 (칸) : 굵은 펜이면 커져요
+
+        // 알맹이를 남길 때 지울 선 굵기 : 가는·중간 펜은 2칸, 굵은 펜(약 6칸)은 4칸까지
+        public int CoreRadius => Mathf.Clamp(Mathf.CeilToInt(strokeWidth / 2f), 2, 4);
 
         BatShape bat;
 
@@ -153,6 +157,18 @@ public static class LocalJudge
             // 손으로 그린 선은 조금씩 끊겨 있어서, 틈을 메운 선(CloseGaps)으로 닫힌 안쪽을 찾아요
             inkHoles = Holes(CloseGaps(ink), out silhouette);
             rawHoles = Holes(ink, out _);
+
+            // 선 굵기 ≈ 2 × 잉크 칸 수 ÷ 가장자리 칸 수 (가는 선은 양쪽이 다 가장자리라서)
+            int edge = 0;
+            bool[] m = ink;
+            bool In(int nx, int ny) => nx >= 0 && ny >= 0 && nx < N && ny < N && m[ny * N + nx];
+            for (int y = 0; y < N; y++)
+            for (int x = 0; x < N; x++)
+            {
+                if (!m[y * N + x]) continue;
+                if (!In(x - 1, y) || !In(x + 1, y) || !In(x, y - 1) || !In(x, y + 1)) edge++;
+            }
+            strokeWidth = edge == 0 ? 1f : 2f * inkCount / edge;
         }
 
         public BatShape Bat() => bat ??= new BatShape(this);
@@ -279,8 +295,9 @@ public static class LocalJudge
     // 틈 메우기 (닫힘 연산) : 2칸 두껍게 → 2칸 얇게. 약 16픽셀까지 끊긴 선이 이어지고, 선 굵기는 거의 그대로예요.
     static bool[] CloseGaps(bool[] mask) => Shrink(Grow(mask, 2), 2);
 
-    // 알맹이만 남기기 (열림 연산) : 2칸 얇게 → 2칸 두껍게. 펜으로 그은 가는 선(돌기·손잡이 선)은 사라지고 속이 찬 부분만 남아요.
-    static bool[] Core(bool[] mask) => Grow(Shrink(mask, 2), 2);
+    // 알맹이만 남기기 (열림 연산) : r칸 얇게 → r칸 두껍게. 펜으로 그은 선(돌기·손잡이 선)은 사라지고 속이 찬 부분만 남아요.
+    //   r 은 선 굵기에 맞춰요 (굵은 펜으로 그은 돌기도 지워지게)
+    static bool[] Core(bool[] mask, int r = 2) => Grow(Shrink(mask, r), r);
 
     // r 칸만큼 두껍게
     static bool[] Grow(bool[] mask, int r)
@@ -446,7 +463,7 @@ public static class LocalJudge
 
         public BatShape(Picture p)
         {
-            bool[] core = Core(p.silhouette);
+            bool[] core = Core(p.silhouette, p.CoreRadius);
             for (int i = 0; i < N * N; i++)
             {
                 if (p.silhouette[i]) pts.Add(new Vector2(i % N, i / N));

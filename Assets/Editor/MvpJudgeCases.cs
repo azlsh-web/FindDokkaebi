@@ -40,6 +40,7 @@ static class MvpJudgeCases
         public bool[] judged;       // 실제 판정
         public string[] notes;
         public string shot, drawing;
+        public int pen = 4;         // 펜 반지름 (게임의 굵은 펜 = 12)
     }
 
     static List<Case> cases;
@@ -129,7 +130,7 @@ static class MvpJudgeCases
             SetField(gm, "snacks", 3);             // 간식이 떨어지지 않게
             Call(gm, "StartDraw", false);
 
-            Texture2D tex = Draw(c.stage, c.drawn);
+            Texture2D tex = Draw(c.stage, c.drawn, c.pen);
             Find("DrawPanel/Board").GetComponent<DrawingBoard>().LoadPixels(tex.GetPixels32());
             OpenAIJudge.Verdict v = LocalJudge.Judge(stage, tex);   // 게임과 같은 판정 함수 (리포트 기록용)
             c.judged = v.present;
@@ -176,13 +177,13 @@ static class MvpJudgeCases
 
     static void WriteCsv()
     {
-        var sb = new StringBuilder("index,stage,drawn,expected,judged,pass,shot,drawing,notes\n");
+        var sb = new StringBuilder("index,stage,drawn,expected,judged,pass,shot,drawing,notes,pen\n");
         for (int i = 0; i < cases.Count; i++)
         {
             Case c = cases[i];
             if (c.judged == null) continue;
             string notes = string.Join(" | ", c.notes ?? new string[0]).Replace("\"", "'");
-            sb.Append($"{i},{c.stage + 1},{Bits(c.drawn)},{Bits(c.expected)},{Bits(c.judged)},{(Same(c.expected, c.judged) ? "PASS" : "FAIL")},{c.shot},{c.drawing},\"{notes}\"\n");
+            sb.Append($"{i},{c.stage + 1},{Bits(c.drawn)},{Bits(c.expected)},{Bits(c.judged)},{(Same(c.expected, c.judged) ? "PASS" : "FAIL")},{c.shot},{c.drawing},\"{notes}\",{c.pen}\n");
         }
         File.WriteAllText(Path.Combine(OutDir, "results.csv"), sb.ToString(), new UTF8Encoding(true));
     }
@@ -204,6 +205,7 @@ static class MvpJudgeCases
                 if (s == 0) exp[1] = drawn[0] && drawn[1];      // 손잡이 없으면 "손잡이보다 굵은 머리" 불인정
                 if (s == 1) exp[3] = drawn[2] && drawn[3];      // 주머니 없으면 "주머니 안 줄무늬" 불인정
                 list.Add(new Case { stage = s, drawn = drawn, expected = exp });
+                if (s == 0) list.Add(new Case { stage = s, drawn = drawn, expected = exp, pen = 12 });   // 방망이는 굵은 펜으로도
             }
         }
         return list;
@@ -215,7 +217,7 @@ static class MvpJudgeCases
     static Vector2 V(float x, float y) => new Vector2(x, y);
 
     // 단계와 특징 on/off 에 맞는 손그림
-    static Texture2D Draw(int stage, bool[] f)
+    static Texture2D Draw(int stage, bool[] f, int pen = 4)
     {
         var k = HandSketch.Black;
         var s = new HandSketch();
@@ -226,15 +228,15 @@ static class MvpJudgeCases
                 // 머리 : 굵음 = 타원 / 안 굵음 = 손잡이와 같은 굵기의 막대 (손잡이가 없으면 작은 동그라미)
                 Vector2 c = f[0] ? V(256, 335) : V(256, 260);
                 float rx = f[1] ? 58 : (f[0] ? 3 : 32), ry = f[1] ? 88 : (f[0] ? 88 : 32);
-                if (f[0]) s.Line(k, 4, 2f, V(250, 40), V(253, 140), V(256, c.y - ry + 4));
-                s.Ellipse(k, 4, c, rx, ry, gapDeg: 14f);
+                if (f[0]) s.Line(k, pen, 2f, V(250, 40), V(253, 140), V(256, c.y - ry + 4));
+                s.Ellipse(k, pen, c, rx, ry, gapDeg: 14f);
                 if (f[2])
                 {
                     foreach (float a in new[] { 25f, 70f, 115f, 160f })
                     {
                         Vector2 dir = V(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad));
                         Vector2 edge = c + new Vector2(dir.x * rx, dir.y * ry);
-                        s.Line(k, 4, 1f, edge, edge + dir * 55);
+                        s.Line(k, pen, 1f, edge, edge + dir * 55);
                     }
                 }
                 break;
