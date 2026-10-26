@@ -28,7 +28,7 @@
 <!-- ───────── 1쪽 ───────── -->
 <div class="page">
   <h1>찾아라! 도깨비 — MVP 아키텍처</h1>
-  <div class="sub">5단계 전체 · Unity 6.3 LTS · 씬 1개 + 패널 8개 · 스크립트 7개 · OpenAI 판정 (키 없으면 테스트 입력)</div>
+  <div class="sub">5단계 전체 · Unity 6.3 LTS · 씬 1개 + 패널 8개 · 스크립트 8개 · 판정은 항상 자동 (OpenAI, 키 없으면 LocalJudge)</div>
 
   <section>
     <h2>1. 플레이 흐름 (GameManager 의 State)</h2>
@@ -46,7 +46,7 @@
         <text x="142" y="39" font-weight="bold">StageIntro</text><text x="142" y="56" font-size="9.5">이야기·규칙</text>
         <text x="240" y="39" font-weight="bold">Observe</text><text x="240" y="56" font-size="9.5">원본 3초</text>
         <text x="336" y="39" font-weight="bold">Draw</text><text x="336" y="56" font-size="9.5">그리기 60초</text>
-        <text x="432" y="39" font-weight="bold">Judge</text><text x="432" y="56" font-size="9.5">AI / 체크박스</text>
+        <text x="432" y="39" font-weight="bold">Judge</text><text x="432" y="56" font-size="9.5">AI / 자동 판정</text>
         <text x="528" y="39" font-weight="bold">Result</text><text x="528" y="56" font-size="9.5">물건 + O/X</text>
         <text x="626" y="39" font-weight="bold">Compare</text><text x="626" y="56" font-size="9.5">내 그림 vs 원본</text>
         <text x="626" y="171" font-weight="bold">Ending</text><text x="626" y="188" font-size="9.5">단계별 기록</text>
@@ -105,7 +105,7 @@
         <text x="16" y="228" font-size="9">· BuildPrompt (부록 B 형식)</text>
         <text x="16" y="242" font-size="9">· Judge() 코루틴 → Responses API</text>
         <text x="16" y="256" font-size="9">· ParseVerdict → present[] notes[]</text>
-        <text x="16" y="272" font-size="9" fill="#6b5a4c">키 : UserSettings/OpenAI.json</text>
+        <text x="16" y="272" font-size="9" fill="#6b5a4c">키 없으면 → LocalJudge (HSV + 모양)</text>
         <!-- ToolBar / Board / Mixer -->
         <rect x="528" y="14" width="186" height="76" rx="8" fill="#eef7ee" stroke="#2e7d32"/>
         <text x="621" y="34" text-anchor="middle" font-weight="bold">ToolBar</text>
@@ -187,7 +187,7 @@
 변환  present[i] = (features 중 id == stage.features[i].id 인 것의 status == "present")    uncertain → 빠뜨림 + "(애매함)"</pre>
     <table style="margin-top:6px">
       <tr><th style="width:30%">상황</th><th>처리</th></tr>
-      <tr><td>키 없음 / 자동 테스트</td><td>IsReady = false → 체크박스 테스트 입력</td></tr>
+      <tr><td>키 없음</td><td>IsReady = false → 도깨비 1.5초 고민 뒤 LocalJudge (기획서 대체 기술 : HSV 색 분석 + 모양 계산)</td></tr>
       <tr><td>연결 실패 · 키 오류 · 시간 초과(40초)</td><td>onError → 간식 +1, 제출 횟수 −1, [그림으로 돌아가 다시 제출] (그림·남은 시간 유지)</td></tr>
       <tr><td>JSON 이 아님 · 특징 누락 · insufficient</td><td>위와 같음</td></tr>
       <tr><td>기다리는 동안</td><td>도깨비가 갸웃갸웃 (SimpleAnim Sway), "쪽지를 들여다보는 중..."</td></tr>
@@ -201,10 +201,10 @@
     <h2>6. 폴더 구조</h2>
     <pre>FindDokkaebi/
 ├─ Assets/
-│  ├─ Scripts/      GameManager · StageData · DrawingBoard · ToolBar · ColorMixer · OpenAIJudge · SimpleAnim
+│  ├─ Scripts/      GameManager · StageData · DrawingBoard · ToolBar · ColorMixer · OpenAIJudge · LocalJudge · SimpleAnim
 │  ├─ Editor/       MvpSceneBuilder (씬 조립 + 5단계 초기 데이터) · MvpAutoBuild · MvpSelfTest (자동 플레이 테스트)
 │  ├─ Data/         Stage1_Bat · Stage2_Bag · Stage3_Mat · Stage4_Gimbap · Stage5_Friend (.asset)
-│  ├─ Sprites/      StageN_*/Original.png + Wrong_F1~Fn.png · Characters/ · Props/ · Background/Room.png
+│  ├─ Sprites/      StageN_*/Original.png + Wrong_F1~Fn.png · Characters/(팀 그림) · UI/(아이콘) · Props/ · Background/
 │  ├─ Scenes/       Game.unity (하나뿐)
 │  └─ Fonts/        NotoSansKR SDF (한글)
 ├─ UserSettings/OpenAI.json   API 키 (Git 에 안 올라감)
@@ -226,7 +226,7 @@
    │  ├─ ToolBar               ColorRow : 검정·빨강·노랑·파랑 ─▶ SelectColor(0~3) · 섞은 색 ─▶ SelectMixed() · 색 섞기 ─▶ OpenMixer()
    │  │                        ToolRow  : 지우개 · 가는/보통/굵은 선 ─▶ SelectSize(0~2) · 되돌리기 · 모두 지우기
    │  └─ MixerPanel            (ColorMixer) 재료 ─▶ TogglePick(0~2) · 섞어서 칠하기 ─▶ Apply() · 닫기
-   ├─ JudgePanel               도깨비(Sway) · 쪽지 · TestInput(FeatureToggle1~5, Confirm ─▶ OnJudgeConfirmed()) · BackToDraw
+   ├─ JudgePanel               도깨비(Sway) · 쪽지 · 간식 · BackToDraw (AI 오류 때만)
    ├─ ResultPanel              ReturnedItem(Pop) · 내 그림 · FeatureList · BoyFace · BoyLine · Retry ─▶ Retry() · Compare ─▶ ShowCompare()
    ├─ ComparePanel             내 그림 · 원본 · FeatureHint · NextButton ─▶ NextStage()
    ├─ EndingPanel              소년·도깨비·친구 · Records · 처음으로 ─▶ BackToTitle()
@@ -242,7 +242,8 @@
       <tr><td>간식·시간</td><td>GameManager Inspector : snacksPerStage · observeSeconds · drawSeconds</td></tr>
       <tr><td>섞이는 색</td><td>ColorMixer.MixTable()</td></tr>
       <tr><td>AI 모델</td><td>UserSettings/OpenAI.json 의 model</td></tr>
-      <tr><td>검증</td><td>Tools → 찾아라도깨비 → 자동 플레이 테스트 (Temp/SelfTest 에 결과·스크린샷)</td></tr>
+      <tr><td>자동 판정 기준</td><td>LocalJudge 의 각 함수 숫자 (예: 머리 1.8배, 색 3%) · 에디터 제출 기록 Temp/Submissions</td></tr>
+      <tr><td>검증</td><td>Tools → 찾아라도깨비 → 자동 플레이 테스트 (179개 · Temp/SelfTest 에 결과·스크린샷)</td></tr>
     </table>
   </section>
 </div>
