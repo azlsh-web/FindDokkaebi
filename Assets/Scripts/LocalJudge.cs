@@ -112,7 +112,8 @@ public static class LocalJudge
         public readonly int inkCount;
         public readonly Box inkBox;                     // 그림 전체가 들어가는 네모
         public readonly bool[] silhouette;              // 잉크 + 선으로 닫힌 안쪽 (속을 채운 모양)
-        public readonly List<Blob> inkHoles;            // 잉크 선으로 닫힌 안쪽 영역들 (큰 것부터)
+        public readonly List<Blob> inkHoles;            // 잉크 선으로 닫힌 안쪽 영역들 (큰 것부터, 틈 메운 선 기준)
+        public readonly List<Blob> rawHoles;            // 같은 것, 원래 선 기준 (틈이 있으면 안 닫혀요)
 
         BatShape bat;
 
@@ -149,8 +150,9 @@ public static class LocalJudge
             black = Mask(i => cls[i] == Black);
             foreach (bool b in ink) if (b) inkCount++;
             inkBox = Box.Of(ink);
-            // 손으로 그린 선은 조금씩 끊겨 있어서, 1칸(약 4픽셀) 두껍게 한 선으로 닫힌 안쪽을 찾아요
-            inkHoles = Holes(Thicken(ink), out silhouette);
+            // 손으로 그린 선은 조금씩 끊겨 있어서, 틈을 메운 선(CloseGaps)으로 닫힌 안쪽을 찾아요
+            inkHoles = Holes(CloseGaps(ink), out silhouette);
+            rawHoles = Holes(ink, out _);
         }
 
         public BatShape Bat() => bat ??= new BatShape(this);
@@ -274,6 +276,49 @@ public static class LocalJudge
         return Blobs(hole, false);
     }
 
+    // 틈 메우기 (닫힘 연산) : 2칸 두껍게 → 2칸 얇게. 약 16픽셀까지 끊긴 선이 이어지고, 선 굵기는 거의 그대로예요.
+    static bool[] CloseGaps(bool[] mask) => Shrink(Grow(mask, 2), 2);
+
+    // 알맹이만 남기기 (열림 연산) : 2칸 얇게 → 2칸 두껍게. 펜으로 그은 가는 선(돌기·손잡이 선)은 사라지고 속이 찬 부분만 남아요.
+    static bool[] Core(bool[] mask) => Grow(Shrink(mask, 2), 2);
+
+    // r 칸만큼 두껍게
+    static bool[] Grow(bool[] mask, int r)
+    {
+        var t = new bool[N * N];
+        for (int y = 0; y < N; y++)
+        for (int x = 0; x < N; x++)
+        {
+            if (!mask[y * N + x]) continue;
+            for (int dy = -r; dy <= r; dy++)
+            for (int dx = -r; dx <= r; dx++)
+            {
+                int nx = x + dx, ny = y + dy;
+                if (nx >= 0 && ny >= 0 && nx < N && ny < N) t[ny * N + nx] = true;
+            }
+        }
+        return t;
+    }
+
+    // r 칸만큼 얇게 (주변 r 칸이 전부 칠해진 칸만 남김)
+    static bool[] Shrink(bool[] mask, int r)
+    {
+        var t = new bool[N * N];
+        for (int y = 0; y < N; y++)
+        for (int x = 0; x < N; x++)
+        {
+            bool all = true;
+            for (int dy = -r; dy <= r && all; dy++)
+            for (int dx = -r; dx <= r && all; dx++)
+            {
+                int nx = x + dx, ny = y + dy;
+                all = nx >= 0 && ny >= 0 && nx < N && ny < N && mask[ny * N + nx];
+            }
+            t[y * N + x] = all;
+        }
+        return t;
+    }
+
     // 칸 마스크를 상하좌우로 1칸씩 두껍게 (작은 틈 메우기)
     static bool[] Thicken(bool[] mask)
     {
@@ -386,17 +431,27 @@ public static class LocalJudge
     class BatShape
     {
         const int Bins = 16;
-        readonly float[] thickness = new float[Bins];
+        readonly float[] thickness = new float[Bins];      // 토막별 굵기 (돌기·선 포함)
+        readonly float[] coreThickness = new float[Bins];  // 토막별 "알맹이" 굵기 (가는 선을 지운 뒤)
+        readonly float[] spreadMin = new float[Bins], spreadMax = new float[Bins];   // 토막 안 점들이 옆으로 퍼진 범위
         readonly float length, maxThick;
-        readonly int handleFrom = -1, handleTo = -1;   // 가는 토막 구간 (끝에서 시작)
-        readonly bool headAtLow;                       // 머리가 축의 앞쪽(낮은 값)에 있는지
+        readonly int handleFrom = -1, handleTo = -1;       // 손잡이 토막 구간
+        readonly bool wholeThin;                           // 전체가 가늘고 긴 막대 (머리 없이 손잡이만)
+        readonly bool headAtLow;                           // 머리가 축의 앞쪽(낮은 값)에 있는지
         readonly Vector2 mean, axis;
-        readonly List<Vector2> pts = new List<Vector2>();
-        readonly float aMin;
+        readonly float aMin, binLen;
+        readonly List<Vector2> pts = new List<Vector2>(), corePts = new List<Vector2>();
+
+        int BinOf(Vector2 v) => Mathf.Clamp((int)((Vector2.Dot(v - mean, axis) - aMin) / binLen), 0, Bins - 1);
 
         public BatShape(Picture p)
         {
-            for (int i = 0; i < N * N; i++) if (p.silhouette[i]) pts.Add(new Vector2(i % N, i / N));
+            bool[] core = Core(p.silhouette);
+            for (int i = 0; i < N * N; i++)
+            {
+                if (p.silhouette[i]) pts.Add(new Vector2(i % N, i / N));
+                if (core[i]) corePts.Add(new Vector2(i % N, i / N));
+            }
             foreach (Vector2 v in pts) mean += v;
             mean /= Mathf.Max(1, pts.Count);
 
@@ -410,33 +465,47 @@ public static class LocalJudge
             float aMax = float.MinValue;
             foreach (Vector2 v in pts) { float a = Vector2.Dot(v - mean, axis); aMin = Mathf.Min(aMin, a); aMax = Mathf.Max(aMax, a); }
             length = aMax - aMin + 1;
-            float binLen = length / Bins;
+            binLen = length / Bins;
+            Vector2 side = new Vector2(-axis.y, axis.x);                       // 주축에 수직인 방향
+            for (int k = 0; k < Bins; k++) { spreadMin[k] = float.MaxValue; spreadMax[k] = float.MinValue; }
             foreach (Vector2 v in pts)
             {
-                int k = Mathf.Clamp((int)((Vector2.Dot(v - mean, axis) - aMin) / binLen), 0, Bins - 1);
-                thickness[k] += 1f / binLen;   // 토막 안 칸 수 ÷ 토막 길이 = 평균 굵기
+                int k = BinOf(v);
+                thickness[k] += 1f / binLen;                                    // 토막 안 칸 수 ÷ 토막 길이 = 평균 굵기
+                float b = Vector2.Dot(v - mean, side);
+                spreadMin[k] = Mathf.Min(spreadMin[k], b); spreadMax[k] = Mathf.Max(spreadMax[k], b);
             }
-            int kMax = 0;
-            for (int k = 0; k < Bins; k++) if (thickness[k] > thickness[kMax]) kMax = k;
+            foreach (Vector2 v in corePts) coreThickness[BinOf(v)] += 1f / binLen;
+
+            // 머리 = 알맹이가 가장 굵은 쪽 (알맹이가 없으면 그냥 가장 굵은 쪽)
+            int kMax = 0, kCore = 0;
+            for (int k = 0; k < Bins; k++)
+            {
+                if (thickness[k] > thickness[kMax]) kMax = k;
+                if (coreThickness[k] > coreThickness[kCore]) kCore = k;
+            }
             maxThick = thickness[kMax];
-            headAtLow = kMax < Bins / 2;
+            headAtLow = (coreThickness[kCore] > 0 ? kCore : kMax) < Bins / 2;
 
             // 머리 반대쪽 끝에서부터 머리 쪽으로 가면서 "가는 토막"이 이어지는 구간 = 손잡이
             //   가늘다 = 가장 굵은 곳의 45% 이하 (동그라미 가장자리처럼 점점 굵어지는 곳은 금방 넘어서요)
             int end = headAtLow ? Bins - 1 : 0;     // 손잡이 끝 토막
             int step = headAtLow ? -1 : 1;          // 머리 쪽으로 한 칸
             int k2 = end;
-            while (k2 >= 0 && k2 < Bins && thickness[k2] > 0 && thickness[k2] <= maxThick * 0.45f) k2 += step;
-            int run = Math.Abs(k2 - end);
-            if (run >= 4) { handleFrom = end; handleTo = k2 - step; }
+            //   한 가닥 = 옆으로 퍼진 폭이 굵기의 2.5배 이하 (돌기처럼 여러 선이 흩어져 있으면 손잡이가 아님)
+            while (k2 >= 0 && k2 < Bins && thickness[k2] > 0 && thickness[k2] <= maxThick * 0.45f
+                   && spreadMax[k2] - spreadMin[k2] + 1 <= Mathf.Max(3f, thickness[k2] * 2.5f)) k2 += step;
+            if (Math.Abs(k2 - end) >= 4) { handleFrom = end; handleTo = k2 - step; }
+
+            // 굵은 곳이 없이 전체가 가늘고 길면(길이가 굵기의 4배 이상) 그 자체가 손잡이
+            wholeThin = handleFrom < 0 && length >= maxThick * 4f;
         }
 
-        // 끝에서부터 가는 토막이 4개(전체의 1/4) 이상 이어지면 손잡이. (옆으로 튀어나온 돌기 때문에 최대 굵기가 커질 수 있어 길이 비율은 느슨하게)
-        bool HasHandle => handleFrom >= 0 && length >= maxThick * 1.2f;
+        bool HasHandle => wholeThin || (handleFrom >= 0 && length >= maxThick * 1.2f);
 
         public bool LongHandle(out string note)
         {
-            if (HasHandle) { note = "한쪽에 가늘고 길게 뻗은 손잡이가 있어요."; return true; }
+            if (HasHandle) { note = "가늘고 길게 뻗은 손잡이가 있어요."; return true; }
             note = length < maxThick * 1.2f ? "전체 모양이 길쭉하지 않아요." : "가늘고 긴 손잡이 부분이 보이지 않아요.";
             return false;
         }
@@ -444,54 +513,70 @@ public static class LocalJudge
         public bool ThickHead(out string note)
         {
             if (!HasHandle) { note = "손잡이와 이어진 머리를 찾지 못했어요."; return false; }
+
+            // 손잡이 굵기 = 손잡이 토막 굵기의 가운데 값 (막대 전체가 손잡이면 전체의 가운데 값)
             var hs = new List<float>();
-            for (int k = Math.Min(handleFrom, handleTo); k <= Math.Max(handleFrom, handleTo); k++) hs.Add(thickness[k]);
+            if (wholeThin) { foreach (float t in thickness) if (t > 0) hs.Add(t); }
+            else for (int k = Math.Min(handleFrom, handleTo); k <= Math.Max(handleFrom, handleTo); k++) hs.Add(thickness[k]);
             hs.Sort();
-            float handle = hs[hs.Count / 2];
-            float ratio = maxThick / Mathf.Max(0.5f, handle);
+            float handle = Mathf.Max(0.5f, hs[hs.Count / 2]);
+
+            // 머리 굵기 = 가는 선(돌기)을 지운 "알맹이"의 가장 굵은 곳 → 돌기 때문에 굵어 보이는 걸 막아요
+            float head = 0f;
+            foreach (float t in coreThickness) head = Mathf.Max(head, t);
+            float ratio = head / handle;
             if (ratio >= 1.8f) { note = $"머리가 손잡이보다 약 {ratio:0.0}배 굵어요."; return true; }
-            note = $"머리가 손잡이보다 별로 굵지 않아요 (약 {ratio:0.0}배).";
+            note = head <= 0f ? "손잡이보다 굵은 머리가 보이지 않아요." : $"머리가 손잡이보다 별로 굵지 않아요 (약 {ratio:0.0}배).";
             return false;
+        }
+
+        bool HeadSide(Vector2 v)
+        {
+            if (!HasHandle || wholeThin) return true;          // 손잡이가 없으면 전부 머리로 봐요
+            int k = BinOf(v);
+            return headAtLow ? k < Bins * 0.55f : k >= Bins * 0.45f;
         }
 
         public bool Spikes(out string note)
         {
-            // 머리 부분 점들만 모아 머리 중심을 구하고, 각도별로 가장 먼 거리를 재요
-            float binLen = length / Bins;
+            // 머리의 "알맹이"(속이 찬 부분) 둘레보다 바깥으로 튀어나온 방향 = 돌기
             var head = new List<Vector2>();
-            foreach (Vector2 v in pts)
-            {
-                int k = Mathf.Clamp((int)((Vector2.Dot(v - mean, axis) - aMin) / binLen), 0, Bins - 1);
-                bool headSide = headAtLow ? k < Bins * 0.55f : k >= Bins * 0.45f;
-                if (headSide) head.Add(v);
-            }
+            foreach (Vector2 v in pts) if (HeadSide(v)) head.Add(v);
+            var coreHead = new List<Vector2>();
+            foreach (Vector2 v in corePts) if (HeadSide(v)) coreHead.Add(v);
             if (head.Count < 30) { note = "머리 부분을 찾지 못했어요."; return false; }
 
+            bool useCore = coreHead.Count >= 30;
             Vector2 c = Vector2.zero;
-            foreach (Vector2 v in head) c += v;
-            c /= head.Count;
+            foreach (Vector2 v in useCore ? coreHead : head) c += v;
+            c /= useCore ? coreHead.Count : head.Count;
 
             const int A = 36;                      // 10도씩 36방향
-            var r = new float[A];
-            foreach (Vector2 v in head)
-            {
-                Vector2 d = v - c;
-                int a = ((int)(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg + 360f) / 10) % A;
-                r[a] = Mathf.Max(r[a], d.magnitude);
-            }
-            var sorted = (float[])r.Clone();
+            var rFull = new float[A];
+            var rCore = new float[A];
+            int Dir(Vector2 d) => ((int)(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg + 360f) / 10) % A;
+            foreach (Vector2 v in head) { Vector2 d = v - c; int a = Dir(d); rFull[a] = Mathf.Max(rFull[a], d.magnitude); }
+            foreach (Vector2 v in coreHead) { Vector2 d = v - c; int a = Dir(d); rCore[a] = Mathf.Max(rCore[a], d.magnitude); }
+
+            var sorted = (float[])(useCore ? rCore : rFull).Clone();
             Array.Sort(sorted);
             float median = sorted[A / 2];
 
-            // 손잡이 쪽 방향은 빼고, 평소 반지름보다 18% 이상 튀어나온 방향 묶음 = 돌기
             Vector2 toHandle = headAtLow ? axis : -axis;
             float handleAngle = Mathf.Atan2(toHandle.y, toHandle.x) * Mathf.Rad2Deg;
+            bool skipHandle = HasHandle && !wholeThin;
+            float axisAngle = Mathf.Atan2(axis.y, axis.x) * Mathf.Rad2Deg;
             var peak = new bool[A];
             for (int a = 0; a < A; a++)
             {
                 float deg = a * 10f + 5f;
-                bool nearHandle = Mathf.Abs(Mathf.DeltaAngle(deg, handleAngle)) < 45f;
-                peak[a] = !nearHandle && r[a] > median * 1.18f;
+                bool nearHandle = skipHandle && Mathf.Abs(Mathf.DeltaAngle(deg, handleAngle)) < 45f;
+                // 막대 모양이면 막대의 양 끝(위·아래)은 원래 멀어서 돌기로 세지 않아요
+                bool alongStick = wholeThin && (Mathf.Abs(Mathf.DeltaAngle(deg, axisAngle)) < 45f || Mathf.Abs(Mathf.DeltaAngle(deg, axisAngle + 180f)) < 45f);
+                if (nearHandle || alongStick) continue;
+                peak[a] = useCore
+                    ? rFull[a] - rCore[a] > Mathf.Max(3f, median * 0.15f)   // 알맹이보다 확실히 튀어나옴
+                    : rFull[a] > median * 1.18f;                            // (알맹이가 없을 때) 평소보다 18% 이상 멂
             }
             int spikes = 0;
             for (int a = 0; a < A; a++) if (peak[a] && !peak[(a + A - 1) % A]) spikes++;
@@ -527,23 +612,32 @@ public static class LocalJudge
     }
 
     // 몸체 안에 따로 닫힌 작은 영역들 = 주머니 안쪽
+    //   - 원래 선 기준으로 먼저 찾고(틈 메우기를 하면 줄무늬와 주머니 테두리 사이가 메워져 주머니가 작아 보여요),
+    //     없으면 틈 메운 선 기준으로 찾아요.
+    //   - 주머니가 몸체 아래쪽에 붙어 있으면 몸체 안쪽 영역이 잘려 보일 수 있어서, "가운데가 몸체 안"이면 인정해요.
     static bool FindPocket(Picture p, out Box pocket)
     {
         pocket = default;
         Box body = BodyBox(p, out bool fromHole);
         if (!fromHole) return false;
-        var inner = new Box { xMin = N, yMin = N, xMax = -1, yMax = -1 };
-        for (int i = 1; i < p.inkHoles.Count; i++)
+        Box near = body.Shrink(-4);   // 몸체보다 4칸 넓게
+        foreach (List<Blob> holes in new[] { p.rawHoles, p.inkHoles })
         {
-            Blob h = p.inkHoles[i];
-            if (h.Count < body.Area * 0.01f) continue;
-            if (!body.Contains(h.box.xMin, h.box.yMin) || !body.Contains(h.box.xMax, h.box.yMax)) continue;
-            inner.xMin = Math.Min(inner.xMin, h.box.xMin); inner.xMax = Math.Max(inner.xMax, h.box.xMax);
-            inner.yMin = Math.Min(inner.yMin, h.box.yMin); inner.yMax = Math.Max(inner.yMax, h.box.yMax);
+            var inner = new Box { xMin = N, yMin = N, xMax = -1, yMax = -1 };
+            foreach (Blob h in holes)
+            {
+                if (h.box.xMin == body.xMin && h.box.xMax == body.xMax && h.box.yMin == body.yMin && h.box.yMax == body.yMax) continue; // 몸체 자신
+                if (h.Count < body.Area * 0.01f) continue;
+                if (h.box.Area >= body.Area * 0.85f) continue;                                  // 몸체만 한 것은 주머니가 아님
+                if (!near.Contains((int)h.box.CX, (int)h.box.CY)) continue;                     // 가운데가 몸체 안
+                if (!near.Contains(h.box.xMin, h.box.yMin) || !near.Contains(h.box.xMax, h.box.yMax)) continue;
+                inner.xMin = Math.Min(inner.xMin, h.box.xMin); inner.xMax = Math.Max(inner.xMax, h.box.xMax);
+                inner.yMin = Math.Min(inner.yMin, h.box.yMin); inner.yMax = Math.Max(inner.yMax, h.box.yMax);
+            }
+            inner.valid = inner.xMax >= 0;
+            if (inner.valid && inner.Area >= body.Area * 0.05f) { pocket = inner; return true; }
         }
-        inner.valid = inner.xMax >= 0;
-        pocket = inner;
-        return inner.valid && inner.Area >= body.Area * 0.05f;
+        return false;
     }
 
     static bool InnerPocket(Picture p, out string note)
@@ -555,13 +649,8 @@ public static class LocalJudge
 
     static bool PocketStripes(Picture p, out string note)
     {
-        Box r;
-        if (!FindPocket(p, out r))
-        {
-            // 주머니가 없으면 몸체 아래쪽에서 찾아봐요 (특징마다 따로 판정)
-            Box body = BodyBox(p, out _);
-            r = new Box { xMin = body.xMin, xMax = body.xMax, yMin = body.yMin, yMax = body.yMin + body.H * 6 / 10, valid = true }.Shrink(3);
-        }
+        // 기획서 기준 : "주머니 외곽 안에" 가로줄이 있어야 해요. 주머니 밖에만 있는 줄은 인정하지 않아요.
+        if (!FindPocket(p, out Box r)) { note = "주머니가 없어서 주머니 안 줄무늬도 없어요."; return false; }
         int lines = CountHorizontalLines(p, r, 0.45f);
         if (lines >= 2) { note = $"주머니 안에 가로 줄이 {lines}줄 있어요."; return true; }
         note = lines == 1 ? "가로 줄이 1줄뿐이에요." : "주머니 안에 가로 줄무늬가 보이지 않아요.";
@@ -652,7 +741,7 @@ public static class LocalJudge
     // ── 김밥 : 둥근 검은 테두리와 그 안쪽 ──
     static bool BlackRing(Picture p, out Blob inside)
     {
-        List<Blob> holes = Holes(Thicken(p.black), out bool[] filled);   // 끊긴 테두리도 닫힌 걸로
+        List<Blob> holes = Holes(CloseGaps(p.black), out bool[] filled);   // 끊긴 테두리도 닫힌 걸로
         Box blackBox = Box.Of(p.black);
         inside = holes.Count > 0 && blackBox.valid && holes[0].Count >= blackBox.Area * 0.15f ? holes[0] : null;
         if (inside == null) return false;
@@ -673,6 +762,9 @@ public static class LocalJudge
     {
         BlackRing(p, out Blob inside);
         if (inside != null) return inside.cells;
+        // 검은 테두리가 없으면 : 속을 채운 모양 중 가장 큰 덩어리 (다른 색 테두리 안쪽)
+        List<Blob> blobs = Blobs(p.silhouette, true);
+        if (blobs.Count > 0) return blobs[0].cells;
         var list = new List<int>();
         for (int y = p.inkBox.yMin; y <= p.inkBox.yMax; y++)
         for (int x = p.inkBox.xMin; x <= p.inkBox.xMax; x++) list.Add(y * N + x);

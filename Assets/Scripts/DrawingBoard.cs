@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -93,6 +94,20 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         undoStack.Clear();
         ApplyPixels();
         HasDrawn = false;
+    }
+
+    /// <summary>
+    /// 미리 만든 그림(512x512 픽셀)을 쪽지에 통째로 넣기.
+    /// 자동 검사(판정 전수 검사)에서 손그림 샘플을 넣을 때 써요. 나중에 "저장한 그림 불러오기"에도 쓸 수 있어요.
+    /// </summary>
+    public void LoadPixels(Color32[] source)
+    {
+        Init();
+        if (source.Length != pixels.Length) return;
+        SaveUndo();
+        Array.Copy(source, pixels, pixels.Length);
+        ApplyPixels();
+        HasDrawn = ScanForInk();
     }
 
     /// <summary>[버튼] 모두 지우기 : 흰색으로 비우지만, 되돌리기로 다시 살릴 수 있어요.</summary>
