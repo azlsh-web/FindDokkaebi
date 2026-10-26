@@ -1,24 +1,25 @@
 using UnityEngine;
 
 // ─────────────────────────────────────────────────────────────
-// SimpleAnim : 아주 간단한 움직임 2가지 (애니메이터 없이 코드로)
+// SimpleAnim : 아주 간단한 움직임 3가지 (애니메이터 없이 코드로)
 // ─────────────────────────────────────────────────────────────
-//   Sway : 좌우로 갸웃갸웃 (판정 중 도깨비가 쪽지를 들여다보며 고민하는 모습)
-//   Pop  : 켜질 때 0 → 살짝 크게 → 원래 크기 (도깨비가 물건을 "뿅" 꺼내는 모습)
+//   Sway  : 좌우로 갸웃갸웃 (판정 중 도깨비가 쪽지를 들여다보며 고민하는 모습)
+//   Pop   : 켜질 때 0 → 살짝 크게 → 원래 크기 (도깨비가 물건을 "뿅" 꺼내는 모습)
+//   Swing : 켜질 때 한 번 휙 휘두르기 (도깨비가 방망이를 휘둘러 물건을 꺼내는 모습)
 // 오브젝트에 붙이고 Inspector 에서 kind 만 고르면 돼요.
 public class SimpleAnim : MonoBehaviour
 {
-    public enum Kind { Sway, Pop }
+    public enum Kind { Sway, Pop, Swing }
 
     public Kind kind = Kind.Sway;
 
     [Tooltip("Sway : 흔들리는 빠르기")]
     public float speed = 3f;
 
-    [Tooltip("Sway : 기울어지는 각도(도)")]
+    [Tooltip("Sway·Swing : 기울어지는 각도(도)")]
     public float angle = 8f;
 
-    [Tooltip("Pop : 커지는 데 걸리는 시간(초)")]
+    [Tooltip("Pop·Swing : 움직임에 걸리는 시간(초)")]
     public float popTime = 0.45f;
 
     float t;
@@ -33,17 +34,25 @@ public class SimpleAnim : MonoBehaviour
     void Update()
     {
         t += Time.deltaTime;
+        float p = Mathf.Clamp01(t / popTime);
 
         if (kind == Kind.Sway)
         {
             transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(t * speed) * angle);
         }
-        else
+        else if (kind == Kind.Pop)
         {
             // 0 → 1.15 → 1 로 튕기듯 커지기
-            float p = Mathf.Clamp01(t / popTime);
             float scale = p < 0.7f ? Mathf.Lerp(0f, 1.15f, p / 0.7f) : Mathf.Lerp(1.15f, 1f, (p - 0.7f) / 0.3f);
             transform.localScale = Vector3.one * scale;
+        }
+        else
+        {
+            // 뒤로 젖혔다가(+) 앞으로 휙(-) 휘두르고 제자리로
+            float a = p < 0.35f ? Mathf.Lerp(0f, angle, p / 0.35f)
+                    : p < 0.7f ? Mathf.Lerp(angle, -angle, (p - 0.35f) / 0.35f)
+                    : Mathf.Lerp(-angle, 0f, (p - 0.7f) / 0.3f);
+            transform.localRotation = Quaternion.Euler(0f, 0f, a);
         }
     }
 }

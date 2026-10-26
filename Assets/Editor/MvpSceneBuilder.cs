@@ -35,9 +35,12 @@ public static class MvpSceneBuilder
     static readonly Color TextColor = new Color(0.20f, 0.14f, 0.10f);
     static readonly Color CardColor = new Color(1f, 0.98f, 0.93f, 0.92f);
     static readonly Color FrameColor = new Color(1f, 0.62f, 0.05f);
+    static readonly Color CreamColor = new Color(1f, 0.97f, 0.9f);        // 보조 버튼 · 도구 버튼 바탕
+    static readonly Color EmptySlotColor = new Color(0.85f, 0.85f, 0.85f);
 
     static TMP_FontAsset font;
-    static Sprite uiSprite;
+    static Sprite uiSprite;       // 둥근 네모 (버튼·카드)
+    static Sprite circleSprite;   // 동그라미 (색 버튼·도구 버튼)
 
     [MenuItem("Tools/찾아라도깨비/MVP 씬 만들기")]
     public static void Build()
@@ -46,8 +49,6 @@ public static class MvpSceneBuilder
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
         font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
-        uiSprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-
         MakeAllSprites();
         CreateStageDataFiles();
         CreateOpenAISettingsFile();
@@ -57,6 +58,8 @@ public static class MvpSceneBuilder
 
         // 새 씬을 열면 Unity 가 안 쓰는 에셋을 메모리에서 내려버려서,
         // 데이터·그림은 씬을 연 "뒤에" 불러와야 연결이 끊기지 않아요.
+        uiSprite = LoadSprite("UI/RoundRect.png");
+        circleSprite = LoadSprite("UI/Circle.png");
         StageData[] stages =
         {
             LoadStage("Stage1_Bat"), LoadStage("Stage2_Bag"), LoadStage("Stage3_Mat"),
@@ -70,6 +73,9 @@ public static class MvpSceneBuilder
         Sprite snack = LoadSprite("Props/Snack.png");
         Sprite incense = LoadSprite("Props/Incense.png");
         Sprite room = LoadSprite("Background/Room.png");
+        Sprite iconEraser = LoadSprite("UI/Eraser.png"), iconUndo = LoadSprite("UI/Undo.png"), iconTrash = LoadSprite("UI/Trash.png");
+        Sprite iconPalette = LoadSprite("UI/Palette.png"), iconClose = LoadSprite("UI/Close.png");
+        Sprite[] iconDots = { LoadSprite("UI/DotS.png"), LoadSprite("UI/DotM.png"), LoadSprite("UI/DotL.png") };
 
         // 카메라 (UI 는 Canvas 가 그리지만, 카메라가 하나는 있어야 해요)
         var cam = new GameObject("Main Camera").AddComponent<Camera>();
@@ -177,58 +183,64 @@ public static class MvpSceneBuilder
         var toolBar = toolBarGo.GetComponent<ToolBar>();
         Transform tb = toolBarGo.transform;
 
-        // 1줄 : 색 (보이는 버튼만 가운데로 모이도록 HorizontalLayoutGroup 사용)
-        var colorRow = NewRow("ColorRow", tb, 1150, 120);
+        // 도구 줄 뒤 받침 카드 (도구들을 한 덩어리로 보이게)
+        var toolCard = NewImage("ToolCard", tb, new Color(1f, 1f, 1f, 0.6f));
+        toolCard.sprite = uiSprite; toolCard.type = Image.Type.Sliced;
+        Place(toolCard.rectTransform, new Vector2(0, 1145), new Vector2(940, 270));
+        toolCard.raycastTarget = false;
+
+        // 1줄 : 색 동그라미 (글자 없이 색만). 보이는 버튼만 가운데로 모이도록 HorizontalLayoutGroup 사용
+        var colorRow = NewRow("ColorRow", tb, 1155, 120);
         string[] colorNames = { "검정", "빨강", "노랑", "파랑" };
         var colorButtons = new GameObject[4];
         var colorFrames = new GameObject[4];
         var colorButtonComps = new Button[4];
         for (int i = 0; i < 4; i++)
         {
-            colorButtonComps[i] = NewToolButton("Color_" + colorNames[i], colorRow, colorNames[i], ToolBar.Palette[i], new Vector2(150, 110), out colorFrames[i]);
+            colorButtonComps[i] = NewRoundTool("Color_" + colorNames[i], colorRow, null, ToolBar.Palette[i], 104, out colorFrames[i]);
             colorButtons[i] = colorButtonComps[i].transform.parent.gameObject;
-            if (i == 2) colorButtonComps[i].GetComponentInChildren<TMP_Text>().color = TextColor; // 노랑 위 글자는 진하게
         }
-        var mixedSlot = NewToolButton("MixedSlot", colorRow, "섞은 색", new Color(0.85f, 0.85f, 0.85f), new Vector2(150, 110), out GameObject mixedFrame);
-        mixedSlot.GetComponentInChildren<TMP_Text>().color = TextColor;
-        var mixOpen = NewToolButton("MixOpen", colorRow, "색 섞기", ButtonColor, new Vector2(150, 110), out GameObject mixOpenFrame);
+        var mixedSlot = NewRoundTool("MixedSlot", colorRow, null, EmptySlotColor, 104, out GameObject mixedFrame); // 섞은 색 한 칸
+        var mixOpen = NewRoundTool("MixOpen", colorRow, iconPalette, CreamColor, 104, out GameObject mixOpenFrame);  // 색 섞기
         Object.DestroyImmediate(mixOpenFrame); // 색 섞기 버튼은 선택 테두리가 필요 없어요
 
-        // 2줄 : 지우개 · 굵기 · 되돌리기 · 모두 지우기
-        var toolRow = NewRow("ToolRow", tb, 1290, 110);
-        var eraserButton = NewToolButton("Eraser", toolRow, "지우개", ButtonColor, new Vector2(150, 100), out GameObject eraserFrame);
-        string[] sizeNames = { "가는 선", "보통 선", "굵은 선" };
+        // 2줄 : 아이콘 도구 (지우개 · 가는/보통/굵은 선 · 되돌리기 · 모두 지우기)
+        var toolRow = NewRow("ToolRow", tb, 1285, 120);
+        var eraserButton = NewRoundTool("Eraser", toolRow, iconEraser, CreamColor, 104, out GameObject eraserFrame);
         var sizeFrames = new GameObject[3];
         var sizeButtons = new Button[3];
-        for (int i = 0; i < 3; i++) sizeButtons[i] = NewToolButton("Size_" + i, toolRow, sizeNames[i], ButtonColor, new Vector2(150, 100), out sizeFrames[i]);
-        var undoButton = NewToolButton("Undo", toolRow, "되돌리기", ButtonColor, new Vector2(150, 100), out GameObject undoFrame);
-        var clearButton = NewToolButton("Clear", toolRow, "모두 지우기", ButtonColor, new Vector2(150, 100), out GameObject clearFrame);
+        for (int i = 0; i < 3; i++) sizeButtons[i] = NewRoundTool("Size_" + i, toolRow, iconDots[i], CreamColor, 104, out sizeFrames[i]);
+        var undoButton = NewRoundTool("Undo", toolRow, iconUndo, CreamColor, 104, out GameObject undoFrame);
+        var clearButton = NewRoundTool("Clear", toolRow, iconTrash, CreamColor, 104, out GameObject clearFrame);
         Object.DestroyImmediate(undoFrame);
         Object.DestroyImmediate(clearFrame);
 
-        var submitButton = NewButton("SubmitButton", draw, "제출 (간식 1개)", new Vector2(0, 1430), new Vector2(700, 140));
+        var submitButton = NewButton("SubmitButton", draw, "제출하기  (간식 1개)", new Vector2(0, 1440), new Vector2(700, 140));
 
         // 혼색 팔레트 (색 섞기를 누르면 도구 줄 위에 열림)
-        var mixerCard = NewImage("MixerPanel", draw, new Color(1f, 0.97f, 0.9f, 1f));
+        var mixerCard = NewImage("MixerPanel", draw, CreamColor);
         mixerCard.sprite = uiSprite; mixerCard.type = Image.Type.Sliced;
-        Place(mixerCard.rectTransform, new Vector2(0, 1120), new Vector2(1000, 480));
+        Place(mixerCard.rectTransform, new Vector2(0, 1130), new Vector2(940, 450));
+        AddEdge(mixerCard);
         var mixer = mixerCard.gameObject.AddComponent<ColorMixer>();
         Transform mx = mixerCard.transform;
-        var mixGuide = NewText("Guide", mx, "", 38, new Vector2(-60, 20), new Vector2(760, 60));
-        var mixClose = NewButton("CloseButton", mx, "닫기", new Vector2(390, 15), new Vector2(170, 80));
-        var materialRow = NewRow("MaterialRow", mx, 100, 130);
+        var mixGuide = NewText("Guide", mx, "", 38, new Vector2(-40, 26), new Vector2(760, 60));
+        var closeRow = NewRow("CloseRow", mx, 14, 84);
+        Place(closeRow.GetComponent<RectTransform>(), new Vector2(400, 14), new Vector2(90, 84));
+        var mixClose = NewRoundTool("CloseButton", closeRow, iconClose, Color.white, 76, out GameObject closeFrame);
+        Object.DestroyImmediate(closeFrame);
+        var materialRow = NewRow("MaterialRow", mx, 105, 130);
         var materialFrames = new GameObject[3];
         var materialButtons = new Button[3];
         for (int i = 0; i < 3; i++)
         {
-            materialButtons[i] = NewToolButton("Material_" + colorNames[i + 1], materialRow, colorNames[i + 1], ToolBar.Palette[i + 1], new Vector2(200, 120), out materialFrames[i]);
-            if (i == 1) materialButtons[i].GetComponentInChildren<TMP_Text>().color = TextColor;
+            materialButtons[i] = NewRoundTool("Material_" + colorNames[i + 1], materialRow, null, ToolBar.Palette[i + 1], 116, out materialFrames[i]);
         }
-        var swatch = NewImage("Preview", mx, Color.gray);
-        swatch.sprite = uiSprite; swatch.type = Image.Type.Sliced;
-        Place(swatch.rectTransform, new Vector2(-330, 260), new Vector2(110, 110));
-        var recipe = NewText("Recipe", mx, "", 42, new Vector2(80, 280), new Vector2(640, 70), TextAlignmentOptions.Left);
-        var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(0, 385), new Vector2(520, 80));
+        var swatch = NewImage("Preview", mx, EmptySlotColor);
+        swatch.sprite = circleSprite;
+        Place(swatch.rectTransform, new Vector2(-300, 255), new Vector2(96, 96));
+        var recipe = NewText("Recipe", mx, "", 42, new Vector2(70, 268), new Vector2(620, 70), TextAlignmentOptions.Left);
+        var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(0, 360), new Vector2(520, 76));
 
         // ── 5. 판정 화면 (쪽지와 간식을 도깨비에게) ──
         var judgeP = NewEmpty("JudgePanel", canvas);
@@ -242,19 +254,17 @@ public static class MvpSceneBuilder
         Stretch(judgeDrawing.rectTransform, 6);
         NewSprite("Snack", judgeP, snack, new Vector2(60, 640), new Vector2(110, 110));
 
-        var testGroup = NewEmpty("TestInput", judgeP);
-        var toggles = new Toggle[5];
-        var toggleLabels = new TMP_Text[5];
-        for (int i = 0; i < toggles.Length; i++)
-        {
-            toggles[i] = NewToggle($"FeatureToggle{i + 1}", testGroup, new Vector2(0, 800 + i * 105), out toggleLabels[i]);
-        }
-        var judgeButton = NewButton("ConfirmButton", testGroup, "판정 결과 보내기", new Vector2(0, 1380), new Vector2(700, 140));
-        var backToDraw = NewButton("BackToDrawButton", judgeP, "그림으로 돌아가 다시 제출", new Vector2(0, 1380), new Vector2(760, 140));
+        // 판정은 자동이라 버튼이 없어요. AI 오류가 났을 때만 "다시 제출" 버튼이 보여요.
+        var backToDraw = NewButton("BackToDrawButton", judgeP, "그림으로 돌아가 다시 제출", new Vector2(0, 900), new Vector2(760, 140), primary: false);
 
         // ── 6. 결과 화면 ──
         var result = NewEmpty("ResultPanel", canvas);
-        NewSprite("Dokkaebi", result, dokkaebi, new Vector2(-350, 250), new Vector2(240, 240));
+        var swingDokkaebi = NewSprite("Dokkaebi", result, dokkaebi, new Vector2(-350, 250), new Vector2(240, 240));
+        var swing = swingDokkaebi.gameObject.AddComponent<SimpleAnim>();  // 방망이를 휙 휘둘러 물건을 꺼냄
+        swing.kind = SimpleAnim.Kind.Swing;
+        swing.angle = 25f;
+        swingDokkaebi.rectTransform.pivot = new Vector2(0.5f, 0f);       // 발밑을 기준으로 휘청
+        swingDokkaebi.rectTransform.anchoredPosition = new Vector2(-350, -490);
         var resultItem = NewImage("ReturnedItem", result, Color.white);
         Place(resultItem.rectTransform, new Vector2(0, 210), new Vector2(380, 380));
         resultItem.preserveAspect = true;
@@ -267,11 +277,13 @@ public static class MvpSceneBuilder
         Stretch(resultMine.rectTransform, 4);
         var resultTitle = NewText("ResultTitle", result, "", 52, new Vector2(0, 610), new Vector2(1040, 90));
         var resultFeatures = NewText("FeatureList", result, "", 38, new Vector2(0, 710), new Vector2(900, 430), TextAlignmentOptions.TopLeft);
-        var boyFace = NewSprite("BoyFace", result, boyNormal, new Vector2(-350, 1150), new Vector2(200, 200));
-        var boyLine = NewText("BoyLine", result, "", 38, new Vector2(110, 1160), new Vector2(680, 180), TextAlignmentOptions.Left);
-        var resultSnack = NewText("SnackLeft", result, "", 38, new Vector2(0, 1370), new Vector2(1000, 60));
-        var retryButton = NewButton("RetryButton", result, "다시 그리기 (간식 1개)", new Vector2(0, 1450), new Vector2(700, 130));
-        var compareButton = NewButton("CompareButton", result, "비교하기", new Vector2(0, 1600), new Vector2(700, 130));
+        var boyFace = NewSprite("BoyFace", result, boyNormal, new Vector2(-350, 1040), new Vector2(220, 220));
+        var boyMark = NewText("SurprisedMark", result, "!?", 64, new Vector2(-245, 1020), new Vector2(110, 90));
+        boyMark.color = new Color(0.78f, 0.16f, 0.16f);   // 당황했을 때만 보이는 빨간 "!?"
+        var boyLine = NewText("BoyLine", result, "", 38, new Vector2(110, 1070), new Vector2(680, 180), TextAlignmentOptions.Left);
+        var resultSnack = NewText("SnackLeft", result, "", 38, new Vector2(0, 1290), new Vector2(1000, 60));
+        var retryButton = NewButton("RetryButton", result, "다시 그리기 (간식 1개)", new Vector2(0, 1370), new Vector2(700, 130));
+        var compareButton = NewButton("CompareButton", result, "비교하기", new Vector2(0, 1520), new Vector2(700, 130), primary: false);
 
         // ── 7. 비교 화면 ──
         var compare = NewEmpty("ComparePanel", canvas);
@@ -311,7 +323,6 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(startGameButton.onClick, gm.StartGame);
         UnityEventTools.AddPersistentListener(observeButton.onClick, gm.StartObserve);
         UnityEventTools.AddPersistentListener(submitButton.onClick, gm.Submit);
-        UnityEventTools.AddPersistentListener(judgeButton.onClick, gm.OnJudgeConfirmed);
         UnityEventTools.AddPersistentListener(backToDraw.onClick, gm.BackToDraw);
         UnityEventTools.AddPersistentListener(retryButton.onClick, gm.Retry);
         UnityEventTools.AddPersistentListener(compareButton.onClick, gm.ShowCompare);
@@ -362,9 +373,6 @@ public static class MvpSceneBuilder
         Set(so, "submitButton", submitButton);
         Set(so, "judgeDrawing", judgeDrawing);
         Set(so, "judgeStatusText", judgeStatus);
-        Set(so, "testInputGroup", testGroup.gameObject);
-        SetArray(so, "featureToggles", toggles);
-        SetArray(so, "featureToggleLabels", toggleLabels);
         Set(so, "backToDrawButton", backToDraw.gameObject);
         Set(so, "resultTitleText", resultTitle);
         Set(so, "resultItemImage", resultItem);
@@ -377,6 +385,7 @@ public static class MvpSceneBuilder
         Set(so, "compareButtonLabel", compareButton.GetComponentInChildren<TMP_Text>());
         Set(so, "boyHappy", boyHappy);
         Set(so, "boySurprised", boySurprised);
+        Set(so, "boySurprisedMark", boyMark.gameObject);
         Set(so, "compareMyDrawing", compareMine);
         Set(so, "compareOriginal", compareOriginal);
         Set(so, "compareFeatureText", compareFeatures);
@@ -481,6 +490,32 @@ public static class MvpSceneBuilder
         AssetDatabase.SaveAssets();
     }
 
+    // 자동 판정(LocalJudge)이 특징마다 할 계산 : [단계 번호 - 1][특징 번호 - 1]
+    static readonly (AutoCheck check, InkColor color, Area area)[][] AutoChecks =
+    {
+        new[] { (AutoCheck.LongHandle, InkColor.Black, Area.TopLeft),            // 1 방망이
+                (AutoCheck.ThickHead, InkColor.Black, Area.TopLeft),
+                (AutoCheck.Spikes, InkColor.Black, Area.TopLeft) },
+        new[] { (AutoCheck.RectOutline, InkColor.Black, Area.TopLeft),           // 2 가방
+                (AutoCheck.HandleOnTop, InkColor.Black, Area.TopLeft),
+                (AutoCheck.InnerPocket, InkColor.Black, Area.TopLeft),
+                (AutoCheck.PocketStripes, InkColor.Black, Area.TopLeft) },
+        new[] { (AutoCheck.RectOutline, InkColor.Black, Area.TopLeft),           // 3 돗자리
+                (AutoCheck.CrossLines, InkColor.Black, Area.TopLeft),
+                (AutoCheck.ColorAt, InkColor.Red, Area.TopLeft),
+                (AutoCheck.ColorAt, InkColor.Yellow, Area.TopRight),
+                (AutoCheck.ColorAt, InkColor.Blue, Area.BottomBoth) },
+        new[] { (AutoCheck.RoundBlackRing, InkColor.Black, Area.TopLeft),        // 4 김밥
+                (AutoCheck.WhiteInside, InkColor.Black, Area.TopLeft),
+                (AutoCheck.ColorInside, InkColor.Red, Area.TopLeft),
+                (AutoCheck.ColorInside, InkColor.Yellow, Area.TopLeft),
+                (AutoCheck.ColorInside, InkColor.Green, Area.TopLeft) },
+        new[] { (AutoCheck.PersonShape, InkColor.Black, Area.TopLeft),           // 5 친구
+                (AutoCheck.ShirtStripes, InkColor.Black, Area.TopLeft),
+                (AutoCheck.ShirtColor, InkColor.Green, Area.TopLeft),
+                (AutoCheck.PantsColor, InkColor.Brown, Area.TopLeft) },
+    };
+
     static void CreateStage(string file, int number, string target, ColorMode mode, string story, string newRule,
                             string learned, string description, params (string name, string criteria)[] features)
     {
@@ -504,6 +539,9 @@ public static class MvpSceneBuilder
                 id = "F" + (i + 1),
                 name = features[i].name,
                 criteria = features[i].criteria,
+                check = AutoChecks[number - 1][i].check,
+                color = AutoChecks[number - 1][i].color,
+                area = AutoChecks[number - 1][i].area,
                 wrongSprite = LoadSprite($"{file}/Wrong_F{i + 1}.png"),
             };
         }
@@ -525,10 +563,14 @@ public static class MvpSceneBuilder
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null) continue;
-            if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single)
+            bool roundRect = path.EndsWith("UI/RoundRect.png");
+            Vector4 border = roundRect ? new Vector4(48, 48, 48, 48) : Vector4.zero; // 모서리 48px 는 늘리지 않음 (9-slice)
+            if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
+                || importer.spriteBorder != border)
             {
                 importer.textureType = TextureImporterType.Sprite;
                 importer.spriteImportMode = SpriteImportMode.Single;
+                importer.spriteBorder = border;
                 importer.SaveAndReimport();
             }
         }
@@ -590,17 +632,57 @@ public static class MvpSceneBuilder
         return t;
     }
 
-    static Button NewButton(string name, Transform parent, string label, Vector2 pos, Vector2 box)
+    // 글자 버튼. primary = 진한 갈색(이 화면의 주된 행동) / false = 밝은 크림색(보조 행동)
+    static Button NewButton(string name, Transform parent, string label, Vector2 pos, Vector2 box, bool primary = true)
     {
-        var img = NewImage(name, parent, ButtonColor);
+        var img = NewImage(name, parent, primary ? ButtonColor : CreamColor);
         img.sprite = uiSprite;
         img.type = Image.Type.Sliced;
         Place(img.rectTransform, pos, box);
         var button = img.gameObject.AddComponent<Button>();
+        if (!primary) AddEdge(img);
 
         var t = NewText("Label", img.transform, label, 42, Vector2.zero, Vector2.zero);
         Stretch(t.rectTransform);
-        t.color = Color.white;
+        t.color = primary ? Color.white : ButtonColor;
+        return button;
+    }
+
+    // 밝은 버튼이 배경에 묻히지 않게 얇은 테두리
+    static void AddEdge(Image img)
+    {
+        var edge = img.gameObject.AddComponent<Outline>();
+        edge.effectColor = new Color(ButtonColor.r, ButtonColor.g, ButtonColor.b, 0.45f);
+        edge.effectDistance = new Vector2(2, -2);
+    }
+
+    // 동그란 도구 버튼 : [묶음] 안에 [Frame(선택 테두리, 뒤)] + [Button(동그라미, 앞) + Icon]
+    static Button NewRoundTool(string name, Transform row, Sprite icon, Color color, float size, out GameObject frame)
+    {
+        var holder = new GameObject(name, typeof(RectTransform));
+        holder.transform.SetParent(row, false);
+        holder.GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
+
+        var frameImg = NewImage("Frame", holder.transform, FrameColor);
+        frameImg.sprite = circleSprite;
+        Stretch(frameImg.rectTransform, -9); // 버튼보다 9 만큼 크게 → 둥근 테두리처럼 보임
+        frameImg.raycastTarget = false;
+        frame = frameImg.gameObject;
+
+        var img = NewImage("Button", holder.transform, color);
+        img.sprite = circleSprite;
+        Stretch(img.rectTransform);
+        AddEdge(img);
+        var button = img.gameObject.AddComponent<Button>();
+
+        if (icon != null)
+        {
+            var iconImg = NewImage("Icon", img.transform, Color.white);
+            iconImg.sprite = icon;
+            iconImg.preserveAspect = true;
+            iconImg.raycastTarget = false;
+            Stretch(iconImg.rectTransform, size * 0.16f);
+        }
         return button;
     }
 
@@ -616,69 +698,6 @@ public static class MvpSceneBuilder
         layout.childControlWidth = layout.childControlHeight = false;
         layout.childForceExpandWidth = layout.childForceExpandHeight = false;
         return go.transform;
-    }
-
-    // 선택 테두리가 있는 도구 버튼 : [묶음] 안에 [Frame(테두리, 뒤)] + [버튼(앞)]
-    static Button NewToolButton(string name, Transform row, string label, Color color, Vector2 size, out GameObject frame)
-    {
-        var holder = new GameObject(name, typeof(RectTransform));
-        holder.transform.SetParent(row, false);
-        holder.GetComponent<RectTransform>().sizeDelta = size;
-
-        var frameImg = NewImage("Frame", holder.transform, FrameColor);
-        frameImg.sprite = uiSprite; frameImg.type = Image.Type.Sliced;
-        Stretch(frameImg.rectTransform, -9); // 버튼보다 9 만큼 크게 → 테두리처럼 보임
-        frameImg.raycastTarget = false;
-        frame = frameImg.gameObject;
-
-        var img = NewImage("Button", holder.transform, color);
-        img.sprite = uiSprite; img.type = Image.Type.Sliced;
-        Stretch(img.rectTransform);
-        var button = img.gameObject.AddComponent<Button>();
-
-        var t = NewText("Label", img.transform, label, 30, Vector2.zero, Vector2.zero);
-        Stretch(t.rectTransform);
-        t.color = Color.white;
-        return button;
-    }
-
-    static Toggle NewToggle(string name, Transform parent, Vector2 pos, out TMP_Text label)
-    {
-        var root = new GameObject(name, typeof(RectTransform), typeof(Toggle));
-        root.transform.SetParent(parent, false);
-        Place(root.GetComponent<RectTransform>(), pos, new Vector2(900, 95));
-
-        // 체크 상자
-        var box = NewImage("Box", root.transform, Color.white);
-        box.sprite = uiSprite;
-        box.type = Image.Type.Sliced;
-        var boxRt = box.rectTransform;
-        boxRt.anchorMin = boxRt.anchorMax = new Vector2(0, 0.5f);
-        boxRt.pivot = new Vector2(0, 0.5f);
-        boxRt.anchoredPosition = Vector2.zero;
-        boxRt.sizeDelta = new Vector2(80, 80);
-
-        // 체크 표시 (켜지면 보임)
-        var check = NewImage("Check", box.transform, new Color(0.18f, 0.49f, 0.20f));
-        check.sprite = uiSprite;
-        check.type = Image.Type.Sliced;
-        Stretch(check.rectTransform, 14);
-
-        // 글자 (GameManager 가 특징 이름으로 채워요)
-        label = NewText("Label", root.transform, "F?", 40, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left);
-        var lrt = label.rectTransform;
-        lrt.anchorMin = new Vector2(0, 0);
-        lrt.anchorMax = new Vector2(1, 1);
-        lrt.offsetMin = new Vector2(110, 0);
-        lrt.offsetMax = Vector2.zero;
-        label.raycastTarget = true; // 글자를 눌러도 체크되게
-
-        var toggle = root.GetComponent<Toggle>();
-        toggle.targetGraphic = box;
-        toggle.graphic = check;
-        toggle.toggleTransition = Toggle.ToggleTransition.None; // 바로 보이게
-        toggle.isOn = false;
-        return toggle;
     }
 
     // 위쪽 가운데 기준으로 위치·크기 정하기
