@@ -53,10 +53,11 @@ public class GameManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] GameObject hud;
     [SerializeField] TMP_Text snackText;            // 왼쪽 위 "간식 3개"
-    [SerializeField] TMP_Text stageText;            // 오른쪽 위 "1단계 방망이"
+    [SerializeField] TMP_Text stageText;            // 가운데 위 "1/5 · 방망이"
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
-    [SerializeField] TMP_Text timerText;            // "향 58초"
-    [SerializeField] Image incenseBar;              // 타들어 가는 향 막대
+    [SerializeField] TMP_Text timerText;            // "58초"
+    [SerializeField] Image incenseBar;              // 타들어 가는 향 막대 (없어도 돼요)
+    [SerializeField] GameObject pausePanel;         // 일시정지 화면
 
     [Header("패널(화면)")]
     [SerializeField] GameObject titlePanel;
@@ -75,9 +76,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text introRules;
 
     [Header("관찰 화면")]
-    [SerializeField] TMP_Text observeTitle;
+    [SerializeField] TMP_Text observeTitle;         // 카드 아래 물건 이름
+    [SerializeField] TMP_Text observeHintText;      // "모양과 색을 눈에 꼭 담아 줘!"
     [SerializeField] Image observeImage;
-    [SerializeField] TMP_Text observeCountText;
+    [SerializeField] Image[] observeCountDots;      // 3 · 2 · 1 동그라미 (지금 숫자만 코랄)
 
     [Header("그리기 화면")]
     [SerializeField] TMP_Text drawTitle;
@@ -127,6 +129,9 @@ public class GameManager : MonoBehaviour
 
     StageData Stage => stages[stageIndex];
 
+    static readonly Color CountOn = new Color32(237, 141, 128, 255);    // 지금 숫자 (코랄)
+    static readonly Color CountOff = new Color32(255, 252, 245, 255);   // 지난·남은 숫자 (크림)
+
     // Start : 게임이 시작되면 한 번 실행
     void Start()
     {
@@ -139,14 +144,16 @@ public class GameManager : MonoBehaviour
         if (state == State.Observe)
         {
             timeLeft -= Time.deltaTime;                             // 지난 시간만큼 빼기
-            observeCountText.text = Mathf.CeilToInt(timeLeft).ToString();
+            int count = Mathf.CeilToInt(timeLeft);                  // 3 → 2 → 1
+            for (int i = 0; i < observeCountDots.Length; i++)
+                observeCountDots[i].color = observeCountDots.Length - i == count ? CountOn : CountOff;
             if (timeLeft <= 0f) StartDraw(false);                   // 3초 끝 → 그리기
         }
         else if (state == State.Draw)
         {
             timeLeft -= Time.deltaTime;
-            timerText.text = $"향 {Mathf.CeilToInt(Mathf.Max(0f, timeLeft))}초";
-            incenseBar.fillAmount = timeLeft / drawSeconds;         // 향이 타들어 감
+            timerText.text = $"{Mathf.CeilToInt(Mathf.Max(0f, timeLeft))}초";
+            if (incenseBar != null) incenseBar.fillAmount = timeLeft / drawSeconds;   // 향이 타들어 감
             submitButton.interactable = board.HasDrawn;             // 빈 쪽지면 제출 불가
             if (timeLeft <= 0f) Submit();                           // 향이 다 타면 자동 제출
         }
@@ -158,6 +165,7 @@ public class GameManager : MonoBehaviour
     void ShowTitle()
     {
         state = State.Title;
+        SetPaused(false);
         hud.SetActive(false);
         ShowPanel(titlePanel);
     }
@@ -181,7 +189,7 @@ public class GameManager : MonoBehaviour
 
         hud.SetActive(true);
         timerGroup.SetActive(false);
-        stageText.text = Stage.Title;
+        stageText.text = $"{Stage.stageNumber}/{stages.Length} · {Stage.targetName}";
         UpdateSnackText();
 
         introStageNumber.text = $"{Stage.stageNumber}단계";
@@ -200,7 +208,8 @@ public class GameManager : MonoBehaviour
     {
         state = State.Observe;
         timeLeft = observeSeconds;
-        observeTitle.text = $"{Stage.targetName}{Josa(Stage.targetName, "을", "를")} 잘 기억하세요!";
+        observeTitle.text = Stage.targetName;
+        observeHintText.text = Stage.colorMode == ColorMode.BlackOnly ? "모양을 눈에 꼭 담아 줘!" : "모양과 색을 눈에 꼭 담아 줘!";
         observeImage.sprite = Stage.originalSprite;
         ShowPanel(observePanel);
     }
@@ -218,7 +227,7 @@ public class GameManager : MonoBehaviour
             timeLeft = drawSeconds;
             board.ResetBoard();
         }
-        drawTitle.text = $"기억한 {Stage.targetName}{Josa(Stage.targetName, "을", "를")} 그려주세요 (원본은 볼 수 없어요)";
+        drawTitle.text = $"기억나는 {Stage.targetName}{Josa(Stage.targetName, "을", "를")} 그려 줘";
         timerGroup.SetActive(true);
         ShowPanel(drawPanel);
     }
@@ -410,6 +419,15 @@ public class GameManager : MonoBehaviour
     public void BackToTitle()
     {
         ShowTitle();
+    }
+
+    /// <summary>[버튼] 오른쪽 위 일시정지 ↔ 계속하기. 멈춘 동안은 시간(향·관찰)이 흐르지 않아요.</summary>
+    public void TogglePause() => SetPaused(!pausePanel.activeSelf);
+
+    void SetPaused(bool paused)
+    {
+        pausePanel.SetActive(paused);
+        Time.timeScale = paused ? 0f : 1f;
     }
 
     // ───────────── 도우미 함수 ─────────────

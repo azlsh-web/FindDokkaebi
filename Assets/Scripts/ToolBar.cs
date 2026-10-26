@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // ─────────────────────────────────────────────────────────────
-// ToolBar : 쪽지 아래 그리기 도구 줄 (색 · 지우개 · 굵기 · 되돌리기 · 모두 지우기 · 색 섞기)
+// ToolBar : 쪽지 아래 그리기 도구 줄 (색 · 연필 · 지우개 · 굵기 · 되돌리기 · 모두 지우기 · 색 섞기)
 // ─────────────────────────────────────────────────────────────
 // - 버튼을 누르면 DrawingBoard 의 함수를 불러서 펜 색·굵기를 바꿔요.
 // - 지금 고른 색과 도구는 "테두리(Frame)"로 표시해요. (기획서 4장)
@@ -25,7 +25,8 @@ public class ToolBar : MonoBehaviour
     [SerializeField] GameObject mixedSlotFrame;
     [SerializeField] GameObject mixOpenButton;
 
-    [Header("지우개 · 굵기 (가는, 보통, 굵은)")]
+    [Header("연필 · 지우개 · 굵기 (가는, 보통, 굵은)")]
+    [SerializeField] GameObject pencilFrame;
     [SerializeField] GameObject eraserFrame;
     [SerializeField] GameObject[] sizeFrames;
 
@@ -48,6 +49,7 @@ public class ToolBar : MonoBehaviour
 
     ColorMode mode;
     int selectedColor;
+    int lastColor;              // 지우개를 쓰기 전에 고른 색 (연필을 누르면 이 색으로 돌아가요)
     int selectedSize;
     bool hasMixed;              // 혼합색을 한 번이라도 만들었는지
     Color mixedColor;
@@ -85,7 +87,7 @@ public class ToolBar : MonoBehaviour
     /// <summary>[버튼] 색 고르기. 0 검정, 1 빨강, 2 노랑, 3 파랑</summary>
     public void SelectColor(int index)
     {
-        selectedColor = index;
+        selectedColor = lastColor = index;
         board.SetColor(Palette[index]);
         RefreshFrames();
     }
@@ -94,9 +96,16 @@ public class ToolBar : MonoBehaviour
     public void SelectMixed()
     {
         if (!hasMixed) return;
-        selectedColor = MixedSlot;
+        selectedColor = lastColor = MixedSlot;
         board.SetColor(mixedColor);
         RefreshFrames();
+    }
+
+    /// <summary>[버튼] 연필 : 지우개에서 마지막으로 쓰던 색으로 돌아가기</summary>
+    public void SelectPen()
+    {
+        if (lastColor == MixedSlot && hasMixed) SelectMixed();
+        else SelectColor(lastColor == MixedSlot ? 0 : lastColor);
     }
 
     /// <summary>[버튼] 지우개</summary>
@@ -143,6 +152,7 @@ public class ToolBar : MonoBehaviour
     {
         for (int i = 0; i < colorFrames.Length; i++) colorFrames[i].SetActive(selectedColor == i);
         mixedSlotFrame.SetActive(selectedColor == MixedSlot);
+        pencilFrame.SetActive(selectedColor != Eraser);
         eraserFrame.SetActive(selectedColor == Eraser);
         for (int i = 0; i < sizeFrames.Length; i++) sizeFrames[i].SetActive(selectedSize == i);
     }
