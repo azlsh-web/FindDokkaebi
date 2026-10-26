@@ -266,8 +266,8 @@ static class MvpSelfTest
             Add(0.3f, $"{st.Title} 도입", () =>
             {
                 Check(IsOn("StageIntroPanel"), $"{st.Title} 도입 화면");
-                Check(Text("HUD/SnackText") == "간식 3개", $"{st.Title} 간식 3개로 시작 ({Text("HUD/SnackText")})");
-                Check(Text("StageIntroPanel/RulesCard/Rules").Contains("새로 배울 규칙"), "규칙 안내가 있다");
+                Check(Text("HUD/SnackTag/SnackText") == "간식 3개", $"{st.Title} 간식 3개로 시작 ({Text("HUD/SnackTag/SnackText")})");
+                Check(Text("StageIntroPanel/IntroCard/RulesCard/Rules").Contains("새로 배울 규칙"), "규칙 안내가 있다");
                 Shot($"s{s + 1}_intro");
                 Then(() => Gm().StartObserve());
             });
@@ -317,15 +317,15 @@ static class MvpSelfTest
             Add(s == 2 ? 1.0f : 0.3f, $"{st.Title} 판정", () =>
             {
                 Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면 (쪽지와 간식을 건넴)");
-                Check(Text("HUD/SnackText") == "간식 2개", $"제출하면 간식 -1 ({Text("HUD/SnackText")})");
-                Check(Text("JudgePanel/Status").Contains("들여다보는"), "도깨비가 쪽지를 들여다보며 판정 중");
+                Check(Text("HUD/SnackTag/SnackText") == "간식 2개", $"제출하면 간식 -1 ({Text("HUD/SnackTag/SnackText")})");
+                Check(Text("JudgePanel/StatusCard/Status").Contains("들여다보는"), "도깨비가 쪽지를 들여다보며 판정 중");
                 Check(GameObject.Find("Canvas").transform.Find("JudgePanel/TestInput") == null, "체크박스(수동 판정)가 없다");
 
                 if (s == 0)
                 {
                     // AI 오류가 나면 간식을 돌려주고 그림 그대로 다시 제출
                     Invoke(Gm(), "OnJudgeError", "테스트용 가짜 오류");
-                    Check(Text("HUD/SnackText") == "간식 3개", "오류가 나면 간식을 돌려준다");
+                    Check(Text("HUD/SnackTag/SnackText") == "간식 3개", "오류가 나면 간식을 돌려준다");
                     Check(IsOn("JudgePanel/BackToDrawButton"), "다시 제출 버튼이 보인다");
                     Shot("s1_ai_error");
                     Then(() =>
@@ -345,27 +345,27 @@ static class MvpSelfTest
                     int kk = k;
                     Add(0.3f, $"2단계 {kk}번째 실패", () =>
                     {
-                        Check(Text("ResultPanel/ResultTitle").Contains("아무것도"), $"{kk}번째 : 하나도 못 맞히면 아무것도 못 찾음");
+                        Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("아무것도"), $"{kk}번째 : 하나도 못 맞히면 아무것도 못 찾음");
                         Gm().Retry();
                         Gm().Submit();
                     }, ResultShown);
                 }
                 Add(0.3f, "2단계 간식 0개", () =>
                 {
-                    Check(Text("HUD/SnackText") == "간식 0개", "간식 0개");
-                    Check(Text("ResultPanel/ResultTitle").Contains("아무것도"), "0개 맞히면 아무것도 못 찾음");
+                    Check(Text("HUD/SnackTag/SnackText") == "간식 0개", "간식 0개");
+                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("아무것도"), "0개 맞히면 아무것도 못 찾음");
                     Check(!IsOn("ResultPanel/RetryButton"), "간식이 없으면 다시 그리기 숨김");
                     Check(Text("ResultPanel/SnackLeft").Contains("떨어졌어요"), "간식이 다 떨어졌다고 알려준다");
                     Shot("s2_out_of_snacks");
                     Then(() => Gm().ShowCompare());
-                }, () => ResultShown() && Text("HUD/SnackText") == "간식 0개");
+                }, () => ResultShown() && Text("HUD/SnackTag/SnackText") == "간식 0개");
             }
             else
             {
                 // 부분 성공 : 마지막 특징만 빠뜨림 → 그 특징이 빠진 물건
                 Add(0.3f, $"{st.Title} 부분 성공", () =>   // 도깨비 고민 1.5초 + 물건이 뿅 커지는 0.45초 뒤 확인·촬영
                 {
-                    Check(Text("ResultPanel/ResultTitle").Contains("엉뚱한"), "하나 빠뜨리면 엉뚱한 물건");
+                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("엉뚱한"), "하나 빠뜨리면 엉뚱한 물건");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.features[st.features.Length - 1].wrongSprite, "빠뜨린 특징에 맞는 물건이 왔다");
                     Check(IsOn("ResultPanel/RetryButton"), "다시 그리기 버튼");
                     if (s == 0 || s == 4) Shot($"s{s + 1}_result_partial");
@@ -382,12 +382,12 @@ static class MvpSelfTest
                 });
                 Add(0.3f, $"{st.Title} 성공", () =>
                 {
-                    Check(Text("ResultPanel/ResultTitle").Contains("찾아왔다"), "전부 맞히면 성공");
+                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"), "전부 맞히면 성공");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");
                     Check(!IsOn("ResultPanel/RetryButton"), "성공하면 다시 그리기 숨김");
                     Shot($"s{s + 1}_result_success");
                     Then(() => Gm().ShowCompare());
-                }, () => ResultShown() && Text("ResultPanel/ResultTitle").Contains("찾아왔다"));
+                }, () => ResultShown() && Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"));
             }
 
             // 원본 비교 → 다음 단계
@@ -508,72 +508,15 @@ static class MvpSelfTest
         Check(ok, $"손그림 판정 : {what}" + (ok ? "" : " / 틀린 것:" + detail));
     }
 
-    // ── 손그림 만들기 도구 (512x512, 아래가 y=0) ──
-    static readonly Color32 PaperWhite = new Color32(255, 255, 255, 255);
-    static readonly Color32 InkBlack = new Color32(0, 0, 0, 255);
-
-    class Sketch
-    {
-        public readonly Color32[] px = new Color32[512 * 512];
-        public Sketch() { for (int i = 0; i < px.Length; i++) px[i] = PaperWhite; }
-
-        // 점들을 따라 선 긋기 (wobble = 손떨림 크기)
-        public Sketch Line(Color32 c, int r, float wobble, params Vector2[] pts)
-        {
-            for (int k = 1; k < pts.Length; k++)
-            {
-                float len = Vector2.Distance(pts[k - 1], pts[k]);
-                for (int t = 0; t <= len; t++)
-                {
-                    Vector2 q = Vector2.Lerp(pts[k - 1], pts[k], t / Mathf.Max(1f, len));
-                    q += new Vector2(Mathf.Sin(q.y * 0.07f + k), Mathf.Cos(q.x * 0.06f + k)) * wobble;
-                    Dot(q, r, c);
-                }
-            }
-            return this;
-        }
-
-        // 타원 테두리 (gapDeg 만큼 비워서 살짝 안 닫힌 손그림처럼)
-        public Sketch Ellipse(Color32 c, int r, Vector2 center, float rx, float ry, float gapDeg = 0f)
-        {
-            var pts = new System.Collections.Generic.List<Vector2>();
-            for (float a = gapDeg; a <= 360f; a += 4f)
-                pts.Add(center + new Vector2(Mathf.Cos(a * Mathf.Deg2Rad) * rx, Mathf.Sin(a * Mathf.Deg2Rad) * ry));
-            return Line(c, r, 1.5f, pts.ToArray());
-        }
-
-        // 네모 안을 지그재그로 쓱쓱 칠하기 (gap 이 클수록 성기게)
-        public Sketch Scribble(Color32 c, int r, float x0, float y0, float x1, float y1, float gap)
-        {
-            var pts = new System.Collections.Generic.List<Vector2>();
-            bool right = true;
-            for (float y = y0; y <= y1; y += gap) { pts.Add(new Vector2(right ? x0 : x1, y)); pts.Add(new Vector2(right ? x1 : x0, y + gap * 0.5f)); right = !right; }
-            return Line(c, r, 2f, pts.ToArray());
-        }
-
-        void Dot(Vector2 q, int r, Color32 c)
-        {
-            int cx = Mathf.RoundToInt(q.x), cy = Mathf.RoundToInt(q.y);
-            for (int y = cy - r; y <= cy + r; y++)
-            for (int x = cx - r; x <= cx + r; x++)
-                if (x >= 0 && y >= 0 && x < 512 && y < 512 && (x - cx) * (x - cx) + (y - cy) * (y - cy) <= r * r) px[y * 512 + x] = c;
-        }
-
-        public Texture2D Tex()
-        {
-            var t = new Texture2D(512, 512, TextureFormat.RGBA32, false);
-            t.SetPixels32(px);
-            t.Apply();
-            return t;
-        }
-    }
+    // 손그림은 HandSketch.cs 로 만들어요 (판정 전수 검사와 같이 씀)
+    static readonly Color32 InkBlack = HandSketch.Black;
 
     static Color32 C(int i) => ToolBar.Palette[i];          // 0 검정, 1 빨강, 2 노랑, 3 파랑
     static Vector2 V(float x, float y) => new Vector2(x, y);
 
     static Texture2D HandBat(bool spikes)
     {
-        var s = new Sketch()
+        var s = new HandSketch()
             .Line(InkBlack, 4, 2f, V(248, 40), V(252, 140), V(256, 246))               // 한 줄로 그은 손잡이
             .Ellipse(InkBlack, 4, V(256, 335), 58, 88, gapDeg: 14f);                  // 살짝 안 닫힌 타원 머리
         if (spikes)
@@ -590,7 +533,7 @@ static class MvpSelfTest
 
     static Texture2D HandBag()
     {
-        return new Sketch()
+        return new HandSketch()
             .Line(InkBlack, 4, 2f, V(100, 60), V(412, 64), V(408, 330), V(104, 326), V(100, 60))   // 몸체
             .Line(InkBlack, 4, 2f, V(190, 328), V(200, 400), V(256, 440), V(312, 400), V(322, 328)) // 손잡이
             .Line(InkBlack, 4, 2f, V(170, 90), V(342, 92), V(340, 210), V(168, 206), V(170, 90))   // 주머니
@@ -602,7 +545,7 @@ static class MvpSelfTest
 
     static Texture2D HandMat(bool cross)
     {
-        var s = new Sketch()
+        var s = new HandSketch()
             .Scribble(C(1), 6, 90, 285, 235, 370, 22)      // 왼쪽 위 빨강 (성기게)
             .Scribble(C(2), 6, 280, 285, 425, 370, 22)     // 오른쪽 위 노랑
             .Scribble(C(3), 6, 90, 165, 235, 250, 22)      // 왼쪽 아래 파랑
@@ -619,7 +562,7 @@ static class MvpSelfTest
     static Texture2D HandGimbap()
     {
         Color32 green = new Color32(40, 160, 60, 255);       // 노랑 + 파랑 으로 섞은 초록
-        return new Sketch()
+        return new HandSketch()
             .Ellipse(InkBlack, 9, V(256, 256), 200, 196, gapDeg: 8f)
             .Scribble(C(1), 6, 160, 280, 240, 340, 14)
             .Scribble(C(2), 6, 280, 280, 360, 340, 14)
@@ -630,7 +573,7 @@ static class MvpSelfTest
     static Texture2D HandFriend()
     {
         Color32 green = new Color32(40, 160, 60, 255), brown = new Color32(130, 80, 40, 255);
-        return new Sketch()
+        return new HandSketch()
             .Ellipse(InkBlack, 4, V(256, 400), 55, 55)                                     // 머리
             .Scribble(green, 8, 165, 225, 347, 335, 9)                                     // 초록 상의 (꼼꼼히)
             .Scribble(green, 8, 110, 250, 165, 320, 9)
