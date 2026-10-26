@@ -39,6 +39,9 @@ MonoBehaviour:
       \uC54A\uC544\uB3C4 \uB465\uADFC \uAC80\uC740 \uC678\uACFD\uC774 \uC2DD\uBCC4\uB418\uBA74
       \uC778\uC815\uD569\uB2C8\uB2E4. \uB2E4\uB978 \uC0C9 \uD14C\uB450\uB9AC\uB098
       \uC0AC\uAC01\uD615 \uC678\uACFD\uC740 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 9
+    color: 0
+    area: 0
     wrongSprite: {fileID: 21300000, guid: e89ad7c5cdce71549aeb56a80a9a1744, type: 3}
   - id: F2
     name: "\uD770 \uBC25"
@@ -47,22 +50,34 @@ MonoBehaviour:
       \uB0A8\uC544 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uBC25 \uBD80\uBD84 \uC804\uCCB4\uB97C
       \uB2E4\uB978 \uC0C9\uC73C\uB85C \uCE60\uD588\uC73C\uBA74 \uC778\uC815\uD558\uC9C0
       \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 10
+    color: 0
+    area: 0
     wrongSprite: {fileID: 21300000, guid: 0468d081063562a4cb52057c6772033d, type: 3}
   - id: F3
     name: "\uBE68\uAC04 \uC7AC\uB8CC"
     criteria: "\uBC25 \uC548\uCABD\uC5D0 \uBE68\uAC04\uC0C9 \uACC4\uC5F4\uB85C \uCE60\uD55C
       \uC7AC\uB8CC \uC870\uAC01\uC774 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uD14C\uB450\uB9AC
       \uBC16\uC758 \uBE68\uAC15\uC740 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 11
+    color: 1
+    area: 0
     wrongSprite: {fileID: 21300000, guid: f1f3e0f75c5790a42a9f4daf5842d20c, type: 3}
   - id: F4
     name: "\uB178\uB780 \uC7AC\uB8CC"
     criteria: "\uBC25 \uC548\uCABD\uC5D0 \uB178\uB780\uC0C9 \uACC4\uC5F4\uB85C \uCE60\uD55C
       \uC7AC\uB8CC \uC870\uAC01\uC774 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uD14C\uB450\uB9AC
       \uBC16\uC758 \uB178\uB791\uC740 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 11
+    color: 2
+    area: 0
     wrongSprite: {fileID: 21300000, guid: 5009304457d98e444ad633588ccf0099, type: 3}
   - id: F5
     name: "\uCD08\uB85D \uC7AC\uB8CC"
     criteria: "\uBC25 \uC548\uCABD\uC5D0 \uCD08\uB85D\uC0C9 \uACC4\uC5F4\uB85C \uCE60\uD55C
       \uC7AC\uB8CC \uC870\uAC01\uC774 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uD30C\uB791\uC774\uB098
       \uB178\uB791\uB9CC \uC788\uC73C\uBA74 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 11
+    color: 4
+    area: 0
     wrongSprite: {fileID: 21300000, guid: 26e9ad078ac331045adbe5add000c4bc, type: 3}

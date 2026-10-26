@@ -24,6 +24,36 @@ public enum ColorMode
     MixFree,     // + 두 가지 이상(2~3가지) 색 섞기
 }
 
+/// <summary>
+/// 자동 판정(LocalJudge)이 이 특징을 "어떤 계산으로" 확인할지.
+/// AI(OpenAI) 판정은 criteria 글을 읽고, 자동 판정은 이 값을 보고 계산해요.
+/// </summary>
+public enum AutoCheck
+{
+    LongHandle,         // 가늘고 긴 부분이 있다 (방망이 손잡이)
+    ThickHead,          // 한쪽 끝이 손잡이보다 굵다 (방망이 머리)
+    Spikes,             // 머리 둘레에 뾰족한 돌기가 2개 이상
+    RectOutline,        // 네모난 외곽 (가방 몸체, 돗자리)
+    HandleOnTop,        // 몸체 위쪽에 손잡이
+    InnerPocket,        // 몸체 안에 닫힌 작은 네모 (주머니)
+    PocketStripes,      // 주머니 안 가로 줄무늬 2줄 이상
+    CrossLines,         // 안쪽을 네 칸으로 나누는 가로선 + 세로선
+    ColorAt,            // 정해진 칸(area)의 주된 색이 color
+    RoundBlackRing,     // 둥근 검은 테두리 (김 테두리)
+    WhiteInside,        // 테두리 안쪽이 대부분 흰색 (밥)
+    ColorInside,        // 테두리 안쪽에 color 조각이 있다 (김밥 재료)
+    PersonShape,        // 동그란 머리 + 아래로 이어진 몸 (사람)
+    ShirtStripes,       // 상의 안 가로 줄무늬 2줄 이상
+    ShirtColor,         // 상의의 주된 색이 color
+    PantsColor,         // 하의의 주된 색이 color
+}
+
+/// <summary>자동 판정에서 쓰는 색 이름 (HSV 로 구분)</summary>
+public enum InkColor { Black, Red, Yellow, Blue, Green, Orange, Purple, Brown }
+
+/// <summary>ColorAt 이 볼 칸 (화면에서 보이는 방향 기준)</summary>
+public enum Area { TopLeft, TopRight, BottomBoth }
+
 /// <summary>판정할 특징 하나 (기획서의 F1, F2 …)</summary>
 [System.Serializable]
 public class Feature
@@ -37,6 +67,13 @@ public class Feature
     [Tooltip("AI 에게 알려줄 충족 기준 (기획서 부록 B 의 '충족 기준')")]
     [TextArea(2, 5)]
     public string criteria;
+
+    [Header("자동 판정 (기획서 6장 대체 기술 : HSV 색 분석 + 모양 계산)")]
+    public AutoCheck check;
+    [Tooltip("색을 보는 판정(ColorAt, ColorInside, ShirtColor, PantsColor)에서 쓸 색")]
+    public InkColor color;
+    [Tooltip("ColorAt 에서 볼 칸")]
+    public Area area;
 
     [Tooltip("이 특징을 빠뜨렸을 때 도깨비가 잘못 가져오는 물건")]
     public Sprite wrongSprite;
