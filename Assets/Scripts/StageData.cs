@@ -46,13 +46,20 @@ public enum AutoCheck
     ShirtStripes,       // 상의 안 가로 줄무늬 2줄 이상
     ShirtColor,         // 상의의 주된 색이 color
     PantsColor,         // 하의의 주된 색이 color
+    ColorBands,         // 외곽 안이 색 띠 네 줄로 나뉨 (돗자리)
+    ColorInZone,        // 그림의 위(area=Head)·가운데(Body)·아래(Legs) 부분에 color 가 충분히 있다 (친구)
 }
 
 /// <summary>자동 판정에서 쓰는 색 이름 (HSV 로 구분)</summary>
 public enum InkColor { Black, Red, Yellow, Blue, Green, Orange, Purple, Brown }
 
 /// <summary>ColorAt 이 볼 칸 (화면에서 보이는 방향 기준)</summary>
-public enum Area { TopLeft, TopRight, BottomBoth }
+public enum Area
+{
+    TopLeft, TopRight, BottomBoth,      // (예전 4칸 돗자리)
+    Band2, Band3, BothEnds,             // 돗자리 띠 : 왼쪽에서 두 번째 · 세 번째 · 양 끝
+    Head, Body, Legs,                   // 친구 : 머리 · 몸통(상의) · 다리(하의)
+}
 
 /// <summary>판정할 특징 하나 (기획서의 F1, F2 …)</summary>
 [System.Serializable]

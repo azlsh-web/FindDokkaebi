@@ -71,6 +71,8 @@ public static class LocalJudge
             case AutoCheck.ShirtStripes: return ShirtStripes(p, out note);
             case AutoCheck.ShirtColor: return ShirtColor(p, f.color, out note);
             case AutoCheck.PantsColor: return PantsColor(p, f.color, out note);
+            case AutoCheck.ColorBands: return ColorBands(p, out note);
+            case AutoCheck.ColorInZone: return ColorInZone(p, f.area, f.color, out note);
         }
         note = "판정 방법이 정해지지 않았어요.";
         return false;
@@ -86,6 +88,7 @@ public static class LocalJudge
         h *= 360f;
         if (v < 0.22f) return Black;                          // 아주 어두우면 검정
         if (s < 0.25f) return v > 0.6f ? White : Black;       // 채도가 낮으면 흰색/회색/검정
+        if (v < 0.45f && (h < 45f || h >= 330f)) return Ink(InkColor.Brown);   // 어두운 빨강·주황 = 갈색 (친구 머리)
         if (h < 12f || h >= 340f) return Ink(InkColor.Red);
         if (h < 45f) return v < 0.65f ? Ink(InkColor.Brown) : Ink(InkColor.Orange); // 같은 색상이라도 어두우면 갈색
         if (h < 72f) return Ink(InkColor.Yellow);
@@ -600,6 +603,33 @@ public static class LocalJudge
             if (spikes == 0 && peak[0]) spikes = 1; // 한 바퀴 전부 튀어나온 경우
 
             if (spikes >= 2) { note = $"머리 둘레에 뾰족한 돌기가 {spikes}개 있어요."; return true; }
+
+            // 구름처럼 볼록볼록한 머리 : 볼록한 곳 사이의 "오목하게 들어간 곳"을 세요 (5도씩 72방향)
+            //   매끈한 동그라미·타원은 오목한 곳이 없어요. 돌기도 볼록 덩어리도 2개 이상이면 오목한 곳이 2군데 이상 생겨요.
+            const int B = 72;
+            var r72 = new float[B];
+            foreach (Vector2 v in head)
+            {
+                Vector2 d = v - c;
+                int b = ((int)(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg + 360f) / 5) % B;
+                r72[b] = Mathf.Max(r72[b], d.magnitude);
+            }
+            var r72s = (float[])r72.Clone();
+            Array.Sort(r72s);
+            float thr = Mathf.Max(2f, r72s[B / 2] * 0.06f);
+            var notch = new bool[B];
+            for (int b = 0; b < B; b++)
+            {
+                float deg = b * 5f + 2.5f;
+                if (skipHandle && Mathf.Abs(Mathf.DeltaAngle(deg, handleAngle)) < 45f) continue;
+                if (wholeThin) continue;
+                float l = r72[(b + B - 4) % B], r = r72[(b + 4) % B];
+                if (r72[b] > 0 && l > 0 && r > 0 && (l + r) * 0.5f - r72[b] > thr) notch[b] = true;
+            }
+            int notches = 0;
+            for (int b = 0; b < B; b++) if (notch[b] && !notch[(b + B - 1) % B]) notches++;
+            // (손잡이가 있을 때만 : 손잡이 없이 작은 동그라미만 있으면 살짝 삐뚤어진 곳도 오목하게 보여서)
+            if (HasHandle && notches >= 2) { note = $"머리 둘레가 볼록볼록해요 (오목한 곳 {notches}군데)."; return true; }
             note = spikes == 1 ? "머리의 돌기가 1개뿐이에요." : "머리 둘레가 매끈해서 돌기가 보이지 않아요.";
             return false;
         }
@@ -725,6 +755,7 @@ public static class LocalJudge
     // ── 돗자리 : 칸별 색 ──
     static bool ColorAt(Picture p, Area area, InkColor color, out string note)
     {
+        if (area == Area.Band2 || area == Area.Band3 || area == Area.BothEnds) return BandColor(p, area, color, out note);
         Box o = BodyBox(p, out _);
         FindCross(p, o, out int cx, out int cy, out float cr, out float rr);
         if (cr < 0.4f) cx = (int)o.CX;   // 선이 없으면 가운데로 나눠요
@@ -755,6 +786,95 @@ public static class LocalJudge
         return false;
     }
 
+    // ── 돗자리 (띠 무늬) : 외곽을 가로로 4등분한 띠의 색 ──
+    //   시안의 돗자리는 비스듬히 놓여 있어서, 위아래 가장자리는 빼고 가운데 높이만 봐요.
+    static Box Band(Box o, int k) => new Box
+    {
+        xMin = o.xMin + o.W * k / 4 + o.W / 40, xMax = o.xMin + o.W * (k + 1) / 4 - 1 - o.W / 40,
+        yMin = o.yMin + o.H / 4, yMax = o.yMax - o.H / 4, valid = true,
+    };
+
+    static bool BandColor(Picture p, Area area, InkColor color, out string note)
+    {
+        Box o = BodyBox(p, out _);
+        bool BandIs(int k, out string got)
+        {
+            Box b = Band(o, k);
+            int dom = DominantColor(p, b, out int cnt, out int total);
+            got = total == 0 ? "칠하지 않음" : Name(dom);
+            return dom == Ink(color) && cnt >= b.Area * 0.03f && cnt >= total * 0.4f;
+        }
+        string target = Name(color);
+        if (area == Area.BothEnds)
+        {
+            bool a = BandIs(0, out string ga), b = BandIs(3, out string gb);
+            if (a && b) { note = $"양 끝 띠가 모두 {target}이에요."; return true; }
+            note = $"양 끝 띠가 {ga} / {gb} 예요. ({target}이어야 해요)";
+            return false;
+        }
+        int band = area == Area.Band2 ? 1 : 2;
+        string where = band == 1 ? "왼쪽에서 두 번째" : "왼쪽에서 세 번째";
+        if (BandIs(band, out string g)) { note = $"{where} 띠가 {target}이에요."; return true; }
+        note = $"{where} 띠가 {g}이에요. ({target}이어야 해요)";
+        return false;
+    }
+
+    // 띠 네 줄 : 가운데 높이의 여러 줄에서 왼쪽→오른쪽으로 색이 바뀌는 덩어리 수를 세요 (작은 조각은 무시)
+    static bool ColorBands(Picture p, out string note)
+    {
+        Box o = BodyBox(p, out _);
+        var counts = new List<int>();
+        for (int t = 3; t <= 7; t++)
+        {
+            int y = o.yMin + o.H * t / 10;
+            var runs = new List<(int c, int n)>();
+            for (int x = o.xMin + o.W / 20; x <= o.xMax - o.W / 20; x++)
+            {
+                int c = p.cls[y * N + x];
+                if (!Chromatic(c)) continue;
+                if (runs.Count > 0 && runs[runs.Count - 1].c == c) runs[runs.Count - 1] = (c, runs[runs.Count - 1].n + 1);
+                else runs.Add((c, 1));
+            }
+            int minLen = Math.Max(3, o.W / 16);
+            var big = new List<int>();
+            foreach (var r in runs)
+                if (r.n >= minLen && (big.Count == 0 || big[big.Count - 1] != r.c)) big.Add(r.c);
+            counts.Add(big.Count);
+        }
+        counts.Sort();
+        int bands = counts[counts.Count / 2];
+        if (bands >= 4) { note = $"색 띠가 {bands}줄로 나뉘어 있어요."; return true; }
+        note = bands <= 1 ? "띠 무늬 없이 한 가지 색이에요." : $"색 띠가 {bands}줄뿐이에요. (네 줄이어야 해요)";
+        return false;
+    }
+
+    // ── 친구 : 위(머리) · 가운데(상의) · 아래(하의) 부분의 색 ──
+    static bool ColorInZone(Picture p, Area area, InkColor color, out string note)
+    {
+        Box b = p.inkBox;
+        float from = area == Area.Head ? 0f : area == Area.Body ? 0.3f : 0.62f;     // 위에서부터 비율
+        float to = area == Area.Head ? 0.3f : area == Area.Body ? 0.65f : 1f;
+        var zone = new Box
+        {
+            xMin = b.xMin, xMax = b.xMax,
+            yMin = b.yMax - (int)(b.H * to), yMax = b.yMax - (int)(b.H * from), valid = true,
+        };
+        int n = 0, chroma = 0;
+        for (int y = Math.Max(0, zone.yMin); y <= Math.Min(N - 1, zone.yMax); y++)
+        for (int x = zone.xMin; x <= zone.xMax; x++)
+        {
+            int c = p.cls[y * N + x];
+            if (!Chromatic(c)) continue;
+            chroma++;
+            if (c == Ink(color)) n++;
+        }
+        string part = area == Area.Head ? "머리" : area == Area.Body ? "상의" : "하의";
+        string target = Name(color);
+        if (n >= Math.Max(6, zone.Area * 0.02f) && n >= chroma * 0.2f) { note = $"{part}에 {target}이 칠해져 있어요."; return true; }
+        note = chroma == 0 ? $"{part} 부분이 칠해져 있지 않아요." : $"{part}에 {target}이 보이지 않아요.";
+        return false;
+    }
+
     // ── 김밥 : 둥근 검은 테두리와 그 안쪽 ──
     static bool BlackRing(Picture p, out Blob inside)
     {
@@ -778,7 +898,19 @@ public static class LocalJudge
     static List<int> InsideCells(Picture p)
     {
         BlackRing(p, out Blob inside);
-        if (inside != null) return inside.cells;
+        if (inside != null)
+        {
+            // 테두리 안쪽 전부 = 속을 채운 모양 − 가장 큰 검은 덩어리(김 테두리)
+            //   재료를 검은 선으로 둘러 그려도 재료 안쪽까지 "테두리 안"으로 쳐요
+            bool[] wall = CloseGaps(p.black);
+            Holes(wall, out bool[] filled);
+            List<Blob> blacks = Blobs(wall, false);
+            var ring = new bool[N * N];
+            if (blacks.Count > 0) foreach (int i in blacks[0].cells) ring[i] = true;
+            var all = new List<int>();
+            for (int i = 0; i < N * N; i++) if (filled[i] && !ring[i]) all.Add(i);
+            return all;
+        }
         // 검은 테두리가 없으면 : 속을 채운 모양 중 가장 큰 덩어리 (다른 색 테두리 안쪽)
         List<Blob> blobs = Blobs(p.silhouette, true);
         if (blobs.Count > 0) return blobs[0].cells;

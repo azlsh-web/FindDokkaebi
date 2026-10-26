@@ -73,13 +73,13 @@ public class OpenAIJudge : MonoBehaviour
 
     bool HasKey => !string.IsNullOrWhiteSpace(settings.apiKey);
 
-    /// <summary>키 없이 판정 중계 서버로 보내는지 (웹 게임)</summary>
+    /// <summary>키 없이 판정 중계 서버로 보내는지 (빌드한 게임만. 에디터는 서버가 받아 주지 않아요 = 웹 게임 주소가 아니라서)</summary>
     public bool UsesServer
     {
         get
         {
             if (settings == null) LoadSettings();
-            return !HasKey && !string.IsNullOrWhiteSpace(serverUrl);
+            return !Application.isEditor && !HasKey && !string.IsNullOrWhiteSpace(serverUrl);
         }
     }
 

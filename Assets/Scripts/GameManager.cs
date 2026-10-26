@@ -80,6 +80,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text observeHintText;      // "모양과 색을 눈에 꼭 담아 줘!"
     [SerializeField] Image observeImage;
     [SerializeField] Image[] observeCountDots;      // 3 · 2 · 1 동그라미 (지금 숫자만 코랄)
+    [SerializeField] Image[] observeCountGlyphs;    // 동그라미 속 숫자 (지금 = 흰색, 나머지 = 검정)
+    [SerializeField] GameObject[] observeCountSparkles;   // 지금 숫자 옆 노란 반짝이
+    [SerializeField] Sprite countOnSprite;          // 시안의 코랄 동그라미
+    [SerializeField] Sprite countOffSprite;         // 시안의 크림 동그라미
 
     [Header("그리기 화면")]
     [SerializeField] TMP_Text drawTitle;
@@ -129,9 +133,6 @@ public class GameManager : MonoBehaviour
 
     StageData Stage => stages[stageIndex];
 
-    static readonly Color CountOn = new Color32(237, 141, 128, 255);    // 지금 숫자 (코랄)
-    static readonly Color CountOff = new Color32(255, 252, 245, 255);   // 지난·남은 숫자 (크림)
-
     // Start : 게임이 시작되면 한 번 실행
     void Start()
     {
@@ -146,7 +147,12 @@ public class GameManager : MonoBehaviour
             timeLeft -= Time.deltaTime;                             // 지난 시간만큼 빼기
             int count = Mathf.CeilToInt(timeLeft);                  // 3 → 2 → 1
             for (int i = 0; i < observeCountDots.Length; i++)
-                observeCountDots[i].color = observeCountDots.Length - i == count ? CountOn : CountOff;
+            {
+                bool now = observeCountDots.Length - i == count;
+                observeCountDots[i].sprite = now ? countOnSprite : countOffSprite;
+                observeCountGlyphs[i].color = now ? Color.white : Color.black;
+                observeCountSparkles[i].SetActive(now);
+            }
             if (timeLeft <= 0f) StartDraw(false);                   // 3초 끝 → 그리기
         }
         else if (state == State.Draw)

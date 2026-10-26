@@ -57,7 +57,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     bool isEraser;          // true 면 지우개 모드
     Vector2 lastPixel;      // 직전에 그린 점 (선을 끊기지 않게 잇는 데 사용)
 
-    static readonly Color32 Paper = new Color32(255, 255, 255, 255); // 쪽지 색(흰색)
+    static readonly Color32 Paper = new Color32(253, 252, 245, 255); // 쪽지 색 (시안 클립보드 종이 색)
 
     // Awake : 이 오브젝트가 "처음 켜질 때" 한 번 실행돼요.
     // ※ 그림판은 꺼져 있는 DrawPanel 안에 있어서, 게임 시작 때는 Awake 가 아직 안 불려요.

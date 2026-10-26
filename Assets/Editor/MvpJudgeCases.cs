@@ -204,6 +204,7 @@ static class MvpJudgeCases
                 var exp = (bool[])drawn.Clone();
                 if (s == 0) exp[1] = drawn[0] && drawn[1];      // 손잡이 없으면 "손잡이보다 굵은 머리" 불인정
                 if (s == 1) exp[3] = drawn[2] && drawn[3];      // 주머니 없으면 "주머니 안 줄무늬" 불인정
+                if (s == 2 && !drawn[1]) { exp[2] = false; exp[3] = false; }   // 띠가 없으면(한 가지 색) 두·세 번째 띠 색도 없음
                 list.Add(new Case { stage = s, drawn = drawn, expected = exp });
                 if (s == 0) list.Add(new Case { stage = s, drawn = drawn, expected = exp, pen = 12 });   // 방망이는 굵은 펜으로도
             }
@@ -255,22 +256,20 @@ static class MvpJudgeCases
                 }
                 break;
             }
-            case 2: // 돗자리 : F1 네모, F2 십자선, F3 왼위 빨강, F4 오위 노랑, F5 아래 파랑
+            case 2: // 돗자리 : F1 네모, F2 띠 네 줄, F3 두 번째 빨강, F4 세 번째 노랑, F5 양 끝 파랑
             {
-                Color32 tl = f[2] ? Pal(1) : Pal(2), tr = f[3] ? Pal(2) : Pal(1), bot = f[4] ? Pal(3) : Pal(1);
-                float ix0 = f[0] ? 90 : 130, ix1 = f[0] ? 425 : 385;              // 둥근 돗자리는 안쪽으로 좁게 칠함
-                s.Scribble(tl, 6, ix0, 285, 235, f[0] ? 370 : 345, 22);
-                s.Scribble(tr, 6, 280, 285, ix1, f[0] ? 370 : 345, 22);
-                s.Scribble(bot, 6, ix0, f[0] ? 165 : 190, 235, 250, 22);
-                s.Scribble(bot, 6, 280, f[0] ? 165 : 190, ix1, 250, 22);
-                if (f[0]) s.Line(k, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150));
-                else s.Ellipse(k, 3, V(256, 268), 195, 128, gapDeg: 6f);
+                Color32 end = f[4] ? Pal(3) : Orange, second = f[2] ? Pal(1) : Green, third = f[3] ? Pal(2) : Purple;
+                float y0 = f[0] ? 170 : 215, y1 = f[0] ? 370 : 325;              // 둥근 돗자리는 위아래로 좁게 칠함
                 if (f[1])
                 {
-                    float top = f[0] ? 388 : 393, bottom = f[0] ? 150 : 143, left = f[0] ? 68 : 63, right = f[0] ? 442 : 449;
-                    s.Line(k, 3, 3f, V(255, bottom), V(262, 270), V(258, top));
-                    s.Line(k, 3, 3f, V(left, 268), V(250, 262), V(right, 266));
+                    s.Scribble(end, 6, 85, y0, 168, y1, 16);
+                    s.Scribble(second, 6, 180, y0, 255, y1, 16);
+                    s.Scribble(third, 6, 265, y0, 340, y1, 16);
+                    s.Scribble(end, 6, 352, y0, 430, y1, 16);
                 }
+                else s.Scribble(end, 6, 85, y0, 430, y1, 16);                    // 띠 없이 한 가지 색
+                if (f[0]) s.Line(k, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150));
+                else s.Ellipse(k, 3, V(256, 268), 195, 128, gapDeg: 6f);
                 break;
             }
             case 3: // 김밥 : F1 검은 테두리, F2 흰 밥, F3 빨강, F4 노랑, F5 초록
@@ -282,19 +281,14 @@ static class MvpJudgeCases
                 s.Ellipse(f[0] ? k : Orange, 9, V(256, 256), 200, 196, gapDeg: 8f);   // 검정 또는 주황 테두리
                 break;
             }
-            default: // 친구 : F1 사람, F2 상의 줄무늬, F3 초록 상의, F4 갈색 하의
+            default: // 친구 : F1 사람, F2 갈색 머리, F3 주황 상의, F4 파란 하의
             {
-                Color32 top = f[2] ? Green : Pal(3), pants = f[3] ? Brown : Purple;
+                Color32 top = f[2] ? Orange : Green, pants = f[3] ? Pal(3) : Purple;
                 s.Ellipse(k, 4, V(256, 400), 55, 55);
+                s.Scribble(f[1] ? Brown : k, 8, 200, 405, 312, 458, 9);               // 머리카락 (갈색 또는 검정)
                 s.Scribble(top, 8, 165, 225, 347, 335, 9);
                 s.Scribble(top, 8, 110, 250, 165, 320, 9);
                 s.Scribble(top, 8, 347, 250, 402, 320, 9);
-                if (f[1])
-                {
-                    s.Line(k, 4, 1f, V(165, 258), V(347, 260));
-                    s.Line(k, 4, 1f, V(165, 285), V(347, 287));
-                    s.Line(k, 4, 1f, V(165, 312), V(347, 310));
-                }
                 if (f[0])
                 {
                     s.Scribble(pants, 8, 175, 70, 235, 215, 9);                       // 두 다리
@@ -322,7 +316,11 @@ static class MvpJudgeCases
         return arr;
     }
 
-    static Transform Find(string path) => GameObject.Find("Canvas").transform.Find(path);
+    static Transform Find(string path)
+    {
+        Transform canvas = GameObject.Find("Canvas").transform;
+        return canvas.Find("Frame/" + path) ?? canvas.Find(path);      // 게임 화면은 Canvas/Frame 안에
+    }
     static string Bits(bool[] b) { var sb = new StringBuilder(); foreach (bool x in b) sb.Append(x ? 'O' : 'X'); return sb.ToString(); }
     static bool Same(bool[] a, bool[] b) { for (int i = 0; i < a.Length; i++) if (a[i] != b[i]) return false; return true; }
 

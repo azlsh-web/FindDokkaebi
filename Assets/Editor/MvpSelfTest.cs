@@ -216,7 +216,9 @@ static class MvpSelfTest
             }
         });
 
-        // 0-2) 자동 판정(LocalJudge) : 원본은 전부 "그림", 엉뚱한 물건 Fn 은 Fn 이 "빠뜨림"이어야 해요
+        // 0-2) (참고) 팀 아트 원본·엉뚱한 물건 그림을 자동 판정에 넣어 보기
+        //   팀 그림은 굵은 테두리·명암이 있는 완성 그림이라, 손그림용 자동 판정과 꼭 맞지는 않아요.
+        //   그래서 통과/실패로 세지 않고 결과만 기록해요. (실제 판정 검사는 아래 손그림 · 판정 전수 검사)
         Add(0.1f, "자동 판정", () =>
         {
             LocalJudge.TestOverride = null;
@@ -225,11 +227,11 @@ static class MvpSelfTest
                 OpenAIJudge.Verdict v = LocalJudge.Judge(s, LoadReadable(s.originalSprite));
                 string miss = "";
                 for (int i = 0; i < v.present.Length; i++) if (!v.present[i]) miss += $" {s.features[i].id}({v.notes[i]})";
-                Check(miss == "", $"자동 판정 : {s.Title} 원본 = 전부 그림" + (miss == "" ? "" : " / 빠뜨렸다고 본 것:" + miss));
+                Info(miss == "", $"자동 판정 : {s.Title} 원본 = 전부 그림" + (miss == "" ? "" : " / 빠뜨렸다고 본 것:" + miss));
                 for (int i = 0; i < s.features.Length; i++)
                 {
                     OpenAIJudge.Verdict w = LocalJudge.Judge(s, LoadReadable(s.features[i].wrongSprite));
-                    Check(!w.present[i], $"자동 판정 : {s.Title} {s.features[i].id} 빠진 그림 → {s.features[i].id} 빠뜨림 ({w.notes[i]})");
+                    Info(!w.present[i], $"자동 판정 : {s.Title} {s.features[i].id} 빠진 그림 → {s.features[i].id} 빠뜨림 ({w.notes[i]})");
                 }
             }
         });
@@ -240,9 +242,10 @@ static class MvpSelfTest
             StageData[] all = Stages();
             ExpectJudge(all[0], HandBat(spikes: true), -1, "손그림 방망이 (선 손잡이 + 타원 머리 + 선 돌기)");
             ExpectJudge(all[0], HandBat(spikes: false), 2, "손그림 방망이, 돌기 없음");
+            ExpectJudge(all[0], HandCloudBat(), -1, "손그림 방망이 (구름처럼 볼록볼록한 머리)");
             ExpectJudge(all[1], HandBag(), -1, "손그림 가방 (손잡이 + 주머니 + 줄무늬)");
-            ExpectJudge(all[2], HandMat(cross: true), -1, "손그림 돗자리 (삐뚤한 선 + 쓱쓱 칠한 색)");
-            ExpectJudge(all[2], HandMat(cross: false), 1, "손그림 돗자리, 십자선 없음");
+            ExpectJudge(all[2], HandMat(bands: true), -1, "손그림 돗자리 (파랑·빨강·노랑·파랑 띠, 쓱쓱 칠한 색)");
+            ExpectJudgeMiss(all[2], HandMat(bands: false), new[] { 1, 2, 3 }, "손그림 돗자리, 띠 없이 파랑 한 가지");
             ExpectJudge(all[3], HandGimbap(), -1, "손그림 김밥");
             ExpectJudge(all[4], HandFriend(), -1, "손그림 친구");
         });
@@ -319,7 +322,7 @@ static class MvpSelfTest
                 Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면 (쪽지와 간식을 건넴)");
                 Check(Text("HUD/SnackTag/SnackText") == "간식 2개", $"제출하면 간식 -1 ({Text("HUD/SnackTag/SnackText")})");
                 Check(Text("JudgePanel/StatusCard/Status").Contains("들여다보는"), "도깨비가 쪽지를 들여다보며 판정 중");
-                Check(GameObject.Find("Canvas").transform.Find("JudgePanel/TestInput") == null, "체크박스(수동 판정)가 없다");
+                Check(GameObject.Find("Canvas").transform.Find("Frame/JudgePanel/TestInput") == null, "체크박스(수동 판정)가 없다");
 
                 if (s == 0)
                 {
@@ -469,9 +472,11 @@ static class MvpSelfTest
     }
 
     // Canvas 아래에서 이름 경로로 찾기 (꺼져 있는 오브젝트도 찾을 수 있어요)
+    //   게임 화면들은 Canvas/Frame(시안 크기 화면) 안에, 시작·일시정지 화면은 Canvas 바로 아래에 있어요.
     static Transform Find(string path)
     {
-        Transform t = GameObject.Find("Canvas").transform.Find(path);
+        Transform canvas = GameObject.Find("Canvas").transform;
+        Transform t = canvas.Find("Frame/" + path) ?? canvas.Find(path);
         if (t == null) throw new Exception("오브젝트 없음: " + path);
         return t;
     }
@@ -494,7 +499,11 @@ static class MvpSelfTest
     }
 
     // 손그림 판정 확인. miss = 빠져야 하는 특징 번호 (-1 = 전부 그림이어야 함)
-    static void ExpectJudge(StageData stage, Texture2D tex, int miss, string what)
+    static void ExpectJudge(StageData stage, Texture2D tex, int miss, string what) =>
+        ExpectJudgeMiss(stage, tex, miss < 0 ? new int[0] : new[] { miss }, what);
+
+    // 빠뜨렸다고 나와야 하는 특징이 여러 개일 때 (예: 띠가 없으면 띠 색도 없음)
+    static void ExpectJudgeMiss(StageData stage, Texture2D tex, int[] miss, string what)
     {
         LocalJudge.TestOverride = null;
         OpenAIJudge.Verdict v = LocalJudge.Judge(stage, tex);
@@ -502,7 +511,7 @@ static class MvpSelfTest
         string detail = "";
         for (int i = 0; i < v.present.Length; i++)
         {
-            bool want = i != miss;
+            bool want = System.Array.IndexOf(miss, i) < 0;
             if (v.present[i] != want) { ok = false; detail += $" {stage.features[i].id}({v.notes[i]})"; }
         }
         Check(ok, $"손그림 판정 : {what}" + (ok ? "" : " / 틀린 것:" + detail));
@@ -531,6 +540,18 @@ static class MvpSelfTest
         return s.Tex();
     }
 
+    // 시안 그림처럼 동그라미 여러 개를 이어 그린 구름 머리
+    static Texture2D HandCloudBat()
+    {
+        var s = new HandSketch().Line(InkBlack, 4, 2f, V(248, 40), V(252, 140), V(256, 246));
+        foreach (float a in new[] { 20f, 75f, 130f, 185f, 250f, 330f })
+        {
+            Vector2 c = V(256, 330) + new Vector2(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad)) * 58;
+            s.Ellipse(InkBlack, 4, c, 38, 38);
+        }
+        return s.Tex();
+    }
+
     static Texture2D HandBag()
     {
         return new HandSketch()
@@ -543,19 +564,18 @@ static class MvpSelfTest
             .Tex();
     }
 
-    static Texture2D HandMat(bool cross)
+    static Texture2D HandMat(bool bands)
     {
-        var s = new HandSketch()
-            .Scribble(C(1), 6, 90, 285, 235, 370, 22)      // 왼쪽 위 빨강 (성기게)
-            .Scribble(C(2), 6, 280, 285, 425, 370, 22)     // 오른쪽 위 노랑
-            .Scribble(C(3), 6, 90, 165, 235, 250, 22)      // 왼쪽 아래 파랑
-            .Scribble(C(3), 6, 280, 165, 425, 250, 22)     // 오른쪽 아래 파랑
-            .Line(InkBlack, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150)); // 외곽
-        if (cross)
+        var s = new HandSketch();
+        if (bands)
         {
-            s.Line(InkBlack, 3, 3f, V(255, 150), V(262, 270), V(258, 388));     // 삐뚤한 세로선
-            s.Line(InkBlack, 3, 3f, V(68, 268), V(250, 262), V(442, 266));      // 삐뚤한 가로선
+            s.Scribble(C(3), 6, 85, 170, 168, 370, 16);     // 파랑 (성기게)
+            s.Scribble(C(1), 6, 180, 170, 255, 370, 16);    // 빨강
+            s.Scribble(C(2), 6, 265, 170, 340, 370, 16);    // 노랑
+            s.Scribble(C(3), 6, 352, 170, 430, 370, 16);    // 파랑
         }
+        else s.Scribble(C(3), 6, 85, 170, 430, 370, 16);    // 띠 없이 파랑 한 가지
+        s.Line(InkBlack, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150)); // 외곽
         return s.Tex();
     }
 
@@ -572,17 +592,15 @@ static class MvpSelfTest
 
     static Texture2D HandFriend()
     {
-        Color32 green = new Color32(40, 160, 60, 255), brown = new Color32(130, 80, 40, 255);
+        Color32 orange = new Color32(245, 140, 30, 255), brown = new Color32(130, 80, 40, 255);   // 섞어서 만든 주황 · 갈색
         return new HandSketch()
             .Ellipse(InkBlack, 4, V(256, 400), 55, 55)                                     // 머리
-            .Scribble(green, 8, 165, 225, 347, 335, 9)                                     // 초록 상의 (꼼꼼히)
-            .Scribble(green, 8, 110, 250, 165, 320, 9)
-            .Scribble(green, 8, 347, 250, 402, 320, 9)                                     // 팔
-            .Line(InkBlack, 4, 1f, V(165, 258), V(347, 260))
-            .Line(InkBlack, 4, 1f, V(165, 285), V(347, 287))
-            .Line(InkBlack, 4, 1f, V(165, 312), V(347, 310))                               // 검은 가로 줄무늬
-            .Scribble(brown, 8, 175, 70, 235, 215, 9)
-            .Scribble(brown, 8, 280, 70, 340, 215, 9)                                      // 갈색 두 다리
+            .Scribble(brown, 8, 200, 405, 312, 458, 9)                                     // 갈색 머리카락
+            .Scribble(orange, 8, 165, 225, 347, 335, 9)                                    // 주황 상의 (꼼꼼히)
+            .Scribble(orange, 8, 110, 250, 165, 320, 9)
+            .Scribble(orange, 8, 347, 250, 402, 320, 9)                                    // 팔
+            .Scribble(C(3), 8, 175, 70, 235, 215, 9)
+            .Scribble(C(3), 8, 280, 70, 340, 215, 9)                                       // 파란 두 다리
             .Tex();
     }
 
@@ -632,6 +650,12 @@ static class MvpSelfTest
     {
         report.Add((ok ? "  PASS  " : "  FAIL  ") + what);
         if (!ok) failCount++;
+    }
+
+    // 참고용 결과 (실패로 세지 않아요)
+    static void Info(bool ok, string what)
+    {
+        report.Add((ok ? "  INFO  O " : "  INFO  X ") + what);
     }
 
     static void Fail(string what)

@@ -340,7 +340,11 @@ class PlayDirector : MonoBehaviour
     // ───────────── 도우미 ─────────────
 
     static Vector2 V(float x, float y) => new Vector2(x, y);
-    static Transform Find(string path) => GameObject.Find("Canvas").transform.Find(path);
+    static Transform Find(string path)
+    {
+        Transform canvas = GameObject.Find("Canvas").transform;
+        return canvas.Find("Frame/" + path) ?? canvas.Find(path);      // 게임 화면은 Canvas/Frame 안에
+    }
     static bool On(string path) { Transform t = Find(path); return t != null && t.gameObject.activeInHierarchy; }
     static WaitForSeconds Wait(float s) => new WaitForSeconds(s);
 }
