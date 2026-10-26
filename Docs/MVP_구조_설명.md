@@ -76,6 +76,14 @@
 - AI 는 부르지 않습니다 (요금 X).
 - Unity 창이 뒤에 있어도 돌아가도록 Project Settings → Player → Run In Background 를 켜 둡니다.
 
+### 판정 전수 검사 (모든 경우의 수)
+메뉴 **Tools → 찾아라도깨비 → 판정 전수 검사** 를 누르면, 단계마다 특징을 그림/빠뜨림으로 바꾼 **모든 조합 104가지**
+(방망이 8 · 가방 16 · 돗자리 32 · 김밥 32 · 친구 16)를 손그림으로 만들어 실제 게임에서 제출하고 결과 화면을 캡처합니다.
+- 결과 : `Temp/JudgeCases/` (손그림 · 결과 화면 캡처 · results.csv)
+- 리포트 : [판정_전수검사_리포트.pdf](판정_전수검사_리포트.pdf) — 현재 **103 / 104** 경우가 기대와 같아요.
+  (틀린 1가지 : 손잡이 없이 작은 동그라미 머리 + 돌기 선만 그린 그림을 짧은 손잡이 방망이로 봄 → 리포트에 이유 정리)
+- 리포트 다시 만들기 : `python Docs/architecture_src/make_judge_report.py Temp/JudgeCases 리포트.html` → 브라우저로 PDF 인쇄
+
 ---
 
 ## 3. 폴더 구조
@@ -95,18 +103,20 @@ FindDokkaebi/
 │  ├─ Editor/                ← 에디터 전용 도구 (게임 빌드에는 안 들어감)
 │  │  ├─ MvpSceneBuilder.cs  ← 씬 자동 조립 + 5단계 데이터 초기값
 │  │  ├─ MvpAutoBuild.cs     ← Game 씬이 없으면 자동 조립
-│  │  └─ MvpSelfTest.cs      ← 자동 플레이 테스트
+│  │  ├─ MvpSelfTest.cs      ← 자동 플레이 테스트
+│  │  ├─ MvpJudgeCases.cs    ← 판정 전수 검사 (104가지 조합)
+│  │  └─ HandSketch.cs       ← 검사용 손그림 만들기 도구
 │  ├─ Data/                  ← 단계 데이터 5개 (Stage1_Bat ~ Stage5_Friend)
 │  ├─ Sprites/
 │  │  ├─ Stage1_Bat/ …  Stage5_Friend/   Original.png + Wrong_F1~Fn.png (빠뜨린 특징별 물건)
 │  │  ├─ Characters/         Boy_*, Dokkaebi, Friend_Art (팀 그림, 배경 제거)
-│  │  ├─ UI/                 동그라미 · 둥근 버튼 · 도구 아이콘(지우개·되돌리기·휴지통·팔레트·굵기 점)
+│  │  ├─ UI/                 시작 화면 스타일 : 진갈색 테두리 카드 · 코랄/크림 알약 버튼 · 이름표 · 도구 아이콘
 │  │  ├─ Props/              Snack, Incense
-│  │  └─ Background/         Room (창호가 보이는 방 + 나무 책상)
+│  │  └─ Background/         TitleScreen (팀 시작 화면 그림) · RoomBG (같은 방, 글자 지운 게임 배경)
 │  ├─ Scenes/Game.unity      ← 게임 씬 하나
 │  └─ Fonts/                 ← 한글 폰트 (NotoSansKR SDF)
 ├─ UserSettings/OpenAI.json  ← API 키 (Git 에 안 올라감)
-└─ Docs/                     ← 이 문서와 아키텍처 PDF
+└─ Docs/                     ← 이 문서 · 아키텍처 PDF · 판정 전수검사 리포트 PDF
 ```
 
 **규칙 한 줄 요약:** 코드는 `Scripts`, 데이터는 `Data`, 그림은 `Sprites`, 화면은 `Scenes`.
@@ -180,7 +190,7 @@ Game
 ├─ GameManager               ← GameManager.cs + OpenAIJudge.cs
 └─ Canvas (1080 폭 기준)
    ├─ Background             (방 그림, 흐리게)
-   ├─ TitlePanel             제목 · 소년 · 도깨비 · StartButton
+   ├─ TitlePanel             팀 시작 화면 그림 + 그 위 "소풍 준비하러 가기" 자리의 투명 StartButton
    ├─ StageIntroPanel        단계 번호 · 대상 · 이야기 · RulesCard · ObserveButton
    ├─ ObservePanel           원본 그림 · 카운트다운
    ├─ DrawPanel              Board(DrawingBoard)
@@ -214,3 +224,17 @@ Game
 ## 8. 커밋 기록 (브랜치: `feature/mvp-stage1`)
 
 기능 단위로 나눠 커밋했습니다. GitHub Desktop 의 History 탭에서 하나씩 눌러 보면 무엇이 바뀌었는지 볼 수 있습니다.
+
+---
+
+## 9. 화면 디자인 (시작 화면 참고 이미지 기준)
+
+| 요소 | 모양 |
+|---|---|
+| 색 | 진갈색 테두리·글자 #4A2B16 · 크림 #FBF5E7 · 코랄 주 버튼 #ED8D80 · 벽 #F8F1E3 |
+| 시작 화면 | 팀이 그린 시작 화면 그림을 그대로 쓰고, 그림 속 버튼 자리에 투명 버튼 |
+| 게임 배경 | 같은 방 그림에서 제목·버튼만 지운 그림 (창문 윗부분은 이어 그림) |
+| 카드 | 크림(또는 흰) 둥근 네모 + 굵은 진갈색 테두리 (9-slice 라 크기가 바뀌어도 테두리 두께 그대로) |
+| 버튼 | 알약 모양. 화면마다 주된 행동 하나만 코랄, 나머지는 크림 |
+| 도구 | 글자 없이 색 동그라미 + 아이콘, 고른 것은 주황 고리 |
+| HUD | 왼쪽 위 간식, 오른쪽 위 단계 이름, 그 아래 향(남은 초 + 줄어드는 막대) — 모두 크림 이름표 |
