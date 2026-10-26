@@ -34,3 +34,6 @@
 sysinfo.txt
 mono_crash.*
 crashlytics-build.properties
+
+# 빌드 결과물 (웹 빌드 등)
+/[Bb]uilds/
