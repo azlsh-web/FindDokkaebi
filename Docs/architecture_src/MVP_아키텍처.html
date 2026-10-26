@@ -4,250 +4,245 @@
 <meta charset="utf-8">
 <title>MVP 아키텍처</title>
 <style>
-  @page { size: A4; margin: 16mm 14mm; }
-  :root { --ink:#2b211a; --muted:#6b5a4c; --line:#c9b79f; --card:#fbf6ee; --accent:#8c5c38; --ok:#2e7d32; --bad:#c62828; --blue:#1f5f99; }
+  @page { size: A4; margin: 15mm 13mm; }
+  :root { --ink:#2b211a; --muted:#6b5a4c; --line:#c9b79f; --card:#fbf6ee; --accent:#8c5c38; --ok:#2e7d32; --bad:#c62828; --blue:#1f5f99; --green:#2e7d32; }
   * { box-sizing: border-box; }
-  body { font-family: "Malgun Gothic", "Noto Sans KR", sans-serif; color: var(--ink); background:#fff; font-size: 10.5pt; line-height: 1.55; margin:0; }
-  h1 { font-size: 22pt; margin: 0 0 4px; }
-  h2 { font-size: 14pt; margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); }
-  .sub { color: var(--muted); margin-bottom: 14px; }
+  body { font-family: "Malgun Gothic", "Noto Sans KR", sans-serif; color: var(--ink); background:#fff; font-size: 10pt; line-height: 1.5; margin:0; }
+  h1 { font-size: 21pt; margin: 0 0 4px; }
+  h2 { font-size: 13.5pt; margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); }
+  .sub { color: var(--muted); margin-bottom: 12px; }
   .page { page-break-after: always; }
   .page:last-child { page-break-after: auto; }
-  section { margin-bottom: 18px; }
-  table { width:100%; border-collapse: collapse; font-size: 9.5pt; }
-  th, td { border: 1px solid var(--line); padding: 5px 7px; text-align: left; vertical-align: top; }
+  section { margin-bottom: 16px; }
+  table { width:100%; border-collapse: collapse; font-size: 9pt; }
+  th, td { border: 1px solid var(--line); padding: 4px 6px; text-align: left; vertical-align: top; }
   th { background: var(--card); }
-  code { font-family: Consolas, monospace; font-size: 9pt; background: var(--card); padding: 0 3px; border-radius: 3px; }
-  pre { font-family: Consolas, "Malgun Gothic", monospace; font-size: 9pt; background: var(--card); border:1px solid var(--line); border-radius:6px; padding:8px 10px; margin:0; line-height:1.45; }
-  .two { display:flex; gap:12px; }
-  .two > * { flex:1; }
-  .note { border-left: 4px solid var(--accent); background: var(--card); padding: 6px 10px; margin-top: 8px; }
+  code { font-family: Consolas, monospace; font-size: 8.6pt; background: var(--card); padding: 0 3px; border-radius: 3px; }
+  pre { font-family: Consolas, "Malgun Gothic", monospace; font-size: 8.4pt; background: var(--card); border:1px solid var(--line); border-radius:6px; padding:7px 9px; margin:0; line-height:1.4; }
+  .note { border-left: 4px solid var(--accent); background: var(--card); padding: 5px 9px; margin-top: 7px; }
   svg text { font-family: "Malgun Gothic", "Noto Sans KR", sans-serif; }
 </style>
 </head>
 <body>
 
-<!-- ───────── 1쪽 : 한눈에 보기 ───────── -->
+<!-- ───────── 1쪽 ───────── -->
 <div class="page">
   <h1>찾아라! 도깨비 — MVP 아키텍처</h1>
-  <div class="sub">1단계 방망이 · Unity 6.3 LTS · 씬 1개 + 패널 6개 + 스크립트 3개 · 판정은 테스트 입력(체크박스)</div>
+  <div class="sub">5단계 전체 · Unity 6.3 LTS · 씬 1개 + 패널 8개 · 스크립트 7개 · OpenAI 판정 (키 없으면 테스트 입력)</div>
 
   <section>
     <h2>1. 플레이 흐름 (GameManager 의 State)</h2>
-    <svg viewBox="0 0 720 230" width="100%">
-      <defs>
-        <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8c5c38"/></marker>
-      </defs>
-      <g font-size="12" text-anchor="middle">
-        <!-- boxes -->
-        <rect x="5" y="20" width="95" height="54" rx="8" fill="#fbf6ee" stroke="#8c5c38"/>
-        <text x="52" y="43" font-weight="bold">Intro</text><text x="52" y="61" font-size="10">도입 이야기</text>
-        <rect x="125" y="20" width="95" height="54" rx="8" fill="#fbf6ee" stroke="#8c5c38"/>
-        <text x="172" y="43" font-weight="bold">Observe</text><text x="172" y="61" font-size="10">원본 3초</text>
-        <rect x="245" y="20" width="95" height="54" rx="8" fill="#fbf6ee" stroke="#8c5c38"/>
-        <text x="292" y="43" font-weight="bold">Draw</text><text x="292" y="61" font-size="10">그리기 60초</text>
-        <rect x="365" y="20" width="95" height="54" rx="8" fill="#fbf6ee" stroke="#8c5c38"/>
-        <text x="412" y="43" font-weight="bold">Judge</text><text x="412" y="61" font-size="10">F1~F3 체크</text>
-        <rect x="485" y="20" width="95" height="54" rx="8" fill="#fbf6ee" stroke="#8c5c38"/>
-        <text x="532" y="43" font-weight="bold">Result</text><text x="532" y="61" font-size="10">물건 + O/X</text>
-        <rect x="605" y="20" width="105" height="54" rx="8" fill="#fbf6ee" stroke="#8c5c38"/>
-        <text x="657" y="43" font-weight="bold">Compare</text><text x="657" y="61" font-size="10">내 그림 vs 원본</text>
-        <!-- arrows -->
-        <line x1="100" y1="47" x2="123" y2="47" stroke="#8c5c38" stroke-width="1.6" marker-end="url(#a)"/>
-        <line x1="220" y1="47" x2="243" y2="47" stroke="#8c5c38" stroke-width="1.6" marker-end="url(#a)"/>
-        <line x1="340" y1="47" x2="363" y2="47" stroke="#8c5c38" stroke-width="1.6" marker-end="url(#a)"/>
-        <line x1="460" y1="47" x2="483" y2="47" stroke="#8c5c38" stroke-width="1.6" marker-end="url(#a)"/>
-        <line x1="580" y1="47" x2="603" y2="47" stroke="#8c5c38" stroke-width="1.6" marker-end="url(#a)"/>
-        <!-- labels on arrows -->
-        <text x="112" y="100" font-size="10" fill="#6b5a4c">버튼</text>
-        <text x="232" y="100" font-size="10" fill="#6b5a4c">3초 끝</text>
-        <text x="352" y="100" font-size="10" fill="#6b5a4c">제출/시간끝</text>
-        <text x="352" y="113" font-size="10" fill="#6b5a4c">간식 −1</text>
-        <text x="472" y="100" font-size="10" fill="#6b5a4c">판정 보내기</text>
-        <text x="592" y="100" font-size="10" fill="#6b5a4c">비교</text>
-        <!-- retry loop -->
-        <path d="M532,74 L532,150 L292,150 L292,78" fill="none" stroke="#c62828" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#a)"/>
-        <text x="412" y="168" font-size="11" fill="#c62828">다시 그리기 (실패 + 간식 남음) — 원본은 다시 안 보여줌</text>
-        <!-- restart loop -->
-        <path d="M657,74 L657,205 L52,205 L52,78" fill="none" stroke="#1f5f99" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#a)"/>
-        <text x="360" y="222" font-size="11" fill="#1f5f99">처음부터 다시 (간식 3개로 초기화)</text>
+    <svg viewBox="0 0 720 250" width="100%">
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8c5c38"/></marker></defs>
+      <g font-size="11.5" text-anchor="middle">
+        <g fill="#fbf6ee" stroke="#8c5c38">
+          <rect x="4" y="18" width="80" height="50" rx="8"/><rect x="100" y="18" width="84" height="50" rx="8"/>
+          <rect x="200" y="18" width="80" height="50" rx="8"/><rect x="296" y="18" width="80" height="50" rx="8"/>
+          <rect x="392" y="18" width="80" height="50" rx="8"/><rect x="488" y="18" width="80" height="50" rx="8"/>
+          <rect x="584" y="18" width="84" height="50" rx="8"/>
+          <rect x="584" y="150" width="84" height="50" rx="8" fill="#eef4fb" stroke="#1f5f99"/>
+        </g>
+        <text x="44" y="39" font-weight="bold">Title</text><text x="44" y="56" font-size="9.5">시작 화면</text>
+        <text x="142" y="39" font-weight="bold">StageIntro</text><text x="142" y="56" font-size="9.5">이야기·규칙</text>
+        <text x="240" y="39" font-weight="bold">Observe</text><text x="240" y="56" font-size="9.5">원본 3초</text>
+        <text x="336" y="39" font-weight="bold">Draw</text><text x="336" y="56" font-size="9.5">그리기 60초</text>
+        <text x="432" y="39" font-weight="bold">Judge</text><text x="432" y="56" font-size="9.5">AI / 체크박스</text>
+        <text x="528" y="39" font-weight="bold">Result</text><text x="528" y="56" font-size="9.5">물건 + O/X</text>
+        <text x="626" y="39" font-weight="bold">Compare</text><text x="626" y="56" font-size="9.5">내 그림 vs 원본</text>
+        <text x="626" y="171" font-weight="bold">Ending</text><text x="626" y="188" font-size="9.5">단계별 기록</text>
+        <g stroke="#8c5c38" stroke-width="1.5" marker-end="url(#a)">
+          <line x1="84" y1="43" x2="98" y2="43"/><line x1="184" y1="43" x2="198" y2="43"/>
+          <line x1="280" y1="43" x2="294" y2="43"/><line x1="376" y1="43" x2="390" y2="43"/>
+          <line x1="472" y1="43" x2="486" y2="43"/><line x1="568" y1="43" x2="582" y2="43"/>
+        </g>
+        <!-- retry -->
+        <path d="M528,68 L528,112 L336,112 L336,72" fill="none" stroke="#c62828" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#a)"/>
+        <text x="432" y="128" font-size="10" fill="#c62828">다시 그리기 (실패 + 간식 남음)</text>
+        <!-- next stage -->
+        <path d="M626,68 L626,90 L690,90 L690,234 L142,234 L142,72" fill="none" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#a)"/>
+        <text x="380" y="248" font-size="10" fill="#2e7d32">다음 단계 (간식 3개로 다시) — 1 방망이 → 2 가방 → 3 돗자리 → 4 김밥 → 5 친구</text>
+        <line x1="626" y1="90" x2="626" y2="148" stroke="#1f5f99" stroke-width="1.5" marker-end="url(#a)"/>
+        <text x="600" y="125" font-size="9.5" fill="#1f5f99" text-anchor="end">5단계 뒤</text>
+        <path d="M584,175 L44,175 L44,72" fill="none" stroke="#1f5f99" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#a)"/>
+        <text x="300" y="168" font-size="9.5" fill="#1f5f99">처음으로</text>
       </g>
     </svg>
-    <div class="note">화면을 바꾸는 방법은 하나뿐입니다: <code>ShowPanel(패널)</code> — 그 패널만 켜고 나머지 5개는 끕니다.</div>
+    <div class="note">화면을 바꾸는 방법은 하나: <code>ShowPanel(패널)</code> — 그 패널만 켜고 나머지 7개는 끕니다. 간식은 단계마다 3개, 제출(또는 향이 다 탐)할 때 1개 사용. AI 판정 오류가 나면 간식을 돌려주고 Draw 로 돌아가 같은 그림을 다시 제출합니다.</div>
   </section>
 
   <section>
     <h2>2. 구성 요소와 의존 관계</h2>
-    <svg viewBox="0 0 720 270" width="100%">
-      <defs>
-        <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b211a"/></marker>
-      </defs>
-      <g font-size="12">
+    <svg viewBox="0 0 720 300" width="100%">
+      <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2b211a"/></marker></defs>
+      <g font-size="11">
         <!-- StageData -->
-        <rect x="10" y="20" width="200" height="110" rx="8" fill="#eef4fb" stroke="#1f5f99"/>
-        <text x="110" y="42" text-anchor="middle" font-weight="bold">StageData.cs</text>
-        <text x="110" y="58" text-anchor="middle" font-size="10" fill="#6b5a4c">ScriptableObject (데이터 양식)</text>
-        <text x="22" y="80" font-size="10">· stageTitle, targetName</text>
-        <text x="22" y="95" font-size="10">· introStory</text>
-        <text x="22" y="110" font-size="10">· originalSprite, wrongSprite</text>
-        <text x="22" y="125" font-size="10">· features[] (F1~F3)</text>
-        <!-- asset -->
-        <rect x="10" y="170" width="200" height="56" rx="8" fill="#fff" stroke="#1f5f99" stroke-dasharray="4 3"/>
-        <text x="110" y="193" text-anchor="middle" font-weight="bold">Stage1_Bat.asset</text>
-        <text x="110" y="210" text-anchor="middle" font-size="10" fill="#6b5a4c">양식으로 만든 실제 데이터 파일</text>
-        <line x1="110" y1="168" x2="110" y2="132" stroke="#1f5f99" stroke-width="1.4" stroke-dasharray="4 3"/>
-        <text x="118" y="153" font-size="10" fill="#1f5f99">이 양식으로 만듦</text>
-
+        <rect x="6" y="14" width="186" height="130" rx="8" fill="#eef4fb" stroke="#1f5f99"/>
+        <text x="99" y="34" text-anchor="middle" font-weight="bold">StageData ×5</text>
+        <text x="99" y="49" text-anchor="middle" font-size="9" fill="#6b5a4c">ScriptableObject (데이터)</text>
+        <text x="16" y="68" font-size="9">· 이야기 · 새 규칙 · 배운 규칙</text>
+        <text x="16" y="82" font-size="9">· colorMode (도구 범위)</text>
+        <text x="16" y="96" font-size="9">· originalSprite</text>
+        <text x="16" y="110" font-size="9">· targetDescription (AI용)</text>
+        <text x="16" y="124" font-size="9">· features[] : id · name</text>
+        <text x="16" y="137" font-size="9">   · criteria · wrongSprite</text>
         <!-- GameManager -->
-        <rect x="260" y="20" width="210" height="206" rx="8" fill="#fbf6ee" stroke="#8c5c38" stroke-width="1.6"/>
-        <text x="365" y="42" text-anchor="middle" font-weight="bold">GameManager.cs</text>
-        <text x="365" y="58" text-anchor="middle" font-size="10" fill="#6b5a4c">게임 흐름 = 사회자</text>
-        <text x="272" y="82" font-size="10">· state (지금 화면)</text>
-        <text x="272" y="97" font-size="10">· snacks (간식), timeLeft</text>
-        <text x="272" y="112" font-size="10">· Update(): 3초 / 60초 타이머</text>
-        <text x="272" y="127" font-size="10">· StartObserve / Submit</text>
-        <text x="272" y="142" font-size="10">· OnJudgeConfirmed → bool[]</text>
-        <text x="272" y="157" font-size="10">· ShowResult: 성공/부분/실패</text>
-        <text x="272" y="172" font-size="10">· Retry / ShowCompare / Restart</text>
-        <text x="272" y="187" font-size="10">· ShowPanel(): 패널 전환</text>
-        <text x="272" y="210" font-size="10" fill="#6b5a4c">UI 칸들은 Inspector 에서 연결</text>
-
-        <!-- DrawingBoard -->
-        <rect x="520" y="20" width="190" height="110" rx="8" fill="#eef7ee" stroke="#2e7d32"/>
-        <text x="615" y="42" text-anchor="middle" font-weight="bold">DrawingBoard.cs</text>
-        <text x="615" y="58" text-anchor="middle" font-size="10" fill="#6b5a4c">쪽지 (RawImage + Texture2D)</text>
-        <text x="532" y="80" font-size="10">· OnPointerDown / OnDrag</text>
-        <text x="532" y="95" font-size="10">· UsePen / UseEraser / Clear</text>
-        <text x="532" y="110" font-size="10">· HasDrawn (읽기 전용)</text>
-        <text x="532" y="125" font-size="10">· Texture (읽기 전용)</text>
-
-        <!-- UI -->
-        <rect x="520" y="160" width="190" height="66" rx="8" fill="#fff" stroke="#6b5a4c"/>
-        <text x="615" y="183" text-anchor="middle" font-weight="bold">Canvas UI</text>
-        <text x="615" y="200" text-anchor="middle" font-size="10" fill="#6b5a4c">패널 6개 · HUD · 버튼 · 체크박스</text>
-        <text x="615" y="215" text-anchor="middle" font-size="10" fill="#6b5a4c">TextMeshPro (NotoSansKR)</text>
-
+        <rect x="262" y="14" width="196" height="186" rx="8" fill="#fbf6ee" stroke="#8c5c38" stroke-width="1.6"/>
+        <text x="360" y="34" text-anchor="middle" font-weight="bold">GameManager</text>
+        <text x="360" y="49" text-anchor="middle" font-size="9" fill="#6b5a4c">흐름 = 사회자</text>
+        <text x="272" y="68" font-size="9">· state · stageIndex · snacks</text>
+        <text x="272" y="82" font-size="9">· Update(): 3초 / 60초 타이머</text>
+        <text x="272" y="96" font-size="9">· StartStage → StartObserve</text>
+        <text x="272" y="110" font-size="9">· Submit → judge 또는 체크박스</text>
+        <text x="272" y="124" font-size="9">· ShowResult(bool[] present)</text>
+        <text x="272" y="138" font-size="9">· Retry · ShowCompare · NextStage</text>
+        <text x="272" y="152" font-size="9">· OnJudgeError → 간식 +1</text>
+        <text x="272" y="166" font-size="9">· ShowEnding (기록)</text>
+        <text x="272" y="188" font-size="9" fill="#6b5a4c">UI 칸은 Inspector 에서 연결</text>
+        <!-- OpenAIJudge -->
+        <rect x="6" y="176" width="186" height="104" rx="8" fill="#fff4e0" stroke="#e08a00"/>
+        <text x="99" y="196" text-anchor="middle" font-weight="bold">OpenAIJudge</text>
+        <text x="16" y="214" font-size="9">· IsReady (키 있음?)</text>
+        <text x="16" y="228" font-size="9">· BuildPrompt (부록 B 형식)</text>
+        <text x="16" y="242" font-size="9">· Judge() 코루틴 → Responses API</text>
+        <text x="16" y="256" font-size="9">· ParseVerdict → present[] notes[]</text>
+        <text x="16" y="272" font-size="9" fill="#6b5a4c">키 : UserSettings/OpenAI.json</text>
+        <!-- ToolBar / Board / Mixer -->
+        <rect x="528" y="14" width="186" height="76" rx="8" fill="#eef7ee" stroke="#2e7d32"/>
+        <text x="621" y="34" text-anchor="middle" font-weight="bold">ToolBar</text>
+        <text x="538" y="52" font-size="9">· Setup(colorMode) 버튼 보이기</text>
+        <text x="538" y="66" font-size="9">· SelectColor/Size/Eraser</text>
+        <text x="538" y="80" font-size="9">· 선택 테두리 · Undo · Clear</text>
+        <rect x="528" y="114" width="186" height="76" rx="8" fill="#eef7ee" stroke="#2e7d32"/>
+        <text x="621" y="134" text-anchor="middle" font-weight="bold">DrawingBoard</text>
+        <text x="538" y="152" font-size="9">· 512² 픽셀 Texture2D</text>
+        <text x="538" y="166" font-size="9">· SetColor · SetPenSize · Undo</text>
+        <text x="538" y="180" font-size="9">· HasDrawn · CanUndo · Texture</text>
+        <rect x="528" y="214" width="186" height="66" rx="8" fill="#eef7ee" stroke="#2e7d32"/>
+        <text x="621" y="234" text-anchor="middle" font-weight="bold">ColorMixer</text>
+        <text x="538" y="252" font-size="9">· TogglePick(빨/노/파) · Apply</text>
+        <text x="538" y="266" font-size="9">· MixTable : 노+파=초록 …</text>
         <!-- arrows -->
-        <line x1="212" y1="75" x2="257" y2="75" stroke="#2b211a" stroke-width="1.4" marker-end="url(#b)"/>
-        <text x="216" y="68" font-size="10">읽음</text>
-        <line x1="472" y1="75" x2="517" y2="75" stroke="#2b211a" stroke-width="1.4" marker-end="url(#b)"/>
-        <text x="476" y="68" font-size="10">호출</text>
-        <line x1="472" y1="193" x2="517" y2="193" stroke="#2b211a" stroke-width="1.4" marker-end="url(#b)"/>
-        <text x="474" y="186" font-size="10">켜고 끔</text>
-        <line x1="615" y1="158" x2="615" y2="133" stroke="#2b211a" stroke-width="1.4" marker-end="url(#b)"/>
-        <text x="622" y="150" font-size="10">펜·지우개 버튼</text>
-        <path d="M560,226 L560,250 L365,250 L365,229" fill="none" stroke="#2b211a" stroke-width="1.4" marker-end="url(#b)"/>
-        <text x="440" y="265" font-size="10">버튼 OnClick → GameManager 함수</text>
+        <g stroke="#2b211a" stroke-width="1.3" marker-end="url(#b)" fill="none">
+          <line x1="194" y1="70" x2="259" y2="70"/>
+          <line x1="260" y1="170" x2="195" y2="215"/>
+          <path d="M195,250 L230,250 L230,190 L259,190"/>
+          <line x1="460" y1="52" x2="525" y2="52"/>
+          <line x1="460" y1="150" x2="498" y2="150"/><line x1="502" y1="150" x2="525" y2="150"/>
+          <line x1="621" y1="92" x2="621" y2="111"/>
+          <path d="M700,92 L700,211" />
+          <path d="M528,248 L500,248 L500,70 L525,70" stroke-dasharray="4 3"/>
+        </g>
+        <text x="200" y="64" font-size="9">읽음</text>
+        <text x="200" y="186" font-size="9">Judge() 호출</text>
+        <text x="200" y="266" font-size="9">onDone / onError</text>
+        <text x="464" y="46" font-size="9">Setup</text>
+        <text x="466" y="144" font-size="9">그림</text>
+        <text x="504" y="300" font-size="9">OnMixed(색) → ToolBar</text>
       </g>
     </svg>
-    <div class="note">화살표 방향 = "누가 누구를 아는가". <b>DrawingBoard 와 StageData 는 GameManager 를 모릅니다.</b> 그래서 각각 따로 고치거나 재사용하기 쉽습니다.</div>
+    <div class="note">화살표 = "누가 누구를 부르는가". <b>DrawingBoard · ColorMixer · OpenAIJudge 는 GameManager 를 모릅니다.</b> 결과는 콜백(onDone, OnMixed)으로 돌려줘서 따로 고치거나 재사용하기 쉽습니다.</div>
   </section>
 </div>
 
-<!-- ───────── 2쪽 : 데이터 흐름 + 판정 규칙 ───────── -->
+<!-- ───────── 2쪽 ───────── -->
 <div class="page">
   <section>
-    <h2>3. 데이터 흐름 — 그림 한 장이 결과가 되기까지</h2>
+    <h2>3. 단계별 데이터 (Assets/Data)</h2>
     <table>
-      <tr><th style="width:18%">단계</th><th style="width:30%">어디서 → 어디로</th><th>무엇이 전달되나</th></tr>
-      <tr><td>게임 시작</td><td>Stage1_Bat.asset → GameManager</td><td><code>stage</code> 칸에 연결된 데이터 전체 (이름, 이야기, 그림 2장, 특징 3개)</td></tr>
-      <tr><td>관찰</td><td>GameManager → TargetImage</td><td><code>stage.originalSprite</code> 를 3초 보여줌</td></tr>
-      <tr><td>그리기</td><td>마우스 → DrawingBoard</td><td>화면 좌표 → 픽셀 좌표 → <code>pixels[]</code> 배열 색 변경 → <code>Texture</code></td></tr>
-      <tr><td>그리기 중</td><td>DrawingBoard → GameManager</td><td><code>HasDrawn</code> → 제출 버튼 <code>interactable</code></td></tr>
-      <tr><td>제출</td><td>GameManager 내부</td><td><code>snacks--</code>, 체크박스 초기화, 판정 화면으로</td></tr>
-      <tr><td>판정</td><td>체크박스 ×3 → GameManager</td><td><code>bool[] present</code> 예) {true, true, false}</td></tr>
-      <tr><td>결과</td><td>GameManager → ResultPanel</td><td>true 개수 → 제목·가져온 그림·[O]/[X] 목록·버튼 표시 여부</td></tr>
-      <tr><td>비교</td><td>DrawingBoard → MyDrawing<br>StageData → Original</td><td>내가 그린 <code>Texture</code> 를 그대로 재사용 / 원본 Sprite</td></tr>
+      <tr><th style="width:12%">단계</th><th style="width:13%">colorMode</th><th style="width:40%">특징 (F1 …)</th><th>빠뜨렸을 때 돌아오는 물건 (Wrong_Fn)</th></tr>
+      <tr><td>1 방망이</td><td>BlackOnly</td><td>길쭉한 손잡이 · 손잡이보다 굵은 머리 · 머리 바깥의 돌기 2개 이상</td><td>손잡이 없는 머리 · 가는 머리 · 돌기 없는 방망이</td></tr>
+      <tr><td>2 가방</td><td>BlackOnly</td><td>네모난 몸체 · 위쪽 손잡이 · 앞쪽 주머니 · 주머니 안 가로 줄무늬</td><td>동그란 가방 · 손잡이 없음 · 주머니 없음 · 세로 줄무늬</td></tr>
+      <tr><td>3 돗자리</td><td>Primaries</td><td>사각형 외곽 · 십자선 · 왼쪽 위 빨강 · 오른쪽 위 노랑 · 아래 두 칸 파랑</td><td>둥근 돗자리 · 선 없음 · 색 배치가 다른 돗자리 3종</td></tr>
+      <tr><td>4 김밥</td><td>MixTwo</td><td>검은 김 테두리 · 흰 밥 · 빨간 재료 · 노란 재료 · 초록 재료</td><td>김 없음 · 갈색 밥 · 빨강/노랑 없음 · 파란 재료</td></tr>
+      <tr><td>5 친구</td><td>MixFree</td><td>사람 모습 · 상의 가로 줄무늬 · 초록 상의 · 갈색 하의</td><td>허수아비 · 민무늬 상의 · 파란 상의 · 보라 바지</td></tr>
     </table>
   </section>
 
   <section>
-    <h2>4. 결과 계산 규칙 (ShowResult)</h2>
+    <h2>4. 판정 → 결과 계산 (ShowResult)</h2>
     <table>
-      <tr><th>맞힌 특징 수</th><th>결과</th><th>도깨비가 가져오는 것</th><th>버튼</th></tr>
-      <tr><td>3 / 3</td><td style="color:var(--ok)"><b>성공</b></td><td>진짜 방망이 (originalSprite)</td><td>내 그림과 비교하기</td></tr>
-      <tr><td>1 ~ 2 / 3</td><td><b>부분 성공</b></td><td>엉뚱한 방망이 (wrongSprite)</td><td>다시 그리기 (간식 남으면) · 포기하고 비교</td></tr>
-      <tr><td>0 / 3</td><td style="color:var(--bad)"><b>실패</b></td><td>아무것도 없음</td><td>다시 그리기 (간식 남으면) · 포기하고 비교</td></tr>
+      <tr><th>맞힌 특징</th><th>결과</th><th>도깨비가 가져오는 것</th><th>소년</th><th>버튼</th></tr>
+      <tr><td>전부</td><td style="color:var(--ok)"><b>성공</b></td><td>originalSprite</td><td>웃음 "찾았다!"</td><td>내 그림과 비교하기</td></tr>
+      <tr><td>일부</td><td><b>부분 성공</b></td><td><b>처음 빠뜨린 특징</b>의 wrongSprite</td><td>당황 "'○○' 부분이 달라!"</td><td>다시 그리기 · 포기하고 비교</td></tr>
+      <tr><td>하나도 없음</td><td style="color:var(--bad)"><b>실패</b></td><td>없음</td><td>당황 "빈손으로 왔어…"</td><td>다시 그리기 · 포기하고 비교</td></tr>
     </table>
-    <div class="note">간식은 3개로 시작, 제출할 때마다 1개. 0개면 다시 그리기 버튼이 사라지고 "간식이 다 떨어졌어요" 표시.</div>
+    <div class="note">간식이 0개면 다시 그리기가 사라지고 "간식이 다 떨어졌어요. 원본과 비교하고 넘어가요." → 비교 → 다음 단계.</div>
   </section>
 
   <section>
-    <h2>5. AI 판정으로 바꿀 때 — 바뀌는 곳은 한 군데</h2>
-    <div class="two">
-      <pre>// 지금 (MVP, 테스트 입력)
-public void OnJudgeConfirmed()
-{
-    bool[] present = new bool[3];
-    for (int i = 0; i &lt; 3; i++)
-        present[i] = featureToggles[i].isOn;
-    ShowResult(present);
-}</pre>
-      <pre>// 나중 (AI 판정)
-byte[] png = board.Texture.EncodeToPNG();
-// → 프롬프트 + png 를 LLM 에 전송
-// ← {"features":[{"featureId":"F1",
-//      "status":"present"}, ...]}
-present[i] = (status == "present");
-ShowResult(present);   // 그대로 재사용</pre>
-    </div>
-    <div class="note">기획서 6장의 JSON 구조(<code>inputStatus</code>, <code>features[].status</code>)를 받아 <code>bool[]</code> 로만 바꿔주면 결과·재도전·비교 화면은 손대지 않아도 됩니다.</div>
+    <h2>5. AI 판정 (OpenAIJudge)</h2>
+    <pre>요청  POST https://api.openai.com/v1/responses       Authorization: Bearer {UserSettings/OpenAI.json 의 apiKey}
+{ "model": "gpt-6-luna",
+  "input": [{ "role": "user", "content": [
+      { "type": "input_text",  "text": BuildPrompt(stage) },            ← 기획서 부록 B 형식 (역할·대상·특징·원칙·출력형식)
+      { "type": "input_image", "image_url": "data:image/png;base64,..." } ← board.Texture.EncodeToPNG()
+  ]}],
+  "text": { "format": { "type": "json_object" } } }
+
+응답  output[] → type "message" → content[] → type "output_text" → text =
+{ "inputStatus": "ok",
+  "features": [ { "featureId": "F1", "status": "present",  "evidence": "가늘고 긴 손잡이가 있다." }, ... ],
+  "inputIssue": "" }
+
+변환  present[i] = (features 중 id == stage.features[i].id 인 것의 status == "present")    uncertain → 빠뜨림 + "(애매함)"</pre>
+    <table style="margin-top:6px">
+      <tr><th style="width:30%">상황</th><th>처리</th></tr>
+      <tr><td>키 없음 / 자동 테스트</td><td>IsReady = false → 체크박스 테스트 입력</td></tr>
+      <tr><td>연결 실패 · 키 오류 · 시간 초과(40초)</td><td>onError → 간식 +1, 제출 횟수 −1, [그림으로 돌아가 다시 제출] (그림·남은 시간 유지)</td></tr>
+      <tr><td>JSON 이 아님 · 특징 누락 · insufficient</td><td>위와 같음</td></tr>
+      <tr><td>기다리는 동안</td><td>도깨비가 갸웃갸웃 (SimpleAnim Sway), "쪽지를 들여다보는 중..."</td></tr>
+    </table>
   </section>
 </div>
 
-<!-- ───────── 3쪽 : 폴더 + Hierarchy ───────── -->
+<!-- ───────── 3쪽 ───────── -->
 <div class="page">
   <section>
     <h2>6. 폴더 구조</h2>
     <pre>FindDokkaebi/
 ├─ Assets/
-│  ├─ Scripts/               게임 코드 (빌드에 포함)
-│  │  ├─ GameManager.cs      게임 흐름
-│  │  ├─ DrawingBoard.cs     그림판
-│  │  └─ StageData.cs        단계 데이터 양식
-│  ├─ Editor/                에디터 전용 (빌드에 안 들어감)
-│  │  ├─ MvpSceneBuilder.cs  씬 자동 조립 (Tools 메뉴)
-│  │  ├─ MvpAutoBuild.cs     Game 씬이 없으면 자동으로 한 번 조립
-│  │  └─ MvpSelfTest.cs      자동 플레이 테스트 (31개 확인 + 스크린샷)
-│  ├─ Data/Stage1_Bat.asset  1단계 데이터
-│  ├─ Sprites/               Bat_Original.png · Bat_Wrong.png (임시 그림)
-│  ├─ Scenes/Game.unity      게임 씬 (하나뿐)
-│  └─ Fonts/                 NotoSansKR SDF (한글)
-└─ Docs/                     MVP_구조_설명.md · 이 PDF</pre>
+│  ├─ Scripts/      GameManager · StageData · DrawingBoard · ToolBar · ColorMixer · OpenAIJudge · SimpleAnim
+│  ├─ Editor/       MvpSceneBuilder (씬 조립 + 5단계 초기 데이터) · MvpAutoBuild · MvpSelfTest (자동 플레이 테스트)
+│  ├─ Data/         Stage1_Bat · Stage2_Bag · Stage3_Mat · Stage4_Gimbap · Stage5_Friend (.asset)
+│  ├─ Sprites/      StageN_*/Original.png + Wrong_F1~Fn.png · Characters/ · Props/ · Background/Room.png
+│  ├─ Scenes/       Game.unity (하나뿐)
+│  └─ Fonts/        NotoSansKR SDF (한글)
+├─ UserSettings/OpenAI.json   API 키 (Git 에 안 올라감)
+└─ Docs/            MVP_구조_설명.md · 이 PDF</pre>
   </section>
 
   <section>
     <h2>7. 씬(Hierarchy) 구조</h2>
     <pre>Game
 ├─ Main Camera
-├─ EventSystem                (InputSystemUIInputModule — 마우스·터치를 UI 로)
-├─ GameManager                ← GameManager.cs
-└─ Canvas                     (Scale With Screen Size, 1080 x 1920)
-   ├─ Background
-   ├─ IntroPanel     Title · Story · StartButton ─────────▶ StartObserve()
-   ├─ ObservePanel   Guide · TargetImage · Countdown
-   ├─ DrawPanel      Guide · Board(DrawingBoard)
-   │                 PenButton ─▶ UsePen()   EraserButton ─▶ UseEraser()
-   │                 ClearButton ─▶ Clear()  SubmitButton ─▶ Submit()
-   ├─ JudgePanel     Waiting · TestGuide · FeatureToggle1~3
-   │                 ConfirmButton ──────────────────────▶ OnJudgeConfirmed()
-   ├─ ResultPanel    ResultTitle · ReturnedItem · FeatureList
-   │                 RetryButton ─▶ Retry()   CompareButton ─▶ ShowCompare()
-   ├─ ComparePanel   MyDrawing · Original · FeatureHint
-   │                 RestartButton ──────────────────────▶ Restart()
-   └─ HUD            SnackText · StageText · TimerText   (맨 아래 = 맨 앞에 그려짐)</pre>
+├─ EventSystem                 InputSystemUIInputModule (마우스·터치 → UI)
+├─ GameManager                 GameManager + OpenAIJudge
+└─ Canvas                      Scale With Screen Size, 1080 폭 기준 (세로로 긴 폰은 아래 여백만 늘어남)
+   ├─ Background               방 그림 (AspectRatioFitter Envelope)
+   ├─ TitlePanel               StartButton ──────────────▶ StartGame()
+   ├─ StageIntroPanel          RulesCard · ObserveButton ──▶ StartObserve()
+   ├─ ObservePanel             Card/TargetImage · Countdown
+   ├─ DrawPanel                Board(DrawingBoard) · SubmitButton ─▶ Submit()
+   │  ├─ ToolBar               ColorRow : 검정·빨강·노랑·파랑 ─▶ SelectColor(0~3) · 섞은 색 ─▶ SelectMixed() · 색 섞기 ─▶ OpenMixer()
+   │  │                        ToolRow  : 지우개 · 가는/보통/굵은 선 ─▶ SelectSize(0~2) · 되돌리기 · 모두 지우기
+   │  └─ MixerPanel            (ColorMixer) 재료 ─▶ TogglePick(0~2) · 섞어서 칠하기 ─▶ Apply() · 닫기
+   ├─ JudgePanel               도깨비(Sway) · 쪽지 · TestInput(FeatureToggle1~5, Confirm ─▶ OnJudgeConfirmed()) · BackToDraw
+   ├─ ResultPanel              ReturnedItem(Pop) · 내 그림 · FeatureList · BoyFace · BoyLine · Retry ─▶ Retry() · Compare ─▶ ShowCompare()
+   ├─ ComparePanel             내 그림 · 원본 · FeatureHint · NextButton ─▶ NextStage()
+   ├─ EndingPanel              소년·도깨비·친구 · Records · 처음으로 ─▶ BackToTitle()
+   └─ HUD                      SnackIcon · SnackText · StageText · TimerGroup(향 초 + 막대)</pre>
   </section>
 
   <section>
-    <h2>8. 확장 로드맵</h2>
+    <h2>8. 바꾸거나 늘릴 때</h2>
     <table>
-      <tr><th style="width:26%">다음 기능</th><th>고칠 곳</th></tr>
-      <tr><td>2~5단계</td><td>StageData 파일 추가 + GameManager 에 <code>StageData[] stages</code>, 다음 단계 버튼</td></tr>
-      <tr><td>삼원색 펜</td><td>DrawingBoard 에 <code>SetColor(Color)</code> + 색 버튼 3개</td></tr>
-      <tr><td>선 굵기 / 되돌리기</td><td>DrawingBoard 에 <code>SetPenSize(int)</code>, 획마다 <code>pixels</code> 복사본 저장</td></tr>
-      <tr><td>혼색 팔레트</td><td>두 색 평균 = <code>Color.Lerp(a, b, 0.5f)</code> → SetColor</td></tr>
-      <tr><td>AI 판정</td><td>OnJudgeConfirmed 만 교체 (5번 참고), 오류 시 <code>snacks++</code></td></tr>
-      <tr><td>진짜 아트</td><td>Sprites 의 PNG 파일만 같은 이름으로 교체</td></tr>
+      <tr><th style="width:26%">하고 싶은 것</th><th>고칠 곳</th></tr>
+      <tr><td>진짜 아트</td><td>Sprites 의 PNG 를 같은 이름으로 덮어쓰기</td></tr>
+      <tr><td>문장·판정 기준</td><td>Data 의 .asset → Inspector (introStory, newRule, targetDescription, features[].criteria)</td></tr>
+      <tr><td>간식·시간</td><td>GameManager Inspector : snacksPerStage · observeSeconds · drawSeconds</td></tr>
+      <tr><td>섞이는 색</td><td>ColorMixer.MixTable()</td></tr>
+      <tr><td>AI 모델</td><td>UserSettings/OpenAI.json 의 model</td></tr>
+      <tr><td>검증</td><td>Tools → 찾아라도깨비 → 자동 플레이 테스트 (Temp/SelfTest 에 결과·스크린샷)</td></tr>
     </table>
   </section>
 </div>
