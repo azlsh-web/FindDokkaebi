@@ -27,7 +27,9 @@ public static class MvpSceneBuilder
     const string ScenePath = "Assets/Scenes/Game.unity";
     const string DataFolder = "Assets/Data";
     const string SpriteFolder = "Assets/Sprites";
-    const string FontPath = "Assets/Fonts/NotoSansKR-Regular SDF.asset";
+    // 글꼴 : 팀 시안 글꼴 Jua (MvpFontBake 로 구운 것). 아직 안 구웠으면 Noto Sans KR
+    const string FontPath = "Assets/Fonts/Jua-Regular SDF.asset";
+    const string FallbackFontPath = "Assets/Fonts/NotoSansKR-Regular SDF.asset";
 
     // 화면 색 (따뜻한 방 느낌)
     // 시작 화면 참고 이미지에서 뽑은 색 (진갈색 굵은 테두리 + 크림 + 코랄)
@@ -55,7 +57,7 @@ public static class MvpSceneBuilder
         // 저장 안 한 씬이 있으면 먼저 물어보기
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
 
-        font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+        font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath) ?? AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FallbackFontPath);
         MakeAllSprites();
         CreateStageDataFiles();
         CreateOpenAISettingsFile();
@@ -372,7 +374,7 @@ public static class MvpSceneBuilder
         var resultTitle = NewText("ResultTitle", resultCard, "", 48, new Vector2(0, 30), new Vector2(920, 80), bold: true);
         var resultFeatures = NewText("FeatureList", resultCard, "", 33, new Vector2(0, 118), new Vector2(860, 380), TextAlignmentOptions.TopLeft);
         var boyFace = NewSprite("BoyFace", resultCard, boyNormal, new Vector2(-350, 500), new Vector2(180, 180));
-        var boyMark = NewText("SurprisedMark", resultCard, "!?", 60, new Vector2(-260, 480), new Vector2(110, 90), bold: true);
+        var boyMark = NewText("SurprisedMark", resultCard, "!?", 56, new Vector2(-350, 410), new Vector2(110, 88), bold: true);   // 소년 바로 위
         boyMark.color = new Color32(214, 80, 66, 255);   // 당황했을 때만 보이는 "!?"
         var bubble = NewCard("Bubble", resultCard, new Vector2(110, 515), new Vector2(680, 150), white: true);
         var boyLine = NewText("BoyLine", bubble, "", 34, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left);
@@ -690,16 +692,26 @@ public static class MvpSceneBuilder
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null) continue;
-            Vector4 border = Vector4.zero;                       // 늘려 쓰는 그림은 모서리를 고정 (9-slice)
-            if (path.EndsWith("TeamUI/TeamCard.png")) border = new Vector4(80, 80, 80, 80);
-            if (path.EndsWith("TeamUI/TeamPillCoral.png")) border = new Vector4(181, 0, 181, 0);
-            if (path.EndsWith("TeamUI/TeamPillCream.png")) border = new Vector4(140, 0, 140, 0);
+            Vector4 border = Vector4.zero;                       // 늘려 쓰는 그림은 모서리를 고정 (9-slice). TeamUI 는 시안의 절반 크기
+            if (path.EndsWith("TeamUI/TeamCard.png")) border = new Vector4(40, 40, 40, 40);
+            if (path.EndsWith("TeamUI/TeamPillCoral.png")) border = new Vector4(91, 0, 91, 0);
+            if (path.EndsWith("TeamUI/TeamPillCream.png")) border = new Vector4(70, 0, 70, 0);
+
+            // 외곽선이 또렷하게 : 시안 UI · 시작 화면은 압축하지 않고(압축하면 가는 진갈색 선이 뭉개져요),
+            //   모든 그림에 밉맵(미리 줄여 둔 그림)을 켜서 작은 화면에서 크게 줄어들어도 선이 끊기지 않게
+            bool crisp = path.Contains("/TeamUI/") || path.EndsWith("Background/TitleScreen.png");
+            var compression = crisp ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
             if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
-                || importer.spriteBorder != border)
+                || importer.spriteBorder != border || importer.textureCompression != compression
+                || !importer.mipmapEnabled || importer.maxTextureSize < 4096)
             {
                 importer.textureType = TextureImporterType.Sprite;
                 importer.spriteImportMode = SpriteImportMode.Single;
                 importer.spriteBorder = border;
+                importer.textureCompression = compression;
+                importer.mipmapEnabled = true;
+                importer.filterMode = FilterMode.Trilinear;
+                importer.maxTextureSize = 4096;                  // 기본 2048 이면 긴 그림이 줄어들어 흐려져요
                 importer.SaveAndReimport();
             }
         }
@@ -756,7 +768,8 @@ public static class MvpSceneBuilder
         t.fontSize = size;
         t.color = TextColor;
         t.alignment = align;
-        if (bold) t.fontStyle = FontStyles.Bold;   // 제목·버튼은 굵게 (시작 화면처럼 또렷하게)
+        // Jua 는 원래 굵은 글꼴이라 따로 굵게 하지 않아요 (Noto 일 때만 제목·버튼을 굵게)
+        if (bold && !font.name.StartsWith("Jua")) t.fontStyle = FontStyles.Bold;
         t.raycastTarget = false; // 글자가 클릭을 가로채지 않게
         Place(t.rectTransform, pos, box);
         return t;
@@ -783,7 +796,7 @@ public static class MvpSceneBuilder
         var img = NewImage(name, parent, Color.white);
         img.sprite = white ? whiteCardSprite : cardSprite;
         img.type = Image.Type.Sliced;
-        img.pixelsPerUnitMultiplier = 1f / K;                           // 모서리 둥글기를 시안과 같은 크기로
+        img.pixelsPerUnitMultiplier = 0.5f / K;                         // 모서리 둥글기를 시안과 같은 크기로 (카드 그림은 시안의 절반 크기)
         Place(img.rectTransform, pos, size);
         return img.transform;
     }
