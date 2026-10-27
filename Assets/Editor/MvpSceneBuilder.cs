@@ -149,23 +149,18 @@ public static class MvpSceneBuilder
         incenseBar.fillMethod = Image.FillMethod.Vertical;
         incenseBar.fillOrigin = (int)Image.OriginVertical.Bottom;
         var timerText = NewText("TimerText", timerGroup, "60초", 34, Vector2.zero, Vector2.zero, bold: true);
-        PlaceM(timerText.rectTransform, 1950, 2550, 2210, 2640);
+        PlaceM(timerText.rectTransform, 1940, 2548, 2220, 2672);      // 글자 높이(약 49)가 들어가게
         foreach (TMP_Text t in new[] { stageText, snackText, timerText })
             t.textWrappingMode = TextWrappingModes.NoWrap;        // 이름표 글자는 한 줄로
 
         // ── 1. 시작 화면 : 팀이 그린 시작 화면 그림 + 그 위 "소풍 준비하러 가기" 자리에 투명 버튼 ──
-        var title = NewEmpty("TitlePanel", root);                 // 시작 화면 그림은 화면 전체를 채워요
+        // 시작 화면 그림(2248x3952)은 시안 크기 화면(Frame)에 딱 맞아요 → 폰이 길어도 잘리지 않고, 위아래는 방 배경
+        var title = NewEmpty("TitlePanel", canvas);
         var titleArt = NewImage("TitleArt", title, Color.white);
         titleArt.sprite = titleScreen;
         Stretch(titleArt.rectTransform);
-        var titleFit = titleArt.gameObject.AddComponent<AspectRatioFitter>();
-        titleFit.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
-        titleFit.aspectRatio = 2248f / 3952f;  // 시작 화면 그림 비율 (아트 수정 기획서 확정본)
-        var startImg = NewImage("StartButton", titleArt.transform, new Color(1f, 1f, 1f, 0f)); // 그림 속 버튼과 같은 자리
-        var srt = startImg.rectTransform;
-        srt.anchorMin = new Vector2(63f / 674f, 1f - 1072f / 1182f);   // 그림 속 "소풍 준비하러 가기" 버튼 자리
-        srt.anchorMax = new Vector2(612f / 674f, 1f - 958f / 1182f);
-        srt.offsetMin = srt.offsetMax = Vector2.zero;
+        var startImg = NewImage("StartButton", title, new Color(1f, 1f, 1f, 0f)); // 그림 속 버튼과 같은 자리
+        PlaceM(startImg.rectTransform, 200, 3204, 2048, 3596);   // 그림 속 "소풍 준비하러 가기" 버튼 (코랄 부분 + 테두리)
         var startGameButton = startImg.gameObject.AddComponent<Button>();
         var startColors = startGameButton.colors;
         startColors.pressedColor = new Color(0f, 0f, 0f, 0.15f);       // 누르면 살짝 어두워짐
@@ -175,14 +170,14 @@ public static class MvpSceneBuilder
         // ── 2. 단계 도입 화면 : 큰 크림 카드 하나에 단계 · 이야기 · 규칙 ──
         var intro = NewEmpty("StageIntroPanel", canvas);
         var introCard = NewCard("IntroCard", intro, new Vector2(0, 160), new Vector2(980, 1180));
-        var introNumber = NewText("StageNumber", introCard, "1단계", 44, new Vector2(0, 40), new Vector2(900, 70), bold: true);
+        var introNumber = NewText("StageNumber", introCard, "1단계", 40, new Vector2(0, 24), new Vector2(900, 66), bold: true);
         introNumber.color = SubTextColor;
-        var introTarget = NewText("TargetName", introCard, "방망이", 100, new Vector2(0, 100), new Vector2(900, 140), bold: true);
+        var introTarget = NewText("TargetName", introCard, "방망이", 96, new Vector2(0, 96), new Vector2(900, 150), bold: true);
         NewSprite("Boy", introCard, boyNormal, new Vector2(-180, 250), new Vector2(270, 270));
         NewSprite("Dokkaebi", introCard, dokkaebi, new Vector2(180, 250), new Vector2(270, 270));
-        var introStory = NewText("Story", introCard, "", 36, new Vector2(0, 525), new Vector2(900, 270));
+        var introStory = NewText("Story", introCard, "", 34, new Vector2(0, 525), new Vector2(900, 255));
         var rulesCard = NewCard("RulesCard", introCard, new Vector2(0, 790), new Vector2(900, 360), white: true);   // 바깥 카드 안쪽에 딱 들어가게
-        var introRules = NewText("Rules", rulesCard, "", 31, Vector2.zero, Vector2.zero, TextAlignmentOptions.TopLeft);
+        var introRules = NewText("Rules", rulesCard, "", 29, Vector2.zero, Vector2.zero, TextAlignmentOptions.TopLeft);
         Stretch(introRules.rectTransform, 30);
         var observeButton = NewButton("ObserveButton", intro, "기억할 모습 보기", new Vector2(0, 1390), new Vector2(720, 150));
 
@@ -193,13 +188,13 @@ public static class MvpSceneBuilder
         var observeCard = TeamImage("Card", observe, T("ObserveCard"), 300, 590, 2010, 3040);
         float[] cardBox = { 300, 590, 2010, 3040 };
         var observeImage = NewImage("TargetImage", observeCard.transform, Color.white);
-        PlaceIn(observeImage.rectTransform, cardBox, 500, 1300, 1740, 2480);
+        PlaceIn(observeImage.rectTransform, cardBox, 500, 1300, 1740, 2440);
         observeImage.preserveAspect = true;
         observeImage.raycastTarget = false;
-        var observeTitle = NewText("TargetName", observeCard.transform, "", 100, Vector2.zero, Vector2.zero, bold: true);
-        PlaceIn(observeTitle.rectTransform, cardBox, 400, 2500, 1840, 2720);
+        var observeTitle = NewText("TargetName", observeCard.transform, "", 84, Vector2.zero, Vector2.zero, bold: true);
+        PlaceIn(observeTitle.rectTransform, cardBox, 400, 2460, 1840, 2730);
         var observeHint = NewText("Hint", observeCard.transform, "", 40, Vector2.zero, Vector2.zero, bold: true);
-        PlaceIn(observeHint.rectTransform, cardBox, 400, 2730, 1840, 2850);
+        PlaceIn(observeHint.rectTransform, cardBox, 400, 2745, 1840, 2875);
         observeHint.color = HintColor;
 
         // 3 · 2 · 1 : 지금 숫자는 코랄 동그라미 + 흰 숫자 + 노란 반짝이, 나머지는 크림 + 검은 숫자
@@ -310,31 +305,33 @@ public static class MvpSceneBuilder
         submitColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.55f);   // 빈 쪽지면 흐리게
         submitButton.colors = submitColors;
 
-        // 혼색 팔레트 (색 섞기를 누르면 도구 줄 위에 열림)
-        var mixerGo = NewCard("MixerPanel", draw, new Vector2(0, 1170), new Vector2(980, 450));
+        // 혼색 팔레트 (색 섞기를 누르면 물감 판 + 도구 줄 자리를 딱 덮으며 열림. 시안 x 116~2052, y 2676~3462)
+        var mixerGo = NewCard("MixerPanel", draw, Vector2.zero, Vector2.zero);
+        PlaceM((RectTransform)mixerGo, 116, 2676, 2052, 3462);
         var mixerCard = mixerGo.GetComponent<Image>();
         var mixer = mixerGo.gameObject.AddComponent<ColorMixer>();
         Transform mx = mixerGo;
-        var mixGuide = NewText("Guide", mx, "", 38, new Vector2(-40, 30), new Vector2(760, 60), bold: true);
-        var closeRow = NewRow("CloseRow", mx, 18, 84);
-        Place(closeRow.GetComponent<RectTransform>(), new Vector2(410, 18), new Vector2(90, 84));
-        var mixClose = NewRoundTool("CloseButton", closeRow, iconClose, Color.white, 72, out GameObject closeFrame);
+        var mixGuide = NewText("Guide", mx, "", 36, new Vector2(-40, 22), new Vector2(720, 56), bold: true);
+        var closeRow = NewRow("CloseRow", mx, 16, 72);
+        Place(closeRow.GetComponent<RectTransform>(), new Vector2(405, 16), new Vector2(80, 72));
+        var mixClose = NewRoundTool("CloseButton", closeRow, iconClose, Color.white, 64, out GameObject closeFrame);
         Object.DestroyImmediate(closeFrame);
-        var materialRow = NewRow("MaterialRow", mx, 110, 130);
+        var materialRow = NewRow("MaterialRow", mx, 84, 112);
+        Place(materialRow.GetComponent<RectTransform>(), new Vector2(0, 84), new Vector2(860, 112));
         var materialFrames = new GameObject[3];
         var materialButtons = new Button[3];
         for (int i = 0; i < 3; i++)
         {
-            materialButtons[i] = NewRoundTool("Material_" + colorNames[i + 1], materialRow, null, ToolBar.Palette[i + 1], 112, out materialFrames[i]);
+            materialButtons[i] = NewRoundTool("Material_" + colorNames[i + 1], materialRow, null, ToolBar.Palette[i + 1], 96, out materialFrames[i]);
         }
         var swatchEdge = NewImage("PreviewEdge", mx, OutlineColor);
         swatchEdge.sprite = circleSprite;
-        Place(swatchEdge.rectTransform, new Vector2(-300, 255), new Vector2(100, 100));
+        Place(swatchEdge.rectTransform, new Vector2(-300, 212), new Vector2(76, 76));
         var swatch = NewImage("Preview", swatchEdge.transform, EmptySlotColor);
         swatch.sprite = circleSprite;
         Stretch(swatch.rectTransform, 5);
-        var recipe = NewText("Recipe", mx, "", 42, new Vector2(70, 270), new Vector2(620, 70), TextAlignmentOptions.Left, bold: true);
-        var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(0, 350), new Vector2(520, 84));
+        var recipe = NewText("Recipe", mx, "", 38, new Vector2(60, 214), new Vector2(600, 72), TextAlignmentOptions.Left, bold: true);
+        var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(0, 298), new Vector2(480, 66));
 
         // ── 5. 판정 화면 (쪽지와 간식을 도깨비에게) ──
         var judgeP = NewEmpty("JudgePanel", canvas);
@@ -347,7 +344,7 @@ public static class MvpSceneBuilder
         var judgeDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         judgeDrawing.transform.SetParent(noteCard, false);
         Stretch(judgeDrawing.rectTransform, 14);
-        NewSprite("Snack", judgeP, snack, new Vector2(60, 760), new Vector2(110, 110));
+        NewSprite("Snack", judgeP, snack, new Vector2(20, 745), new Vector2(90, 90));   // 도깨비와 쪽지 사이
 
         // 판정은 자동이라 버튼이 없어요. AI 오류가 났을 때만 "다시 제출" 버튼이 보여요.
         var backToDraw = NewButton("BackToDrawButton", judgeP, "그림으로 돌아가 다시 제출", new Vector2(0, 960), new Vector2(760, 140), primary: false);
@@ -422,7 +419,7 @@ public static class MvpSceneBuilder
         var pause = NewEmpty("PausePanel", root);
         pause.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.45f);   // 뒤 화면을 못 누르게 덮음
         var pauseCard = NewCard("PauseCard", pause, new Vector2(0, 700), new Vector2(760, 430));
-        NewText("Title", pauseCard, "잠깐 쉬는 중", 64, new Vector2(0, 60), new Vector2(700, 90), bold: true);
+        NewText("Title", pauseCard, "잠깐 쉬는 중", 64, new Vector2(0, 56), new Vector2(700, 100), bold: true);
         NewText("Sub", pauseCard, "멈춘 동안은 향이 타지 않아요", 36, new Vector2(0, 160), new Vector2(700, 60)).color = SubTextColor;
         var resumeButton = NewButton("ResumeButton", pauseCard, "계속하기", new Vector2(0, 260), new Vector2(520, 130));
 

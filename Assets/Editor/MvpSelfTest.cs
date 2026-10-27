@@ -452,8 +452,15 @@ static class MvpSelfTest
                 mixer.TogglePick(0); mixer.TogglePick(1); mixer.TogglePick(2);
                 Check(Text("DrawPanel/MixerPanel/Recipe") == "빨강 + 노랑 + 파랑 = 갈색", "자유 혼합 : " + Text("DrawPanel/MixerPanel/Recipe"));
             }
+            LayoutOnly($"s{st.stageNumber}_mixer");                     // 팔레트가 열린 화면도 배치 검사
             mixer.Apply();
             Check(!IsOn("DrawPanel/MixerPanel"), "섞어서 칠하면 팔레트가 닫힌다");
+            var gmPause = Object.FindFirstObjectByType<GameManager>();
+            gmPause.TogglePause();                                          // 일시정지 화면도 배치 검사
+            Check(IsOn("PausePanel"), "일시정지 버튼을 누르면 일시정지 화면");
+            LayoutOnly($"s{st.stageNumber}_pause");
+            gmPause.TogglePause();
+            Check(!IsOn("PausePanel") && Time.timeScale == 1f, "계속하기를 누르면 다시 진행");
             Stroke(new Vector2(0.35f, 0.5f), new Vector2(0.65f, 0.5f));
         }
     }
@@ -666,8 +673,20 @@ static class MvpSelfTest
 
     // Game 창 스크린샷 : 게임 프레임이 끝나는 순간에 찍는 도우미를 잠깐 붙여요.
     // (ScreenCapture.CaptureScreenshot 은 에디터에서 "다음에 그려지는 화면"을 저장해서 한 장씩 밀렸어요)
+    // 스크린샷 없이 배치 검사만 (잠깐 열렸다 닫히는 화면)
+    static void LayoutOnly(string name)
+    {
+        List<string> layout = MvpLayoutCheck.Check(name);
+        Check(layout.Count == 0, $"배치 검사 : {name}" + (layout.Count == 0 ? " (겹침 · 넘침 없음)" : $" 문제 {layout.Count}개"));
+        foreach (string line in layout) report.Add("        " + line);
+    }
+
     static void Shot(string name)
     {
+        // 화면 배치 숫자 검사 (걸쳐 겹침 · 글자 겹침 · 글자 넘침 · 화면 밖)
+        List<string> layout = MvpLayoutCheck.Check(name);
+        Check(layout.Count == 0, $"배치 검사 : {name}" + (layout.Count == 0 ? " (겹침 · 넘침 없음)" : $" 문제 {layout.Count}개"));
+        foreach (string line in layout) report.Add("        " + line);
         shotCount++;
         var helper = new GameObject("SelfTestShot").AddComponent<ShotHelper>();
         helper.path = Path.Combine(OutDir, $"{shotCount:00}_{name}.png");
