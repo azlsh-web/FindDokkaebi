@@ -1,6 +1,7 @@
 # Cloudflare Worker 설정 : 찾아라! 도깨비 AI 판정 중계 서버
 # 배포 : npx wrangler deploy   (이 폴더에서)
-# 키 넣기 : npx wrangler secret put OPENAI_API_KEY   (키는 이 파일이 아니라 Cloudflare 비밀값으로만!)
+# 키 넣기 (복사한 키를 클립보드에서) : Get-Clipboard | npx wrangler secret put GEMINI_API_KEY
+#   (OpenAI 를 쓰려면 OPENAI_API_KEY. 키는 이 파일이 아니라 Cloudflare 비밀값으로만!)
 name = "finddokkaebi-judge"
 main = "worker.js"
 compatibility_date = "2026-10-01"
@@ -8,10 +9,17 @@ compatibility_date = "2026-10-01"
 [vars]
 # 웹 게임 주소 (GitHub Pages). 여러 개면 쉼표로
 ALLOWED_ORIGINS = "https://azlsh-web.github.io"
-MODEL = "gpt-6-luna"
+MODEL = "gpt-6-luna"           # OpenAI 를 쓸 때
+GEMINI_MODEL = "gemini-3.5-flash"   # Gemini 를 쓸 때 (무료 등급 : 모델마다 하루 약 20번)
+TEST_MODEL_OVERRIDE = "0"           # "1" 이면 테스트 때 X-Judge-Model / X-Judge-Thinking 머리글로 모델을 바꿔 볼 수 있어요
+GEMINI_THINKING = "low"             # 생각 양 : low(빠름) / medium / high
 
 # 같은 IP 가 1분(60초)에 20번 넘게 보내면 거절
 [[ratelimits]]
 name = "JUDGE_LIMIT"
 namespace_id = "1001"
 simple = { limit = 20, period = 60 }
+
+# Gemini 는 일부 나라(지역)에서 오는 요청을 막아요. 그래서 서버가 미국에서 돌게 해요.
+[placement]
+region = "aws:us-east-1"   # 미국 버지니아. (홍콩에서 보내면 Gemini 가 "지원하지 않는 위치" 로 거절해요)

@@ -2,11 +2,15 @@
 // 찾아라! 도깨비 : AI 판정 중계 서버 (Cloudflare Worker)
 // ─────────────────────────────────────────────────────────────
 // 왜 필요해요?
-//   웹 게임 안에 OpenAI 키를 넣으면 누구나 꺼내 갈 수 있어요.
-//   그래서 키는 이 서버(비밀값 OPENAI_API_KEY)에만 두고, 게임은 그림만 보내요.
+//   웹 게임 안에 AI 키를 넣으면 누구나 꺼내 갈 수 있어요.
+//   그래서 키는 이 서버(비밀값)에만 두고, 게임은 그림만 보내요.
+//
+// 어떤 AI 를 쓰나 (비밀값이 있는 것)
+//   GEMINI_API_KEY → Google Gemini (무료 등급, 모델 = GEMINI_MODEL)   ← 지금 쓰는 것
+//   OPENAI_API_KEY → OpenAI Responses API (유료, 모델 = MODEL)
 //
 // 게임 → 서버 : POST /judge  { "stage": 1~5, "image": "data:image/png;base64,..." }
-// 서버 → OpenAI : 그 단계의 판정 프롬프트(stages.json) + 그림 → Responses API
+// 서버 → AI : 그 단계의 판정 프롬프트(stages.json) + 그림
 // 서버 → 게임 : { "ok": true, "text": "<AI 가 쓴 판정 JSON>" }  또는  { "ok": false, "error": "..." }
 //
 // 다른 용도로 못 쓰게 막는 것들
@@ -33,10 +37,18 @@ export default {
 
     if (request.method === "OPTIONS") return new Response(null, { status: allowed ? 204 : 403, headers: cors });
     const url = new URL(request.url);
-    if (url.pathname === "/health") return reply(200, { ok: true, stages: Object.keys(stages).length, key: !!env.OPENAI_API_KEY });
+    const provider = env.GEMINI_API_KEY ? "gemini" : env.OPENAI_API_KEY ? "openai" : "";
+    if (url.pathname === "/health")
+      return reply(200, { ok: true, stages: Object.keys(stages).length, key: !!provider, provider, model: provider === "gemini" ? geminiModel(env) : env.MODEL });
+    // (관리용) Gemini 에서 쓸 수 있는 모델 이름 보기 — 키는 밖으로 안 나가요
+    if (url.pathname === "/models" && allowed && env.GEMINI_API_KEY) {
+      const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": env.GEMINI_API_KEY } });
+      const j = await r.json().catch(() => ({}));
+      return reply(r.status, { ok: r.ok, models: (j.models || []).filter(m => (m.supportedGenerationMethods || []).includes("generateContent")).map(m => m.name) });
+    }
     if (url.pathname !== "/judge" || request.method !== "POST") return reply(404, { ok: false, error: "없는 주소예요" });
     if (!allowed) return reply(403, { ok: false, error: "허락하지 않은 곳에서 온 요청이에요" });
-    if (!env.OPENAI_API_KEY) return reply(500, { ok: false, error: "서버에 OpenAI 키가 없어요" });
+    if (!provider) return reply(500, { ok: false, error: "서버에 AI 키가 없어요" });
 
     // 같은 IP 가 1분에 너무 많이 보내면 거절 (wrangler.toml 의 ratelimits)
     if (env.JUDGE_LIMIT) {
@@ -52,6 +64,8 @@ export default {
     const image = body.image;
     if (typeof image !== "string" || !image.startsWith("data:image/png;base64,") || image.length > MAX_IMAGE_CHARS)
       return reply(400, { ok: false, error: "그림 형식이 맞지 않아요" });
+
+    if (provider === "gemini") return reply(...await askGemini(env, prompt, image, geminiModel(env, request), request.headers.get("X-Judge-Thinking")));
 
     // OpenAI Responses API (Unity 의 OpenAIJudge 와 같은 요청 모양)
     const ai = await fetch("https://api.openai.com/v1/responses", {
@@ -74,6 +88,27 @@ export default {
     return reply(502, { ok: false, error: "AI 답변이 비어 있어요" });
   },
 };
+
+function geminiModel(env, req) { return (env.TEST_MODEL_OVERRIDE === "1" && req?.headers.get("X-Judge-Model")) || env.GEMINI_MODEL || "gemini-3.5-flash"; }
+
+// Google Gemini : 글(프롬프트) + 그림 → JSON 한 개 (온도 0 = 같은 그림이면 같은 판정에 가깝게)
+async function askGemini(env, prompt, image, model, thinking) {
+  const data = image.slice("data:image/png;base64,".length);
+  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: "image/png", data } }] }],
+      // thinkingLevel : AI 가 답하기 전에 얼마나 생각할지 (low = 빠름, high = 느리지만 꼼꼼)
+      generationConfig: { responseMimeType: "application/json", temperature: 0, thinkingConfig: { thinkingLevel: (env.TEST_MODEL_OVERRIDE === "1" && thinking) || env.GEMINI_THINKING || "low" } },
+    }),
+  });
+  const raw = await r.json().catch(() => null);
+  if (!r.ok) return [502, { ok: false, error: `AI 오류 (${r.status}) ${raw?.error?.message ?? ""}`.trim() }];
+  const text = (raw?.candidates?.[0]?.content?.parts ?? []).map(p => p.text || "").join("").trim();
+  if (!text) return [502, { ok: false, error: "AI 답변이 비어 있어요 " + (raw?.candidates?.[0]?.finishReason ?? raw?.promptFeedback?.blockReason ?? "") }];
+  return [200, { ok: true, text }];
+}
 
 // ALLOWED_ORIGINS (쉼표로 구분) + 내 컴퓨터에서 테스트할 때(localhost)
 function allowedOrigin(origin, env) {
