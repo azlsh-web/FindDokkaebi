@@ -65,7 +65,7 @@ export default {
     if (typeof image !== "string" || !image.startsWith("data:image/png;base64,") || image.length > MAX_IMAGE_CHARS)
       return reply(400, { ok: false, error: "그림 형식이 맞지 않아요" });
 
-    if (provider === "gemini") return reply(...await askGemini(env, prompt, image, geminiModel(env, request), request.headers.get("X-Judge-Thinking")));
+    if (provider === "gemini") return reply(...await askGemini(env, prompt, image));
 
     // OpenAI Responses API (Unity 의 OpenAIJudge 와 같은 요청 모양)
     const ai = await fetch("https://api.openai.com/v1/responses", {
@@ -89,25 +89,34 @@ export default {
   },
 };
 
-function geminiModel(env, req) { return (env.TEST_MODEL_OVERRIDE === "1" && req?.headers.get("X-Judge-Model")) || env.GEMINI_MODEL || "gemini-3.5-flash"; }
+function geminiModel(env) { return env.GEMINI_MODEL || "gemini-3.5-flash"; }
 
 // Google Gemini : 글(프롬프트) + 그림 → JSON 한 개 (온도 0 = 같은 그림이면 같은 판정에 가깝게)
-async function askGemini(env, prompt, image, model, thinking) {
+async function askGemini(env, prompt, image) {
+  const model = geminiModel(env);
   const data = image.slice("data:image/png;base64,".length);
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
-    body: JSON.stringify({
-      contents: [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: "image/png", data } }] }],
-      // thinkingLevel : AI 가 답하기 전에 얼마나 생각할지 (low = 빠름, high = 느리지만 꼼꼼)
-      generationConfig: { responseMimeType: "application/json", temperature: 0, thinkingConfig: { thinkingLevel: (env.TEST_MODEL_OVERRIDE === "1" && thinking) || env.GEMINI_THINKING || "low" } },
-    }),
-  });
-  const raw = await r.json().catch(() => null);
-  if (!r.ok) return [502, { ok: false, error: `AI 오류 (${r.status}) ${raw?.error?.message ?? ""}`.trim() }];
+  // thinkingLevel : AI 가 답하기 전에 얼마나 생각할지 (low = 빠름, high = 느리지만 꼼꼼). 이 설정이 없는 모델이면 빼고 다시 보내요.
+  const level = env.GEMINI_THINKING || "low";
+  let r, raw;
+  for (const useThinking of [true, false]) {
+    const generationConfig = { responseMimeType: "application/json", temperature: 0 };
+    if (useThinking) generationConfig.thinkingConfig = { thinkingLevel: level };
+    r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: "image/png", data } }] }],
+        generationConfig,
+      }),
+    });
+    raw = await r.json().catch(() => null);
+    if (!(r.status === 400 && /thinking/i.test(raw?.error?.message ?? ""))) break;
+  }
+  if (!r.ok) return [502, { ok: false,
+    error: `AI 오류 (${model} ${r.status}) ${raw?.error?.message ?? ""}`.trim().slice(0, 300) }];
   const text = (raw?.candidates?.[0]?.content?.parts ?? []).map(p => p.text || "").join("").trim();
   if (!text) return [502, { ok: false, error: "AI 답변이 비어 있어요 " + (raw?.candidates?.[0]?.finishReason ?? raw?.promptFeedback?.blockReason ?? "") }];
-  return [200, { ok: true, text }];
+  return [200, { ok: true, text, model }];
 }
 
 // ALLOWED_ORIGINS (쉼표로 구분) + 내 컴퓨터에서 테스트할 때(localhost)
