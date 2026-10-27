@@ -2,6 +2,7 @@
 import os
 from collections import deque
 from PIL import Image
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); from clean_edges import soften
 OUT = "objects"; os.makedirs(OUT, exist_ok=True)
 
 def cut(src, box, name, scale=2):
@@ -34,8 +35,9 @@ def cut(src, box, name, scale=2):
         for x in range(w):
             if (x, y) not in keep:
                 c = p[x, y]; p[x, y] = (c[0], c[1], c[2], 0)
+    soften(im)                                              # 가장자리 부드럽게
     im = im.crop(im.getchannel("A").getbbox())
-    im = im.resize((im.width * scale, im.height * scale), Image.LANCZOS)
+    im = im.convert("RGBa").resize((im.width * scale, im.height * scale), Image.LANCZOS).convert("RGBA")   # 배경색이 번지지 않게
     im.save(os.path.join(OUT, name + ".png")); print(name, im.size)
 
 cut("image1.png", (60, 290, 400, 548), "Bat")

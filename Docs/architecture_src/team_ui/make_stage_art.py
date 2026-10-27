@@ -13,7 +13,7 @@ OBJ = "objects"
 def fit512(im, margin=16):
     im = im.crop(im.getchannel("A").getbbox())          # 빈 곳 잘라 내고 쪽지 크기에 맞게
     s = (512 - 2 * margin) / max(im.width, im.height)
-    im = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
+    im = im.convert("RGBa").resize((round(im.width * s), round(im.height * s)), Image.LANCZOS).convert("RGBA")   # 배경색이 번지지 않게
     c = Image.new("RGBA", (512, 512), (0, 0, 0, 0))
     c.alpha_composite(im, ((512 - im.width) // 2, (512 - im.height) // 2))
     return c
@@ -146,6 +146,8 @@ while q:
     if r + g + b < 720: continue
     p[x, y] = (r, g, b, 0)
     q.extend(((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)))
+import sys as _s, os as _o; _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__))); from clean_edges import soften
+soften(fr)                                                   # 흰 바탕 지운 가장자리 부드럽게
 fr = fr.crop(fr.getchannel("A").getbbox())
 fh = fr.height
 isHair = lambda h, s, v: v < 0.45 and s > 0.35 and (h < 40 or h > 340)
