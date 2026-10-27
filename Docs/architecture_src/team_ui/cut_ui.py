@@ -59,7 +59,7 @@ D = "image10.png"; O = "image9.png"
 boxes["Logo"] = cutout(D, (190, 110, 870, 345), "Logo")
 boxes["StagePill"] = cutout(D, (940, 110, 1730, 345), "StagePill")
 boxes["Pause"] = cutout(D, (1890, 105, 2150, 345), "Pause")
-boxes["SnackPill"] = cutout(D, (100, 410, 890, 690), "SnackPill")
+boxes["SnackPill"] = cutout(D, (100, 410, 890, 740), "SnackPill")
 boxes["Clipboard"] = cutout(D, (120, 640, 1950, 2640), "Clipboard")
 boxes["Palette"] = cutout(D, (120, 2670, 1640, 3100), "Palette")
 boxes["MixButton"] = cutout(D, (1630, 2670, 2060, 3090), "MixButton")

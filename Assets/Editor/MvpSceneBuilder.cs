@@ -138,7 +138,7 @@ public static class MvpSceneBuilder
         pauseImg.raycastTarget = true;
         var pauseButton = pauseImg.gameObject.AddComponent<Button>();
 
-        var snackTag = TeamImage("SnackTag", hud, T("SnackPill"), 108, 424, 880, 694);
+        var snackTag = TeamImage("SnackTag", hud, T("SnackPill"), 108, 424, 880, 708);
         var snackText = NewText("SnackText", snackTag.transform, "간식 3개", 46, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left, bold: true);
         Anchor(snackText.rectTransform, 0f, 0.5f, new Vector2((358 - 108) * K, 0), new Vector2((850 - 358) * K, 100));
 
@@ -186,7 +186,7 @@ public static class MvpSceneBuilder
         Stretch(introRules.rectTransform, 30);
         var observeButton = NewButton("ObserveButton", intro, "기억할 모습 보기", new Vector2(0, 1390), new Vector2(720, 150));
 
-        ShiftDown(intro, 180);   // HUD 두 줄 아래로
+        ShiftDown(intro, 200);   // HUD 두 줄 아래로
 
         // ── 3. 관찰 화면 : 팀 시안(그림 9) — 빼꼼한 도깨비 + 말풍선 + 테이프 쪽지 + 3·2·1 ──
         var observe = NewEmpty("ObservePanel", canvas);
@@ -352,7 +352,7 @@ public static class MvpSceneBuilder
         // 판정은 자동이라 버튼이 없어요. AI 오류가 났을 때만 "다시 제출" 버튼이 보여요.
         var backToDraw = NewButton("BackToDrawButton", judgeP, "그림으로 돌아가 다시 제출", new Vector2(0, 960), new Vector2(760, 140), primary: false);
 
-        ShiftDown(judgeP, 180);
+        ShiftDown(judgeP, 200);
 
         // ── 6. 결과 화면 ──
         var result = NewEmpty("ResultPanel", canvas);
@@ -384,7 +384,7 @@ public static class MvpSceneBuilder
         var retryButton = NewButton("RetryButton", result, "다시 그리기 (간식 1개)", new Vector2(0, 1380), new Vector2(720, 140));
         var compareButton = NewButton("CompareButton", result, "비교하기", new Vector2(0, 1535), new Vector2(720, 140), primary: false);
 
-        ShiftDown(result, 180);
+        ShiftDown(result, 200);
 
         // ── 7. 비교 화면 ──
         var compare = NewEmpty("ComparePanel", canvas);
@@ -403,7 +403,7 @@ public static class MvpSceneBuilder
         Stretch(compareFeatures.rectTransform, 36);
         var nextButton = NewButton("NextButton", compare, "다음 단계로", new Vector2(0, 1330), new Vector2(720, 150));
 
-        ShiftDown(compare, 180);
+        ShiftDown(compare, 200);
 
         // ── 8. 이야기 종료 화면 ──
         var ending = NewEmpty("EndingPanel", canvas);
