@@ -1,0 +1,142 @@
+[
+ {
+  "case": "방망이 1",
+  "image": "그림21",
+  "expected": "present present absent",
+  "actual": "present present absent",
+  "match": true,
+  "sec": 3.7,
+  "model": "gemini-3.5-flash",
+  "json": {
+   "inputStatus": "ok",
+   "features": [
+    {
+     "featureId": "F1",
+     "status": "present",
+     "evidence": "길이가 폭보다 긴 가늘고 길쭉한 손잡이 모양이 표현되어 있다."
+    },
+    {
+     "featureId": "F2",
+     "status": "present",
+     "evidence": "손잡이 끝에 폭이 더 넓은 머리 부분이 하나로 연결되어 표현되어 있다."
+    },
+    {
+     "featureId": "F3",
+     "status": "absent",
+     "evidence": "머리 바깥 윤곽에 튀어나온 뾰족한 돌기가 없다."
+    }
+   ],
+   "inputIssue": ""
+  }
+ },
+ {
+  "case": "방망이 2",
+  "image": "그림22",
+  "expected": "present present present",
+  "actual": "present present present",
+  "match": true,
+  "sec": 5.4,
+  "model": "gemini-3.5-flash",
+  "json": {
+   "inputStatus": "ok",
+   "features": [
+    {
+     "featureId": "F1",
+     "status": "present",
+     "evidence": "아래쪽으로 가늘고 길게 뻗은 손잡이 형태가 표현되어 있다."
+    },
+    {
+     "featureId": "F2",
+     "status": "present",
+     "evidence": "손잡이보다 폭이 넓은 머리 부분이 하나로 연결되어 있다."
+    },
+    {
+     "featureId": "F3",
+     "status": "present",
+     "evidence": "머리 바깥 윤곽선으로 튀어나온 뾰족한 돌기가 두 개 이상 있다."
+    }
+   ],
+   "inputIssue": ""
+  }
+ },
+ {
+  "case": "돗자리 1",
+  "image": "그림23",
+  "expected": "present present present absent present",
+  "actual": "present present present absent present",
+  "match": true,
+  "sec": 3.6,
+  "model": "gemini-3.5-flash",
+  "json": {
+   "inputStatus": "ok",
+   "features": [
+    {
+     "featureId": "F1",
+     "status": "present",
+     "evidence": "네 변으로 이루어진 직사각형 모양의 외곽이 식별된다."
+    },
+    {
+     "featureId": "F2",
+     "status": "present",
+     "evidence": "내부에 가로선과 세로선이 교차하여 영역을 네 칸으로 나누고 있다."
+    },
+    {
+     "featureId": "F3",
+     "status": "present",
+     "evidence": "왼쪽 위 영역이 주된 빨간색으로 칠해져 있다."
+    },
+    {
+     "featureId": "F4",
+     "status": "absent",
+     "evidence": "오른쪽 위 영역이 노란색이 아닌 파란색으로 칠해져 있다."
+    },
+    {
+     "featureId": "F5",
+     "status": "present",
+     "evidence": "왼쪽 아래와 오른쪽 아래 영역 모두 파란색으로 칠해져 있다."
+    }
+   ],
+   "inputIssue": ""
+  }
+ },
+ {
+  "case": "돗자리 2",
+  "image": "그림24",
+  "expected": "present present present present present",
+  "actual": "present present present present present",
+  "match": true,
+  "sec": 5.7,
+  "model": "gemini-3.5-flash",
+  "json": {
+   "inputStatus": "ok",
+   "features": [
+    {
+     "featureId": "F1",
+     "status": "present",
+     "evidence": "네 변으로 이루어진 직사각형 외곽이 표현되어 있다."
+    },
+    {
+     "featureId": "F2",
+     "status": "present",
+     "evidence": "내부의 가로 구분선과 세로 구분선이 교차하여 네 영역을 나눈다."
+    },
+    {
+     "featureId": "F3",
+     "status": "present",
+     "evidence": "왼쪽 위 영역이 빨간색으로 칠해져 있다."
+    },
+    {
+     "featureId": "F4",
+     "status": "present",
+     "evidence": "오른쪽 위 영역이 노란색으로 칠해져 있다."
+    },
+    {
+     "featureId": "F5",
+     "status": "present",
+     "evidence": "왼쪽 아래와 오른쪽 아래 영역 모두 파란색으로 칠해져 있다."
+    }
+   ],
+   "inputIssue": ""
+  }
+ }
+]
