@@ -1,0 +1,40 @@
+<html><head><meta charset='utf-8'><title>MVP 아키텍처</title><style>
+@page { size: A4; margin: 13mm 12mm; }
+body { font-family: 'Malgun Gothic', sans-serif; color: #3b2414; font-size: 10.3pt; line-height: 1.5; }
+h1 { font-size: 20pt; margin: 0 0 2px; } h2 { font-size: 14pt; margin: 16px 0 6px; border-bottom: 2px solid #4a2b16; padding-bottom: 2px; }
+h3 { font-size: 11.5pt; margin: 10px 0 4px; }
+.sub { color: #7a604a; margin: 0 0 8px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 8px; }
+td, th { border: 1px solid #dccab6; padding: 3px 6px; vertical-align: top; font-size: 9.4pt; }
+th { background: #f6ecdf; text-align: left; }
+code { background: #f3ece3; padding: 0 3px; border-radius: 3px; font-size: 9pt; }
+.screen { display: flex; gap: 12px; break-inside: avoid; page-break-inside: avoid; border: 1px solid #e2d3c2; border-radius: 10px; padding: 8px; margin: 8px 0; }
+.screen .shot { border: 1px solid #aaa; border-radius: 8px; }
+.screen h3 { margin-top: 0; }
+.k { color: #7a604a; white-space: nowrap; width: 17%; }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 6px 0; }
+.flow span.b { border: 2px solid #4a2b16; border-radius: 10px; padding: 4px 8px; background: #fffaf2; font-weight: bold; font-size: 9.5pt; }
+.flow span.a { color: #b07a50; font-weight: bold; }
+.note { background: #f6f1ea; border-left: 5px solid #b07a50; padding: 5px 10px; margin: 6px 0; font-size: 9.6pt; }
+.keep { break-inside: avoid; page-break-inside: avoid; }
+.pb { page-break-before: always; }
+pre { background: #f6f1ea; padding: 6px 10px; border-radius: 6px; font-size: 8.8pt; white-space: pre-wrap; }
+</style></head><body><h1>찾아라! 도깨비 — MVP 아키텍처</h1><p class='sub'>개발할 때 옆에 두고 보는 문서. 어떤 파일이 무엇을 하고, 무엇을 바꾸려면 어디를 고치는지.</p><h2>1. 한눈에</h2><table><tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr><tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr><tr><td class='k'>화면</td><td>패널 8개 (시작 · 도입 · 관찰 · 그리기 · 판정 · 결과 · 비교 · 종료) 중 하나만 켜고, 위에 HUD · 일시정지. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr><tr><td class='k'>판정</td><td>AI (OpenAI Responses API). 웹 · 에디터는 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 실패하면 간식 돌려주고 다시 제출</td></tr><tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>feature/mvp-stage1</code></td></tr></table><h2>2. 폴더</h2><pre>FindDokkaebi/
+  Assets/Scripts/     게임 코드 (아래 3장)
+  Assets/Editor/      에디터 도구 : 씬 만들기 · 자동 테스트 · 판정 검사 · 웹 빌드 · 글꼴 굽기
+  Assets/Data/        단계 데이터 Stage1~5 (.asset, 씬 만들 때 MvpSceneBuilder 가 채움)
+  Assets/Sprites/     TeamUI(시안에서 오린 UI, 절반 크기) · Background · Characters · Stage1~5(원본·엉뚱한 물건) · UI(그림 준비 중 등)
+  Assets/Fonts/       Jua(시안 글꼴, 구운 SDF) · Noto Sans KR(없는 기호 대신)
+  ArtSource/          아트 원본 정리 : 원본(기획서 그림 · 첨부 사진) + 화면별로 들어간 부품 + README 표
+  Server/judge/       판정 중계 서버 (worker.js · stages.json 프롬프트 · wrangler.toml)
+  Docs/               이 문서들 · src(문서·그림 만드는 스크립트) · 참고(예전 문서)
+  Builds/WebGL/       웹 빌드 결과 (git 에 안 올림)
+  UserSettings/OpenAI.json   (선택) 내 OpenAI 키 — git 에 안 올림</pre><h2 class='pb'>3. 게임 코드 (Assets/Scripts)</h2><table><tr><th>파일</th><th>하는 일</th><th>주로 고칠 때</th></tr><tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식 · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 일시정지</td><td>흐름 · 규칙 · 문구</td></tr><tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 이야기 · 규칙 · 색 모드 · 원본 그림 · 특징 목록). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 엉뚱한 물건 그림 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr><tr><td><code>DrawingBoard</code></td><td>512×512 쪽지 : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처</td><td>그리기 느낌</td></tr><tr><td><code>ToolBar</code></td><td>색 · 연필 · 지우개 · 굵기 버튼, 고른 표시, 단계마다 색 버튼 보이기/숨기기</td><td>도구 버튼</td></tr><tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 재료 고르기 → 결과 색 (MixTable) → 섞은 색 칸</td><td>섞는 규칙</td></tr><tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 키 있으면 OpenAI 직접, 없으면 판정 서버. 기획서 부록 B 프롬프트(BuildPrompt) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr><tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr><tr><td><code>SimpleAnim</code></td><td>도깨비 갸웃 · 물건 뿅 · 방망이 휘두르기</td><td>연출</td></tr></table><h3>화면 흐름 (GameManager.State)</h3><pre>Title ─StartGame→ StageIntro ─StartObserve→ Observe(3초) ─자동→ Draw(60초)
+Draw ─Submit(간식-1)→ Judge ─AI 결과→ Result ─ShowCompare→ Compare ─NextStage→ StageIntro(다음) … → Ending ─BackToTitle→ Title
+Judge ─AI 실패→ (간식+1) ─BackToDraw→ Draw(그리던 그림)     Result ─Retry(간식 남음)→ Draw(빈 쪽지, 60초)
+어느 화면이든 ─TogglePause→ 일시정지 (Time.timeScale 0)</pre><h3>결과 규칙 (ShowResult)</h3><p>특징 전부 그림 → 성공 · 진짜 물건 / 일부 → 처음 빠뜨린 특징의 엉뚱한 물건 / 하나도 없음 → 아무것도 못 찾음. 실패했고 간식이 남으면 「다시 그리기」.</p><h2>4. 판정이 흐르는 길</h2><pre>제출 → board.Texture → PNG → base64
+  ├ (UserSettings/OpenAI.json 에 키 있음)  OpenAI Responses API 로 바로 : 프롬프트(BuildPrompt) + 그림
+  └ (키 없음)  판정 서버 POST /judge {stage, image}
+        서버 : 허락한 곳(웹 게임 주소 · Unity)만, IP 당 1분 20번 → stages.json 의 그 단계 프롬프트 + 그림 → OpenAI
+← AI JSON {inputStatus, features:[{featureId, status, evidence}]} → present = (status == present) → ShowResult
+실패(연결 · 키 · JSON) → OnJudgeError : 간식 돌려주고 「그림으로 돌아가 다시 제출」</pre><div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 웹 빌드(이때 <code>Server/judge/stages.json</code> 도 자동으로 새로) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. 서버 키 : <code>npx wrangler secret put OPENAI_API_KEY</code> (값은 물어볼 때 붙여 넣기).</div><h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table><tr><td class='k'>좌표</td><td><code>PlaceM(rt, x0,y0,x1,y1)</code> = 시안 픽셀 상자 그대로 (K = 1080/2248). <code>TeamImage</code> = 오린 그림을 원래 자리에, <code>TeamTool</code> = 시안 그림 버튼 + 고른 표시 고리</td></tr><tr><td class='k'>화면 크기</td><td>CanvasScaler 1080×1899 Expand, 가운데 <code>Frame</code> 안에 모든 화면. 폰이 더 길면 위아래에 방 배경</td></tr><tr><td class='k'>그림 설정</td><td>시안 UI · 시작 화면은 압축 없이 + 밉맵 + 최대 4096 (외곽선이 또렷하게). 카드 · 버튼은 9-slice (TeamCard · TeamPillCoral · TeamPillCream)</td></tr><tr><td class='k'>글꼴</td><td>Jua SDF (<code>MvpFontBake</code> 가 게임 글자만 구움). 글자를 새로 넣었으면 글꼴 굽기를 다시</td></tr><tr><td class='k'>단계 데이터</td><td><code>CreateStageDataFiles</code> : 이야기 · 규칙 · 특징(이름 · 기준 글) · 그림 연결. 씬 만들 때마다 덮어써요</td></tr></table><h2>6. 도구 (Tools → 찾아라도깨비, 또는 Temp/ 의 flag 파일)</h2><table><tr><th>도구</th><th>파일</th><th>하는 일</th></tr><tr><td>MVP 씬 만들기</td><td>MvpSceneBuilder · MvpAutoBuild</td><td>씬을 처음부터 만들기 (mvp_rebuild.flag)</td></tr><tr><td>자동 플레이 테스트</td><td>MvpSelfTest · MvpLayoutCheck</td><td>5단계 흐름 · 규칙 · 버튼 확인 + 화면 캡처(Temp/SelfTest) + 배치 숫자 검사(걸쳐 겹침 · 글자 넘침 · 화면 밖) (mvp_selftest.flag)</td></tr><tr><td>판정 전수 검사</td><td>MvpJudgeCases · HandSketch</td><td>특징 조합 112가지 손그림을 계산식 판정에 넣어 보기 (mvp_judgecases.flag)</td></tr><tr><td>글꼴 굽기</td><td>MvpFontBake</td><td>Jua SDF (mvp_font.flag)</td></tr><tr><td>웹 빌드</td><td>MvpWebGLBuild</td><td>Builds/WebGL + 판정 서버 프롬프트 내보내기 (mvp_webgl.flag)</td></tr><tr><td>판정 서버 프롬프트</td><td>MvpJudgeServer</td><td>stages.json 내보내기, server_url.txt → 씬의 서버 주소</td></tr><tr><td>플레이 영상</td><td>MvpPlayRecorder</td><td>자동 플레이를 프레임으로 저장 (예전 화면 기준, 다시 찍어야 함)</td></tr></table><h2>7. 자주 하는 수정</h2><table><tr><th>하고 싶은 것</th><th>방법</th></tr><tr><td>팀 그림이 왔어요 (엉뚱한 물건 · 표정)</td><td><code>Assets/Sprites/Stage*/Wrong_F*.png</code> · <code>Characters/Boy_*.png</code> 를 같은 이름으로 덮어쓰기 → 씬 만들기 → 웹 빌드</td></tr><tr><td>시안 UI 가 바뀌었어요</td><td>새 시안을 <code>ArtSource/원본</code> 에 → <code>Docs/src/art_pipeline</code> 스크립트로 다시 오리기 → TeamUI 덮어쓰기</td></tr><tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr><tr><td>특징 · 판정 기준</td><td>CreateStageDataFiles 의 특징 글 → 씬 만들기 → 웹 빌드 → wrangler deploy</td></tr><tr><td>웹에 올리기</td><td>웹 빌드 → Builds/WebGL/Build 를 gh-pages 브랜치에 커밋 · 푸시 (GitHub Pages)</td></tr></table></body></html>

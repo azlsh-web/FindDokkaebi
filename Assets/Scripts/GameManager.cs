@@ -257,30 +257,33 @@ public class GameManager : MonoBehaviour
         // 기다리는 동안 도깨비가 갸웃갸웃 (SimpleAnim)
         judgeStatusText.text = "쪽지와 간식 1개를 도깨비에게 건넸어요.\n도깨비가 쪽지를 들여다보는 중...";
         int ticket = ++judgeTicket;
-        if (judge.IsReady)
+        // 판정은 AI 가 해요 (기획서 6장). 키가 있으면 OpenAI 에 바로, 없으면 판정 중계 서버로.
+        //   AI 판정이 안 되면(서버·키·인터넷 문제) 기획서대로 간식을 돌려주고 다시 제출하게 해요 (OnJudgeError).
+        //   계산식 자동 판정(LocalJudge)은 자동 테스트(OpenAIJudge.DisableAI)에서만 써요.
+        if (OpenAIJudge.DisableAI)
         {
-            // AI 판정 (OpenAI 또는 판정 중계 서버) : 응답이 오면 OnVerdict, 문제가 생기면 OnJudgeError
-            //   웹 게임에서 서버가 안 되면(인터넷·서버 문제) 게임이 멈추지 않게 자동 판정으로 넘어가요.
-            bool viaServer = judge.UsesServer;
+            StartCoroutine(LocalJudgeRoutine(ticket));
+        }
+        else if (judge.IsReady)
+        {
             StartCoroutine(judge.Judge(Stage, board.Texture,
                 v => { if (ticket == judgeTicket) OnVerdict(v); },
-                e =>
-                {
-                    if (ticket != judgeTicket) return;
-                    if (!viaServer) { OnJudgeError(e); return; }
-                    Debug.LogWarning("[OpenAIJudge] 서버 판정 실패 → 자동 판정 : " + e);
-                    judgeStatusText.text = "AI 서버에 닿지 않아서\n도깨비가 직접 쪽지를 들여다보는 중...";
-                    StartCoroutine(LocalJudgeRoutine(ticket));
-                }));
+                e => { if (ticket == judgeTicket) OnJudgeError(e); }));
         }
         else
         {
-            // 자동 판정 (Unity 안에서 계산) : 도깨비가 잠깐 고민한 뒤 결과
-            StartCoroutine(LocalJudgeRoutine(ticket));
+            StartCoroutine(NoJudgeRoutine(ticket));
         }
     }
 
-    // 도깨비가 고민하는 시간만큼 기다렸다가 LocalJudge 로 판정
+    // AI 판정을 쓸 수 없을 때 (키도 판정 서버 주소도 없음) : 잠깐 기다렸다가 오류로 (간식은 돌려줘요)
+    IEnumerator NoJudgeRoutine(int ticket)
+    {
+        yield return new WaitForSeconds(thinkSeconds);
+        if (ticket == judgeTicket && state == State.Judge) OnJudgeError("AI 판정 설정이 없어요 (키 또는 판정 서버 주소)");
+    }
+
+    // (자동 테스트용) 도깨비가 고민하는 시간만큼 기다렸다가 LocalJudge 로 판정
     IEnumerator LocalJudgeRoutine(int ticket)
     {
         yield return new WaitForSeconds(thinkSeconds);

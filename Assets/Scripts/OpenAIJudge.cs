@@ -73,13 +73,13 @@ public class OpenAIJudge : MonoBehaviour
 
     bool HasKey => !string.IsNullOrWhiteSpace(settings.apiKey);
 
-    /// <summary>키 없이 판정 중계 서버로 보내는지 (빌드한 게임만. 에디터는 서버가 받아 주지 않아요 = 웹 게임 주소가 아니라서)</summary>
+    /// <summary>키 없이 판정 중계 서버로 보내는지 (웹 게임 · 에디터 모두. 에디터는 X-FindDokkaebi-Client 머리글로 알려요)</summary>
     public bool UsesServer
     {
         get
         {
             if (settings == null) LoadSettings();
-            return !Application.isEditor && !HasKey && !string.IsNullOrWhiteSpace(serverUrl);
+            return !HasKey && !string.IsNullOrWhiteSpace(serverUrl);
         }
     }
 
@@ -166,6 +166,8 @@ public class OpenAIJudge : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(body));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
+            // 브라우저가 아닌 곳(에디터 · PC 빌드)은 Origin 이 없어서, 우리 게임이라고 머리글로 알려요
+            if (Application.platform != RuntimePlatform.WebGLPlayer) request.SetRequestHeader("X-FindDokkaebi-Client", "unity");
             request.timeout = timeoutSeconds;
 
             yield return request.SendWebRequest();

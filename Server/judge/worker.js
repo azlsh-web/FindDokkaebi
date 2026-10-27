@@ -20,11 +20,12 @@ const MAX_IMAGE_CHARS = 1_500_000;   // 512x512 PNG 는 보통 수십 KB 라 넉
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin") || "";
-    const allowed = allowedOrigin(origin, env);
+    // 웹 게임은 브라우저가 Origin 을 붙여요. Unity 에디터 · PC 빌드는 Origin 이 없어서 머리글로 알려요.
+    const allowed = allowedOrigin(origin, env) || (!origin && request.headers.get("X-FindDokkaebi-Client") === "unity");
     const cors = {
       "Access-Control-Allow-Origin": allowed ? origin : "null",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, X-FindDokkaebi-Client",
       "Vary": "Origin",
     };
     const reply = (status, obj) =>
