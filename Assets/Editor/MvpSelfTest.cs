@@ -248,6 +248,10 @@ static class MvpSelfTest
             ExpectJudgeMiss(all[2], HandMat(bands: false), new[] { 1, 2, 3 }, "손그림 돗자리, 띠 없이 파랑 한 가지");
             ExpectJudge(all[3], HandGimbap(), -1, "손그림 김밥");
             ExpectJudge(all[4], HandFriend(), -1, "손그림 친구");
+            // 흐름 검사에서 "하나 빠뜨림" 으로 제출하는 손그림이 정말 그 특징만 빠졌는지
+            ExpectJudge(all[2], HandMat(bands: true, endsBlue: false), 4, "손그림 돗자리, 오른쪽 끝 띠가 빨강");
+            ExpectJudge(all[3], HandGimbap(green: false), 4, "손그림 김밥, 초록 재료 없음");
+            ExpectJudge(all[4], HandFriend(blueLegs: false), 3, "손그림 친구, 하의가 파랑이 아니라 검정");
         });
 
         // 1) 시작 화면
@@ -305,7 +309,21 @@ static class MvpSelfTest
                     Check(!Board().HasDrawn, "모두 지우기");
                     Board().Undo();
                     Check(Board().HasDrawn, "되돌리기로 지운 그림 복구");
+
+                    // 그림판 밖으로 나갔다가 다른 곳으로 들어오기 : 왼쪽으로 나가서 아래로 돌아 들어옴
+                    Board().Clear();
+                    Stroke(V(0.3f, 0.5f), V(-0.3f, 0.5f), V(-0.3f, -0.3f), V(0.5f, -0.3f), V(0.5f, 0.3f));
+                    Check(!Ink(0.25f, 0.25f), "밖으로 나간 곳과 들어온 곳이 직선으로 이어지지 않는다");
+                    Check(Ink(0.002f, 0.5f) && Ink(0.5f, 0.002f), "선은 그림판 가장자리까지 그려진다");
+                    Check(Ink(0.5f, 0.2f), "다시 들어온 뒤의 선은 그려진다");
+                    Board().Undo();
+                    Check(!Board().HasDrawn, "되돌리기로 빈 쪽지가 되면 빈 쪽지로 인식");
+                    Board().Undo();
+                    Check(Board().HasDrawn, "그 전 그림으로 되돌리기");
                 }
+                // 도구 확인이 끝나면, 이번 결과(강제로 넣는 판정)에 맞는 손그림으로 바꿔서 제출해요.
+                // (네모만 그려 놓고 "잘 그렸다" 가 나오면 캡처를 보는 사람이 판정이 고장 난 줄 알아요)
+                PutSketch(st, allDrawn: false);
                 Shot($"s{s + 1}_draw");
                 Expect(st, s == 1 ? -1 : st.features.Length - 1); // 2단계는 전부 빠뜨림, 나머지는 마지막 특징만 빠뜨림
                 if (s == 2)
@@ -380,6 +398,7 @@ static class MvpSelfTest
                 {
                     Check(IsOn("DrawPanel") && !Board().HasDrawn, "다시 그리기는 빈 쪽지 (원본 안 보여줌)");
                     DrawStage(st);
+                    PutSketch(st, allDrawn: true);
                     Expect(st, -2);     // 이번엔 전부 그림
                     Gm().Submit();
                 });
@@ -571,7 +590,7 @@ static class MvpSelfTest
             .Tex();
     }
 
-    static Texture2D HandMat(bool bands)
+    static Texture2D HandMat(bool bands, bool endsBlue = true)
     {
         var s = new HandSketch();
         if (bands)
@@ -579,36 +598,37 @@ static class MvpSelfTest
             s.Scribble(C(3), 6, 85, 170, 168, 370, 16);     // 파랑 (성기게)
             s.Scribble(C(1), 6, 180, 170, 255, 370, 16);    // 빨강
             s.Scribble(C(2), 6, 265, 170, 340, 370, 16);    // 노랑
-            s.Scribble(C(3), 6, 352, 170, 430, 370, 16);    // 파랑
+            s.Scribble(C(endsBlue ? 3 : 1), 6, 352, 170, 430, 370, 16);    // 파랑 (endsBlue 가 false 면 빨강)
         }
         else s.Scribble(C(3), 6, 85, 170, 430, 370, 16);    // 띠 없이 파랑 한 가지
         s.Line(InkBlack, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150)); // 외곽
         return s.Tex();
     }
 
-    static Texture2D HandGimbap()
+    static Texture2D HandGimbap(bool green = true)
     {
-        Color32 green = new Color32(40, 160, 60, 255);       // 노랑 + 파랑 으로 섞은 초록
-        return new HandSketch()
+        Color32 mixedGreen = new Color32(40, 160, 60, 255);  // 노랑 + 파랑 으로 섞은 초록
+        var s = new HandSketch()
             .Ellipse(InkBlack, 9, V(256, 256), 200, 196, gapDeg: 8f)
             .Scribble(C(1), 6, 160, 280, 240, 340, 14)
-            .Scribble(C(2), 6, 280, 280, 360, 340, 14)
-            .Scribble(green, 6, 210, 170, 310, 230, 14)
-            .Tex();
+            .Scribble(C(2), 6, 280, 280, 360, 340, 14);
+        if (green) s.Scribble(mixedGreen, 6, 210, 170, 310, 230, 14);
+        return s.Tex();
     }
 
-    static Texture2D HandFriend()
+    static Texture2D HandFriend(bool blueLegs = true)
     {
         Color32 orange = new Color32(245, 140, 30, 255), brown = new Color32(130, 80, 40, 255);   // 섞어서 만든 주황 · 갈색
-        return new HandSketch()
+        var s = new HandSketch()
             .Ellipse(InkBlack, 4, V(256, 400), 55, 55)                                     // 머리
             .Scribble(brown, 8, 200, 405, 312, 458, 9)                                     // 갈색 머리카락
             .Scribble(orange, 8, 165, 225, 347, 335, 9)                                    // 주황 상의 (꼼꼼히)
             .Scribble(orange, 8, 110, 250, 165, 320, 9)
-            .Scribble(orange, 8, 347, 250, 402, 320, 9)                                    // 팔
-            .Scribble(C(3), 8, 175, 70, 235, 215, 9)
-            .Scribble(C(3), 8, 280, 70, 340, 215, 9)                                       // 파란 두 다리
-            .Tex();
+            .Scribble(orange, 8, 347, 250, 402, 320, 9);                                   // 팔
+        Color32 legColor = blueLegs ? C(3) : InkBlack;                                     // blueLegs 가 false 면 검은 하의
+        return s.Scribble(legColor, 8, 175, 70, 235, 215, 9)
+                .Scribble(legColor, 8, 280, 70, 340, 215, 9)                               // 두 다리
+                .Tex();
     }
 
     // Sprite 원본 PNG 를 픽셀을 읽을 수 있는 텍스처로 불러오기 (자동 판정 검사용)
@@ -619,7 +639,35 @@ static class MvpSelfTest
         return tex;
     }
 
-    // 그림판 위 비율 좌표(0~1)를 따라 가짜 드래그
+    // 흐름 검사에서 제출할 손그림 : allDrawn = 특징 전부, 아니면 그 단계 첫 제출의 기대 결과대로
+    //   1 방망이 돌기 없음 · 2 가방 특징 없는 낙서 · 3 돗자리 오른쪽 끝 띠 빨강 · 4 김밥 초록 없음 · 5 친구 하의가 검정
+    static void PutSketch(StageData st, bool allDrawn)
+    {
+        Texture2D tex;
+        switch (st.stageNumber)
+        {
+            case 1: tex = allDrawn ? HandCloudBat() : HandBat(spikes: false); break;
+            case 2: tex = allDrawn ? HandBag() : new HandSketch().Line(InkBlack, 4, 3f, V(120, 300), V(200, 250), V(260, 310), V(330, 240), V(400, 290)).Tex(); break;
+            case 3: tex = HandMat(bands: true, endsBlue: allDrawn); break;
+            case 4: tex = HandGimbap(green: allDrawn); break;
+            default: tex = HandFriend(blueLegs: allDrawn); break;
+        }
+        Color32[] px = tex.GetPixels32();
+        var paper = new Color32(253, 252, 245, 255);                 // 손그림의 흰 종이 → 쪽지 종이 색
+        for (int i = 0; i < px.Length; i++)
+            if (px[i].r == 255 && px[i].g == 255 && px[i].b == 255) px[i] = paper;
+        Board().LoadPixels(px);
+    }
+
+    // 그림판 비율 좌표(0~1)의 픽셀에 잉크가 있는지 (종이 색이 아니면 잉크)
+    static bool Ink(float u, float v)
+    {
+        Texture2D t = Board().Texture;
+        Color32 c = t.GetPixel(Mathf.Clamp((int)(u * t.width), 0, t.width - 1), Mathf.Clamp((int)(v * t.height), 0, t.height - 1));
+        return !(c.r == 253 && c.g == 252 && c.b == 245);
+    }
+
+    // 그림판 위 비율 좌표(0~1)를 따라 가짜 드래그 (0~1 밖이면 그림판 밖)
     static void Stroke(params Vector2[] uv)
     {
         DrawingBoard board = Board();

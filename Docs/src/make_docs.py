@@ -1,10 +1,10 @@
 # Docs 의 두 문서 만들기 : 1_게임_플로우 · 2_MVP_아키텍처 (HTML → Edge 로 PDF)
 #   python make_docs.py <FindDokkaebi 폴더> <SelfTest 캡처 폴더>
-import sys, os, io, base64, subprocess
+import sys, os, io, base64, subprocess, tempfile
 from PIL import Image
 
 ROOT, SHOTS = sys.argv[1:3]
-DOCS = os.path.join(ROOT, "Docs")
+DOCS = os.path.abspath(os.path.join(ROOT, "Docs"))   # Edge 에 넘기는 file:/// 주소는 절대 경로여야 해요
 SRC = os.path.join(DOCS, "src")
 EDGE = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 
@@ -95,7 +95,7 @@ flow = ["<h1>찾아라! 도깨비 — 게임 플로우</h1>",
         "<tr><td class='k'>다음</td><td>「섞어서 칠하기」 → 카드가 닫히고 그 색이 물감 판 5번째 칸에 들어가 골라져요</td></tr></table></div></div>",
         screen(5, "판정 대기", "05_s1_ai_error.png", [
             ("나오는 것", "「쪽지와 간식 1개를 도깨비에게 건넸어요. 도깨비가 쪽지를 들여다보는 중...」, 갸웃거리는 도깨비 · 건넨 쪽지 · 간식"),
-            ("판정", "그림(PNG) → 판정 서버 → AI(OpenAI) 가 단계별 특징 기준(기획서 부록 B 프롬프트)으로 특징마다 그림/빠뜨림 + 근거"),
+            ("판정", "그림(PNG) → 판정 서버 → AI(Google Gemini) 가 단계별 특징 기준(기획서 부록 B 프롬프트)으로 특징마다 present / absent / uncertain + 근거"),
             ("다음", "판정이 오면 결과. 실패하면 (캡처) 「판정 중에 문제가 생겼어요. 간식을 돌려줬어요」 + 「그림으로 돌아가 다시 제출」")]),
         screen(6, "결과 — 부분 성공", "06_s1_result_partial.png", [
             ("나오는 것", "도깨비 · 가져온 물건 · 내 그림, 「엉뚱한 방망이를 가져왔다...」, 특징별 [O] 그림 / [X] 빠뜨림 (+ 빠뜨린 이유), 소년 「'볼록볼록한 머리' 부분이 달라!」, 남은 간식"),
@@ -131,7 +131,7 @@ arch = [
     "<tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr>"
     "<tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr>"
     "<tr><td class='k'>화면</td><td>패널 8개 (시작 · 도입 · 관찰 · 그리기 · 판정 · 결과 · 비교 · 종료) 중 하나만 켜고, 위에 HUD · 일시정지. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
-    "<tr><td class='k'>판정</td><td>AI (OpenAI Responses API). 웹 · 에디터는 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 실패하면 간식 돌려주고 다시 제출</td></tr>"
+    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3.5-flash</code>, 무료 등급 : 하루 약 20번). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 그대로. 실패하면 간식 돌려주고 다시 제출</td></tr>"
     "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>feature/mvp-stage1</code></td></tr></table>",
     "<h2>2. 폴더</h2><pre>"
     "FindDokkaebi/\n"
@@ -141,17 +141,17 @@ arch = [
     "  Assets/Sprites/     TeamUI(시안에서 오린 UI, 절반 크기) · Background · Characters · Stage1~5(원본·엉뚱한 물건) · UI(그림 준비 중 등)\n"
     "  Assets/Fonts/       Jua(시안 글꼴, 구운 SDF) · Noto Sans KR(없는 기호 대신)\n"
     "  ArtSource/          아트 원본 정리 : 원본(기획서 그림 · 첨부 사진) + 화면별로 들어간 부품 + README 표\n"
-    "  Server/judge/       판정 중계 서버 (worker.js · stages.json 프롬프트 · wrangler.toml)\n"
+    "  Server/judge/       판정 중계 서버 (worker.js · stages.json 게임 프롬프트 · appendix_b.json 부록 B 원문 · wrangler.toml)\n"
     "  Docs/               이 문서들 · src(문서·그림 만드는 스크립트) · 참고(예전 문서)\n"
     "  Builds/WebGL/       웹 빌드 결과 (git 에 안 올림)\n"
-    "  UserSettings/OpenAI.json   (선택) 내 OpenAI 키 — git 에 안 올림</pre>",
+    "  UserSettings/OpenAI.json   (선택) 판정 서버 주소가 비어 있을 때만 쓰는 OpenAI 키 — git 에 안 올림</pre>",
     "<h2 class='pb'>3. 게임 코드 (Assets/Scripts)</h2><table><tr><th>파일</th><th>하는 일</th><th>주로 고칠 때</th></tr>"
     "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식 · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 일시정지</td><td>흐름 · 규칙 · 문구</td></tr>"
     "<tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 이야기 · 규칙 · 색 모드 · 원본 그림 · 특징 목록). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 엉뚱한 물건 그림 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr>"
-    "<tr><td><code>DrawingBoard</code></td><td>512×512 쪽지 : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처</td><td>그리기 느낌</td></tr>"
+    "<tr><td><code>DrawingBoard</code></td><td>512×512 쪽지 : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처. 잉크는 쪽지 안에만 칠해지고, 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
     "<tr><td><code>ToolBar</code></td><td>색 · 연필 · 지우개 · 굵기 버튼, 고른 표시, 단계마다 색 버튼 보이기/숨기기</td><td>도구 버튼</td></tr>"
     "<tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 재료 고르기 → 결과 색 (MixTable) → 섞은 색 칸</td><td>섞는 규칙</td></tr>"
-    "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 키 있으면 OpenAI 직접, 없으면 판정 서버. 기획서 부록 B 프롬프트(BuildPrompt) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
+    "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 그대로 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>도깨비 갸웃 · 물건 뿅 · 방망이 휘두르기</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
@@ -162,13 +162,18 @@ arch = [
     "<h3>결과 규칙 (ShowResult)</h3><p>특징 전부 그림 → 성공 · 진짜 물건 / 일부 → 처음 빠뜨린 특징의 엉뚱한 물건 / 하나도 없음 → 아무것도 못 찾음. 실패했고 간식이 남으면 「다시 그리기」.</p>",
     "<h2>4. 판정이 흐르는 길</h2><pre>"
     "제출 → board.Texture → PNG → base64\n"
-    "  ├ (UserSettings/OpenAI.json 에 키 있음)  OpenAI Responses API 로 바로 : 프롬프트(BuildPrompt) + 그림\n"
-    "  └ (키 없음)  판정 서버 POST /judge {stage, image}\n"
-    "        서버 : 허락한 곳(웹 게임 주소 · Unity)만, IP 당 1분 20번 → stages.json 의 그 단계 프롬프트 + 그림 → OpenAI\n"
+    "  ├ (판정 서버 주소 있음 = 보통)  판정 서버 POST /judge {stage, image}\n"
+    "  │     서버 : 허락한 곳(웹 게임 주소 · Unity)만, IP 당 1분 20번 → stages.json 의 그 단계 프롬프트 + 그림\n"
+    "  │            → Google Gemini (GEMINI_MODEL). 서버는 미국(aws:us-east-1)에서 돌아요 (홍콩에서 보내면 Gemini 가 거절)\n"
+    "  └ (서버 주소 없음)  UserSettings/OpenAI.json 키로 OpenAI Responses API 에 바로\n"
     "← AI JSON {inputStatus, features:[{featureId, status, evidence}]} → present = (status == present) → ShowResult\n"
     "실패(연결 · 키 · JSON) → OnJudgeError : 간식 돌려주고 「그림으로 돌아가 다시 제출」</pre>"
-    "<div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 웹 빌드(이때 <code>Server/judge/stages.json</code> 도 자동으로 새로) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. "
-    "서버 키 : <code>npx wrangler secret put OPENAI_API_KEY</code> (값은 물어볼 때 붙여 넣기).</div>",
+    "<div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 판정 서버 프롬프트 내보내기(<code>Server/judge/stages.json</code>) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. 프롬프트는 서버에 있어서 웹 게임은 다시 빌드하지 않아도 돼요. "
+    "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 등급은 하루 약 20번 (한국 시간 오후 4시에 다시 채워짐).</div>"
+    "<h3>판정 검증 (기획서 8장 다시 하기)</h3><p>부록 A 그림 4장 + 부록 B 프롬프트 원문(<code>Server/judge/appendix_b.json</code>)으로 그림마다 한 번씩 판정 → 2026-10-27 Gemini 로 4장 모두 기획서 표와 같은 결과. "
+    "입력 그림과 실제 JSON : <code>Docs/참고/기획서8장_재검증_Gemini_2026-10-27/</code>. "
+    "※ 기획서 8장 돗자리는 십자 네 칸, 게임 3단계 돗자리는 최종 아트대로 색 띠 네 줄이라 프롬프트가 달라요.</p>"
+    "<div class='note'>자동 플레이 테스트(MvpSelfTest)는 AI 를 부르지 않아요. 화면 흐름을 보려고 판정 결과를 미리 정해서 넣고, 그 결과에 맞는 손그림(HandSketch)을 제출해요.</div>",
     "<h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table>"
     "<tr><td class='k'>좌표</td><td><code>PlaceM(rt, x0,y0,x1,y1)</code> = 시안 픽셀 상자 그대로 (K = 1080/2248). <code>TeamImage</code> = 오린 그림을 원래 자리에, <code>TeamTool</code> = 시안 그림 버튼 + 고른 표시 고리</td></tr>"
     "<tr><td class='k'>화면 크기</td><td>CanvasScaler 1080×1899 Expand, 가운데 <code>Frame</code> 안에 모든 화면. 폰이 더 길면 위아래에 방 배경</td></tr>"
@@ -177,7 +182,7 @@ arch = [
     "<tr><td class='k'>단계 데이터</td><td><code>CreateStageDataFiles</code> : 이야기 · 규칙 · 특징(이름 · 기준 글) · 그림 연결. 씬 만들 때마다 덮어써요</td></tr></table>",
     "<h2>6. 도구 (Tools → 찾아라도깨비, 또는 Temp/ 의 flag 파일)</h2><table><tr><th>도구</th><th>파일</th><th>하는 일</th></tr>"
     "<tr><td>MVP 씬 만들기</td><td>MvpSceneBuilder · MvpAutoBuild</td><td>씬을 처음부터 만들기 (mvp_rebuild.flag)</td></tr>"
-    "<tr><td>자동 플레이 테스트</td><td>MvpSelfTest · MvpLayoutCheck</td><td>5단계 흐름 · 규칙 · 버튼 확인 + 화면 캡처(Temp/SelfTest) + 배치 숫자 검사(걸쳐 겹침 · 글자 넘침 · 화면 밖) (mvp_selftest.flag)</td></tr>"
+    "<tr><td>자동 플레이 테스트</td><td>MvpSelfTest · MvpLayoutCheck</td><td>5단계 흐름 · 규칙 · 버튼 · 펜(그림판 밖) 확인 + 화면 캡처(Temp/SelfTest) + 배치 숫자 검사(걸쳐 겹침 · 글자 넘침 · 화면 밖) (mvp_selftest.flag)</td></tr>"
     "<tr><td>판정 전수 검사</td><td>MvpJudgeCases · HandSketch</td><td>특징 조합 112가지 손그림을 계산식 판정에 넣어 보기 (mvp_judgecases.flag)</td></tr>"
     "<tr><td>글꼴 굽기</td><td>MvpFontBake</td><td>Jua SDF (mvp_font.flag)</td></tr>"
     "<tr><td>웹 빌드</td><td>MvpWebGLBuild</td><td>Builds/WebGL + 판정 서버 프롬프트 내보내기 (mvp_webgl.flag)</td></tr>"
@@ -187,7 +192,8 @@ arch = [
     "<tr><td>팀 그림이 왔어요 (엉뚱한 물건 · 표정)</td><td><code>Assets/Sprites/Stage*/Wrong_F*.png</code> · <code>Characters/Boy_*.png</code> 를 같은 이름으로 덮어쓰기 → 씬 만들기 → 웹 빌드</td></tr>"
     "<tr><td>시안 UI 가 바뀌었어요</td><td>새 시안을 <code>ArtSource/원본</code> 에 → <code>Docs/src/art_pipeline</code> 스크립트로 다시 오리기 → TeamUI 덮어쓰기</td></tr>"
     "<tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr>"
-    "<tr><td>특징 · 판정 기준</td><td>CreateStageDataFiles 의 특징 글 → 씬 만들기 → 웹 빌드 → wrangler deploy</td></tr>"
+    "<tr><td>특징 · 판정 기준</td><td>CreateStageDataFiles 의 특징 글 → 씬 만들기 → 판정 서버 프롬프트 내보내기 → wrangler deploy (결과 화면의 특징 이름도 바뀌었으면 웹 빌드도)</td></tr>"
+    "<tr><td>돗자리 온전한 그림이 왔어요</td><td>지금 돗자리 그림은 기획서 그림 5 에서 오린 것이라 왼쪽 모서리가 잘려 있어요 (팀에 요청함). 오면 <code>Assets/Sprites/Stage3_Mat/Original.png</code> 를 덮어쓰기 → 웹 빌드</td></tr>"
     "<tr><td>웹에 올리기</td><td>웹 빌드 → Builds/WebGL/Build 를 gh-pages 브랜치에 커밋 · 푸시 (GitHub Pages)</td></tr></table>",
 ]
 open(os.path.join(SRC, "2_MVP_아키텍처.html"), "w", encoding="utf-8").write(page("MVP 아키텍처", "".join(arch)))
@@ -195,6 +201,8 @@ open(os.path.join(SRC, "2_MVP_아키텍처.html"), "w", encoding="utf-8").write(
 for n in ["1_게임_플로우", "2_MVP_아키텍처"]:
     html = os.path.join(SRC, n + ".html")
     pdf = os.path.join(DOCS, n + ".pdf")
-    subprocess.run([EDGE, "--headless", "--disable-gpu", "--no-pdf-header-footer", f"--print-to-pdf={pdf}", "file:///" + html.replace("\\", "/")],
+    # Edge 를 쓰고 있으면 같은 프로필로는 인쇄가 조용히 안 돼서, 인쇄용 프로필 폴더를 따로 써요
+    profile = os.path.join(tempfile.gettempdir(), "finddokkaebi_docs_edge")
+    subprocess.run([EDGE, "--headless", "--disable-gpu", "--no-pdf-header-footer", f"--user-data-dir={profile}", f"--print-to-pdf={pdf}", "file:///" + html.replace("\\", "/")],
                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     print(n, os.path.getsize(pdf))

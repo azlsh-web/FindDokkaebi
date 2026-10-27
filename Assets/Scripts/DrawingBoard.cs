@@ -55,7 +55,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     Color32 inkColor = new Color32(0, 0, 0, 255); // 지금 펜 색
     int penRadius = 6;      // 지금 펜 굵기(반지름)
     bool isEraser;          // true 면 지우개 모드
-    Vector2 lastPixel;      // 직전에 그린 점 (선을 끊기지 않게 잇는 데 사용)
+    Vector2 lastPixel;      // 직전 손가락 위치(픽셀 좌표). 그림판 밖일 수도 있어요. (선을 끊기지 않게 잇는 데 사용)
 
     static readonly Color32 Paper = new Color32(253, 252, 245, 255); // 쪽지 색 (시안 클립보드 종이 색)
 
@@ -164,12 +164,17 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     }
 
     // 누른 채로 끄는 동안 : 직전 점에서 지금 점까지 선 잇기
+    // 그림판 밖으로 나가도 손가락 위치는 계속 따라가고, 선은 그림판 안에 들어오는 부분만 그려요.
+    // (밖으로 나갔다가 다른 곳으로 들어와도, 나간 곳과 들어온 곳이 직선으로 이어지지 않아요)
     public void OnDrag(PointerEventData eventData)
     {
-        if (!TryGetPixel(eventData, out Vector2 p)) return;
-        DrawLine(lastPixel, p);
+        if (!TryGetPixel(eventData, out Vector2 p, allowOutside: true)) return;
+        if (ClipToBoard(lastPixel, p, out Vector2 a, out Vector2 b))
+        {
+            DrawLine(a, b);
+            ApplyPixels();
+        }
         lastPixel = p;
-        ApplyPixels();
     }
 
     // 손을 뗀 순간 : 지우개로 다 지웠을 수도 있으니 한 번 확인
@@ -186,18 +191,20 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         if (undoStack.Count > maxUndo) undoStack.RemoveAt(0);     // 너무 많으면 가장 오래된 것 버림
     }
 
-    // 쪽지에 흰색이 아닌 픽셀이 하나라도 있는지
+    // 쪽지에 종이 색(또는 흰색)이 아닌 픽셀이 하나라도 있는지
     bool ScanForInk()
     {
         foreach (Color32 c in pixels)
         {
-            if (c.r != 255 || c.g != 255 || c.b != 255) return true;
+            bool paper = c.r == Paper.r && c.g == Paper.g && c.b == Paper.b;
+            bool white = c.r == 255 && c.g == 255 && c.b == 255;   // 검사용으로 불러온 그림은 흰 바탕일 수 있어요
+            if (!paper && !white) return true;
         }
         return false;
     }
 
     // 화면 좌표(마우스 위치) → 텍스처의 픽셀 좌표로 바꾸기
-    bool TryGetPixel(PointerEventData eventData, out Vector2 pixel)
+    bool TryGetPixel(PointerEventData eventData, out Vector2 pixel, bool allowOutside = false)
     {
         pixel = Vector2.zero;
 
@@ -210,10 +217,32 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         Rect r = rect.rect;
         float u = (local.x - r.x) / r.width;
         float v = (local.y - r.y) / r.height;
-        if (u < 0f || u > 1f || v < 0f || v > 1f) return false; // 칸 밖이면 무시
+        if (!allowOutside && (u < 0f || u > 1f || v < 0f || v > 1f)) return false; // 칸 밖이면 무시
 
         // 3) 비율 × 텍스처 크기 = 픽셀 좌표
         pixel = new Vector2(u * textureSize, v * textureSize);
+        return true;
+    }
+
+    // 선분 from→to 에서 그림판(0 ~ textureSize) 안에 들어가는 부분만 남기기 (Liang–Barsky 선분 자르기)
+    // 안에 들어가는 부분이 없으면 false
+    bool ClipToBoard(Vector2 from, Vector2 to, out Vector2 a, out Vector2 b)
+    {
+        a = from; b = to;
+        Vector2 d = to - from;
+        float t0 = 0f, t1 = 1f;
+        float[] p = { -d.x, d.x, -d.y, d.y };
+        float[] q = { from.x, textureSize - from.x, from.y, textureSize - from.y };
+        for (int i = 0; i < 4; i++)
+        {
+            if (p[i] == 0f) { if (q[i] < 0f) return false; continue; }   // 경계와 나란한데 밖에 있음
+            float t = q[i] / p[i];
+            if (p[i] < 0f) t0 = Mathf.Max(t0, t);   // 들어오는 쪽
+            else t1 = Mathf.Min(t1, t);             // 나가는 쪽
+            if (t0 > t1) return false;
+        }
+        a = from + d * t0;
+        b = from + d * t1;
         return true;
     }
 
