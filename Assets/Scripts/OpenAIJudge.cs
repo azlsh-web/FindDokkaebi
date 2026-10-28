@@ -30,8 +30,8 @@ using UnityEngine.Networking;
 //   → GameManager 가 간식을 돌려주고 다시 제출하게 안내해요. (기획서 6장 "오류 처리")
 public class OpenAIJudge : MonoBehaviour
 {
-    [Tooltip("응답을 기다리는 최대 시간(초)")]
-    [SerializeField] int timeoutSeconds = 40;
+    [Tooltip("응답을 기다리는 최대 시간(초). 판정 서버가 AI 혼잡 때 다시 묻는 시간까지 넉넉히")]
+    [SerializeField] int timeoutSeconds = 60;
 
     [Tooltip("판정 중계 서버 주소 (예: https://finddokkaebi-judge.xxx.workers.dev/judge). 비우면 서버를 안 써요")]
     [SerializeField] string serverUrl = "";

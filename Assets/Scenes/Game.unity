@@ -1197,7 +1197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0baf9a7de951eec4d8fdbaf33f41e7b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OpenAIJudge
-  timeoutSeconds: 40
+  timeoutSeconds: 60
   serverUrl: https://finddokkaebi-judge.finddokkaebi-judge.workers.dev/judge
 --- !u!114 &165916690
 MonoBehaviour:
