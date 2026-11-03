@@ -249,7 +249,7 @@ static class MvpSelfTest
             ExpectJudge(all[3], HandGimbap(), -1, "손그림 김밥");
             ExpectJudge(all[4], HandFriend(), -1, "손그림 친구");
             // 흐름 검사에서 "하나 빠뜨림" 으로 제출하는 손그림이 정말 그 특징만 빠졌는지
-            ExpectJudge(all[2], HandMat(bands: true, endsBlue: false), 4, "손그림 돗자리, 오른쪽 끝 띠가 빨강");
+            ExpectJudge(all[2], HandMat(bands: true, endsBlue: false), 4, "손그림 돗자리, 맨 아래 띠가 빨강");
             ExpectJudge(all[3], HandGimbap(green: false), 4, "손그림 김밥, 초록 재료 없음");
             ExpectJudge(all[4], HandFriend(blueLegs: false), 3, "손그림 친구, 하의가 파랑이 아니라 검정");
         });
@@ -595,10 +595,10 @@ static class MvpSelfTest
         var s = new HandSketch();
         if (bands)
         {
-            s.Scribble(C(3), 6, 85, 170, 168, 370, 16);     // 파랑 (성기게)
-            s.Scribble(C(1), 6, 180, 170, 255, 370, 16);    // 빨강
-            s.Scribble(C(2), 6, 265, 170, 340, 370, 16);    // 노랑
-            s.Scribble(C(endsBlue ? 3 : 1), 6, 352, 170, 430, 370, 16);    // 파랑 (endsBlue 가 false 면 빨강)
+            s.Scribble(C(3), 6, 85, 325, 430, 372, 16);     // 맨 위 파랑 (성기게)
+            s.Scribble(C(1), 6, 85, 268, 430, 315, 16);     // 빨강
+            s.Scribble(C(2), 6, 85, 211, 430, 258, 16);     // 노랑
+            s.Scribble(C(endsBlue ? 3 : 1), 6, 85, 158, 430, 201, 16);    // 맨 아래 파랑 (endsBlue 가 false 면 빨강)
         }
         else s.Scribble(C(3), 6, 85, 170, 430, 370, 16);    // 띠 없이 파랑 한 가지
         s.Line(InkBlack, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150)); // 외곽
@@ -640,7 +640,7 @@ static class MvpSelfTest
     }
 
     // 흐름 검사에서 제출할 손그림 : allDrawn = 특징 전부, 아니면 그 단계 첫 제출의 기대 결과대로
-    //   1 방망이 돌기 없음 · 2 가방 특징 없는 낙서 · 3 돗자리 오른쪽 끝 띠 빨강 · 4 김밥 초록 없음 · 5 친구 하의가 검정
+    //   1 방망이 돌기 없음 · 2 가방 특징 없는 낙서 · 3 돗자리 맨 아래 띠 빨강 · 4 김밥 초록 없음 · 5 친구 하의가 검정
     static void PutSketch(StageData st, bool allDrawn)
     {
         Texture2D tex;

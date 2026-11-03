@@ -259,15 +259,15 @@ static class MvpJudgeCases
             case 2: // 돗자리 : F1 네모, F2 띠 네 줄, F3 두 번째 빨강, F4 세 번째 노랑, F5 양 끝 파랑
             {
                 Color32 end = f[4] ? Pal(3) : Orange, second = f[2] ? Pal(1) : Green, third = f[3] ? Pal(2) : Purple;
-                float y0 = f[0] ? 170 : 215, y1 = f[0] ? 370 : 325;              // 둥근 돗자리는 위아래로 좁게 칠함
+                float x0 = f[0] ? 85 : 160, x1 = f[0] ? 430 : 352;               // 둥근 돗자리는 좌우로 좁게 칠함
                 if (f[1])
                 {
-                    s.Scribble(end, 6, 85, y0, 168, y1, 16);
-                    s.Scribble(second, 6, 180, y0, 255, y1, 16);
-                    s.Scribble(third, 6, 265, y0, 340, y1, 16);
-                    s.Scribble(end, 6, 352, y0, 430, y1, 16);
+                    s.Scribble(end, 6, x0, 325, x1, 372, 16);                    // 위에서부터 칠함
+                    s.Scribble(second, 6, x0, 268, x1, 315, 16);
+                    s.Scribble(third, 6, x0, 211, x1, 258, 16);
+                    s.Scribble(end, 6, x0, 158, x1, 201, 16);
                 }
-                else s.Scribble(end, 6, 85, y0, 430, y1, 16);                    // 띠 없이 한 가지 색
+                else s.Scribble(end, 6, x0, 158, x1, 372, 16);                   // 띠 없이 한 가지 색
                 if (f[0]) s.Line(k, 3, 3f, V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150));
                 else s.Ellipse(k, 3, V(256, 268), 195, 128, gapDeg: 6f);
                 break;

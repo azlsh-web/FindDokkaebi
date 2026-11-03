@@ -57,7 +57,7 @@ public enum InkColor { Black, Red, Yellow, Blue, Green, Orange, Purple, Brown }
 public enum Area
 {
     TopLeft, TopRight, BottomBoth,      // (예전 4칸 돗자리)
-    Band2, Band3, BothEnds,             // 돗자리 띠 : 왼쪽에서 두 번째 · 세 번째 · 양 끝
+    Band2, Band3, BothEnds,             // 돗자리 띠 : 위에서 두 번째 · 세 번째 · 맨 위와 맨 아래
     Head, Body, Legs,                   // 친구 : 머리 · 몸통(상의) · 다리(하의)
 }
 

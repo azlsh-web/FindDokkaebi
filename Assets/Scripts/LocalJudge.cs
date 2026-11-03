@@ -786,12 +786,12 @@ public static class LocalJudge
         return false;
     }
 
-    // ── 돗자리 (띠 무늬) : 외곽을 가로로 4등분한 띠의 색 ──
-    //   시안의 돗자리는 비스듬히 놓여 있어서, 위아래 가장자리는 빼고 가운데 높이만 봐요.
+    // ── 돗자리 (띠 무늬) : 외곽을 위에서 아래로 4등분한 띠의 색 (k = 0 이 맨 위) ──
+    //   돗자리는 비스듬히 놓여 있어서, 좌우 가장자리는 빼고 가운데 너비만 봐요.
     static Box Band(Box o, int k) => new Box
     {
-        xMin = o.xMin + o.W * k / 4 + o.W / 40, xMax = o.xMin + o.W * (k + 1) / 4 - 1 - o.W / 40,
-        yMin = o.yMin + o.H / 4, yMax = o.yMax - o.H / 4, valid = true,
+        xMin = o.xMin + o.W / 4, xMax = o.xMax - o.W / 4,
+        yMin = o.yMax - o.H * (k + 1) / 4 + 1 + o.H / 40, yMax = o.yMax - o.H * k / 4 - o.H / 40, valid = true,
     };
 
     static bool BandColor(Picture p, Area area, InkColor color, out string note)
@@ -808,34 +808,34 @@ public static class LocalJudge
         if (area == Area.BothEnds)
         {
             bool a = BandIs(0, out string ga), b = BandIs(3, out string gb);
-            if (a && b) { note = $"양 끝 띠가 모두 {target}이에요."; return true; }
-            note = $"양 끝 띠가 {ga} / {gb} 예요. ({target}이어야 해요)";
+            if (a && b) { note = $"맨 위와 맨 아래 띠가 모두 {target}이에요."; return true; }
+            note = $"맨 위와 맨 아래 띠가 {ga} / {gb} 예요. ({target}이어야 해요)";
             return false;
         }
         int band = area == Area.Band2 ? 1 : 2;
-        string where = band == 1 ? "왼쪽에서 두 번째" : "왼쪽에서 세 번째";
+        string where = band == 1 ? "위에서 두 번째" : "위에서 세 번째";
         if (BandIs(band, out string g)) { note = $"{where} 띠가 {target}이에요."; return true; }
         note = $"{where} 띠가 {g}이에요. ({target}이어야 해요)";
         return false;
     }
 
-    // 띠 네 줄 : 가운데 높이의 여러 줄에서 왼쪽→오른쪽으로 색이 바뀌는 덩어리 수를 세요 (작은 조각은 무시)
+    // 띠 네 줄 : 가운데 너비의 여러 줄에서 위→아래로 색이 바뀌는 덩어리 수를 세요 (작은 조각은 무시)
     static bool ColorBands(Picture p, out string note)
     {
         Box o = BodyBox(p, out _);
         var counts = new List<int>();
         for (int t = 3; t <= 7; t++)
         {
-            int y = o.yMin + o.H * t / 10;
+            int x = o.xMin + o.W * t / 10;
             var runs = new List<(int c, int n)>();
-            for (int x = o.xMin + o.W / 20; x <= o.xMax - o.W / 20; x++)
+            for (int y = o.yMax - o.H / 20; y >= o.yMin + o.H / 20; y--)
             {
                 int c = p.cls[y * N + x];
                 if (!Chromatic(c)) continue;
                 if (runs.Count > 0 && runs[runs.Count - 1].c == c) runs[runs.Count - 1] = (c, runs[runs.Count - 1].n + 1);
                 else runs.Add((c, 1));
             }
-            int minLen = Math.Max(3, o.W / 16);
+            int minLen = Math.Max(3, o.H / 16);
             var big = new List<int>();
             foreach (var r in runs)
                 if (r.n >= minLen && (big.Count == 0 || big[big.Count - 1] != r.c)) big.Add(r.c);
