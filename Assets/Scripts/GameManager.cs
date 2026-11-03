@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text stageText;            // 가운데 위 "1/5 · 방망이"
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
     [SerializeField] TMP_Text timerText;            // "58초"
-    [SerializeField] Image incenseBar;              // 타들어 가는 향 막대 (없어도 돼요)
+    [SerializeField] IncenseBurn incense;           // 타들어 가는 향
     [SerializeField] GameObject pausePanel;         // 일시정지 화면
 
     [Header("배경 : 시작 화면과 게임 중 그림이 달라요")]
@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour
         {
             timeLeft -= Time.deltaTime;
             timerText.text = $"{Mathf.CeilToInt(Mathf.Max(0f, timeLeft))}초";
-            if (incenseBar != null) incenseBar.fillAmount = timeLeft / drawSeconds;   // 향이 타들어 감
+            incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
             submitButton.interactable = board.HasDrawn;             // 빈 쪽지면 제출 불가
             if (timeLeft <= 0f) Submit();                           // 향이 다 타면 자동 제출
         }

@@ -62,7 +62,7 @@ static class MvpLayoutCheck
         var items = new List<Item>();
         foreach (Graphic g in canvas.GetComponentsInChildren<Graphic>(false))
         {
-            if (!g.enabled || g.color.a < 0.05f || g.name == "Background") continue;
+            if (!g.enabled || g.color.a < 0.05f || g.name == "Background" || g.name.StartsWith("IncenseFx") || g.name == "IncenseHolder") continue;   // 움직이는 향 연출 · 향이 꽂힌 촛대는 배치 검사에서 빼요
             var item = new Item { g = g, path = Path(g.transform, canvas), r = WorldRect(g.rectTransform, scale) };
             if (g is TMP_Text t)
             {

@@ -149,12 +149,34 @@ public static class MvpSceneBuilder
         var snackText = NewText("SnackText", snackTag.transform, "간식 3개", 46, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left, bold: true);
         Anchor(snackText.rectTransform, 0f, 0.5f, new Vector2((358 - 108) * K, 0), new Vector2((850 - 358) * K, 100));
 
-        // 향 : 오른쪽 긴 향이 위에서부터 타들어 가요 (Filled, 아래 기준). 그 아래 남은 초
+        // 향 : 줄기가 위에서부터 타고, 불꽃 · 재 · 연기가 끝을 따라 움직여요 (IncenseBurn)
         var timerGroup = NewEmpty("TimerGroup", hud);
-        var incenseBar = TeamImage("Incense", timerGroup, T("Incense"), 2006, 772, 2153, 2543);
+        TeamImage("IncenseHolder", timerGroup, T("IncenseHolder"), 1950, 2190, 2210, 2542);   // 놋쇠 촛대 (향은 잔 안에 꽂혀요)
+        var incenseBar = TeamImage("Incense", timerGroup, T("IncenseStick"), 2006, 1172, 2153, 2228);
         incenseBar.type = Image.Type.Filled;
         incenseBar.fillMethod = Image.FillMethod.Vertical;
         incenseBar.fillOrigin = (int)Image.OriginVertical.Bottom;
+        Image IncenseFx(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, Color color)
+        {
+            var img = NewImage(name, parent, color);
+            img.sprite = sprite;
+            img.raycastTarget = false;
+            Anchor(img.rectTransform, 0.5f, 0f, pos, size);
+            return img;
+        }
+        var incenseTipGo = new GameObject("IncenseFx_Tip", typeof(RectTransform));
+        incenseTipGo.transform.SetParent(incenseBar.transform, false);
+        var incenseTip = (RectTransform)incenseTipGo.transform;
+        Anchor(incenseTip, 0.5f, 0f, Vector2.zero, new Vector2(70, 0));
+        var incenseSmoke = new Image[14];
+        for (int i = 0; i < incenseSmoke.Length; i++)
+            incenseSmoke[i] = IncenseFx("IncenseFx_Smoke", incenseBar.transform, T("SoftPuff"), Vector2.zero, new Vector2(64, 64), Color.clear);
+        var incenseAsh = IncenseFx("IncenseFx_Ash", incenseTip, T("IncenseAsh"), new Vector2(0, 40), new Vector2(70, 4), Color.white);
+        var incenseGlow = IncenseFx("IncenseFx_Glow", incenseTip, T("SoftPuff"), new Vector2(0, -35), new Vector2(150, 150), Color.clear);
+        IncenseFx("IncenseFx_Ember", incenseTip, T("IncenseEmber"), new Vector2(0, -8), new Vector2(70, 38), Color.white);
+        var incenseFlame = IncenseFx("IncenseFx_Flame", incenseTip, T("IncenseFlame"), new Vector2(0, 8), new Vector2(66, 88), Color.white);
+        var incenseFallingAsh = IncenseFx("IncenseFx_FallingAsh", incenseBar.transform, T("IncenseAsh"), Vector2.zero, new Vector2(34, 42), Color.white);
+        incenseFallingAsh.enabled = false;
         var timerText = NewText("TimerText", timerGroup, "60초", 34, Vector2.zero, Vector2.zero, bold: true);
         PlaceM(timerText.rectTransform, 1940, 2548, 2220, 2672);      // 글자 높이(약 49)가 들어가게
         foreach (TMP_Text t in new[] { stageText, snackText, timerText })
@@ -472,7 +494,18 @@ public static class MvpSceneBuilder
         Set(so, "stageText", stageText);
         Set(so, "timerGroup", timerGroup.gameObject);
         Set(so, "timerText", timerText);
-        Set(so, "incenseBar", incenseBar);
+        var burn = timerGroup.gameObject.AddComponent<IncenseBurn>();
+        var burnSo = new SerializedObject(burn);
+        Set(burnSo, "stick", incenseBar);
+        Set(burnSo, "tip", incenseTip);
+        Set(burnSo, "flame", incenseFlame.rectTransform);
+        Set(burnSo, "glow", incenseGlow);
+        Set(burnSo, "ash", incenseAsh.rectTransform);
+        Set(burnSo, "fallingAsh", incenseFallingAsh);
+        SetArray(burnSo, "smoke", incenseSmoke);
+        Set(burnSo, "secondsText", timerText);
+        burnSo.ApplyModifiedPropertiesWithoutUndo();
+        Set(so, "incense", burn);
         Set(so, "pausePanel", pause.gameObject);
         Set(so, "backgroundImage", bg);
         Set(so, "startBackground", startBackground);

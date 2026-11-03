@@ -157,6 +157,7 @@ arch = [
     "<tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 재료 고르기 → 결과 색 (MixTable) → 섞은 색 칸</td><td>섞는 규칙</td></tr>"
     "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
+    "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불꽃 · 재 · 연기가 따라 움직임, 10초 전 강조. 그림은 <code>Docs/src/art_pipeline/cut_incense.py</code></td><td>향 움직임</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>도깨비 갸웃 · 물건 뿅 · 방망이 휘두르기</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
     "Title ─StartGame→ StageIntro ─StartObserve→ Observe(3초) ─자동→ Draw(60초)\n"

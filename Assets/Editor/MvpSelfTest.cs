@@ -331,6 +331,8 @@ static class MvpSelfTest
                 if (s == 2)
                 {
                     // 3단계 : 향이 다 타면 자동 제출되는지 (남은 시간을 0.3초로 줄여 봄)
+                    SetPrivate(Gm(), "timeLeft", 30f);
+                    new GameObject("SelfTestShot").AddComponent<ShotHelper>().path = Path.Combine(OutDir, "extra_incense_8s.png");
                     Then(() => SetPrivate(Gm(), "timeLeft", 0.3f));
                 }
                 else Then(() => Gm().Submit());
@@ -339,6 +341,7 @@ static class MvpSelfTest
             // 판정 화면
             Add(s == 2 ? 1.0f : 0.3f, $"{st.Title} 판정", () =>
             {
+                if (s == 2) Check(((RectTransform)Find("HUD/TimerGroup/Incense/IncenseFx_Tip")).anchoredPosition.y < 150f, "향이 다 타면 불꽃이 아래까지 내려온다");
                 Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면 (쪽지와 간식을 건넴)");
                 Check(Text("HUD/SnackTag/SnackText") == "간식 2개", $"제출하면 간식 -1 ({Text("HUD/SnackTag/SnackText")})");
                 Check(Text("JudgePanel/StatusCard/Status").Contains("들여다보는"), "도깨비가 쪽지를 들여다보며 판정 중");
