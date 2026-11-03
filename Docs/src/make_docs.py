@@ -173,7 +173,7 @@ arch = [
     "← AI JSON {inputStatus, features:[{featureId, status, evidence}]} → present = (status == present) → ShowResult\n"
     "실패(연결 · 키 · JSON) → OnJudgeError : 간식 돌려주고 「그림으로 돌아가 다시 제출」</pre>"
     "<div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 판정 서버 프롬프트 내보내기(<code>Server/judge/stages.json</code>) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. 프롬프트는 서버에 있어서 웹 게임은 다시 빌드하지 않아도 돼요. "
-    "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 등급은 하루 약 20번 (한국 시간 오후 4시에 다시 채워짐).</div>"
+    "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 등급은 하루 약 20번 (미국 태평양 시간 자정에 다시 채워짐 : 한국 시간 오후 5시, 서머타임 때는 오후 4시).</div>"
     "<h3>판정 검증 (기획서 8장 다시 하기)</h3><p>부록 A 그림 4장 + 부록 B 프롬프트 원문(<code>Server/judge/appendix_b.json</code>)으로 그림마다 한 번씩 판정 → 2026-10-27 Gemini 로 4장 모두 기획서 표와 같은 결과. "
     "입력 그림과 실제 JSON : <code>Docs/참고/기획서8장_재검증_Gemini_2026-10-27/</code>. "
     "※ 기획서 8장 돗자리는 십자 네 칸, 게임 3단계 돗자리는 최종 아트대로 위에서부터 색 띠 네 줄이라 프롬프트가 달라요. 게임 1단계 방망이도 최종 아트대로 돌기가 있는 머리 기준이에요.</p>"

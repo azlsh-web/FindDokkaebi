@@ -65,15 +65,22 @@ th { background: #f4f0ea; }
 
 p = ["<h1>경우의 수 테스트 보고서</h1><p class='sub'>판정 조합별로 게임을 실행해 돌려주는 물건을 확인한 결과예요. 2026-11-03 기준이에요.</p>"]
 passed = sum(r["ok"] for r in rows)
-p.append(f"<h2>결론</h2><p><b>{len(rows)}번 중 {passed}번이 기대대로 나왔어요.</b> 62가지 조합이 게임에서 맞는 그림으로 연결돼 있어요. 다만 이 검사는 실제 AI가 아니라 테스트용 계산식과 손그림으로 돌렸어요.</p>" if all_ok else f"<h2>결론</h2><p><b>{len(rows)}번 중 {passed}번만 기대대로 나왔어요.</b> 빨간 테두리 경우를 확인해야 해요.</p>")
+p.append(f"<h2>결론</h2><p><b>{len(rows)}번 중 {passed}번이 기대대로 나왔어요.</b> 62가지 조합이 게임에서 맞는 그림으로 연결돼 있어요. 이 표의 조합 검사는 테스트용 계산식과 손그림으로 돌렸고, 실제 AI 확인은 아래에 따로 적었어요.</p>" if all_ok else f"<h2>결론</h2><p><b>{len(rows)}번 중 {passed}번만 기대대로 나왔어요.</b> 빨간 테두리 경우를 확인해야 해요.</p>")
 p.append("<table><tr><th>검사</th><th>결과</th><th>확인한 것</th></tr>"
          f"<tr><td>자동 플레이 테스트</td><td>{self_result}</td><td>5단계 흐름, 버튼, 간식, 화면 배치</td></tr>"
          f"<tr><td>판정 조합</td><td>{sum(r['judge_ok'] for r in rows)} / {len(rows)}</td><td>손그림의 O·X가 기대대로 판정되는지 (방망이는 굵은 펜도 검사해 62가지를 {len(rows)}번 실행)</td></tr>"
          f"<tr><td>돌려주는 그림</td><td>{sum(r['item_ok'] for r in rows)} / {len(rows)}</td><td>결과 화면에 나온 그림 파일이 그 조합의 파일인지</td></tr></table>")
 p.append("<h2>이번에 확인하지 못한 것</h2><ul>"
-         "<li><b>실제 AI 판정:</b> 새 판정 기준을 서버에 배포하지 않아, Gemini가 사람 그림을 어떻게 판정하는지는 확인하지 못했어요.</li>"
+         "<li><b>돗자리 · 김밥 · 친구의 실제 AI 판정:</b> Gemini 혼잡과 사용량 제한으로 답을 받지 못했어요.</li>"
+         "<li><b>사람이 그린 그림:</b> 실제 AI 확인에도 코드로 그린 손그림을 썼어요.</li>"
          "<li><b>실제 그림으로 판정:</b> 입력은 조합에 맞춰 코드로 그린 손그림이에요. 양 갈래와 천 조각 계산은 테스트용으로 단순하게 만들었어요.</li>"
-         "<li><b>웹 빌드:</b> 공개된 웹 게임은 아직 예전 버전이에요.</li></ul>")
+         "</ul>")
+p.append("<h2>실제 AI 판정 확인</h2><p>배포한 판정 서버로 Gemini에 보낸 결과예요. 답을 받은 3장은 모두 기대와 같았어요.</p>"
+         "<table><tr><th>그림</th><th>기대</th><th>결과</th><th>Gemini 근거</th></tr>"
+         "<tr><td>방망이, 전부 그림</td><td>O</td><td>O ✓</td><td>손잡이 끝에 굵은 머리가 이어지고 돌기가 여러 개 있다.</td></tr>"
+         "<tr><td>방망이, 돌기 없음</td><td>X</td><td>X ✓</td><td>손잡이와 굵은 머리는 있으나 돌기가 없다.</td></tr>"
+         "<tr><td>가방, 줄무늬 없음</td><td>OX</td><td>OX ✓</td><td>몸체 · 손잡이 · 주머니는 있으나 주머니 안 줄무늬가 없다.</td></tr>"
+         "<tr><td>돗자리 2장, 김밥 1장, 친구 2장</td><td></td><td>답 없음</td><td>Gemini 503 · 429</td></tr></table>")
 p.append("<table><tr><th>물건</th><th>평가 요소</th><th class='num'>경우의 수</th><th class='num'>통과</th></tr>")
 for s, (name, _, els) in STAGES.items():
     sr = [r for r in rows if int(r["stage"]) == s]
