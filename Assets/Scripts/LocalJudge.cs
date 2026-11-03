@@ -73,6 +73,14 @@ public static class LocalJudge
             case AutoCheck.PantsColor: return PantsColor(p, f.color, out note);
             case AutoCheck.ColorBands: return ColorBands(p, out note);
             case AutoCheck.ColorInZone: return ColorInZone(p, f.area, f.color, out note);
+            case AutoCheck.BatShape:
+                return p.Bat().LongHandle(out note) && p.Bat().ThickHead(out note) && p.Bat().Spikes(out note);
+            case AutoCheck.BagShape:
+                return RectOutline(p, out note) && HandleOnTop(p, out note) && InnerPocket(p, out note);
+            case AutoCheck.BandOrder: return BandOrder(p, out note);
+            case AutoCheck.IngredientLayout: return IngredientLayout(p, out note);
+            case AutoCheck.PigTails: return PigTails(p, out note);
+            case AutoCheck.PocketPatch: return PocketPatch(p, out note);
         }
         note = "판정 방법이 정해지지 않았어요.";
         return false;
@@ -786,12 +794,12 @@ public static class LocalJudge
         return false;
     }
 
-    // ── 돗자리 (띠 무늬) : 외곽을 가로로 4등분한 띠의 색 ──
-    //   시안의 돗자리는 비스듬히 놓여 있어서, 위아래 가장자리는 빼고 가운데 높이만 봐요.
+    // ── 돗자리 (띠 무늬) : 외곽을 위에서 아래로 4등분한 띠의 색 (k = 0 이 맨 위) ──
+    //   돗자리는 비스듬히 놓여 있어서, 좌우 가장자리는 빼고 가운데 너비만 봐요.
     static Box Band(Box o, int k) => new Box
     {
-        xMin = o.xMin + o.W * k / 4 + o.W / 40, xMax = o.xMin + o.W * (k + 1) / 4 - 1 - o.W / 40,
-        yMin = o.yMin + o.H / 4, yMax = o.yMax - o.H / 4, valid = true,
+        xMin = o.xMin + o.W / 4, xMax = o.xMax - o.W / 4,
+        yMin = o.yMax - o.H * (k + 1) / 4 + 1 + o.H / 40, yMax = o.yMax - o.H * k / 4 - o.H / 40, valid = true,
     };
 
     static bool BandColor(Picture p, Area area, InkColor color, out string note)
@@ -808,43 +816,63 @@ public static class LocalJudge
         if (area == Area.BothEnds)
         {
             bool a = BandIs(0, out string ga), b = BandIs(3, out string gb);
-            if (a && b) { note = $"양 끝 띠가 모두 {target}이에요."; return true; }
-            note = $"양 끝 띠가 {ga} / {gb} 예요. ({target}이어야 해요)";
+            if (a && b) { note = $"맨 위와 맨 아래 띠가 모두 {target}이에요."; return true; }
+            note = $"맨 위와 맨 아래 띠가 {ga} / {gb} 예요. ({target}이어야 해요)";
             return false;
         }
         int band = area == Area.Band2 ? 1 : 2;
-        string where = band == 1 ? "왼쪽에서 두 번째" : "왼쪽에서 세 번째";
+        string where = band == 1 ? "위에서 두 번째" : "위에서 세 번째";
         if (BandIs(band, out string g)) { note = $"{where} 띠가 {target}이에요."; return true; }
         note = $"{where} 띠가 {g}이에요. ({target}이어야 해요)";
         return false;
     }
 
-    // 띠 네 줄 : 가운데 높이의 여러 줄에서 왼쪽→오른쪽으로 색이 바뀌는 덩어리 수를 세요 (작은 조각은 무시)
+    // 가운데 너비의 한 줄에서 위→아래로 나타나는 색 덩어리 (작은 조각은 무시)
+    static List<int> BandRuns(Picture p, Box o, int x)
+    {
+        var runs = new List<(int c, int n)>();
+        for (int y = o.yMax - o.H / 20; y >= o.yMin + o.H / 20; y--)
+        {
+            int c = p.cls[y * N + x];
+            if (!Chromatic(c)) continue;
+            if (runs.Count > 0 && runs[runs.Count - 1].c == c) runs[runs.Count - 1] = (c, runs[runs.Count - 1].n + 1);
+            else runs.Add((c, 1));
+        }
+        int minLen = Math.Max(3, o.H / 16);
+        var big = new List<int>();
+        foreach (var r in runs)
+            if (r.n >= minLen && (big.Count == 0 || big[big.Count - 1] != r.c)) big.Add(r.c);
+        return big;
+    }
+
+    // 띠 네 줄 : 여러 줄에서 색 덩어리 수를 세요
     static bool ColorBands(Picture p, out string note)
     {
         Box o = BodyBox(p, out _);
         var counts = new List<int>();
-        for (int t = 3; t <= 7; t++)
-        {
-            int y = o.yMin + o.H * t / 10;
-            var runs = new List<(int c, int n)>();
-            for (int x = o.xMin + o.W / 20; x <= o.xMax - o.W / 20; x++)
-            {
-                int c = p.cls[y * N + x];
-                if (!Chromatic(c)) continue;
-                if (runs.Count > 0 && runs[runs.Count - 1].c == c) runs[runs.Count - 1] = (c, runs[runs.Count - 1].n + 1);
-                else runs.Add((c, 1));
-            }
-            int minLen = Math.Max(3, o.W / 16);
-            var big = new List<int>();
-            foreach (var r in runs)
-                if (r.n >= minLen && (big.Count == 0 || big[big.Count - 1] != r.c)) big.Add(r.c);
-            counts.Add(big.Count);
-        }
+        for (int t = 3; t <= 7; t++) counts.Add(BandRuns(p, o, o.xMin + o.W * t / 10).Count);
         counts.Sort();
         int bands = counts[counts.Count / 2];
-        if (bands >= 4) { note = $"색 띠가 {bands}줄로 나뉘어 있어요."; return true; }
-        note = bands <= 1 ? "띠 무늬 없이 한 가지 색이에요." : $"색 띠가 {bands}줄뿐이에요. (네 줄이어야 해요)";
+        if (bands == 4) { note = "색 띠가 4줄로 나뉘어 있어요."; return true; }
+        note = bands <= 1 ? "띠 무늬 없이 한 가지 색이에요." : $"색 띠가 {bands}줄이에요. (네 줄이어야 해요)";
+        return false;
+    }
+
+    // 띠 색 순서 : 맨 위와 맨 아래가 파랑, 그 사이에 빨강 → 노랑 (띠 수는 보지 않아요)
+    static bool BandOrder(Picture p, out string note)
+    {
+        Box o = BodyBox(p, out _);
+        int good = 0;
+        for (int t = 3; t <= 7; t++)
+        {
+            List<int> b = BandRuns(p, o, o.xMin + o.W * t / 10);
+            if (b.Count < 4 || b[0] != Ink(InkColor.Blue) || b[b.Count - 1] != Ink(InkColor.Blue)) continue;
+            int red = b.IndexOf(Ink(InkColor.Red));
+            int yellow = b.IndexOf(Ink(InkColor.Yellow));
+            if (red > 0 && yellow > red) good++;
+        }
+        if (good >= 3) { note = "위에서부터 파랑 · 빨강 · 노랑 · 파랑 순서예요."; return true; }
+        note = "띠 색 순서가 파랑 · 빨강 · 노랑 · 파랑이 아니에요.";
         return false;
     }
 
@@ -939,6 +967,76 @@ public static class LocalJudge
         string target = Name(color);
         if (n >= Mathf.Max(6, cells.Count * 0.005f)) { note = $"안쪽에 {target} 재료가 있어요."; return true; }
         note = $"안쪽에 {target} 재료가 보이지 않아요.";
+        return false;
+    }
+
+    // ── 김밥 : 재료 배치 (색은 보지 않고 색 덩어리의 위치만 봐요) ──
+    static bool IngredientLayout(Picture p, out string note)
+    {
+        var seen = new bool[N * N];
+        var centers = new List<float>();
+        Box whole = p.inkBox;
+        for (int start = 0; start < N * N; start++)
+        {
+            if (seen[start] || !Chromatic(p.cls[start])) continue;
+            var stack = new Stack<int>();
+            stack.Push(start);
+            seen[start] = true;
+            int count = 0, sumY = 0, xMin = N, xMax = 0;
+            while (stack.Count > 0)
+            {
+                int i = stack.Pop(), x = i % N, y = i / N;
+                count++;
+                sumY += y;
+                xMin = Math.Min(xMin, x);
+                xMax = Math.Max(xMax, x);
+                for (int dy = -2; dy <= 2; dy++)     // 쓱쓱 칠한 틈은 이어 봐요
+                for (int dx = -2; dx <= 2; dx++)
+                {
+                    int nx = x + dx, ny = y + dy;
+                    if (nx < 0 || ny < 0 || nx >= N || ny >= N) continue;
+                    int j = ny * N + nx;
+                    if (seen[j] || !Chromatic(p.cls[j])) continue;
+                    seen[j] = true;
+                    stack.Push(j);
+                }
+            }
+            if (count >= 6 && xMax - xMin < whole.W * 0.6f) centers.Add(sumY / (float)count);   // 김 테두리를 다른 색으로 그린 것은 빼요
+        }
+        if (centers.Count != 3) { note = $"재료 조각이 {centers.Count}개예요. (세 개여야 해요)"; return false; }
+        centers.Sort();
+        float gap = whole.H * 0.1f;
+        if (centers[2] - centers[1] < gap && centers[1] - centers[0] >= gap) { note = "재료가 위에 둘, 아래에 하나 있어요."; return true; }
+        note = "재료 배치가 위에 둘, 아래에 하나가 아니에요.";
+        return false;
+    }
+
+    // ── 친구 : 양 갈래 · 천 조각 (실제 판정은 AI 가 하고, 이 계산은 자동 테스트용으로 단순해요) ──
+    static bool PigTails(Picture p, out string note)
+    {
+        Box b = p.inkBox;
+        int zoneMin = b.yMax - b.H * 25 / 100, xMin = N, xMax = 0;   // 어깨가 들어오지 않게 맨 위 25% 만
+        for (int y = zoneMin; y <= b.yMax; y++)
+        for (int x = b.xMin; x <= b.xMax; x++)
+        {
+            if (!p.ink[y * N + x]) continue;
+            xMin = Math.Min(xMin, x);
+            xMax = Math.Max(xMax, x);
+        }
+        if ((xMax - xMin) >= (b.yMax - zoneMin) * 1.5f) { note = "머리 양옆으로 두 갈래가 보여요."; return true; }
+        note = "머리 양옆의 두 갈래가 보이지 않아요.";
+        return false;
+    }
+
+    static bool PocketPatch(Picture p, out string note)
+    {
+        Box b = p.inkBox;
+        int n = 0;
+        for (int y = b.yMax - b.H * 78 / 100; y <= b.yMax - b.H * 60 / 100; y++)
+        for (int x = b.xMin + b.W / 3; x <= b.xMax - b.W / 3; x++)
+            if (p.black[y * N + x]) n++;
+        if (n >= 4) { note = "주머니 자리에 천 조각이 있어요."; return true; }
+        note = "주머니 자리에 천 조각이 보이지 않아요.";
         return false;
     }
 

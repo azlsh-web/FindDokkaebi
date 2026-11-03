@@ -59,6 +59,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image incenseBar;              // 타들어 가는 향 막대 (없어도 돼요)
     [SerializeField] GameObject pausePanel;         // 일시정지 화면
 
+    [Header("배경 : 시작 화면과 게임 중 그림이 달라요")]
+    [SerializeField] Image backgroundImage;
+    [SerializeField] Sprite startBackground;
+    [SerializeField] Sprite gameBackground;
+
     [Header("패널(화면)")]
     [SerializeField] GameObject titlePanel;
     [SerializeField] GameObject stageIntroPanel;
@@ -173,6 +178,7 @@ public class GameManager : MonoBehaviour
         state = State.Title;
         SetPaused(false);
         hud.SetActive(false);
+        backgroundImage.sprite = startBackground;
         ShowPanel(titlePanel);
     }
 
@@ -182,6 +188,7 @@ public class GameManager : MonoBehaviour
         attempts = new int[stages.Length];
         cleared = new bool[stages.Length];
         snacksLeft = new int[stages.Length];
+        backgroundImage.sprite = gameBackground;
         StartStage(0);
     }
 
@@ -204,7 +211,8 @@ public class GameManager : MonoBehaviour
         string learned = string.IsNullOrEmpty(Stage.learnedRules) ? "없음 (첫 단계예요)" : Stage.learnedRules;
         introRules.text =
             $"<b>새로 배울 규칙</b>\n{Stage.newRule}\n\n" +
-            $"<b>앞에서 배운 규칙</b>  <color=#7A6A5A>{learned}</color>\n\n" +
+            $"<b>이번 판정 기준</b>\n{string.Join(" · ", System.Array.ConvertAll(Stage.features, f => f.name))}\n\n" +
+            $"<b>앞에서 배운 규칙</b>  <color=#7A6A5A>{learned}</color>\n" +
             $"<size=90%><color=#7A6A5A>관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 간식 {snacksPerStage}개 (제출할 때 1개)</color></size>";
         ShowPanel(stageIntroPanel);
     }
@@ -334,10 +342,10 @@ public class GameManager : MonoBehaviour
         cleared[stageIndex] = success;
         boySurprisedMark.SetActive(!success);
 
-        // 기획서 규칙
-        //   전부 맞음     → 진짜 물건 (성공)
-        //   일부만 맞음   → 엉뚱한 물건 : "처음 빠뜨린 특징"이 빠진 물건이 와요
-        //   하나도 없음   → 아무것도 안 가져옴
+        // 판정 기준이 n개면 경우의 수는 2ⁿ 가지예요 (Docs/6_엉뚱한_물건_제작.md)
+        //   전부 맞음     → 진짜 물건 A (성공)
+        //   일부만 맞음   → 그 조합대로 틀린 물건 A'
+        //   전부 틀림     → 완전히 다른 물건 B
         string name = Stage.targetName;
         if (success)
         {
@@ -349,16 +357,16 @@ public class GameManager : MonoBehaviour
         else if (count > 0)
         {
             resultTitleText.text = $"엉뚱한 {name}{Josa(name, "을", "를")} 가져왔다...";
-            ShowItem(Stage.features[firstMissing].wrongSprite);
+            ShowItem(Stage.WrongSpriteFor(present));
             boyFace.sprite = boySurprised;
             boyLineText.text = $"어? 이 {name}{Josa(name, "은", "는")} 좀 이상한데...\n<size=80%>'{Stage.features[firstMissing].name}' 부분이 달라!</size>";
         }
         else
         {
-            resultTitleText.text = "도깨비가 아무것도 찾지 못했다...";
-            ShowItem(null);
+            resultTitleText.text = "도깨비가 전혀 다른 물건을 가져왔다!";
+            ShowItem(Stage.WrongSpriteFor(present));
             boyFace.sprite = boySurprised;
-            boyLineText.text = "도깨비가 빈손으로 왔어...\n특징을 더 그려줘야겠다.";
+            boyLineText.text = $"이건 {name}{Josa(name, "이", "가")} 아니잖아!\n특징을 더 그려줘야겠다.";
         }
 
         // 특징별 결과 목록 (AI 판정이면 근거도 작게)
@@ -367,8 +375,9 @@ public class GameManager : MonoBehaviour
         {
             string mark = present[i] ? "<color=#2E7D32>[O] 그림</color>" : "<color=#C62828>[X] 빠뜨림</color>";
             lines += $"{mark}  {Stage.features[i].name}\n";
-            // 빠뜨린 특징만 "왜 빠뜨렸다고 봤는지" 작게 덧붙여요 (화면이 너무 빽빽하지 않게)
-            if (!present[i] && notes != null && !string.IsNullOrEmpty(notes[i])) lines += $"<size=70%><color=#7A6A5A>      {notes[i]}</color></size>\n";
+            // 빠뜨린 특징만 "왜 빠뜨렸다고 봤는지" 작게 덧붙여요 (줄이 너무 많아지면 주인공 놀람 표시와 겹쳐서 빼요)
+            bool roomForNotes = present.Length + (present.Length - count) <= 8;
+            if (roomForNotes && !present[i] && notes != null && !string.IsNullOrEmpty(notes[i])) lines += $"<size=70%><color=#7A6A5A>      {notes[i]}</color></size>\n";
         }
         resultFeatureText.text = lines;
 

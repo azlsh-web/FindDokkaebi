@@ -48,6 +48,12 @@ public enum AutoCheck
     PantsColor,         // 하의의 주된 색이 color
     ColorBands,         // 외곽 안이 색 띠 네 줄로 나뉨 (돗자리)
     ColorInZone,        // 그림의 위(area=Head)·가운데(Body)·아래(Legs) 부분에 color 가 충분히 있다 (친구)
+    BatShape,           // 긴 손잡이 + 더 굵은 머리 + 돌기 (방망이 형태)
+    BagShape,           // 네모 몸체 + 위쪽 손잡이 + 앞주머니 (가방 형태)
+    BandOrder,          // 맨 위와 맨 아래가 파랑, 그 사이에 위에서부터 빨강 · 노랑 (돗자리 색)
+    IngredientLayout,   // 재료가 위에 둘, 아래에 하나 (김밥 배치)
+    PigTails,           // 머리 양옆으로 튀어나온 양 갈래 (친구 형태)
+    PocketPatch,        // 멜빵바지 주머니 자리의 검은 천 조각 (친구 패턴)
 }
 
 /// <summary>자동 판정에서 쓰는 색 이름 (HSV 로 구분)</summary>
@@ -57,7 +63,7 @@ public enum InkColor { Black, Red, Yellow, Blue, Green, Orange, Purple, Brown }
 public enum Area
 {
     TopLeft, TopRight, BottomBoth,      // (예전 4칸 돗자리)
-    Band2, Band3, BothEnds,             // 돗자리 띠 : 왼쪽에서 두 번째 · 세 번째 · 양 끝
+    Band2, Band3, BothEnds,             // 돗자리 띠 : 위에서 두 번째 · 세 번째 · 맨 위와 맨 아래
     Head, Body, Legs,                   // 친구 : 머리 · 몸통(상의) · 다리(하의)
 }
 
@@ -81,9 +87,6 @@ public class Feature
     public InkColor color;
     [Tooltip("ColorAt 에서 볼 칸")]
     public Area area;
-
-    [Tooltip("이 특징을 빠뜨렸을 때 도깨비가 잘못 가져오는 물건")]
-    public Sprite wrongSprite;
 }
 
 [CreateAssetMenu(fileName = "NewStage", menuName = "찾아라도깨비/Stage Data")]
@@ -121,6 +124,17 @@ public class StageData : ScriptableObject
 
     [Tooltip("그림에 들어 있어야 할 특징들 (순서대로 F1, F2 …)")]
     public Feature[] features;
+
+    [Tooltip("판정 조합마다 도깨비가 가져오는 물건. 칸 번호 = F1 부터 차례로 틀림을 1 로 쓴 이진수 (0 번은 원본이라 비워 둬요)")]
+    public Sprite[] wrongSprites;
+
+    /// <summary>판정 결과(특징마다 맞음/틀림)에 맞는 물건. 전부 틀리면 완전히 다른 물건이에요.</summary>
+    public Sprite WrongSpriteFor(bool[] present)
+    {
+        int index = 0;
+        foreach (bool ok in present) index = index * 2 + (ok ? 0 : 1);
+        return wrongSprites[index];
+    }
 
     /// <summary>화면에 보일 단계 제목. 예) 1단계 방망이</summary>
     public string Title => $"{stageNumber}단계 {targetName}";
