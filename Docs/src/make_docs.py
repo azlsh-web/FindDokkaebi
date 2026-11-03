@@ -98,7 +98,7 @@ flow = ["<h1>찾아라! 도깨비 — 게임 플로우</h1>",
             ("판정", "그림(PNG) → 판정 서버 → AI(Google Gemini) 가 단계별 특징 기준(기획서 부록 B 프롬프트)으로 특징마다 present / absent / uncertain + 근거"),
             ("다음", "판정이 오면 결과. 실패하면 (캡처) 「판정 중에 문제가 생겼어요. 간식을 돌려줬어요」 + 「그림으로 돌아가 다시 제출」")]),
         screen(6, "결과 — 부분 성공", "06_s1_result_partial.png", [
-            ("나오는 것", "도깨비 · 가져온 물건 · 내 그림, 「엉뚱한 방망이를 가져왔다...」, 특징별 [O] 그림 / [X] 빠뜨림 (+ 빠뜨린 이유), 소년 「'볼록볼록한 머리' 부분이 달라!」, 남은 간식"),
+            ("나오는 것", "도깨비 · 가져온 물건 · 내 그림, 「엉뚱한 방망이를 가져왔다...」, 특징별 [O] 그림 / [X] 빠뜨림 (+ 빠뜨린 이유), 소년 「'돌기가 있는 머리' 부분이 달라!」, 남은 간식"),
             ("가져온 물건", "처음 빠뜨린 특징에 맞는 엉뚱한 물건 (지금은 팀 그림이 없어 「그림 준비 중」)"),
             ("하는 것", "「다시 그리기 (간식 1개)」 → 그리기 (60초, 원본 다시 안 봄) / 「포기하고 비교하기」 → 비교")]),
         screen(6, "결과 — 성공", "07_s1_result_success.png", [
@@ -115,11 +115,12 @@ flow = ["<h1>찾아라! 도깨비 — 게임 플로우</h1>",
             ("나오는 것", "「오늘의 이야기 끝!」, 주인공 · 도깨비 · 친구, 단계별 기록 (찾았어요/포기했어요 · 제출 수 · 남은 간식)"),
             ("하는 것", "「처음으로」 → 시작 화면")]),
         "<h2>단계마다 다른 것</h2><table><tr><th>단계</th><th>물건</th><th>쓸 수 있는 색</th><th>판정할 특징</th></tr>"
-        "<tr><td>1</td><td>방망이</td><td>검정</td><td>길쭉한 손잡이 · 손잡이보다 굵은 머리 · 볼록볼록한 머리</td></tr>"
+        "<tr><td>1</td><td>방망이</td><td>검정</td><td>길쭉한 손잡이 · 손잡이보다 굵은 머리 · 돌기가 있는 머리</td></tr>"
         "<tr><td>2</td><td>가방</td><td>검정</td><td>네모난 몸체 · 위쪽 손잡이 · 앞쪽 주머니 · 주머니 안 가로 줄무늬</td></tr>"
-        "<tr><td>3</td><td>돗자리</td><td>검정 · 빨강 · 노랑 · 파랑</td><td>사각형 외곽 · 띠 네 줄 · 두 번째 띠 빨강 · 세 번째 띠 노랑 · 양 끝 띠 파랑</td></tr>"
+        "<tr><td>3</td><td>돗자리</td><td>검정 · 빨강 · 노랑 · 파랑</td><td>사각형 외곽 · 띠 네 줄 · 위에서 두 번째 띠 빨강 · 세 번째 띠 노랑 · 맨 위와 맨 아래 띠 파랑</td></tr>"
         "<tr><td>4</td><td>김밥</td><td>+ 두 색 섞기</td><td>검은 김 테두리 · 흰 밥 · 빨간 · 노란 · 초록 재료</td></tr>"
-        "<tr><td>5</td><td>친구</td><td>+ 세 색까지 섞기</td><td>사람 모습 · 갈색 머리 · 주황 상의 · 파란 하의</td></tr></table>",
+        "<tr><td>5</td><td>친구</td><td>+ 세 색까지 섞기</td><td>사람 모습 · 갈색 머리 · 주황 상의 · 파란 하의</td></tr></table>"
+        "<div class='note'>1단계 · 3단계 판정 기준은 기획서에서 바뀌었어요 (<code>Docs/4_기획_변경_기록.md</code>). 새 원본 그림과 함께 게임에 반영할 예정이라, 이 문서의 캡처에는 아직 예전 그림이 나와요.</div>",
         ]
 open(os.path.join(SRC, "1_게임_플로우.html"), "w", encoding="utf-8").write(page("게임 플로우", "".join(flow)))
 
@@ -131,15 +132,16 @@ arch = [
     "<tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr>"
     "<tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr>"
     "<tr><td class='k'>화면</td><td>패널 8개 (시작 · 도입 · 관찰 · 그리기 · 판정 · 결과 · 비교 · 종료) 중 하나만 켜고, 위에 HUD · 일시정지. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
-    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3.5-flash</code>, 무료 등급 : 하루 약 20번). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 그대로. 실패하면 간식 돌려주고 다시 제출</td></tr>"
-    "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>feature/mvp-stage1</code></td></tr></table>",
+    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3.5-flash</code>, 무료 등급 : 하루 약 20번). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/4_기획_변경_기록.md</code>). 실패하면 간식 돌려주고 다시 제출</td></tr>"
+    "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>main</code> (보호 브랜치, PR 로 합침)</td></tr></table>",
     "<h2>2. 폴더</h2><pre>"
     "FindDokkaebi/\n"
     "  Assets/Scripts/     게임 코드 (아래 3장)\n"
     "  Assets/Editor/      에디터 도구 : 씬 만들기 · 자동 테스트 · 판정 검사 · 웹 빌드 · 글꼴 굽기\n"
     "  Assets/Data/        단계 데이터 Stage1~5 (.asset, 씬 만들 때 MvpSceneBuilder 가 채움)\n"
     "  Assets/Sprites/     TeamUI(시안에서 오린 UI, 절반 크기) · Background · Characters · Stage1~5(원본·엉뚱한 물건) · UI(그림 준비 중 등)\n"
-    "  Assets/Fonts/       Jua(시안 글꼴, 구운 SDF) · Noto Sans KR(없는 기호 대신)\n"
+    "  Assets/TempArt/     받았지만 아직 게임에 연결하지 않은 그림 (진행 상황은 Docs/5_아트_진행_상황.md)\n"
+    "  Assets/Fonts/      Jua(시안 글꼴, 구운 SDF) · Noto Sans KR(없는 기호 대신)\n"
     "  ArtSource/          아트 원본 정리 : 원본(기획서 그림 · 첨부 사진) + 화면별로 들어간 부품 + README 표\n"
     "  Server/judge/       판정 중계 서버 (worker.js · stages.json 게임 프롬프트 · appendix_b.json 부록 B 원문 · wrangler.toml)\n"
     "  Docs/               이 문서들 · src(문서·그림 만드는 스크립트) · 참고(예전 문서)\n"
@@ -151,7 +153,7 @@ arch = [
     "<tr><td><code>DrawingBoard</code></td><td>512×512 쪽지 : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처. 잉크는 쪽지 안에만 칠해지고, 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
     "<tr><td><code>ToolBar</code></td><td>색 · 연필 · 지우개 · 굵기 버튼, 고른 표시, 단계마다 색 버튼 보이기/숨기기</td><td>도구 버튼</td></tr>"
     "<tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 재료 고르기 → 결과 색 (MixTable) → 섞은 색 칸</td><td>섞는 규칙</td></tr>"
-    "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 그대로 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
+    "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>도깨비 갸웃 · 물건 뿅 · 방망이 휘두르기</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
@@ -172,7 +174,7 @@ arch = [
     "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 등급은 하루 약 20번 (한국 시간 오후 4시에 다시 채워짐).</div>"
     "<h3>판정 검증 (기획서 8장 다시 하기)</h3><p>부록 A 그림 4장 + 부록 B 프롬프트 원문(<code>Server/judge/appendix_b.json</code>)으로 그림마다 한 번씩 판정 → 2026-10-27 Gemini 로 4장 모두 기획서 표와 같은 결과. "
     "입력 그림과 실제 JSON : <code>Docs/참고/기획서8장_재검증_Gemini_2026-10-27/</code>. "
-    "※ 기획서 8장 돗자리는 십자 네 칸, 게임 3단계 돗자리는 최종 아트대로 색 띠 네 줄이라 프롬프트가 달라요.</p>"
+    "※ 기획서 8장 돗자리는 십자 네 칸, 게임 3단계 돗자리는 최종 아트대로 위에서부터 색 띠 네 줄이라 프롬프트가 달라요. 게임 1단계 방망이도 최종 아트대로 돌기가 있는 머리 기준이에요.</p>"
     "<div class='note'>자동 플레이 테스트(MvpSelfTest)는 AI 를 부르지 않아요. 화면 흐름을 보려고 판정 결과를 미리 정해서 넣고, 그 결과에 맞는 손그림(HandSketch)을 제출해요.</div>",
     "<h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table>"
     "<tr><td class='k'>좌표</td><td><code>PlaceM(rt, x0,y0,x1,y1)</code> = 시안 픽셀 상자 그대로 (K = 1080/2248). <code>TeamImage</code> = 오린 그림을 원래 자리에, <code>TeamTool</code> = 시안 그림 버튼 + 고른 표시 고리</td></tr>"
@@ -193,7 +195,7 @@ arch = [
     "<tr><td>시안 UI 가 바뀌었어요</td><td>새 시안을 <code>ArtSource/원본</code> 에 → <code>Docs/src/art_pipeline</code> 스크립트로 다시 오리기 → TeamUI 덮어쓰기</td></tr>"
     "<tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr>"
     "<tr><td>특징 · 판정 기준</td><td>CreateStageDataFiles 의 특징 글 → 씬 만들기 → 판정 서버 프롬프트 내보내기 → wrangler deploy (결과 화면의 특징 이름도 바뀌었으면 웹 빌드도)</td></tr>"
-    "<tr><td>돗자리 온전한 그림이 왔어요</td><td>지금 돗자리 그림은 기획서 그림 5 에서 오린 것이라 왼쪽 모서리가 잘려 있어요 (팀에 요청함). 오면 <code>Assets/Sprites/Stage3_Mat/Original.png</code> 를 덮어쓰기 → 웹 빌드</td></tr>"
+    "<tr><td>새 돗자리 · 방망이 원본을 넣어요</td><td><code>Assets/TempArt/Original-*.png</code> 를 <code>Assets/Sprites/Stage*/Original.png</code> 에 덮어쓰기 → 판정 서버 배포 · 웹 빌드를 함께 (판정 기준이 새 그림 기준이에요)</td></tr>"
     "<tr><td>웹에 올리기</td><td>웹 빌드 → Builds/WebGL/Build 를 gh-pages 브랜치에 커밋 · 푸시 (GitHub Pages)</td></tr></table>",
 ]
 open(os.path.join(SRC, "2_MVP_아키텍처.html"), "w", encoding="utf-8").write(page("MVP 아키텍처", "".join(arch)))
