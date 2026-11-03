@@ -26,50 +26,86 @@ MonoBehaviour:
   originalSprite: {fileID: 21300000, guid: cfd53b1f86548564799c0534cef16c02, type: 3}
   targetDescription: "\uC815\uBA74\uC5D0\uC11C \uBCF8 \uCE5C\uAD6C\uC785\uB2C8\uB2E4.
     \uC591 \uAC08\uB798\uB85C \uBB36\uC740 \uAC08\uC0C9 \uBA38\uB9AC, \uC0B4\uAD6C\uC0C9(\uC8FC\uD669
-    \uACC4\uC5F4) \uBC18\uD314 \uC0C1\uC758, \uD30C\uB780 \uBA5C\uBE75 \uBC18\uBC14\uC9C0\uB97C
+    \uACC4\uC5F4) \uBC18\uD314 \uC0C1\uC758, \uC55E\uC8FC\uBA38\uB2C8\uC5D0 \uCC9C
+    \uC870\uAC01\uC744 \uB367\uB304 \uD30C\uB780 \uBA5C\uBE75 \uBC18\uBC14\uC9C0\uB97C
     \uC785\uACE0 \uB178\uB780 \uC2E0\uBC1C\uC744 \uC2E0\uC5C8\uC2B5\uB2C8\uB2E4.
     \uAC08\uC0C9\uC740 \uC138 \uC0C9 \uD63C\uD569, \uC8FC\uD669\uC740 \uB450 \uC0C9
     \uD63C\uD569\uC73C\uB85C \uB9CC\uB4DC\uB294 \uC0C9\uC785\uB2C8\uB2E4."
   features:
   - id: F1
-    name: "\uC0AC\uB78C \uBAA8\uC2B5"
-    criteria: "\uBA38\uB9AC\uC640 \uBAB8\uD1B5\uC774 \uC788\uACE0 \uD314\uC774\uB098
-      \uB2E4\uB9AC\uAC00 \uBD99\uC740 \uC0AC\uB78C \uD615\uD0DC\uB85C \uC2DD\uBCC4\uB418\uC5B4\uC57C
-      \uD569\uB2C8\uB2E4. \uB9C9\uB300 \uC778\uAC04\uCC98\uB7FC \uB2E8\uC21C\uD574\uB3C4
-      \uC778\uC815\uD569\uB2C8\uB2E4. \uC0AC\uB78C\uC774 \uC544\uB2CC \uBB3C\uCCB4\uB098
-      \uBA38\uB9AC\uB9CC \uC788\uB294 \uADF8\uB9BC\uC740 \uC778\uC815\uD558\uC9C0
-      \uC54A\uC2B5\uB2C8\uB2E4."
-    check: 12
+    name: "\uC591 \uAC08\uB798 \uBA38\uB9AC"
+    criteria: "\uBA38\uB9AC \uC591\uC606\uC73C\uB85C \uBB36\uC740 \uBA38\uB9AC \uB450
+      \uAC08\uB798\uAC00 \uAD6C\uBD84\uB418\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uB2E8\uBC1C\uC774\uB098
+      \uD55C \uAC08\uB798 \uBA38\uB9AC\uB294 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 22
     color: 0
     area: 0
-    wrongSprite: {fileID: 21300000, guid: d8f23b7dbfffbe7429015582b7ec89e8, type: 3}
   - id: F2
-    name: "\uAC08\uC0C9 \uBA38\uB9AC"
-    criteria: "\uBA38\uB9AC\uCE74\uB77D \uBD80\uBD84\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774
-      \uAC08\uC0C9 \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uAC80\uC815\uC774\uB098
-      \uB178\uB791 \uB4F1 \uBA85\uD655\uD788 \uB2E4\uB978 \uC0C9\uC774\uBA74 \uC778\uC815\uD558\uC9C0
-      \uC54A\uC2B5\uB2C8\uB2E4."
-    check: 17
-    color: 7
-    area: 6
-    wrongSprite: {fileID: 21300000, guid: d79b3ec9f1f9d0948af44fbf20b6d6ab, type: 3}
+    name: "\uC8FC\uBA38\uB2C8 \uCC9C \uC870\uAC01"
+    criteria: "\uD558\uC758 \uC55E\uCABD \uC8FC\uBA38\uB2C8 \uC790\uB9AC\uC5D0 \uB367\uB304
+      \uC791\uC740 \uCC9C \uC870\uAC01\uC774 \uD45C\uD604\uB418\uC5B4 \uC788\uC5B4\uC57C
+      \uD569\uB2C8\uB2E4. \uCC9C \uC870\uAC01\uC774 \uC5C6\uB294 \uC8FC\uBA38\uB2C8\uB294
+      \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 23
+    color: 0
+    area: 0
   - id: F3
+    name: "\uD30C\uB780 \uBC14\uC9C0"
+    criteria: "\uD558\uC758(\uBA5C\uBE75\uBC14\uC9C0)\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774
+      \uD30C\uB780\uC0C9 \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uBE68\uAC15\uC774\uB098
+      \uBCF4\uB77C\uCC98\uB7FC \uBA85\uD655\uD788 \uB2E4\uB978 \uC0C9\uC774\uBA74
+      \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 17
+    color: 3
+    area: 8
+  - id: F4
     name: "\uC8FC\uD669 \uC0C1\uC758"
     criteria: "\uC0C1\uC758(\uBAB8\uD1B5 \uC717\uBD80\uBD84)\uC5D0 \uC8FC\uD669\xB7\uC0B4\uAD6C\uC0C9
       \uACC4\uC5F4\uC774 \uCE60\uD574\uC838 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4.
-      \uBE68\uAC15\uC774\uB098 \uCD08\uB85D \uB4F1 \uBA85\uD655\uD788 \uB2E4\uB978
+      \uBE68\uAC15\uC774\uB098 \uCD08\uB85D\uCC98\uB7FC \uBA85\uD655\uD788 \uB2E4\uB978
       \uC0C9\uC774\uBA74 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
     check: 17
     color: 5
     area: 7
-    wrongSprite: {fileID: 21300000, guid: af06560e14b72a74fab519a6593221cd, type: 3}
-  - id: F4
-    name: "\uD30C\uB780 \uD558\uC758"
-    criteria: "\uD558\uC758(\uBA5C\uBE75\uBC14\uC9C0)\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774
-      \uD30C\uB780\uC0C9 \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uBCF4\uB77C\uB098
-      \uCD08\uB85D \uB4F1 \uBA85\uD655\uD788 \uB2E4\uB978 \uC0C9\uC774\uBA74 \uC778\uC815\uD558\uC9C0
-      \uC54A\uC2B5\uB2C8\uB2E4."
+  - id: F5
+    name: "\uAC08\uC0C9 \uBA38\uB9AC"
+    criteria: "\uBA38\uB9AC\uCE74\uB77D \uBD80\uBD84\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774
+      \uAC08\uC0C9 \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uAC80\uC815,
+      \uC8FC\uD669, \uB178\uB791\uCC98\uB7FC \uBA85\uD655\uD788 \uB2E4\uB978 \uC0C9\uC774\uBA74
+      \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
     check: 17
-    color: 3
-    area: 8
-    wrongSprite: {fileID: 21300000, guid: e6da4080360795f4bb46e32fd6a266c1, type: 3}
+    color: 7
+    area: 6
+  wrongSprites:
+  - {fileID: 0}
+  - {fileID: 21300000, guid: 51479af4c665165479c1449db5ab2747, type: 3}
+  - {fileID: 21300000, guid: 345345b4ef2f79f44ba1193a7ac52e1d, type: 3}
+  - {fileID: 21300000, guid: d127eb6440b38ef499e868bdd0da2ecd, type: 3}
+  - {fileID: 21300000, guid: b80fd87bd23a4534db54d7a905f0a60a, type: 3}
+  - {fileID: 21300000, guid: a8865425d955e04488412fdc640147e7, type: 3}
+  - {fileID: 21300000, guid: 9e9a4f6f283eba74d8b57ad822b25102, type: 3}
+  - {fileID: 21300000, guid: 0ced8dc1616b6ca4f840c5be0366538d, type: 3}
+  - {fileID: 21300000, guid: 7df497df98f193d449155ab5486b65eb, type: 3}
+  - {fileID: 21300000, guid: 463abb25b045dcd44bbb3cb45d2d05bb, type: 3}
+  - {fileID: 21300000, guid: 72c9414f41e73c543bd7151179226a51, type: 3}
+  - {fileID: 21300000, guid: 9fc139c5e0c1629469d8b9a841159b64, type: 3}
+  - {fileID: 21300000, guid: 8c2726991ecd27a4c9d53a86637c6713, type: 3}
+  - {fileID: 21300000, guid: 676ee7deb3d8b234788f43e0cf58dccc, type: 3}
+  - {fileID: 21300000, guid: 5b08dd4e23bf3384fa737ad9a8373c94, type: 3}
+  - {fileID: 21300000, guid: c62a9959c56c4e94684260d2db47e56b, type: 3}
+  - {fileID: 21300000, guid: 755509946dd2b764da242e7b4d945c39, type: 3}
+  - {fileID: 21300000, guid: f3cccee918ba7d543a6ca99fd67af57a, type: 3}
+  - {fileID: 21300000, guid: f02372cb3413cf54b9566dc74707e05d, type: 3}
+  - {fileID: 21300000, guid: 6302f47979009df4498be935134360b6, type: 3}
+  - {fileID: 21300000, guid: 6028d02ee0091e14e8d2437fe7433ba2, type: 3}
+  - {fileID: 21300000, guid: 313d8004e928f634cb03068d845f5172, type: 3}
+  - {fileID: 21300000, guid: 8571b288f073e58479fb28d6c48e44cc, type: 3}
+  - {fileID: 21300000, guid: b1b86569ccf38404182249c0ded9bc04, type: 3}
+  - {fileID: 21300000, guid: 04ab96c829d924f418478a08d7b09aad, type: 3}
+  - {fileID: 21300000, guid: add07d09491fa5749b819e8be537bdbe, type: 3}
+  - {fileID: 21300000, guid: b6cfeda3a629bde4f8a6a398e231297c, type: 3}
+  - {fileID: 21300000, guid: 2abb119f1515486478f09d469ae8d456, type: 3}
+  - {fileID: 21300000, guid: 3147c51c98c81ad4cb6c0ba9a1b7a743, type: 3}
+  - {fileID: 21300000, guid: 6773719aea778824b810ccfc5abfde28, type: 3}
+  - {fileID: 21300000, guid: a84c678a97e33a541b6bba29c83eea06, type: 3}
+  - {fileID: 21300000, guid: 2547e4d8989b0a949bc13e03f4216cde, type: 3}

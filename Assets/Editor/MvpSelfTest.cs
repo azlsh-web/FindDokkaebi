@@ -211,7 +211,9 @@ static class MvpSelfTest
             {
                 string prompt = OpenAIJudge.BuildPrompt(s);
                 bool all = true;
-                foreach (Feature f in s.features) all &= prompt.Contains("featureId: " + f.id) && f.wrongSprite != null;
+                foreach (Feature f in s.features) all &= prompt.Contains("featureId: " + f.id);
+                all &= s.wrongSprites.Length == 1 << s.features.Length;
+                for (int i = 1; i < s.wrongSprites.Length; i++) all &= s.wrongSprites[i] != null;
                 Check(all && s.originalSprite != null, $"{s.Title} 데이터 (그림 + 특징 {s.features.Length}개 + 프롬프트)");
             }
         });
@@ -228,11 +230,6 @@ static class MvpSelfTest
                 string miss = "";
                 for (int i = 0; i < v.present.Length; i++) if (!v.present[i]) miss += $" {s.features[i].id}({v.notes[i]})";
                 Info(miss == "", $"자동 판정 : {s.Title} 원본 = 전부 그림" + (miss == "" ? "" : " / 빠뜨렸다고 본 것:" + miss));
-                for (int i = 0; i < s.features.Length; i++)
-                {
-                    OpenAIJudge.Verdict w = LocalJudge.Judge(s, LoadReadable(s.features[i].wrongSprite));
-                    Info(!w.present[i], $"자동 판정 : {s.Title} {s.features[i].id} 빠진 그림 → {s.features[i].id} 빠뜨림 ({w.notes[i]})");
-                }
             }
         });
 
@@ -241,23 +238,28 @@ static class MvpSelfTest
         {
             StageData[] all = Stages();
             ExpectJudge(all[0], HandBat(spikes: true), -1, "손그림 방망이 (선 손잡이 + 타원 머리 + 선 돌기)");
-            ExpectJudge(all[0], HandBat(spikes: false), 2, "손그림 방망이, 돌기 없음");
-            ExpectJudge(all[0], HandCloudBat(), -1, "손그림 방망이 (구름처럼 볼록볼록한 머리)");
+            ExpectJudge(all[0], HandBat(spikes: false), 0, "손그림 방망이, 돌기 없음");
+            ExpectJudge(all[0], HandCloudBat(), -1, "손그림 방망이 (구름처럼 볼록한 머리)");
             ExpectJudge(all[1], HandBag(), -1, "손그림 가방 (손잡이 + 주머니 + 줄무늬)");
+            ExpectJudge(all[1], HandBag(stripes: false), 1, "손그림 가방, 줄무늬 없음");
             ExpectJudge(all[2], HandMat(bands: true), -1, "손그림 돗자리 (파랑·빨강·노랑·파랑 띠, 쓱쓱 칠한 색)");
-            ExpectJudgeMiss(all[2], HandMat(bands: false), new[] { 1, 2, 3 }, "손그림 돗자리, 띠 없이 파랑 한 가지");
+            ExpectJudgeMiss(all[2], HandMat(bands: false), new[] { 1, 2 }, "손그림 돗자리, 띠 없이 파랑 한 가지");
             ExpectJudge(all[3], HandGimbap(), -1, "손그림 김밥");
             ExpectJudge(all[4], HandFriend(), -1, "손그림 친구");
             // 흐름 검사에서 "하나 빠뜨림" 으로 제출하는 손그림이 정말 그 특징만 빠졌는지
-            ExpectJudge(all[2], HandMat(bands: true, endsBlue: false), 4, "손그림 돗자리, 맨 아래 띠가 빨강");
-            ExpectJudge(all[3], HandGimbap(green: false), 4, "손그림 김밥, 초록 재료 없음");
-            ExpectJudge(all[4], HandFriend(blueLegs: false), 3, "손그림 친구, 하의가 파랑이 아니라 검정");
+            ExpectJudge(all[2], HandMat(bands: true, endsBlue: false), 2, "손그림 돗자리, 맨 아래 띠가 빨강");
+            ExpectJudge(all[3], HandGimbap(green: false), 3, "손그림 김밥, 시금치가 파랑");
+            ExpectJudge(all[4], HandFriend(brownHair: false), 4, "손그림 친구, 머리가 갈색이 아니라 주황");
         });
 
         // 1) 시작 화면
         Add(0.2f, "시작 화면", () =>
         {
             Check(IsOn("TitlePanel") && !IsOn("HUD"), "시작 화면 (HUD 숨김)");
+            Check(Find("Background").GetComponent<Image>().sprite.name == "StartBG", "시작 화면 배경은 StartBG");
+            Check(Find("TitlePanel/TitleLogo") != null && Find("TitlePanel/StartButton").GetComponent<Button>() != null, "시작 화면 물건은 따로 올려져 있다");
+            Check(Find("JudgePanel/Dokkaebi").GetComponent<Image>().sprite.name == "Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
+            Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Dokkaebi_Swing", "결과는 방망이를 휘두르는 도깨비");
             Shot("title");
             Then(() => Gm().StartGame());
         });
@@ -272,7 +274,7 @@ static class MvpSelfTest
             // 단계 도입
             Add(0.3f, $"{st.Title} 도입", () =>
             {
-                Check(IsOn("StageIntroPanel"), $"{st.Title} 도입 화면");
+                Check(IsOn("StageIntroPanel") && Find("Background").GetComponent<Image>().sprite.name == "RoomBG", $"{st.Title} 도입 화면 (배경은 RoomBG)");
                 Check(Text("HUD/SnackTag/SnackText") == "간식 3개", $"{st.Title} 간식 3개로 시작 ({Text("HUD/SnackTag/SnackText")})");
                 Check(Text("StageIntroPanel/IntroCard/RulesCard/Rules").Contains("새로 배울 규칙"), "규칙 안내가 있다");
                 Shot($"s{s + 1}_intro");
@@ -366,7 +368,7 @@ static class MvpSelfTest
                     int kk = k;
                     Add(0.3f, $"2단계 {kk}번째 실패", () =>
                     {
-                        Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("아무것도"), $"{kk}번째 : 하나도 못 맞히면 아무것도 못 찾음");
+                        Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("전혀 다른"), $"{kk}번째 : 하나도 못 맞히면 완전히 다른 물건");
                         Gm().Retry();
                         Gm().Submit();
                     }, ResultShown);
@@ -374,20 +376,21 @@ static class MvpSelfTest
                 Add(0.3f, "2단계 간식 0개", () =>
                 {
                     Check(Text("HUD/SnackTag/SnackText") == "간식 0개", "간식 0개");
-                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("아무것도"), "0개 맞히면 아무것도 못 찾음");
+                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("전혀 다른") && Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "0개 맞히면 완전히 다른 물건");
                     Check(!IsOn("ResultPanel/RetryButton"), "간식이 없으면 다시 그리기 숨김");
                     Check(Text("ResultPanel/SnackLeft").Contains("떨어졌어요"), "간식이 다 떨어졌다고 알려준다");
+                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "BoyFace_Surprised", "실패하면 당황한 표정");
                     Shot("s2_out_of_snacks");
                     Then(() => Gm().ShowCompare());
                 }, () => ResultShown() && Text("HUD/SnackTag/SnackText") == "간식 0개");
             }
             else
             {
-                // 부분 성공 : 마지막 특징만 빠뜨림 → 그 특징이 빠진 물건
+                // 마지막 특징만 빠뜨림 → 그 조합의 물건 (1단계는 기준이 하나라 곧 전부 틀림)
                 Add(0.3f, $"{st.Title} 부분 성공", () =>   // 도깨비 고민 1.5초 + 물건이 뿅 커지는 0.45초 뒤 확인·촬영
                 {
-                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("엉뚱한"), "하나 빠뜨리면 엉뚱한 물건");
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.features[st.features.Length - 1].wrongSprite, "빠뜨린 특징에 맞는 물건이 왔다");
+                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains(st.features.Length == 1 ? "전혀 다른" : "엉뚱한"), "하나 빠뜨리면 그 조합의 물건");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[1], "판정 조합에 맞는 물건이 왔다");
                     Check(IsOn("ResultPanel/RetryButton"), "다시 그리기 버튼");
                     if (s == 0 || s == 4) Shot($"s{s + 1}_result_partial");
                     if (s == 0 || s == 4) Then(() => Gm().Retry()); else Gm().Retry();
@@ -407,6 +410,7 @@ static class MvpSelfTest
                     Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"), "전부 맞히면 성공");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");
                     Check(!IsOn("ResultPanel/RetryButton"), "성공하면 다시 그리기 숨김");
+                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "BoyFace_Happy", "성공하면 기쁜 표정");
                     Shot($"s{s + 1}_result_success");
                     Then(() => Gm().ShowCompare());
                 }, () => ResultShown() && Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"));
@@ -434,7 +438,7 @@ static class MvpSelfTest
         });
         Add(0.3f, "처음으로", () =>
         {
-            Check(IsOn("TitlePanel"), "처음으로 돌아왔다");
+            Check(IsOn("TitlePanel") && Find("Background").GetComponent<Image>().sprite.name == "StartBG", "처음으로 돌아왔다 (배경도 StartBG)");
         });
 
         return list;
@@ -578,16 +582,17 @@ static class MvpSelfTest
         return s.Tex();
     }
 
-    static Texture2D HandBag()
+    static Texture2D HandBag(bool stripes = true)
     {
-        return new HandSketch()
+        var s = new HandSketch()
             .Line(InkBlack, 4, 2f, V(100, 60), V(412, 64), V(408, 330), V(104, 326), V(100, 60))   // 몸체
             .Line(InkBlack, 4, 2f, V(190, 328), V(200, 400), V(256, 440), V(312, 400), V(322, 328)) // 손잡이
-            .Line(InkBlack, 4, 2f, V(170, 90), V(342, 92), V(340, 210), V(168, 206), V(170, 90))   // 주머니
-            .Line(InkBlack, 3, 1.5f, V(190, 120), V(322, 124))
-            .Line(InkBlack, 3, 1.5f, V(188, 150), V(320, 152))
-            .Line(InkBlack, 3, 1.5f, V(190, 180), V(322, 178))                                     // 줄무늬 3줄
-            .Tex();
+            .Line(InkBlack, 4, 2f, V(170, 90), V(342, 92), V(340, 210), V(168, 206), V(170, 90));  // 주머니
+        if (stripes)
+            s.Line(InkBlack, 3, 1.5f, V(190, 120), V(322, 124))
+             .Line(InkBlack, 3, 1.5f, V(188, 150), V(320, 152))
+             .Line(InkBlack, 3, 1.5f, V(190, 180), V(322, 178));                                   // 줄무늬 3줄
+        return s.Tex();
     }
 
     static Texture2D HandMat(bool bands, bool endsBlue = true)
@@ -612,23 +617,25 @@ static class MvpSelfTest
             .Ellipse(InkBlack, 9, V(256, 256), 200, 196, gapDeg: 8f)
             .Scribble(C(1), 6, 160, 280, 240, 340, 14)
             .Scribble(C(2), 6, 280, 280, 360, 340, 14);
-        if (green) s.Scribble(mixedGreen, 6, 210, 170, 310, 230, 14);
+        s.Scribble(green ? mixedGreen : C(3), 6, 210, 170, 310, 230, 14);   // 안 섞으면 파랑
         return s.Tex();
     }
 
-    static Texture2D HandFriend(bool blueLegs = true)
+    static Texture2D HandFriend(bool brownHair = true)
     {
         Color32 orange = new Color32(245, 140, 30, 255), brown = new Color32(130, 80, 40, 255);   // 섞어서 만든 주황 · 갈색
-        var s = new HandSketch()
+        return new HandSketch()
             .Ellipse(InkBlack, 4, V(256, 400), 55, 55)                                     // 머리
-            .Scribble(brown, 8, 200, 405, 312, 458, 9)                                     // 갈색 머리카락
+            .Ellipse(InkBlack, 4, V(178, 395), 22, 28)
+            .Ellipse(InkBlack, 4, V(334, 395), 22, 28)                                     // 양 갈래
+            .Scribble(brownHair ? brown : orange, 8, 200, 405, 312, 458, 9)                // 머리카락
             .Scribble(orange, 8, 165, 225, 347, 335, 9)                                    // 주황 상의 (꼼꼼히)
             .Scribble(orange, 8, 110, 250, 165, 320, 9)
-            .Scribble(orange, 8, 347, 250, 402, 320, 9);                                   // 팔
-        Color32 legColor = blueLegs ? C(3) : InkBlack;                                     // blueLegs 가 false 면 검은 하의
-        return s.Scribble(legColor, 8, 175, 70, 235, 215, 9)
-                .Scribble(legColor, 8, 280, 70, 340, 215, 9)                               // 두 다리
-                .Tex();
+            .Scribble(orange, 8, 347, 250, 402, 320, 9)                                    // 팔
+            .Scribble(C(3), 8, 175, 70, 235, 215, 9)
+            .Scribble(C(3), 8, 280, 70, 340, 215, 9)                                       // 두 다리
+            .Line(InkBlack, 5, 1.5f, V(240, 175), V(272, 175), V(272, 205), V(240, 205), V(240, 175))   // 천 조각
+            .Tex();
     }
 
     // Sprite 원본 PNG 를 픽셀을 읽을 수 있는 텍스처로 불러오기 (자동 판정 검사용)
@@ -640,7 +647,7 @@ static class MvpSelfTest
     }
 
     // 흐름 검사에서 제출할 손그림 : allDrawn = 특징 전부, 아니면 그 단계 첫 제출의 기대 결과대로
-    //   1 방망이 돌기 없음 · 2 가방 특징 없는 낙서 · 3 돗자리 맨 아래 띠 빨강 · 4 김밥 초록 없음 · 5 친구 하의가 검정
+    //   1 방망이 돌기 없음 · 2 가방 특징 없는 낙서 · 3 돗자리 맨 아래 띠 빨강 · 4 김밥 시금치가 파랑 · 5 친구 머리가 주황
     static void PutSketch(StageData st, bool allDrawn)
     {
         Texture2D tex;
@@ -650,7 +657,7 @@ static class MvpSelfTest
             case 2: tex = allDrawn ? HandBag() : new HandSketch().Line(InkBlack, 4, 3f, V(120, 300), V(200, 250), V(260, 310), V(330, 240), V(400, 290)).Tex(); break;
             case 3: tex = HandMat(bands: true, endsBlue: allDrawn); break;
             case 4: tex = HandGimbap(green: allDrawn); break;
-            default: tex = HandFriend(blueLegs: allDrawn); break;
+            default: tex = HandFriend(brownHair: allDrawn); break;
         }
         Color32[] px = tex.GetPixels32();
         var paper = new Color32(253, 252, 245, 255);                 // 손그림의 흰 종이 → 쪽지 종이 색
