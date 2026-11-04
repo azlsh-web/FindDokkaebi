@@ -125,7 +125,8 @@ class PlayDirector : MonoBehaviour
         yield return Ellipse(V(256, 335), 60, 90, 14f);                                  // 머리
         yield return Click("DrawPanel/SubmitButton");
         yield return WaitResult(3.5f);
-        yield return Click("ResultPanel/RetryButton");
+        yield return TapUntilChoice();
+        yield return Click("ResultPanel/ChoiceRow/RetryButton");
         yield return Wait(0.5f);
         yield return Line(V(250, 60), V(253, 150), V(256, 245));
         yield return Ellipse(V(256, 335), 60, 90, 14f);
@@ -203,8 +204,11 @@ class PlayDirector : MonoBehaviour
     // 도입 화면 보기 → 기억할 모습 보기 → 3초 관찰 → 그리기 화면
     IEnumerator IntroAndObserve(float readSeconds)
     {
-        yield return Wait(readSeconds);
-        yield return Click("StageIntroPanel/ObserveButton");
+        while (!On("ObservePanel") && !On("DrawPanel"))
+        {
+            yield return Wait(readSeconds / 4f);
+            yield return Click("DialoguePanel/TapButton");
+        }
         while (!On("DrawPanel")) yield return null;
         yield return Wait(0.5f);
     }
@@ -214,9 +218,22 @@ class PlayDirector : MonoBehaviour
         yield return Wait(0.4f);
         yield return Click("DrawPanel/SubmitButton");
         yield return WaitResult(3f);
-        yield return Click("ResultPanel/CompareButton");
+        while (On("ResultPanel"))
+        {
+            yield return Click("ResultPanel/TapButton");
+            yield return Wait(1.2f);
+        }
         yield return Wait(2.5f);
-        yield return Click("ComparePanel/NextButton");
+        yield return Click("ComparePanel/TapButton");
+    }
+
+    IEnumerator TapUntilChoice()
+    {
+        while (!On("ResultPanel/ChoiceRow"))
+        {
+            yield return Click("ResultPanel/TapButton");
+            yield return Wait(1.2f);
+        }
     }
 
     IEnumerator WaitResult(float hold)

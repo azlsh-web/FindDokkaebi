@@ -6,36 +6,36 @@ using UnityEngine.UI;
 // ─────────────────────────────────────────────────────────────
 // GameManager : 게임 진행(흐름)을 책임지는 "사회자" 스크립트
 // ─────────────────────────────────────────────────────────────
-// 기획서 2장 플레이 흐름을 5단계 동안 반복해요.
+// 글로 설명하는 대신 대사와 그림으로 진행해요. 대사나 화면을 누르면 순서대로 넘어가요.
 //
 //   [시작 화면]
-//       ↓ 소풍 준비하러 가기
-//   [단계 도입] → [관찰 3초] → [그리기 60초] → [제출: 간식 -1] → [판정] → [결과]
-//                                   ↑                                       │
-//                                   └──────────── 다시 그리기 ───────────────┤ (실패 + 간식 남음)
-//                                                                            ↓ 비교하기 / 포기하고 비교
-//                                                                      [원본 비교]
-//                                                                            ↓ 다음 단계 (5단계 뒤엔)
-//                                                                     [이야기 종료]
+//       ↓ 소풍 가기
+//   [대화 → 도깨비의 쪽지] → [관찰 3초] → [그리기 60초] → [제출: 간식 -1] → [판정 대기] → [결과]
+//                                             ↑                                            │
+//                                             └──────── 다시 (이전 그림에 이어 그리기) ─────┤ (실패 + 간식 남음)
+//                                                                                          ↓ 성공 / 포기 / 간식 없음
+//                                                                                       [채점표]
+//                                                                                          ↓ 다음 단계 (5단계 뒤엔)
+//                                                                                     [이야기 종료]
+//
+// 1단계에서 방망이를 못 찾으면 채점표 뒤에 도깨비가 스스로 찾아오는 장면(Oops)이 나와요.
 //
 // 화면 구조
-//   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요.
-//   - 한 번에 패널 하나만 켜요. → ShowPanel()
-//   - 위쪽 HUD(간식, 단계, 향 타이머)는 게임 중에만 보여요.
+//   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요. 한 번에 패널 하나만 켜요.
+//   - 위쪽 HUD(간식, 일시정지, 향)는 그리기부터 채점표까지만 보여요.
 //
-// 간식 규칙 : 단계마다 3개로 시작, 제출할 때마다 1개. 다 쓰면 다시 그리기 불가 → 포기하고 비교.
+// 간식 규칙 : 단계마다 3개, 제출할 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
 //
-// 판정 (기획서 6장) : 항상 자동이에요. 기다리는 동안 도깨비가 쪽지를 들여다보며 고민해요.
-//   - UserSettings/OpenAI.json 에 키가 있으면 : OpenAIJudge (멀티모달 LLM → JSON)
-//   - 키가 없으면 : LocalJudge (기획서의 대체 기술 : HSV 색 분석 + 모양 계산, Unity 안에서)
-//   - AI 오류 : 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
+// 판정 : 항상 자동이에요. 도깨비의 찾는 동작은 한 바퀴씩 반복하고, 응답이 오면 그 바퀴를 마치고 넘어가요.
+//   AI 오류가 나면 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
+//
+// 대사는 GameScript, 소리는 Sfx 에 있어요.
 public class GameManager : MonoBehaviour
 {
-    // 지금 어떤 화면에 있는지
-    enum State { Title, StageIntro, Observe, Draw, Judge, Result, Compare, Ending }
+    enum State { Title, Dialogue, Observe, Draw, Judge, Result, Compare, Oops, Ending }
+    enum ResultPhase { Dokkaebi, Boy, Choose, Error }
 
     // ───────────── Inspector 에서 연결하는 것들 ─────────────
-    // [SerializeField] = private 이지만 Inspector 창에 보이게 해서 드래그로 연결할 수 있게 함
 
     [Header("데이터 (순서대로 1~5단계)")]
     [SerializeField] StageData[] stages;
@@ -53,116 +53,156 @@ public class GameManager : MonoBehaviour
     [Header("HUD")]
     [SerializeField] GameObject hud;
     [SerializeField] Image[] snackIcons;            // 오른쪽 위 복주머니 (쓴 간식은 흐리게)
+    [SerializeField] SimpleAnim[] snackAnims;       // 단계 첫 그리기 때 들어오는 움직임
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
     [SerializeField] TMP_Text timerText;            // 남은 초 숫자 "58"
     [SerializeField] IncenseBurn incense;           // 타들어 가는 향
     [SerializeField] GameObject pausePanel;         // 일시정지 화면
 
-    [Header("배경 : 시작 화면과 게임 중 그림이 달라요")]
+    [Header("배경 : 시작, 게임 중, 이야기 종료 그림이 달라요")]
     [SerializeField] Image backgroundImage;
     [SerializeField] Sprite startBackground;
     [SerializeField] Sprite gameBackground;
+    [SerializeField] Sprite endingBackground;
 
     [Header("에디터 전용 : 몇 단계부터 시작할지 (웹 빌드는 항상 1단계부터)")]
     [SerializeField] int editorStartStage = 1;
 
     [Header("패널(화면)")]
     [SerializeField] GameObject titlePanel;
-    [SerializeField] GameObject stageIntroPanel;
+    [SerializeField] GameObject dialoguePanel;
     [SerializeField] GameObject observePanel;
     [SerializeField] GameObject drawPanel;
     [SerializeField] GameObject judgePanel;
     [SerializeField] GameObject resultPanel;
     [SerializeField] GameObject comparePanel;
+    [SerializeField] GameObject oopsPanel;
     [SerializeField] GameObject endingPanel;
 
-    [Header("단계 도입 화면")]
-    [SerializeField] TMP_Text introStageNumber;
-    [SerializeField] TMP_Text introTargetName;
-    [SerializeField] TMP_Text introStory;
-    [SerializeField] TMP_Text introRules;
+    [Header("캐릭터 그림")]
+    [SerializeField] Sprite faceBoySurprised;
+    [SerializeField] Sprite faceBoyHappy;
+    [SerializeField] Sprite faceDokkaebi;
+    [SerializeField] Sprite dokkaebiNormal;
+    [SerializeField] Sprite dokkaebiNoBat;          // 1단계 : 방망이를 찾기 전
+    [SerializeField] Sprite dokkaebiSwing;
+
+    [Header("대화 화면")]
+    [SerializeField] DialogueBox dialogueBox;
+    [SerializeField] RectTransform dialogueBoy;     // 처음 혼자 놀랄 때는 가운데에 크게
+    [SerializeField] SimpleAnim dialogueBoyAnim;
+    [SerializeField] GameObject dialogueDokkaebi;
+    [SerializeField] Image dialogueDokkaebiImage;
+    [SerializeField] SimpleAnim dialogueDokkaebiAnim;
+    [SerializeField] GameObject noteCard;           // 도깨비의 쪽지
+    [SerializeField] TMP_Text noteTitle;
+    [SerializeField] GameObject[] noteRows;
+    [SerializeField] Image[] noteRowBacks;
+    [SerializeField] TMP_Text[] noteRowTexts;
 
     [Header("관찰 화면")]
-    [SerializeField] TMP_Text observeTitle;         // 카드 아래 물건 이름
-    [SerializeField] TMP_Text observeHintText;      // "모양과 색을 눈에 꼭 담아 줘!"
     [SerializeField] Image observeImage;
-    [SerializeField] Image[] observeCountDots;      // 3 · 2 · 1 동그라미 (지금 숫자만 코랄)
-    [SerializeField] TMP_Text[] observeCountGlyphs;    // 동그라미 속 숫자 (지금 = 흰색, 나머지 = 검정)
-    [SerializeField] GameObject[] observeCountSparkles;   // 지금 숫자 옆 노란 반짝이
-    [SerializeField] Sprite countOnSprite;          // 시안의 코랄 동그라미
-    [SerializeField] Sprite countOffSprite;         // 시안의 크림 동그라미
+    [SerializeField] TMP_Text observeCount;
+    [SerializeField] SimpleAnim observeCountAnim;
 
     [Header("그리기 화면")]
     [SerializeField] TMP_Text drawTitle;
     [SerializeField] Button submitButton;
 
-    [Header("판정 화면")]
-    [SerializeField] RawImage judgeDrawing;         // 도깨비에게 건넨 쪽지
-    [SerializeField] TMP_Text judgeStatusText;      // "도깨비가 쪽지를 들여다보는 중..."
-    [SerializeField] float thinkSeconds = 1.5f;     // 자동 판정 때 도깨비가 고민하는 시간
-    [SerializeField] GameObject backToDrawButton;   // AI 오류 때만 보임
+    [Header("판정 대기 화면")]
+    [SerializeField] RawImage judgeDrawing;         // 화면 한 곳에 떠 있는 내 그림
+    [SerializeField] RectTransform judgeSnackOut;   // 도깨비 쪽으로 빠져나가는 간식
+    [SerializeField] float thinkSeconds = 1.5f;     // 자동 판정 때 고민하는 시간
+    [SerializeField] float judgeEnterSeconds = 0.7f;// 도깨비가 들어오는 시간
+    [SerializeField] float roamLoopSeconds = 6f;    // 찾는 동작 한 바퀴
 
     [Header("결과 화면")]
-    [SerializeField] TMP_Text resultTitleText;
+    [SerializeField] DialogueBox resultBox;
     [SerializeField] Image resultItemImage;         // 도깨비가 가져온 물건
-    [SerializeField] RawImage resultMyDrawing;      // 내 그림
-    [SerializeField] TMP_Text resultFeatureText;    // 특징별 [O]/[X]
-    [SerializeField] Image boyFace;                 // 소년 표정
-    [SerializeField] TMP_Text boyLineText;          // 소년 대사
-    [SerializeField] TMP_Text resultSnackText;      // 간식이 다 떨어졌을 때 안내
-    [SerializeField] Button retryButton;
-    [SerializeField] TMP_Text compareButtonLabel;
-    [SerializeField] Sprite boyHappy;
-    [SerializeField] Sprite boySurprised;
-    [SerializeField] GameObject boySurprisedMark;   // 당황했을 때 소년 옆에 뜨는 "!?"
-    [SerializeField] Sprite primaryButtonSprite;    // 주 버튼 그림 (코랄)
-    [SerializeField] Sprite secondaryButtonSprite;  // 보조 버튼 그림 (크림)
+    [SerializeField] GameObject resultItemShadow;
+    [SerializeField] GameObject resultSparkles;     // 성공했을 때 반짝임
+    [SerializeField] Image resultDokkaebi;
+    [SerializeField] SimpleAnim resultDokkaebiAnim;
+    [SerializeField] GameObject choiceRow;          // 다시 · 포기
 
-    [Header("비교 화면")]
+    [Header("채점표")]
     [SerializeField] RawImage compareMyDrawing;
     [SerializeField] Image compareOriginal;
-    [SerializeField] TMP_Text compareFeatureText;
-    [SerializeField] TMP_Text nextButtonLabel;
+    [SerializeField] GameObject[] scoreRows;
+    [SerializeField] TMP_Text[] scoreTexts;
+    [SerializeField] GameObject[] scoreCircles;     // 맞으면 초록 동그라미
+    [SerializeField] GameObject[] scoreSlashes;     // 틀리면 빨간 빗금
 
-    [Header("이야기 종료 화면")]
-    [SerializeField] TMP_Text endingRecordText;
+    [Header("1단계를 못 찾았을 때 : 도깨비가 스스로 찾아와요")]
+    [SerializeField] DialogueBox oopsBox;
+    [SerializeField] GameObject oopsHold;           // 대파를 든 도깨비
+    [SerializeField] GameObject oopsRun;            // 뛰어나가는 도깨비
+    [SerializeField] GameObject oopsBack;           // 방망이를 들고 돌아온 도깨비
+    [SerializeField] float oopsRunSeconds = 1.8f;
 
-    static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);   // 쓴 간식 복주머니
+    [Header("이야기 종료 화면 : 물건과 남은 간식 (방망이, 가방, 돗자리, 김밥, 친구 순)")]
+    [SerializeField] DialogueBox endingBox;
+    [SerializeField] Image[] endingItems;
+    [SerializeField] GameObject[] endingSnacks;     // 단계마다 3개씩 차례로
+
+    static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);
+    static readonly Color NoteNewRowColor = new Color32(251, 226, 182, 255);
+
+    // 대화 화면의 주인공 자리 (앞 = 처음 혼자, 뒤 = 도깨비와 함께)
+    static readonly Vector2 BoyAlonePos = new Vector2(0f, -618f);
+    static readonly Vector2 BoyAloneSize = new Vector2(570f, 867f);
+    static readonly Vector2 BoyWithPos = new Vector2(-267f, -768f);
+    static readonly Vector2 BoyWithSize = new Vector2(450f, 684f);
 
     // ───────────── 게임 도중 바뀌는 값들 ─────────────
     State state;
-    int stageIndex;         // 지금 단계 번호 (0부터)
-    int snacks;             // 이번 단계 남은 간식
-    float timeLeft;         // 관찰/그리기 남은 시간
+    ResultPhase resultPhase;
+    int stageIndex;
+    int snacks;
+    float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
-    int[] attempts;         // 단계별 제출 횟수 (이야기 종료 화면 기록용)
-    bool[] cleared;         // 단계별 성공 여부
-    int[] snacksLeft;       // 단계별 남은 간식 (이야기 종료 화면 기록용)
+    int[] attempts;
+    bool[] cleared;
+    int[] snacksLeft;
+    Sprite[] itemsFound;    // 단계별로 마지막에 받은 물건 (이야기 종료 장면에 놓여요)
     int judgeTicket;        // 제출할 때마다 +1. 늦게 도착한 옛 판정 결과를 버리는 데 써요.
+    float judgeStartTime;
+    bool snackIntroPending; // 단계 첫 그리기 때만 간식이 들어와요
+    int dialogueLine;
+    int lastCount;
+    int outcome;            // 0 전부 맞음, 1 일부 틀림, 2 전부 틀림
+    bool[] lastPresent;
+    bool batLost;           // 1단계를 못 찾음
+    int oopsPhase;
+    bool endingAsking;
+    Vector2 boyTargetPos, boyTargetSize;
 
     StageData Stage => stages[stageIndex];
 
-    // Start : 게임이 시작되면 한 번 실행
     void Start()
     {
         ShowTitle();
     }
 
-    // Update : 매 프레임 실행. 타이머만 처리해요.
     void Update()
     {
-        if (state == State.Observe)
+        if (state == State.Dialogue)
         {
-            timeLeft -= Time.deltaTime;                             // 지난 시간만큼 빼기
-            int count = Mathf.CeilToInt(timeLeft);                  // 3 → 2 → 1
-            for (int i = 0; i < observeCountDots.Length; i++)
+            dialogueBoy.anchoredPosition = Vector2.Lerp(dialogueBoy.anchoredPosition, boyTargetPos, Time.deltaTime * 8f);
+            dialogueBoy.sizeDelta = Vector2.Lerp(dialogueBoy.sizeDelta, boyTargetSize, Time.deltaTime * 8f);
+        }
+        else if (state == State.Observe)
+        {
+            timeLeft -= Time.deltaTime;
+            int count = Mathf.Clamp(Mathf.CeilToInt(timeLeft), 1, 3);   // 가운데 숫자 하나가 3 → 2 → 1
+            if (count != lastCount)
             {
-                bool now = observeCountDots.Length - i == count;
-                observeCountDots[i].sprite = now ? countOnSprite : countOffSprite;
-                observeCountGlyphs[i].color = now ? Color.white : Color.black;
-                observeCountSparkles[i].SetActive(now);
+                lastCount = count;
+                observeCount.text = count.ToString();
+                observeCountAnim.Play(SimpleAnim.Kind.NumPop);
+                Sfx.Play(Sfx.Count);
             }
-            if (timeLeft <= 0f) StartDraw(false);                   // 3초 끝 → 그리기
+            if (timeLeft <= 0f) StartDraw(false);
         }
         else if (state == State.Draw)
         {
@@ -174,75 +214,148 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // ───────────── 화면 넘기기 (public = 버튼 OnClick 에 연결) ─────────────
+    // ───────────── 시작 ─────────────
 
-    /// <summary>시작 화면</summary>
     void ShowTitle()
     {
         state = State.Title;
         SetPaused(false);
         hud.SetActive(false);
         backgroundImage.sprite = startBackground;
+        Sfx.Bgm(Sfx.BgmRoom);
         ShowPanel(titlePanel);
     }
 
-    /// <summary>[버튼] 소풍 준비하러 가기</summary>
+    /// <summary>[버튼] 소풍 가기</summary>
     public void StartGame()
     {
+        Sfx.Play(Sfx.Tap);
         attempts = new int[stages.Length];
         cleared = new bool[stages.Length];
         snacksLeft = new int[stages.Length];
+        itemsFound = new Sprite[stages.Length];
+        batLost = false;
         backgroundImage.sprite = gameBackground;
         int first = 0;
 #if UNITY_EDITOR
-        // (에디터 전용) 앞 단계를 건너뛰어 녹화 · 확인. 건너뛴 단계는 기록에 "찾았어요"로 남겨요
+        // (에디터 전용) 앞 단계를 건너뛰어 녹화 · 확인. 건너뛴 단계는 찾은 것으로 쳐요
         first = Mathf.Clamp(editorStartStage - 1, 0, stages.Length - 1);
         for (int i = 0; i < first; i++)
         {
             cleared[i] = true;
             attempts[i] = 1;
             snacksLeft[i] = snacksPerStage - 1;
+            itemsFound[i] = stages[i].originalSprite;
         }
 #endif
         StartStage(first);
     }
 
-    /// <summary>단계 도입 화면 : 이야기 + 새 규칙 + 앞에서 배운 규칙</summary>
+    // ───────────── 대화 + 도깨비의 쪽지 ─────────────
+
     void StartStage(int index)
     {
-        state = State.StageIntro;
+        state = State.Dialogue;
         stageIndex = index;
         snacks = snacksPerStage;
+        snackIntroPending = true;
+        lastPresent = null;
         toolBar.Setup(Stage.colorMode);
-
-        hud.SetActive(true);
+        hud.SetActive(false);
         timerGroup.SetActive(false);
+        backgroundImage.sprite = gameBackground;
         UpdateSnacks();
+        Sfx.Bgm(Sfx.BgmRoom);
 
-        introStageNumber.text = $"{Stage.stageNumber}단계";
-        introTargetName.text = Stage.targetName;
-        introStory.text = Stage.introStory;
-        string learned = string.IsNullOrEmpty(Stage.learnedRules) ? "없음 (첫 단계예요)" : Stage.learnedRules;
-        introRules.text =
-            $"<b>새로 배울 규칙</b>\n{Stage.newRule}\n\n" +
-            $"<b>이번 판정 기준</b>\n{string.Join(" · ", System.Array.ConvertAll(Stage.features, f => f.name))}\n\n" +
-            $"<b>앞에서 배운 규칙</b>  <color=#7A6A5A>{learned}</color>\n" +
-            $"<size=90%><color=#7A6A5A>관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 제출할 때 간식 1개</color></size>";
-        ShowPanel(stageIntroPanel);
+        noteCard.SetActive(false);
+        dialogueBoy.gameObject.SetActive(true);
+        dialogueDokkaebi.SetActive(false);
+        dialogueDokkaebiImage.sprite = index == 0 ? dokkaebiNoBat : dokkaebiNormal;
+        FillNote();
+        ShowPanel(dialoguePanel);
+
+        bool alone = index == 0;                    // 맨 처음에는 주인공 혼자 놀라요
+        boyTargetPos = alone ? BoyAlonePos : BoyWithPos;
+        boyTargetSize = alone ? BoyAloneSize : BoyWithSize;
+        dialogueBoy.anchoredPosition = boyTargetPos;
+        dialogueBoy.sizeDelta = boyTargetSize;
+        dialogueLine = 0;
+        SayIntroLine();
     }
 
-    /// <summary>[버튼] 기억할 모습 보기 → 3초 관찰</summary>
+    void SayIntroLine()
+    {
+        GameScript.Line line = GameScript.IntroLines(stageIndex)[dialogueLine];
+        dialogueBox.Say(line.text, FaceOf(line.face));
+
+        bool alone = stageIndex == 0 && dialogueLine == 0;
+        boyTargetPos = alone ? BoyAlonePos : BoyWithPos;
+        boyTargetSize = alone ? BoyAloneSize : BoyWithSize;
+        if (!alone) dialogueDokkaebi.SetActive(true);
+
+        bool dokkaebiTalks = line.face == GameScript.Face.Dokkaebi;
+        dialogueBoyAnim.Play(line.face == GameScript.Face.BoySurprised ? SimpleAnim.Kind.Shake
+                             : dokkaebiTalks ? SimpleAnim.Kind.None : SimpleAnim.Kind.Gentle);
+        if (dialogueDokkaebi.activeSelf)
+            dialogueDokkaebiAnim.Play(dokkaebiTalks ? SimpleAnim.Kind.Gentle : SimpleAnim.Kind.None);
+    }
+
+    // 쪽지에 판정 기준 적기 : 1. 2. 3. 번호, 새로 생긴 기준은 색칠
+    void FillNote()
+    {
+        noteTitle.text = $"{Stage.stageNumber}단계 {Stage.targetName}";
+        for (int i = 0; i < noteRows.Length; i++)
+        {
+            bool used = i < Stage.features.Length;
+            noteRows[i].SetActive(used);
+            if (!used) continue;
+            noteRowTexts[i].text = $"{i + 1}.<indent=1.3em>{GameScript.NoBreakParts(Stage.features[i].name)}</indent>";
+            bool isNew = Stage.stageNumber > 1 && i == Stage.features.Length - 1;
+            noteRowBacks[i].color = isNew ? NoteNewRowColor : Color.clear;
+        }
+    }
+
+    /// <summary>[화면 터치] 대사 넘기기 → 쪽지 → 관찰</summary>
+    public void DialogueTap()
+    {
+        if (state != State.Dialogue) return;
+        if (dialogueBox.FinishTyping()) return;
+        Sfx.Play(Sfx.Tap);
+
+        GameScript.Line[] lines = GameScript.IntroLines(stageIndex);
+        if (dialogueLine < lines.Length - 1)
+        {
+            dialogueLine++;
+            SayIntroLine();
+        }
+        else if (!noteCard.activeSelf)
+        {
+            // 쪽지가 나오면 캐릭터는 사라지고, 도깨비가 주의할 점을 말해요
+            dialogueBoy.gameObject.SetActive(false);
+            dialogueDokkaebi.SetActive(false);
+            noteCard.SetActive(true);
+            dialogueBox.Say(GameScript.CardLine(stageIndex), faceDokkaebi);
+        }
+        else
+        {
+            StartObserve();
+        }
+    }
+
+    /// <summary>3초 관찰 : 원본과 가운데 숫자만</summary>
     public void StartObserve()
     {
         state = State.Observe;
         timeLeft = observeSeconds;
-        observeTitle.text = Stage.targetName;
-        observeHintText.text = Stage.colorMode == ColorMode.BlackOnly ? "모양을 눈에 꼭 담아 줘!" : "모양과 색을 눈에 꼭 담아 줘!";
+        lastCount = 0;
         observeImage.sprite = Stage.originalSprite;
+        observeCount.text = "3";
         ShowPanel(observePanel);
     }
 
-    /// <summary>그리기 시작. keepDrawing = true 면 그리던 그림을 그대로 (AI 오류로 돌아올 때)</summary>
+    // ───────────── 그리기 ─────────────
+
+    /// <summary>그리기 시작. keepDrawing = true 면 그리던 그림을 그대로</summary>
     void StartDraw(bool keepDrawing)
     {
         state = State.Draw;
@@ -256,31 +369,45 @@ public class GameManager : MonoBehaviour
             board.ResetBoard();
         }
         drawTitle.text = $"기억나는 {Stage.targetName}{Josa(Stage.targetName, "을", "를")} 그려 줘";
+        hud.SetActive(true);
         timerGroup.SetActive(true);
+        Sfx.Bgm(Sfx.BgmDraw);
         ShowPanel(drawPanel);
+        UpdateSnacks();
+
+        if (snackIntroPending)
+        {
+            snackIntroPending = false;
+            foreach (SimpleAnim a in snackAnims) a.Play(SimpleAnim.Kind.SlideRight);
+            Sfx.Play(Sfx.SnackIn);
+        }
     }
 
-    /// <summary>[버튼] 제출 (또는 시간 초과로 자동 제출) : 쪽지 + 간식 1개를 도깨비에게</summary>
+    /// <summary>[버튼] 제출 (또는 시간 초과로 자동 제출)</summary>
     public void Submit()
     {
-        if (state != State.Draw) return;    // 두 번 눌림 방지
+        if (state != State.Draw) return;
 
         state = State.Judge;
         savedDrawTime = Mathf.Max(timeLeft, 10f);
+        int usedBefore = snacksPerStage - snacks;
         snacks--;
         attempts[stageIndex]++;
         UpdateSnacks();
         timerGroup.SetActive(false);
+        Sfx.Play(Sfx.Submit);
+        Sfx.Bgm(Sfx.BgmJudge);
 
         judgeDrawing.texture = board.Texture;
-        backToDrawButton.SetActive(false);
+        // 방금 쓴 간식 자리에서 도깨비 쪽으로 빠져나가요
+        Vector2 p = judgeSnackOut.anchoredPosition;
+        p.x = snackIcons[Mathf.Clamp(usedBefore, 0, snackIcons.Length - 1)].rectTransform.anchoredPosition.x;
+        judgeSnackOut.anchoredPosition = p;
+        judgeStartTime = Time.time;
         ShowPanel(judgePanel);
 
-        // 기다리는 동안 도깨비가 갸웃갸웃 (SimpleAnim)
-        judgeStatusText.text = "도깨비가 쪽지를 들여다보는 중...";   // 건넨 쪽지와 간식은 그림으로 보여요
         int ticket = ++judgeTicket;
-        // 판정은 AI 가 해요 (기획서 6장). 키가 있으면 OpenAI 에 바로, 없으면 판정 중계 서버로.
-        //   AI 판정이 안 되면(서버·키·인터넷 문제) 기획서대로 간식을 돌려주고 다시 제출하게 해요 (OnJudgeError).
+        //   AI 판정이 안 되면(서버·키·인터넷 문제) 간식을 돌려주고 다시 제출하게 해요 (OnJudgeError).
         //   계산식 자동 판정(LocalJudge)은 자동 테스트(OpenAIJudge.DisableAI)에서만 써요.
         if (OpenAIJudge.DisableAI)
         {
@@ -289,8 +416,8 @@ public class GameManager : MonoBehaviour
         else if (judge.IsReady)
         {
             StartCoroutine(judge.Judge(Stage, board.Texture,
-                v => { if (ticket == judgeTicket) OnVerdict(v); },
-                e => { if (ticket == judgeTicket) OnJudgeError(e); }));
+                v => { if (ticket == judgeTicket) StartCoroutine(FinishLoopThen(ticket, () => OnVerdict(v))); },
+                e => { if (ticket == judgeTicket) StartCoroutine(FinishLoopThen(ticket, () => OnJudgeError(e))); }));
         }
         else
         {
@@ -298,22 +425,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // AI 판정을 쓸 수 없을 때 (키도 판정 서버 주소도 없음) : 잠깐 기다렸다가 오류로 (간식은 돌려줘요)
+    // 응답이 오면 도깨비가 찾는 동작 한 바퀴를 마칠 때까지 기다렸다가 넘어가요
+    IEnumerator FinishLoopThen(int ticket, System.Action next)
+    {
+        float passed = Time.time - judgeStartTime - judgeEnterSeconds;
+        float laps = Mathf.Max(1f, Mathf.Ceil(passed / Mathf.Max(0.01f, roamLoopSeconds)));
+        float remain = laps * roamLoopSeconds - passed;
+        if (remain > 0f) yield return new WaitForSeconds(remain);
+        if (ticket == judgeTicket && state == State.Judge) next();
+    }
+
     IEnumerator NoJudgeRoutine(int ticket)
     {
         yield return new WaitForSeconds(thinkSeconds);
-        if (ticket == judgeTicket && state == State.Judge) OnJudgeError("AI 판정 설정이 없어요 (키 또는 판정 서버 주소)");
+        if (ticket == judgeTicket && state == State.Judge)
+            yield return FinishLoopThen(ticket, () => OnJudgeError("AI 판정 설정이 없어요 (키 또는 판정 서버 주소)"));
     }
 
-    // (자동 테스트용) 도깨비가 고민하는 시간만큼 기다렸다가 LocalJudge 로 판정
+    // (자동 테스트용) 고민하는 시간만큼 기다렸다가 LocalJudge 로 판정
     IEnumerator LocalJudgeRoutine(int ticket)
     {
         yield return new WaitForSeconds(thinkSeconds);
-        if (ticket != judgeTicket || state != State.Judge) yield break; // 그 사이 다른 화면으로 갔으면 무시
-        OnVerdict(LocalJudge.Judge(Stage, board.Texture));
+        if (ticket != judgeTicket || state != State.Judge) yield break;
+        yield return FinishLoopThen(ticket, () => OnVerdict(LocalJudge.Judge(Stage, board.Texture)));
     }
 
-    // 판정 결과가 도착했을 때 (AI 든 자동 판정이든 같은 모양)
     void OnVerdict(OpenAIJudge.Verdict verdict)
     {
         if (state != State.Judge) return;
@@ -321,7 +457,7 @@ public class GameManager : MonoBehaviour
         ShowResult(verdict.present, verdict.notes);
     }
 
-    // AI 판정이 실패했을 때 : 간식 돌려주고 다시 제출하게 (기획서 6장 오류 처리)
+    // AI 판정이 실패했을 때 : 간식 돌려주고, 대사를 누르면 그림으로 돌아가요
     void OnJudgeError(string message)
     {
         if (state != State.Judge) return;
@@ -329,133 +465,225 @@ public class GameManager : MonoBehaviour
         attempts[stageIndex]--;
         judgeTicket++;      // 이 제출은 끝난 것으로 (늦게 오는 결과는 무시)
         UpdateSnacks();
-        judgeStatusText.text = $"판정 중에 문제가 생겼어요. 간식을 돌려줬어요.\n<size=70%>{message}</size>";
-        backToDrawButton.SetActive(true);
         Debug.LogWarning("[OpenAIJudge] " + message);
+
+        state = State.Result;
+        resultPhase = ResultPhase.Error;
+        resultItemImage.enabled = false;
+        resultItemShadow.SetActive(false);
+        resultSparkles.SetActive(false);
+        resultDokkaebi.sprite = stageIndex == 0 ? dokkaebiNoBat : dokkaebiNormal;
+        choiceRow.SetActive(false);
+        ShowPanel(resultPanel);
+        resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
+        resultBox.Say(GameScript.JudgeError, faceDokkaebi);
     }
 
-    /// <summary>[버튼] (AI 오류 후) 그림으로 돌아가서 다시 제출</summary>
+    /// <summary>(AI 오류 후) 그림으로 돌아가서 다시 제출</summary>
     public void BackToDraw()
     {
         StartDraw(true);
     }
 
+    // ───────────── 결과 ─────────────
+
     /// <summary>결과 화면 : 맞힌 특징 수에 따라 도깨비가 가져오는 물건이 달라져요.</summary>
     void ShowResult(bool[] present, string[] notes)
     {
         state = State.Result;
+        resultPhase = ResultPhase.Dokkaebi;
+        lastPresent = present;
 
         int count = 0;
-        for (int i = 0; i < present.Length; i++)
-        {
-            if (present[i]) count++;
-        }
+        foreach (bool ok in present) if (ok) count++;
         bool success = count == present.Length;
         cleared[stageIndex] = success;
-        boySurprisedMark.SetActive(!success);
+        outcome = success ? 0 : count > 0 ? 1 : 2;
 
         // 판정 기준이 n개면 경우의 수는 2ⁿ 가지예요 (Docs/6_엉뚱한_물건_제작.md)
-        //   전부 맞음     → 진짜 물건 A (성공)
-        //   일부만 맞음   → 그 조합대로 틀린 물건 A'
-        //   전부 틀림     → 완전히 다른 물건 B
-        string name = Stage.targetName;
-        if (success)
+        //   전부 맞음 → 진짜 물건 A / 일부만 맞음 → 그 조합대로 틀린 A' / 전부 틀림 → 완전히 다른 물건 B
+        Sprite item = success ? Stage.originalSprite : Stage.WrongSpriteFor(present);
+        resultItemImage.sprite = item;
+        resultItemImage.enabled = item != null;
+        itemsFound[stageIndex] = item;
+        resultItemShadow.SetActive(true);
+        resultSparkles.SetActive(success);
+        choiceRow.SetActive(false);
+
+        // 1단계를 못 찾았으면 도깨비는 아직 빈손이에요
+        bool batMissing = stageIndex == 0 && !success;
+        resultDokkaebi.sprite = batMissing ? dokkaebiNoBat : dokkaebiSwing;
+        ShowPanel(resultPanel);
+        resultDokkaebiAnim.Play(SimpleAnim.Kind.Swing);
+        Sfx.Play(Sfx.Item);
+        Sfx.Play(success ? Sfx.Success : Sfx.Fail);
+        resultBox.Say(GameScript.DokkaebiResult(stageIndex, outcome), faceDokkaebi);
+    }
+
+    /// <summary>[화면 터치] 도깨비 대사 → 주인공 대사 → 다시 · 포기 또는 채점표</summary>
+    public void ResultTap()
+    {
+        if (state != State.Result || resultPhase == ResultPhase.Choose) return;
+        if (resultBox.FinishTyping()) return;
+        Sfx.Play(Sfx.Tap);
+
+        if (resultPhase == ResultPhase.Error)
         {
-            resultTitleText.text = $"도깨비가 {name}{Josa(name, "을", "를")} 찾아왔다!";
-            ShowItem(Stage.originalSprite);
-            boyFace.sprite = boyHappy;
-            boyLineText.text = "고마워 도깨비야!";
+            BackToDraw();
         }
-        else if (count > 0)
+        else if (resultPhase == ResultPhase.Dokkaebi)
         {
-            resultTitleText.text = $"엉뚱한 {name}{Josa(name, "을", "를")} 가져왔다...";
-            ShowItem(Stage.WrongSpriteFor(present));
-            boyFace.sprite = boySurprised;
-            boyLineText.text = $"어? 이 {name}{Josa(name, "은", "는")} 좀 이상한데...";
+            bool wrong = outcome != 0;
+            resultPhase = ResultPhase.Boy;
+            resultDokkaebi.sprite = stageIndex == 0 && wrong ? dokkaebiNoBat : dokkaebiNormal;
+            resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
+            string line = wrong && snacks <= 0 ? GameScript.BoyOutOfSnacks : GameScript.BoyResult(outcome);
+            resultBox.Say(line, wrong ? faceBoySurprised : faceBoyHappy);
+        }
+        else if (outcome != 0 && snacks > 0)
+        {
+            // 대사 상자 자리에 다시 · 포기 버튼이 나란히 나와요
+            resultPhase = ResultPhase.Choose;
+            resultBox.gameObject.SetActive(false);
+            choiceRow.SetActive(true);
         }
         else
         {
-            resultTitleText.text = "도깨비가 전혀 다른 물건을 가져왔다!";
-            ShowItem(Stage.WrongSpriteFor(present));
-            boyFace.sprite = boySurprised;
-            boyLineText.text = "특징을 더 그려줘야겠다.";
+            ShowCompare();
         }
-
-        // 특징별 결과 목록 (AI 판정이면 근거도 작게)
-        string lines = "";
-        for (int i = 0; i < present.Length; i++)
-        {
-            string mark = present[i] ? "<color=#2E7D32>[O] 그림</color>" : "<color=#C62828>[X] 빠뜨림</color>";
-            lines += $"{mark}  {Stage.features[i].name}\n";
-            // 빠뜨린 특징만 "왜 빠뜨렸다고 봤는지" 작게 덧붙여요 (줄이 너무 많아지면 주인공 놀람 표시와 겹쳐서 빼요)
-            bool roomForNotes = present.Length + (present.Length - count) <= 8;
-            if (roomForNotes && !present[i] && notes != null && !string.IsNullOrEmpty(notes[i])) lines += $"<size=70%><color=#7A6A5A>      {notes[i]}</color></size>\n";
-        }
-        resultFeatureText.text = lines;
-
-        resultMyDrawing.texture = board.Texture;
-        // 남은 개수는 위 복주머니로 보여요. 여기에는 다시 그릴 수 없는 이유만 적어요.
-        resultSnackText.text = (!success && snacks <= 0) ? "간식이 다 떨어졌어요. 원본과 비교하고 넘어가요." : "";
-
-        // 실패했고 간식이 남아 있을 때만 다시 그리기
-        retryButton.gameObject.SetActive(!success && snacks > 0);
-        compareButtonLabel.text = success ? "내 그림과 비교하기" : "포기하고 비교하기";
-        // 성공이면 비교하기가 주된 버튼(코랄), 아니면 다시 그리기가 주된 버튼이라 비교하기는 보조(크림)
-        compareButtonLabel.transform.parent.GetComponent<Image>().sprite = success ? primaryButtonSprite : secondaryButtonSprite;
-
-        ShowPanel(resultPanel);
     }
 
-    /// <summary>[버튼] 다시 그리기 : 원본은 다시 안 보여주고 빈 쪽지로, 시간은 다시 60초</summary>
+    /// <summary>[버튼] 다시 : 이전 그림에 이어 그리기, 시간은 다시 60초</summary>
     public void Retry()
     {
-        StartDraw(false);
+        Sfx.Play(Sfx.Tap);
+        savedDrawTime = drawSeconds;
+        StartDraw(true);
     }
 
-    /// <summary>[버튼] 비교하기 : 왼쪽 내 그림, 오른쪽 원본, 아래 특징 설명</summary>
+    /// <summary>[버튼 · 터치] 채점표 : 내 그림, 원본, 번호마다 동그라미 또는 빗금</summary>
     public void ShowCompare()
     {
         state = State.Compare;
         compareMyDrawing.texture = board.Texture;
         compareOriginal.sprite = Stage.originalSprite;
 
-        string hint = "<b>원본의 특징</b>\n";
-        foreach (Feature f in Stage.features) hint += "- " + f.name + "\n";
-        compareFeatureText.text = hint;
+        for (int i = 0; i < scoreRows.Length; i++)
+        {
+            bool used = i < Stage.features.Length;
+            scoreRows[i].SetActive(used);
+            if (!used) continue;
+            bool ok = lastPresent != null && i < lastPresent.Length && lastPresent[i];
+            scoreTexts[i].text = GameScript.NoBreakParts(Stage.features[i].name);
+            scoreCircles[i].SetActive(ok);
+            scoreSlashes[i].SetActive(!ok);
+        }
 
-        snacksLeft[stageIndex] = snacks;   // 이야기 종료 화면 기록용
-
-        bool last = stageIndex == stages.Length - 1;
-        nextButtonLabel.text = last ? "오늘의 이야기 마치기" : "다음 단계로";
+        snacksLeft[stageIndex] = snacks;
+        batLost = stageIndex == 0 && !cleared[0];
+        if (batLost) itemsFound[0] = stages[0].originalSprite;   // 도깨비가 스스로 찾아오니 소풍에는 진짜 방망이
+        Sfx.Play(Sfx.Mark);
         ShowPanel(comparePanel);
     }
 
-    /// <summary>[버튼] 다음 단계로 / 오늘의 이야기 마치기</summary>
+    /// <summary>[화면 터치] 채점표 다음으로</summary>
     public void NextStage()
     {
-        if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
+        Sfx.Play(Sfx.Tap);
+        if (stageIndex == 0 && batLost)
+        {
+            batLost = false;
+            ShowOops();
+        }
+        else if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
         else ShowEnding();
     }
 
-    /// <summary>이야기 종료 : 단계별 기록</summary>
+    // ───────────── 1단계를 못 찾았을 때 ─────────────
+
+    void ShowOops()
+    {
+        state = State.Oops;
+        oopsPhase = 0;
+        hud.SetActive(false);
+        oopsHold.SetActive(true);
+        oopsRun.SetActive(false);
+        oopsBack.SetActive(false);
+        ShowPanel(oopsPanel);
+        oopsBox.Say(GameScript.Oops1, faceDokkaebi);
+    }
+
+    /// <summary>[화면 터치] 대파 → 뛰어나가기 → 방망이를 들고 돌아오기 → 2단계</summary>
+    public void OopsTap()
+    {
+        if (state != State.Oops) return;
+        if (oopsBox.FinishTyping()) return;
+        if (oopsPhase == 0)
+        {
+            Sfx.Play(Sfx.Tap);
+            oopsPhase = 1;
+            oopsHold.SetActive(false);
+            oopsRun.SetActive(true);
+            Sfx.Play(Sfx.Step);
+            oopsBox.Say(GameScript.Oops2, faceDokkaebi);
+            StartCoroutine(OopsReturn());
+        }
+        else if (oopsPhase == 2)
+        {
+            Sfx.Play(Sfx.Tap);
+            StartStage(1);
+        }
+    }
+
+    IEnumerator OopsReturn()
+    {
+        yield return new WaitForSeconds(oopsRunSeconds);
+        if (state != State.Oops || oopsPhase != 1) yield break;
+        oopsPhase = 2;
+        oopsRun.SetActive(false);
+        oopsBack.SetActive(true);
+        Sfx.Play(Sfx.Item);
+        oopsBox.Say(GameScript.Oops3, faceDokkaebi);
+    }
+
+    // ───────────── 이야기 종료 ─────────────
+
+    /// <summary>소풍 장면 : 물건이 날아와 놓이고, 물건 옆에 남은 간식이 나와요</summary>
     void ShowEnding()
     {
         state = State.Ending;
         hud.SetActive(false);
-
-        string record = "";
-        for (int i = 0; i < stages.Length; i++)
+        backgroundImage.sprite = endingBackground;
+        endingAsking = false;
+        endingBox.gameObject.SetActive(false);
+        for (int i = 0; i < endingItems.Length; i++)
         {
-            string result = cleared[i] ? "<color=#2E7D32>찾았어요</color>" : "<color=#C62828>포기했어요</color>";
-            record += $"{stages[i].Title}  -  {result}  (제출 {attempts[i]}번, 남은 간식 {snacksLeft[i]}개)\n";
+            endingItems[i].sprite = itemsFound[i] != null ? itemsFound[i] : stages[i].originalSprite;
+            for (int k = 0; k < snacksPerStage; k++)
+                endingSnacks[i * snacksPerStage + k].SetActive(k < snacksLeft[i]);
         }
-        endingRecordText.text = record;
+        Sfx.Bgm(Sfx.BgmPicnic);
+        Sfx.Play(Sfx.Cheer);
         ShowPanel(endingPanel);
     }
 
-    /// <summary>[버튼] 처음으로</summary>
+    /// <summary>[화면 터치] 도깨비가 처음으로 돌아갈지 묻고, 대사를 누르면 돌아가요</summary>
+    public void EndingTap()
+    {
+        if (state != State.Ending) return;
+        if (!endingAsking)
+        {
+            endingAsking = true;
+            endingBox.Say(GameScript.EndingAsk, faceDokkaebi);
+            return;
+        }
+        if (endingBox.FinishTyping()) return;
+        BackToTitle();
+    }
+
     public void BackToTitle()
     {
+        Sfx.Play(Sfx.Tap);
         ShowTitle();
     }
 
@@ -470,8 +698,10 @@ public class GameManager : MonoBehaviour
 
     // ───────────── 도우미 함수 ─────────────
 
+    Sprite FaceOf(GameScript.Face face) =>
+        face == GameScript.Face.BoySurprised ? faceBoySurprised : face == GameScript.Face.BoyHappy ? faceBoyHappy : faceDokkaebi;
+
     // (에디터에서만) 제출한 그림과 판정 결과를 Temp/Submissions 에 저장 → 판정 기준을 조절할 때 참고해요.
-    // Temp 폴더는 Git 에 올라가지 않고, 실제 게임 빌드에서는 이 코드가 아예 빠져요.
     void SaveSubmission(OpenAIJudge.Verdict verdict)
     {
 #if UNITY_EDITOR
@@ -489,15 +719,8 @@ public class GameManager : MonoBehaviour
     // 패널 하나만 켜고 나머지는 끄기
     void ShowPanel(GameObject panel)
     {
-        GameObject[] all = { titlePanel, stageIntroPanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel };
+        GameObject[] all = { titlePanel, dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, oopsPanel, endingPanel };
         foreach (GameObject p in all) p.SetActive(p == panel);
-    }
-
-    // 결과 그림 칸에 물건 보여주기 (null 이면 숨김)
-    void ShowItem(Sprite sprite)
-    {
-        resultItemImage.sprite = sprite;
-        resultItemImage.enabled = sprite != null;
     }
 
     // 남은 간식은 또렷하게, 쓴 간식은 흐리게 (왼쪽부터 흐려져요)
@@ -516,8 +739,8 @@ public class GameManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(word)) return withoutBatchim;
         char last = word[word.Length - 1];
-        if (last < 0xAC00 || last > 0xD7A3) return withoutBatchim;      // 한글이 아니면
-        bool hasBatchim = (last - 0xAC00) % 28 != 0;                     // 한글 글자 번호 규칙
+        if (last < 0xAC00 || last > 0xD7A3) return withoutBatchim;
+        bool hasBatchim = (last - 0xAC00) % 28 != 0;
         return hasBatchim ? withBatchim : withoutBatchim;
     }
 }

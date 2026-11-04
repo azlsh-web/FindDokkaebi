@@ -24,7 +24,10 @@ static class MvpLayoutCheck
     static readonly string[][] Intended =
     {
         new[] { "DrawPanel/BoardFrame", "DrawPanel/Board" },   // 그림판은 틀의 뚫린 종이 면 뒤에 있어요
-        new[] { "ObservePanel/Sparkle", "ObservePanel/Count" },
+        new[] { "JudgePanel/MyDrawingBack", "JudgePanel/SnackOut" },   // 간식이 내 그림 앞을 지나 빠져나가요
+        new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
+        new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
+        new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
     };
 
     class Item
@@ -125,7 +128,7 @@ static class MvpLayoutCheck
         // 4) 화면 밖 (시작 화면 · 일시정지 화면은 화면 전체를 덮는 그림이라 제외)
         foreach (Item it in items)
         {
-            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel")) continue;
+            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
             Rect o = Opaque(it);
             if (o.width <= 0) continue;
             if (o.xMin < frameR.xMin - 2 || o.xMax > frameR.xMax + 2 || o.yMin < frameR.yMin - 2 || o.yMax > frameR.yMax + 2)

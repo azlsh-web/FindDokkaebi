@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0b85402b562d09b4693a679b55a4ea56
+guid: 530d522e1930029498c77fe56474b403
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9084364342081912611
-    second: CountOff_0
+      213: -811121729751436041
+    second: BG_Picnic_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 4096
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 0
+    textureCompression: 2
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CountOff_0
+      name: BG_Picnic_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 348
-        height: 348
+        width: 1080
+        height: 1899
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd08bfb03cadde180800000000000000
-      internalID: -9084364342081912611
+      spriteID: 7f4b09495115eb4f0800000000000000
+      internalID: -811121729751436041
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CountOff_0: -9084364342081912611
+      BG_Picnic_0: -811121729751436041
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

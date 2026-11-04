@@ -125,6 +125,7 @@ static class MvpJudgeCases
                 currentStage = c.stage;
             }
             SetField(gm, "thinkSeconds", 0.15f);   // 검사에서는 도깨비 고민을 짧게
+            SetField(gm, "roamLoopSeconds", 0.05f);
             SetField(gm, "snacks", 3);             // 간식이 떨어지지 않게
             Call(gm, "StartDraw", false);
 

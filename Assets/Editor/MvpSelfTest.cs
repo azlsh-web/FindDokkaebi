@@ -26,8 +26,8 @@ using Object = UnityEngine.Object;
 //   - 화면 흐름 검사에서는 "이번엔 이 특징을 빠뜨렸다"는 결과를 미리 정해서 넣어요 (LocalJudge.TestOverride).
 //
 // 시나리오
-//   시작 → 1~5단계 (각 단계 : 부분 성공 → 다시 그리기 → 성공 → 비교 → 다음 단계)
-//   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
+//   시작 → 1~5단계 (각 단계 : 대화 → 쪽지 → 관찰 → 그리기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
+//   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기, 방망이를 못 찾았을 때의 장면
 //   + 2단계 : 간식 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
 //   + 4·5단계 : 혼색 팔레트 (노랑+파랑=초록, 빨강+노랑+파랑=갈색)
@@ -255,11 +255,14 @@ static class MvpSelfTest
         // 1) 시작 화면
         Add(0.2f, "시작 화면", () =>
         {
+            SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
+            SetPrivate(Gm(), "oopsRunSeconds", 0.2f);
             Check(IsOn("TitlePanel") && !IsOn("HUD"), "시작 화면 (HUD 숨김)");
             Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "시작 화면 배경은 StartBG");
             Check(Find("TitlePanel/TitleLogo") != null && Find("TitlePanel/StartButton").GetComponent<Button>() != null, "시작 화면 물건은 따로 올려져 있다");
-            Check(Find("JudgePanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
-            Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Swing", "결과는 방망이를 휘두르는 도깨비");
+            Check(Text("TitlePanel/StartButton/Label") == "소풍 가기", "시작 버튼은 소풍 가기");
+            Check(Find("TitlePanel").Find("TitleTagline") == null && Find("TitlePanel").Find("TitleGear") == null, "문구와 설정 버튼이 없다");
+            Check(Find("JudgePanel/DokkaebiEnter/Roam/Step/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
             Shot("title");
             Then(() => Gm().StartGame());
         });
@@ -271,20 +274,41 @@ static class MvpSelfTest
             StageData st = stages[s];
             bool last = s == stages.Length - 1;
 
-            // 단계 도입
-            Add(0.3f, $"{st.Title} 도입", () =>
+            // 대화 → 쪽지
+            Add(1.2f, $"{st.Title} 대화", () =>
             {
-                Check(IsOn("StageIntroPanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Room", $"{st.Title} 도입 화면 (배경은 RoomBG)");
-                Check(SnacksLit() == 3, $"{st.Title} 간식 3개로 시작 ({SnacksLit()})");
-                Check(Text("StageIntroPanel/IntroCard/RulesCard/Rules").Contains("새로 배울 규칙"), "규칙 안내가 있다");
-                Shot($"s{s + 1}_intro");
-                Then(() => Gm().StartObserve());
+                Check(IsOn("DialoguePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Room", $"{st.Title} 대화 화면 (배경은 BG_Room)");
+                Check(!IsOn("HUD"), "대화 중에는 간식과 일시정지를 숨긴다");
+                Check(IsOn("DialoguePanel/Boy"), "주인공이 보인다");
+                if (s == 0) Check(!IsOn("DialoguePanel/Dokkaebi"), "맨 처음에는 주인공 혼자 놀란다");
+                Shot($"s{s + 1}_dialogue");
+                Then(() =>
+                {
+                    for (int k = 0; k < 12 && !IsOn("DialoguePanel/NoteArea/NoteCard"); k++) Gm().DialogueTap();
+                    Check(IsOn("DialoguePanel/NoteArea/NoteCard"), "대사가 끝나면 쪽지가 나온다");
+                    Check(!IsOn("DialoguePanel/Boy") && !IsOn("DialoguePanel/Dokkaebi"), "쪽지가 나오면 캐릭터는 사라진다");
+                });
+            });
+            Add(0.5f, $"{st.Title} 쪽지", () =>
+            {
+                int rows = 0;
+                for (int k = 1; k <= 5; k++) if (IsOn($"DialoguePanel/NoteArea/NoteCard/Row_{k}")) rows++;
+                Check(rows == st.features.Length, $"쪽지에 판정 기준 {st.features.Length}개");
+                Check(Text("DialoguePanel/NoteArea/NoteCard/Row_1/Text").StartsWith("1."), "기준에 번호가 있다");
+                Check(Find("DialoguePanel/DialogueBox").GetComponent<DialogueBox>() != null, "쪽지와 함께 도깨비 대사");
+                Shot($"s{s + 1}_note");
+                Then(() =>
+                {
+                    Gm().DialogueTap();     // 글자 다 보이기
+                    Gm().DialogueTap();     // 관찰 시작
+                });
             });
 
             // 관찰 3초
             Add(0.4f, $"{st.Title} 관찰", () =>
             {
                 Check(IsOn("ObservePanel") && Find("ObservePanel/Card/TargetImage").GetComponent<Image>().sprite == st.originalSprite, "원본 그림을 보여준다");
+                Check(IsOn("ObservePanel/CountEdge/CountText"), "가운데 숫자 하나");
                 if (s == 0) Shot($"s{s + 1}_observe");
             });
 
@@ -292,6 +316,7 @@ static class MvpSelfTest
             Add(3.0f, $"{st.Title} 그리기", () =>
             {
                 Check(IsOn("DrawPanel") && !IsOn("ObservePanel"), "3초 뒤 그리기 화면");
+                Check(IsOn("HUD") && SnacksLit() == 3, $"{st.Title} 간식 3개로 시작 ({SnacksLit()})");
                 bool primaries = st.colorMode != ColorMode.BlackOnly;
                 bool mixing = st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree;
                 Check(IsOn("DrawPanel/ToolBar/ColorRow/Color_빨강") == primaries, $"빨강 버튼은 {(primaries ? "보임" : "숨김")}");
@@ -299,10 +324,11 @@ static class MvpSelfTest
                 Check(!Find("DrawPanel/SubmitButton").GetComponent<Button>().interactable, "빈 쪽지면 제출 비활성");
                 DrawStage(st);
             }, () => IsOn("DrawPanel"));
-            Add(0.3f, $"{st.Title} 그린 뒤", () =>
+            Add(0.8f, $"{st.Title} 그린 뒤", () =>
             {
                 Check(Board().HasDrawn && Find("DrawPanel/SubmitButton").GetComponent<Button>().interactable, "그리면 제출 활성");
                 Check(Find("DrawPanel/ToolBar/ToolRow/Undo/Button").GetComponent<Button>().interactable, "그리면 되돌리기 활성");
+                Check(Mathf.Abs(((RectTransform)Find("HUD/SnackRow/Snack_0")).anchoredPosition.x - ((RectTransform)Find("HUD/SnackRow/Snack_1")).anchoredPosition.x) > 50f, "간식이 제자리로 들어왔다");
                 if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
                     Check(IsOn("DrawPanel/ToolBar/ColorRow/MixedSlot/Frame"), "섞은 색이 선택돼 있다");
                 if (s == 0)
@@ -324,7 +350,6 @@ static class MvpSelfTest
                     Check(Board().HasDrawn, "그 전 그림으로 되돌리기");
                 }
                 // 도구 확인이 끝나면, 이번 결과(강제로 넣는 판정)에 맞는 손그림으로 바꿔서 제출해요.
-                // (네모만 그려 놓고 "잘 그렸다" 가 나오면 캡처를 보는 사람이 판정이 고장 난 줄 알아요)
                 PutSketch(st, allDrawn: false);
                 Shot($"s{s + 1}_draw");
                 Expect(st, s == 1 ? -1 : st.features.Length - 1); // 2단계는 전부 빠뜨림, 나머지는 마지막 특징만 빠뜨림
@@ -338,26 +363,27 @@ static class MvpSelfTest
                 else Then(() => Gm().Submit());
             });
 
-            // 판정 화면
+            // 판정 대기
             Add(s == 2 ? 1.0f : 0.3f, $"{st.Title} 판정", () =>
             {
                 if (s == 2) Check(((RectTransform)Find("HUD/TimerGroup/Incense/IncenseFx_Tip")).anchoredPosition.y < 150f, "향이 다 타면 불꽃이 아래까지 내려온다");
-                Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면 (쪽지와 간식을 건넴)");
+                Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면");
                 Check(SnacksLit() == 2, $"제출하면 간식 -1 ({SnacksLit()})");
                 Check(Find("HUD/SnackRow/Snack_0").GetComponent<Image>().color.a < 0.9f, "간식은 왼쪽부터 흐려진다");
-                Check(Text("JudgePanel/StatusCard/Status").Contains("들여다보는"), "도깨비가 쪽지를 들여다보며 판정 중");
-                Check(GameObject.Find("Canvas").transform.Find("Frame/JudgePanel/TestInput") == null, "체크박스(수동 판정)가 없다");
+                Check(IsOn("JudgePanel/MyDrawingBack/MyDrawing"), "내 그림이 떠 있다");
+                if (s == 0) Shot("s1_judge");
 
                 if (s == 0)
                 {
-                    // AI 오류가 나면 간식을 돌려주고 그림 그대로 다시 제출
+                    // AI 오류가 나면 간식을 돌려주고, 대사를 누르면 그림 그대로 돌아가요
                     Invoke(Gm(), "OnJudgeError", "테스트용 가짜 오류");
                     Check(SnacksLit() == 3, "오류가 나면 간식을 돌려준다");
-                    Check(IsOn("JudgePanel/BackToDrawButton"), "다시 제출 버튼이 보인다");
+                    Check(IsOn("ResultPanel/DialogueBox") && !IsOn("ResultPanel/ChoiceRow"), "도깨비가 오류를 말한다");
                     Shot("s1_ai_error");
                     Then(() =>
                     {
-                        Gm().BackToDraw();
+                        Gm().ResultTap();
+                        Gm().ResultTap();
                         Check(IsOn("DrawPanel") && Board().HasDrawn, "그리던 그림 그대로 돌아왔다");
                         Gm().Submit();
                     });
@@ -366,79 +392,148 @@ static class MvpSelfTest
 
             if (s == 1)
             {
-                // 2단계 : 하나도 못 맞혀서 간식 3개를 다 씀 → 포기
+                // 2단계 : 하나도 못 맞혀서 간식 3개를 다 씀
                 for (int k = 1; k <= 2; k++)
                 {
                     int kk = k;
                     Add(0.3f, $"2단계 {kk}번째 실패", () =>
                     {
-                        Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("전혀 다른"), $"{kk}번째 : 하나도 못 맞히면 완전히 다른 물건");
+                        Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], $"{kk}번째 : 하나도 못 맞히면 완전히 다른 물건");
                         Gm().Retry();
                         Gm().Submit();
-                    }, ResultShown);
+                    }, () => ResultShown() && SnacksLit() == 3 - kk);
                 }
                 Add(0.3f, "2단계 간식 0개", () =>
                 {
                     Check(SnacksLit() == 0, "간식 0개");
-                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("전혀 다른") && Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "0개 맞히면 완전히 다른 물건");
-                    Check(!IsOn("ResultPanel/RetryButton"), "간식이 없으면 다시 그리기 숨김");
-                    Check(Text("ResultPanel/SnackLeft").Contains("떨어졌어요"), "간식이 다 떨어졌다고 알려준다");
-                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "Char_BoyFace_Surprised", "실패하면 당황한 표정");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "0개 맞히면 완전히 다른 물건");
+                    TapResult();
+                    Check(!IsOn("ResultPanel/ChoiceRow"), "간식이 없으면 다시 · 포기 버튼이 없다");
+                    Check(Text("ResultPanel/DialogueBox/Line").Contains("떨어졌어"), "간식이 다 떨어졌다고 주인공이 말한다");
+                    Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_BoyFace_Surprised", "실패하면 당황한 표정");
                     Shot("s2_out_of_snacks");
-                    Then(() => Gm().ShowCompare());
+                    Then(() =>
+                    {
+                        Gm().ResultTap();   // 글자 다 보이기
+                        Gm().ResultTap();   // 채점표로
+                        Check(IsOn("ComparePanel"), "대사를 누르면 채점표로 넘어간다");
+                    });
                 }, () => ResultShown() && SnacksLit() == 0);
             }
             else
             {
                 // 마지막 특징만 빠뜨림 → 그 조합의 물건 (1단계는 기준이 하나라 곧 전부 틀림)
-                Add(0.3f, $"{st.Title} 부분 성공", () =>   // 도깨비 고민 1.5초 + 물건이 뿅 커지는 0.45초 뒤 확인·촬영
+                Add(0.3f, $"{st.Title} 부분 성공", () =>
                 {
-                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains(st.features.Length == 1 ? "전혀 다른" : "엉뚱한"), "하나 빠뜨리면 그 조합의 물건");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[1], "판정 조합에 맞는 물건이 왔다");
-                    Check(IsOn("ResultPanel/RetryButton"), "다시 그리기 버튼");
+                    if (s == 0) Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_NoBat", "1단계를 틀리면 도깨비는 빈손");
                     if (s == 0 || s == 4) Shot($"s{s + 1}_result_partial");
-                    if (s == 0 || s == 4) Then(() => Gm().Retry()); else Gm().Retry();
+                    Action next = () =>
+                    {
+                        TapResult();
+                        for (int k = 0; k < 3 && !IsOn("ResultPanel/ChoiceRow"); k++) Gm().ResultTap();
+                        Check(IsOn("ResultPanel/ChoiceRow/RetryButton") && IsOn("ResultPanel/ChoiceRow/GiveUpButton"), "대사 뒤에 다시 · 포기 버튼");
+                        Check(!IsOn("ResultPanel/DialogueBox"), "버튼은 대사 상자 자리에 나온다");
+                        if (s == 0) Shot("s1_choice");
+                        Gm().Retry();
+                    };
+                    if (s == 0 || s == 4) Then(next); else next();
                 }, ResultShown);
 
-                // 다시 그리기 → 성공
-                Add(0.3f, $"{st.Title} 다시 그리기", () =>
+                // 다시 → 성공
+                Add(0.6f, $"{st.Title} 다시 그리기", () =>
                 {
-                    Check(IsOn("DrawPanel") && !Board().HasDrawn, "다시 그리기는 빈 쪽지 (원본 안 보여줌)");
-                    DrawStage(st);
+                    Check(IsOn("DrawPanel") && Board().HasDrawn, "다시 그리기는 이전 그림에서 이어진다");
                     PutSketch(st, allDrawn: true);
                     Expect(st, -2);     // 이번엔 전부 그림
                     Gm().Submit();
                 });
                 Add(0.3f, $"{st.Title} 성공", () =>
                 {
-                    Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"), "전부 맞히면 성공");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");
-                    Check(!IsOn("ResultPanel/RetryButton"), "성공하면 다시 그리기 숨김");
-                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "Char_BoyFace_Happy", "성공하면 기쁜 표정");
+                    Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Swing", "성공하면 방망이를 휘두른다");
+                    TapResult();
+                    Check(!IsOn("ResultPanel/ChoiceRow"), "성공하면 다시 · 포기 버튼이 없다");
+                    Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_BoyFace_Happy", "성공하면 기쁜 표정");
                     Shot($"s{s + 1}_result_success");
-                    Then(() => Gm().ShowCompare());
-                }, () => ResultShown() && Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"));
+                    Then(() =>
+                    {
+                        Gm().ResultTap();
+                        Gm().ResultTap();
+                        Check(IsOn("ComparePanel"), "대사를 누르면 채점표로 넘어간다");
+                    });
+                }, () => ResultShown() && Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite);
             }
 
-            // 원본 비교 → 다음 단계
-            Add(0.3f, $"{st.Title} 비교", () =>
+            // 채점표 → 다음 단계
+            Add(1.5f, $"{st.Title} 채점표", () =>
             {
-                Check(IsOn("ComparePanel"), "비교 화면");
-                Check(Text("ComparePanel/NextButton/Label") == (last ? "오늘의 이야기 마치기" : "다음 단계로"), "다음 버튼 글자");
-                if (s == 0 || last) Shot($"s{s + 1}_compare");
-                if (s == 0 || last) Then(() => Gm().NextStage()); else Gm().NextStage();
+                Check(IsOn("ComparePanel"), "채점표");
+                int marks = 0;
+                for (int k = 1; k <= 5; k++)
+                    if (IsOn($"ComparePanel/Paper/Row_{k}"))
+                        marks += IsOn($"ComparePanel/Paper/Row_{k}/Circle") != IsOn($"ComparePanel/Paper/Row_{k}/Slash") ? 1 : 0;
+                Check(marks == st.features.Length, "번호마다 동그라미 또는 빗금");
+                if (s == 1) Check(!IsOn("ComparePanel/Paper/Row_1/Circle") && IsOn("ComparePanel/Paper/Row_1/Slash"), "틀리면 빨간 빗금");
+                else Check(IsOn("ComparePanel/Paper/Row_1/Circle"), "맞으면 초록 동그라미");
+                if (s <= 1 || last) Shot($"s{s + 1}_compare");
+                if (s == 0)
+                {
+                    // 1단계를 못 찾은 경우의 장면도 확인해요
+                    Then(() =>
+                    {
+                        SetPrivate(Gm(), "batLost", true);
+                        Gm().NextStage();
+                        Check(IsOn("OopsPanel") && IsOn("OopsPanel/Hold"), "1단계를 못 찾으면 대파를 든 도깨비");
+                        Check(!IsOn("HUD"), "이 장면에서는 HUD 를 숨긴다");
+                        Shot("s1_oops");
+                        Then(() =>
+                        {
+                            Gm().OopsTap();
+                            Gm().OopsTap();
+                            Check(IsOn("OopsPanel/Run"), "도깨비가 뛰어나간다");
+                        });
+                    });
+                }
+                else if (s <= 1 || last) Then(() => Gm().NextStage());
+                else Gm().NextStage();
             });
+            if (s == 0)
+            {
+                Add(0.3f, "도깨비가 방망이를 찾아왔다", () =>
+                {
+                    Check(IsOn("OopsPanel/Back"), "방망이를 들고 돌아온다");
+                    Gm().OopsTap();
+                    Gm().OopsTap();
+                    Check(IsOn("DialoguePanel"), "그다음 2단계가 시작된다");
+                    Invoke(Gm(), "StartStage", 0);      // 시나리오는 단계 순서대로 다시 이어가요
+                    SetPrivate(Gm(), "stageIndex", 0);
+                    Gm().NextStage();
+                }, () => IsOn("OopsPanel/Back"));
+            }
         }
 
         // 이야기 종료
-        Add(0.3f, "이야기 종료", () =>
+        Add(3.2f, "이야기 종료", () =>
         {
             Check(IsOn("EndingPanel") && !IsOn("HUD"), "이야기 종료 화면");
-            string rec = Text("EndingPanel/RecordCard/Records");
-            Check(Count(rec, "찾았어요") == 4 && Count(rec, "포기했어요") == 1, "기록 : 4단계 찾음 + 2단계 포기");
-            Check(Count(rec, "남은 간식") == 5, "기록에 단계별 남은 간식이 있다");
+            Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Picnic", "소풍 배경");
+            Check(Find("EndingPanel/BagSlot").GetComponent<Image>().sprite == stages[1].wrongSprites[stages[1].wrongSprites.Length - 1], "포기한 2단계는 받은 엉뚱한 물건이 놓인다");
+            Check(Find("EndingPanel/MatSlot").GetComponent<Image>().sprite == stages[2].originalSprite, "찾은 물건은 진짜가 놓인다");
+            Check(!IsOn("EndingPanel/Snack_2_1"), "2단계 남은 간식 0개");
+            Check(IsOn("EndingPanel/Snack_3_1") && !IsOn("EndingPanel/Snack_3_2"), "3단계 남은 간식 1개는 물건 옆에");
             Shot("ending");
-            Then(() => Gm().BackToTitle());
+            Then(() =>
+            {
+                Gm().EndingTap();
+                Check(IsOn("EndingPanel/DialogueBox"), "화면을 누르면 도깨비가 물어본다");
+                Shot("ending_ask");
+                Then(() =>
+                {
+                    Gm().EndingTap();
+                    Gm().EndingTap();
+                });
+            });
         });
         Add(0.3f, "처음으로", () =>
         {
@@ -495,6 +590,13 @@ static class MvpSelfTest
     // ───────────── 도우미 ─────────────
 
     static GameManager Gm() => Object.FindFirstObjectByType<GameManager>();
+
+    // 결과 화면에서 도깨비 대사를 넘겨 주인공 대사까지 (글자 다 보이기 + 다음)
+    static void TapResult()
+    {
+        Gm().ResultTap();
+        Gm().ResultTap();
+    }
 
     static StageData[] Stages()
     {
