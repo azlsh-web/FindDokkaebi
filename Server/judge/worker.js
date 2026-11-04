@@ -99,32 +99,43 @@ async function askGemini(env, prompt, image) {
   // thinkingLevel : AI 가 답하기 전에 얼마나 생각할지 (low = 빠름, high = 느리지만 꼼꼼). 이 설정이 없는 모델이면 빼고 다시 보내요.
   const level = env.GEMINI_THINKING || "low";
   let r, raw;
-  let useThinking = true;
-  // 무료 등급은 사람이 몰리면 "high demand"(503)·"너무 많이 보냄"(429)으로 잠깐 거절해요.
-  //   이런 일시적 거절이면 조금 기다렸다가 같은 모델에 다시 물어요 (1.5초 → 3초 → 6초).
+  let useThinking = !/^gemini-2/.test(model);   // 2.x 모델은 thinkingLevel 이 없어서 빼고 보내요 (사용량 아끼기)
+  // 무료 등급은 사람이 몰리면 "high demand"(503)로 잠깐 거절해요.
+  //   429(사용량 제한)는 다시 보내면 한도만 더 쓰니까 바로 멈춰요.
+  //   일시적 거절이면 조금 기다렸다가 같은 모델에 다시 물어요 (1.5초 → 3초 → 6초).
   //   20초가 지났으면 더 묻지 않아요 → 게임이 기다리는 60초 안에 꼭 답이 가요.
   const retryDelays = [1500, 3000, 6000];
   const started = Date.now();
   for (let attempt = 0; ; attempt++) {
     const generationConfig = { responseMimeType: "application/json", temperature: 0 };
     if (useThinking) generationConfig.thinkingConfig = { thinkingLevel: level };
+    const askedAt = Date.now();
+    try {
     r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: "POST",
+      signal: AbortSignal.timeout(45000),   // 게임이 60초 기다리니까 그 전에 끊고 이유를 알려줘요
       headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
       body: JSON.stringify({
         contents: [{ role: "user", parts: [{ text: prompt }, { inline_data: { mime_type: "image/png", data } }] }],
         generationConfig,
       }),
     });
+    } catch {
+      console.log(`[judge] ${model} 응답 없음 ${Date.now() - askedAt}ms`);
+      return [502, { ok: false, error: `AI 응답이 45초 안에 오지 않았어요 (${model})` }];
+    }
     raw = await r.json().catch(() => null);
+    console.log(`[judge] ${model} ${r.status} ${Date.now() - askedAt}ms attempt=${attempt}`);
     // thinkingLevel 설정이 없는 모델이면 빼고 바로 다시 보내요
     if (useThinking && r.status === 400 && /thinking/i.test(raw?.error?.message ?? "")) { useThinking = false; attempt--; continue; }
-    const busy = r.status === 429 || r.status === 500 || r.status === 503 || r.status === 504;
+    const busy = r.status === 500 || r.status === 503 || r.status === 504;
     if (!busy || attempt >= retryDelays.length || Date.now() - started > 20000) break;
     await new Promise(resolve => setTimeout(resolve, retryDelays[attempt]));
   }
-  if (r.status === 429 || r.status === 503) return [502, { ok: false,
-    error: `AI 가 지금 붐벼요. 잠시 뒤 다시 제출해 주세요 (${model} ${r.status})` }];
+  if (r.status === 429) return [502, { ok: false,
+    error: `AI 사용량 제한이에요 (${model} 429) ${raw?.error?.message ?? ""}`.trim().slice(0, 300) }];
+  if (r.status === 503) return [502, { ok: false,
+    error: `AI 가 지금 붐벼요. 잠시 뒤 다시 제출해 주세요 (${model} 503)` }];
   if (!r.ok) return [502, { ok: false,
     error: `AI 오류 (${model} ${r.status}) ${raw?.error?.message ?? ""}`.trim().slice(0, 300) }];
   const text = (raw?.candidates?.[0]?.content?.parts ?? []).map(p => p.text || "").join("").trim();

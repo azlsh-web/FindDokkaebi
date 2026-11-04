@@ -52,10 +52,9 @@ public class GameManager : MonoBehaviour
 
     [Header("HUD")]
     [SerializeField] GameObject hud;
-    [SerializeField] TMP_Text snackText;            // 왼쪽 위 "간식 3개"
-    [SerializeField] TMP_Text stageText;            // 가운데 위 "1/5 · 방망이"
+    [SerializeField] Image[] snackIcons;            // 오른쪽 위 복주머니 (쓴 간식은 흐리게)
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
-    [SerializeField] TMP_Text timerText;            // "58초"
+    [SerializeField] TMP_Text timerText;            // 남은 초 숫자 "58"
     [SerializeField] IncenseBurn incense;           // 타들어 가는 향
     [SerializeField] GameObject pausePanel;         // 일시정지 화면
 
@@ -63,6 +62,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image backgroundImage;
     [SerializeField] Sprite startBackground;
     [SerializeField] Sprite gameBackground;
+
+    [Header("에디터 전용 : 몇 단계부터 시작할지 (웹 빌드는 항상 1단계부터)")]
+    [SerializeField] int editorStartStage = 1;
 
     [Header("패널(화면)")]
     [SerializeField] GameObject titlePanel;
@@ -85,7 +87,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text observeHintText;      // "모양과 색을 눈에 꼭 담아 줘!"
     [SerializeField] Image observeImage;
     [SerializeField] Image[] observeCountDots;      // 3 · 2 · 1 동그라미 (지금 숫자만 코랄)
-    [SerializeField] Image[] observeCountGlyphs;    // 동그라미 속 숫자 (지금 = 흰색, 나머지 = 검정)
+    [SerializeField] TMP_Text[] observeCountGlyphs;    // 동그라미 속 숫자 (지금 = 흰색, 나머지 = 검정)
     [SerializeField] GameObject[] observeCountSparkles;   // 지금 숫자 옆 노란 반짝이
     [SerializeField] Sprite countOnSprite;          // 시안의 코랄 동그라미
     [SerializeField] Sprite countOffSprite;         // 시안의 크림 동그라미
@@ -107,7 +109,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text resultFeatureText;    // 특징별 [O]/[X]
     [SerializeField] Image boyFace;                 // 소년 표정
     [SerializeField] TMP_Text boyLineText;          // 소년 대사
-    [SerializeField] TMP_Text resultSnackText;      // "남은 간식 2개"
+    [SerializeField] TMP_Text resultSnackText;      // 간식이 다 떨어졌을 때 안내
     [SerializeField] Button retryButton;
     [SerializeField] TMP_Text compareButtonLabel;
     [SerializeField] Sprite boyHappy;
@@ -124,6 +126,8 @@ public class GameManager : MonoBehaviour
 
     [Header("이야기 종료 화면")]
     [SerializeField] TMP_Text endingRecordText;
+
+    static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);   // 쓴 간식 복주머니
 
     // ───────────── 게임 도중 바뀌는 값들 ─────────────
     State state;
@@ -163,7 +167,7 @@ public class GameManager : MonoBehaviour
         else if (state == State.Draw)
         {
             timeLeft -= Time.deltaTime;
-            timerText.text = $"{Mathf.CeilToInt(Mathf.Max(0f, timeLeft))}초";
+            timerText.text = Mathf.CeilToInt(Mathf.Max(0f, timeLeft)).ToString();
             incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
             submitButton.interactable = board.HasDrawn;             // 빈 쪽지면 제출 불가
             if (timeLeft <= 0f) Submit();                           // 향이 다 타면 자동 제출
@@ -189,7 +193,18 @@ public class GameManager : MonoBehaviour
         cleared = new bool[stages.Length];
         snacksLeft = new int[stages.Length];
         backgroundImage.sprite = gameBackground;
-        StartStage(0);
+        int first = 0;
+#if UNITY_EDITOR
+        // (에디터 전용) 앞 단계를 건너뛰어 녹화 · 확인. 건너뛴 단계는 기록에 "찾았어요"로 남겨요
+        first = Mathf.Clamp(editorStartStage - 1, 0, stages.Length - 1);
+        for (int i = 0; i < first; i++)
+        {
+            cleared[i] = true;
+            attempts[i] = 1;
+            snacksLeft[i] = snacksPerStage - 1;
+        }
+#endif
+        StartStage(first);
     }
 
     /// <summary>단계 도입 화면 : 이야기 + 새 규칙 + 앞에서 배운 규칙</summary>
@@ -202,8 +217,7 @@ public class GameManager : MonoBehaviour
 
         hud.SetActive(true);
         timerGroup.SetActive(false);
-        stageText.text = $"{Stage.stageNumber}/{stages.Length} · {Stage.targetName}";
-        UpdateSnackText();
+        UpdateSnacks();
 
         introStageNumber.text = $"{Stage.stageNumber}단계";
         introTargetName.text = Stage.targetName;
@@ -213,7 +227,7 @@ public class GameManager : MonoBehaviour
             $"<b>새로 배울 규칙</b>\n{Stage.newRule}\n\n" +
             $"<b>이번 판정 기준</b>\n{string.Join(" · ", System.Array.ConvertAll(Stage.features, f => f.name))}\n\n" +
             $"<b>앞에서 배운 규칙</b>  <color=#7A6A5A>{learned}</color>\n" +
-            $"<size=90%><color=#7A6A5A>관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 간식 {snacksPerStage}개 (제출할 때 1개)</color></size>";
+            $"<size=90%><color=#7A6A5A>관찰 {observeSeconds:0}초 · 그리기 {drawSeconds / 60f:0}분 · 제출할 때 간식 1개</color></size>";
         ShowPanel(stageIntroPanel);
     }
 
@@ -255,7 +269,7 @@ public class GameManager : MonoBehaviour
         savedDrawTime = Mathf.Max(timeLeft, 10f);
         snacks--;
         attempts[stageIndex]++;
-        UpdateSnackText();
+        UpdateSnacks();
         timerGroup.SetActive(false);
 
         judgeDrawing.texture = board.Texture;
@@ -263,7 +277,7 @@ public class GameManager : MonoBehaviour
         ShowPanel(judgePanel);
 
         // 기다리는 동안 도깨비가 갸웃갸웃 (SimpleAnim)
-        judgeStatusText.text = "쪽지와 간식 1개를 도깨비에게 건넸어요.\n도깨비가 쪽지를 들여다보는 중...";
+        judgeStatusText.text = "도깨비가 쪽지를 들여다보는 중...";   // 건넨 쪽지와 간식은 그림으로 보여요
         int ticket = ++judgeTicket;
         // 판정은 AI 가 해요 (기획서 6장). 키가 있으면 OpenAI 에 바로, 없으면 판정 중계 서버로.
         //   AI 판정이 안 되면(서버·키·인터넷 문제) 기획서대로 간식을 돌려주고 다시 제출하게 해요 (OnJudgeError).
@@ -314,7 +328,7 @@ public class GameManager : MonoBehaviour
         snacks++;
         attempts[stageIndex]--;
         judgeTicket++;      // 이 제출은 끝난 것으로 (늦게 오는 결과는 무시)
-        UpdateSnackText();
+        UpdateSnacks();
         judgeStatusText.text = $"판정 중에 문제가 생겼어요. 간식을 돌려줬어요.\n<size=70%>{message}</size>";
         backToDrawButton.SetActive(true);
         Debug.LogWarning("[OpenAIJudge] " + message);
@@ -332,11 +346,9 @@ public class GameManager : MonoBehaviour
         state = State.Result;
 
         int count = 0;
-        int firstMissing = -1;
         for (int i = 0; i < present.Length; i++)
         {
             if (present[i]) count++;
-            else if (firstMissing < 0) firstMissing = i;
         }
         bool success = count == present.Length;
         cleared[stageIndex] = success;
@@ -352,21 +364,21 @@ public class GameManager : MonoBehaviour
             resultTitleText.text = $"도깨비가 {name}{Josa(name, "을", "를")} 찾아왔다!";
             ShowItem(Stage.originalSprite);
             boyFace.sprite = boyHappy;
-            boyLineText.text = $"찾았다! 바로 이 {name}{Josa(name, "이야", "야")}!\n고마워 도깨비야!";
+            boyLineText.text = "고마워 도깨비야!";
         }
         else if (count > 0)
         {
             resultTitleText.text = $"엉뚱한 {name}{Josa(name, "을", "를")} 가져왔다...";
             ShowItem(Stage.WrongSpriteFor(present));
             boyFace.sprite = boySurprised;
-            boyLineText.text = $"어? 이 {name}{Josa(name, "은", "는")} 좀 이상한데...\n<size=80%>'{Stage.features[firstMissing].name}' 부분이 달라!</size>";
+            boyLineText.text = $"어? 이 {name}{Josa(name, "은", "는")} 좀 이상한데...";
         }
         else
         {
             resultTitleText.text = "도깨비가 전혀 다른 물건을 가져왔다!";
             ShowItem(Stage.WrongSpriteFor(present));
             boyFace.sprite = boySurprised;
-            boyLineText.text = $"이건 {name}{Josa(name, "이", "가")} 아니잖아!\n특징을 더 그려줘야겠다.";
+            boyLineText.text = "특징을 더 그려줘야겠다.";
         }
 
         // 특징별 결과 목록 (AI 판정이면 근거도 작게)
@@ -382,9 +394,8 @@ public class GameManager : MonoBehaviour
         resultFeatureText.text = lines;
 
         resultMyDrawing.texture = board.Texture;
-        resultSnackText.text = (!success && snacks <= 0)
-            ? "간식이 다 떨어졌어요. 원본과 비교하고 넘어가요."
-            : $"남은 간식 {snacks}개";
+        // 남은 개수는 위 복주머니로 보여요. 여기에는 다시 그릴 수 없는 이유만 적어요.
+        resultSnackText.text = (!success && snacks <= 0) ? "간식이 다 떨어졌어요. 원본과 비교하고 넘어가요." : "";
 
         // 실패했고 간식이 남아 있을 때만 다시 그리기
         retryButton.gameObject.SetActive(!success && snacks > 0);
@@ -489,9 +500,12 @@ public class GameManager : MonoBehaviour
         resultItemImage.enabled = sprite != null;
     }
 
-    void UpdateSnackText()
+    // 남은 간식은 또렷하게, 쓴 간식은 흐리게 (왼쪽부터 흐려져요)
+    void UpdateSnacks()
     {
-        snackText.text = $"간식 {snacks}개";
+        int used = snackIcons.Length - snacks;
+        for (int i = 0; i < snackIcons.Length; i++)
+            snackIcons[i].color = i < used ? UsedSnackColor : Color.white;
     }
 
     /// <summary>

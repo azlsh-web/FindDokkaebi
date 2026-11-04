@@ -25,12 +25,13 @@ using UnityEngine.UI;
 [RequireComponent(typeof(RawImage))]
 public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    [Header("그림판 크기 (픽셀)")]
-    [SerializeField] int textureSize = 512;
+    // 그림판 크기 (픽셀). 클립보드의 세로로 긴 종이 면과 같은 비율이에요.
+    public const int TextureWidth = 512;
+    public const int TextureHeight = 604;
 
     [Header("붓 설정")]
     [Tooltip("지우개 반지름 (픽셀)")]
-    [SerializeField] int eraserRadius = 18;
+    [SerializeField] int eraserRadius = 15;
 
     [Tooltip("되돌리기를 몇 번까지 기억할지")]
     [SerializeField] int maxUndo = 20;
@@ -53,7 +54,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     Color32[] pixels;       // 텍스처의 모든 픽셀 색 (가로 x 세로 개)
     readonly List<Color32[]> undoStack = new List<Color32[]>();
     Color32 inkColor = new Color32(0, 0, 0, 255); // 지금 펜 색
-    int penRadius = 6;      // 지금 펜 굵기(반지름)
+    int penRadius = 5;      // 지금 펜 굵기(반지름)
     bool isEraser;          // true 면 지우개 모드
     Vector2 lastPixel;      // 직전 손가락 위치(픽셀 좌표). 그림판 밖일 수도 있어요. (선을 끊기지 않게 잇는 데 사용)
 
@@ -76,9 +77,9 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         rect = GetComponent<RectTransform>();
 
         // 그림을 담을 빈 텍스처 만들기
-        Texture = new Texture2D(textureSize, textureSize, TextureFormat.RGBA32, false);
+        Texture = new Texture2D(TextureWidth, TextureHeight, TextureFormat.RGBA32, false);
         Texture.filterMode = FilterMode.Bilinear;
-        pixels = new Color32[textureSize * textureSize];
+        pixels = new Color32[TextureWidth * TextureHeight];
 
         rawImage.texture = Texture;
         ResetBoard();
@@ -97,15 +98,16 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     }
 
     /// <summary>
-    /// 미리 만든 그림(512x512 픽셀)을 쪽지에 통째로 넣기.
+    /// 미리 만든 정사각형 그림(512x512 픽셀)을 쪽지 세로 가운데에 넣기.
     /// 자동 검사(판정 전수 검사)에서 손그림 샘플을 넣을 때 써요. 나중에 "저장한 그림 불러오기"에도 쓸 수 있어요.
     /// </summary>
     public void LoadPixels(Color32[] source)
     {
         Init();
-        if (source.Length != pixels.Length) return;
+        if (source.Length != TextureWidth * TextureWidth) return;
         SaveUndo();
-        Array.Copy(source, pixels, pixels.Length);
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = Paper;
+        Array.Copy(source, 0, pixels, (TextureHeight - TextureWidth) / 2 * TextureWidth, source.Length);
         ApplyPixels();
         HasDrawn = ScanForInk();
     }
@@ -220,11 +222,11 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         if (!allowOutside && (u < 0f || u > 1f || v < 0f || v > 1f)) return false; // 칸 밖이면 무시
 
         // 3) 비율 × 텍스처 크기 = 픽셀 좌표
-        pixel = new Vector2(u * textureSize, v * textureSize);
+        pixel = new Vector2(u * TextureWidth, v * TextureHeight);
         return true;
     }
 
-    // 선분 from→to 에서 그림판(0 ~ textureSize) 안에 들어가는 부분만 남기기 (Liang–Barsky 선분 자르기)
+    // 선분 from→to 에서 그림판 안에 들어가는 부분만 남기기 (Liang–Barsky 선분 자르기)
     // 안에 들어가는 부분이 없으면 false
     bool ClipToBoard(Vector2 from, Vector2 to, out Vector2 a, out Vector2 b)
     {
@@ -232,7 +234,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         Vector2 d = to - from;
         float t0 = 0f, t1 = 1f;
         float[] p = { -d.x, d.x, -d.y, d.y };
-        float[] q = { from.x, textureSize - from.x, from.y, textureSize - from.y };
+        float[] q = { from.x, TextureWidth - from.x, from.y, TextureHeight - from.y };
         for (int i = 0; i < 4; i++)
         {
             if (p[i] == 0f) { if (q[i] < 0f) return false; continue; }   // 경계와 나란한데 밖에 있음
@@ -268,14 +270,14 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         // 중심 주변 네모 영역을 돌면서, 원 안에 들어가는 픽셀만 칠한다
         for (int y = cy - radius; y <= cy + radius; y++)
         {
-            if (y < 0 || y >= textureSize) continue;
+            if (y < 0 || y >= TextureHeight) continue;
             for (int x = cx - radius; x <= cx + radius; x++)
             {
-                if (x < 0 || x >= textureSize) continue;
+                if (x < 0 || x >= TextureWidth) continue;
                 int dx = x - cx, dy = y - cy;
                 if (dx * dx + dy * dy <= radius * radius)
                 {
-                    pixels[y * textureSize + x] = color; // 2차원(x,y) → 1차원 배열 번호
+                    pixels[y * TextureWidth + x] = color; // 2차원(x,y) → 1차원 배열 번호
                 }
             }
         }

@@ -19,6 +19,7 @@ static class MvpAutoBuild
     const string RebuildFlag = "Temp/mvp_rebuild.flag";
     const string WrongArtFlag = "Temp/mvp_wrongart.flag";
     static double nextCheck;
+    static bool refreshed;      // 코드가 바뀌어 컴파일되면 스크립트가 다시 불려서 false 로 돌아가요
 
     static MvpAutoBuild()
     {
@@ -42,6 +43,16 @@ static class MvpAutoBuild
         bool needScene = !File.Exists(ScenePath);
         bool rebuildAsked = File.Exists(RebuildFlag);
         if (!needScene && !rebuildAsked) return;
+
+        // Unity 가 다른 창 뒤에 있으면 바뀐 코드를 아직 안 읽었을 수 있어요.
+        // 먼저 새로 읽고, 다음 확인 때 (컴파일이 있었으면 끝난 뒤에) 조립해요.
+        if (!refreshed)
+        {
+            refreshed = true;
+            AssetDatabase.Refresh();
+            return;
+        }
+        refreshed = false;
 
         if (rebuildAsked) File.Delete(RebuildFlag);
         MvpSceneBuilder.Build();

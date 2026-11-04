@@ -65,7 +65,7 @@ static class MvpPlayRecorder
             LocalJudge.TestOverride = null;
             var go = new GameObject("PlayDirector");
             var d = go.AddComponent<PlayDirector>();
-            d.cursorSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Circle.png");
+            d.cursorSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Sprites/UI/Common_Circle.png");
         }
         if (change == PlayModeStateChange.EnteredEditMode) OpenAIJudge.DisableAI = false;
     }
@@ -288,13 +288,14 @@ class PlayDirector : MonoBehaviour
         yield return Wait(0.2f);
     }
 
-    // 쪽지 좌표(512x512, 아래가 0) → 화면 좌표
+    // 512x512 손그림 좌표(아래가 0) → 화면 좌표. 정사각형을 그림판 세로 가운데에 놓아요.
     Vector2 ToScreen(Vector2 p)
     {
         var rt = (RectTransform)Find("DrawPanel/Board");
         var c = new Vector3[4];
         rt.GetWorldCorners(c);
-        return new Vector2(Mathf.Lerp(c[0].x, c[2].x, p.x / 512f), Mathf.Lerp(c[0].y, c[2].y, p.y / 512f));
+        float w = DrawingBoard.TextureWidth, h = DrawingBoard.TextureHeight;
+        return new Vector2(Mathf.Lerp(c[0].x, c[2].x, p.x / w), Mathf.Lerp(c[0].y, c[2].y, (p.y + (h - w) / 2f) / h));
     }
 
     // 점들을 따라 실제 드래그 (속도 : 초당 약 700 쪽지 픽셀)

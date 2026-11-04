@@ -256,10 +256,10 @@ static class MvpSelfTest
         Add(0.2f, "시작 화면", () =>
         {
             Check(IsOn("TitlePanel") && !IsOn("HUD"), "시작 화면 (HUD 숨김)");
-            Check(Find("Background").GetComponent<Image>().sprite.name == "StartBG", "시작 화면 배경은 StartBG");
+            Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "시작 화면 배경은 StartBG");
             Check(Find("TitlePanel/TitleLogo") != null && Find("TitlePanel/StartButton").GetComponent<Button>() != null, "시작 화면 물건은 따로 올려져 있다");
-            Check(Find("JudgePanel/Dokkaebi").GetComponent<Image>().sprite.name == "Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
-            Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Dokkaebi_Swing", "결과는 방망이를 휘두르는 도깨비");
+            Check(Find("JudgePanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
+            Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Swing", "결과는 방망이를 휘두르는 도깨비");
             Shot("title");
             Then(() => Gm().StartGame());
         });
@@ -274,8 +274,8 @@ static class MvpSelfTest
             // 단계 도입
             Add(0.3f, $"{st.Title} 도입", () =>
             {
-                Check(IsOn("StageIntroPanel") && Find("Background").GetComponent<Image>().sprite.name == "RoomBG", $"{st.Title} 도입 화면 (배경은 RoomBG)");
-                Check(Text("HUD/SnackTag/SnackText") == "간식 3개", $"{st.Title} 간식 3개로 시작 ({Text("HUD/SnackTag/SnackText")})");
+                Check(IsOn("StageIntroPanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Room", $"{st.Title} 도입 화면 (배경은 RoomBG)");
+                Check(SnacksLit() == 3, $"{st.Title} 간식 3개로 시작 ({SnacksLit()})");
                 Check(Text("StageIntroPanel/IntroCard/RulesCard/Rules").Contains("새로 배울 규칙"), "규칙 안내가 있다");
                 Shot($"s{s + 1}_intro");
                 Then(() => Gm().StartObserve());
@@ -343,7 +343,8 @@ static class MvpSelfTest
             {
                 if (s == 2) Check(((RectTransform)Find("HUD/TimerGroup/Incense/IncenseFx_Tip")).anchoredPosition.y < 150f, "향이 다 타면 불꽃이 아래까지 내려온다");
                 Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면 (쪽지와 간식을 건넴)");
-                Check(Text("HUD/SnackTag/SnackText") == "간식 2개", $"제출하면 간식 -1 ({Text("HUD/SnackTag/SnackText")})");
+                Check(SnacksLit() == 2, $"제출하면 간식 -1 ({SnacksLit()})");
+                Check(Find("HUD/SnackRow/Snack_0").GetComponent<Image>().color.a < 0.9f, "간식은 왼쪽부터 흐려진다");
                 Check(Text("JudgePanel/StatusCard/Status").Contains("들여다보는"), "도깨비가 쪽지를 들여다보며 판정 중");
                 Check(GameObject.Find("Canvas").transform.Find("Frame/JudgePanel/TestInput") == null, "체크박스(수동 판정)가 없다");
 
@@ -351,7 +352,7 @@ static class MvpSelfTest
                 {
                     // AI 오류가 나면 간식을 돌려주고 그림 그대로 다시 제출
                     Invoke(Gm(), "OnJudgeError", "테스트용 가짜 오류");
-                    Check(Text("HUD/SnackTag/SnackText") == "간식 3개", "오류가 나면 간식을 돌려준다");
+                    Check(SnacksLit() == 3, "오류가 나면 간식을 돌려준다");
                     Check(IsOn("JudgePanel/BackToDrawButton"), "다시 제출 버튼이 보인다");
                     Shot("s1_ai_error");
                     Then(() =>
@@ -378,14 +379,14 @@ static class MvpSelfTest
                 }
                 Add(0.3f, "2단계 간식 0개", () =>
                 {
-                    Check(Text("HUD/SnackTag/SnackText") == "간식 0개", "간식 0개");
+                    Check(SnacksLit() == 0, "간식 0개");
                     Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("전혀 다른") && Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "0개 맞히면 완전히 다른 물건");
                     Check(!IsOn("ResultPanel/RetryButton"), "간식이 없으면 다시 그리기 숨김");
                     Check(Text("ResultPanel/SnackLeft").Contains("떨어졌어요"), "간식이 다 떨어졌다고 알려준다");
-                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "BoyFace_Surprised", "실패하면 당황한 표정");
+                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "Char_BoyFace_Surprised", "실패하면 당황한 표정");
                     Shot("s2_out_of_snacks");
                     Then(() => Gm().ShowCompare());
-                }, () => ResultShown() && Text("HUD/SnackTag/SnackText") == "간식 0개");
+                }, () => ResultShown() && SnacksLit() == 0);
             }
             else
             {
@@ -413,7 +414,7 @@ static class MvpSelfTest
                     Check(Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"), "전부 맞히면 성공");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");
                     Check(!IsOn("ResultPanel/RetryButton"), "성공하면 다시 그리기 숨김");
-                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "BoyFace_Happy", "성공하면 기쁜 표정");
+                    Check(Find("ResultPanel/ResultCard/BoyFace").GetComponent<Image>().sprite.name == "Char_BoyFace_Happy", "성공하면 기쁜 표정");
                     Shot($"s{s + 1}_result_success");
                     Then(() => Gm().ShowCompare());
                 }, () => ResultShown() && Text("ResultPanel/ResultCard/ResultTitle").Contains("찾아왔다"));
@@ -441,7 +442,7 @@ static class MvpSelfTest
         });
         Add(0.3f, "처음으로", () =>
         {
-            Check(IsOn("TitlePanel") && Find("Background").GetComponent<Image>().sprite.name == "StartBG", "처음으로 돌아왔다 (배경도 StartBG)");
+            Check(IsOn("TitlePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "처음으로 돌아왔다 (배경도 StartBG)");
         });
 
         return list;
@@ -517,6 +518,15 @@ static class MvpSelfTest
     static bool IsOn(string path) => Find(path).gameObject.activeInHierarchy;
     static string Text(string path) => Find(path).GetComponent<TMP_Text>().text;
     static DrawingBoard Board() => Find("DrawPanel/Board").GetComponent<DrawingBoard>();
+
+    // 또렷하게 보이는 복주머니 수 = 남은 간식
+    static int SnacksLit()
+    {
+        int lit = 0;
+        foreach (Image icon in Find("HUD/SnackRow").GetComponentsInChildren<Image>())
+            if (icon.color.a > 0.9f) lit++;
+        return lit;
+    }
     static int Count(string text, string word) => text.Split(new[] { word }, StringSplitOptions.None).Length - 1;
 
     // 다음 판정 결과를 미리 정해 두기. miss = 빠뜨릴 특징 번호 (-1 = 전부 빠뜨림, -2 = 전부 그림)

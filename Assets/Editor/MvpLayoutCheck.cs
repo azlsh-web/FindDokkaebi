@@ -23,7 +23,7 @@ static class MvpLayoutCheck
     // 시안 그림 자체가 원래 겹쳐 그려진 것 (시안과 같으면 괜찮아요)
     static readonly string[][] Intended =
     {
-        new[] { "DrawPanel/BoardFrame", "DrawPanel/Clip" },
+        new[] { "DrawPanel/BoardFrame", "DrawPanel/Board" },   // 그림판은 틀의 뚫린 종이 면 뒤에 있어요
         new[] { "ObservePanel/Sparkle", "ObservePanel/Count" },
     };
 
@@ -89,7 +89,7 @@ static class MvpLayoutCheck
                     item.alpha = Alpha(img.sprite);
                     if (img.preserveAspect && img.type == Image.Type.Simple) item.r = Fit(item.r, img.sprite.rect.size);
                 }
-                if (img.type == Image.Type.Filled) item.alpha = null;      // 향 막대 등 : 상자 그대로
+                if (img.type == Image.Type.Filled || img.type == Image.Type.Sliced) item.alpha = null;      // 향 막대 · 늘린 카드 등 : 상자 그대로
             }
             items.Add(item);
         }

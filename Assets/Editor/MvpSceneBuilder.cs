@@ -46,7 +46,6 @@ public static class MvpSceneBuilder
 
     static TMP_FontAsset font;
     static Sprite cardSprite;       // 크림 카드 (진갈색 테두리)
-    static Sprite whiteCardSprite;  // 흰 쪽지 카드
     static Sprite pillCoral;        // 주 버튼 (코랄)
     static Sprite pillCream;        // 보조 버튼 (크림)
     static Sprite circleSprite;     // 동그라미 (색 버튼·도구 버튼)
@@ -67,31 +66,28 @@ public static class MvpSceneBuilder
 
         // 새 씬을 열면 Unity 가 안 쓰는 에셋을 메모리에서 내려버려서,
         // 데이터·그림은 씬을 연 "뒤에" 불러와야 연결이 끊기지 않아요.
-        // 카드·버튼은 팀 시안 그림에서 오린 것 (Assets/Sprites/TeamUI, 오린 방법은 Docs/architecture_src/team_ui)
-        cardSprite = T("TeamCard");
-        whiteCardSprite = T("TeamCard");
-        pillCoral = T("TeamPillCoral");
-        pillCream = T("TeamPillCream");
-        circleSprite = LoadSprite("UI/Circle.png");
+        // 카드·버튼은 팀 시안 그림에서 오린 것 (Assets/Sprites/UI, 오린 방법은 Tools/docs/art_pipeline/team_ui)
+        cardSprite = T("Common_Card");
+        pillCoral = T("Common_ButtonCoral");
+        pillCream = T("Common_ButtonCream");
+        circleSprite = LoadSprite("UI/Common_Circle.png");
         StageData[] stages =
         {
             LoadStage("Stage1_Bat"), LoadStage("Stage2_Bag"), LoadStage("Stage3_Mat"),
             LoadStage("Stage4_Gimbap"), LoadStage("Stage5_Friend"),
         };
-        Sprite boyNormal = LoadSprite("Characters/Boy_Normal.png");
-        Sprite boyHappy = LoadSprite("Characters/Boy_Happy.png");
-        Sprite boySurprised = LoadSprite("Characters/Boy_Surprised.png");
-        Sprite faceNormal = LoadSprite("Characters/BoyFace_Normal.png");       // 결과 화면의 작은 칸에 넣는 얼굴
-        Sprite faceHappy = LoadSprite("Characters/BoyFace_Happy.png");
-        Sprite faceSurprised = LoadSprite("Characters/BoyFace_Surprised.png");
-        Sprite dokkaebi = LoadSprite("Characters/Dokkaebi.png");
-        Sprite dokkaebiThink = LoadSprite("Characters/Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
-        Sprite dokkaebiSwing = LoadSprite("Characters/Dokkaebi_Swing.png");    // 결과 : 방망이를 휘둘러요
-        Sprite friend = LoadSprite("Stage5_Friend/Original.png");
-        Sprite snack = T("SnackBag");                                 // 간식 = 시안의 복주머니
-        Sprite room = LoadSprite("Background/RoomBG.png");          // 시작 화면 그림에서 글자를 지운 방
-        Sprite startBackground = LoadSprite("Background/StartBG.png");  // 시작 화면의 빈 방 (물건은 위에 하나씩 올려요)
-        Sprite iconTrash = LoadSprite("UI/Trash.png"), iconClose = LoadSprite("UI/Close.png");
+        Sprite boyNormal = LoadSprite("Characters/Char_Boy_Normal.png");
+        Sprite boyHappy = LoadSprite("Characters/Char_Boy_Happy.png");
+        Sprite faceHappy = LoadSprite("Characters/Char_BoyFace_Happy.png");
+        Sprite faceSurprised = LoadSprite("Characters/Char_BoyFace_Surprised.png");
+        Sprite dokkaebi = LoadSprite("Characters/Char_Dokkaebi_Normal.png");
+        Sprite dokkaebiThink = LoadSprite("Characters/Char_Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
+        Sprite dokkaebiSwing = LoadSprite("Characters/Char_Dokkaebi_Swing.png");    // 결과 : 방망이를 휘둘러요
+        Sprite friend = LoadSprite("Stage5_Friend/Friend_Original.png");
+        Sprite snack = T("HUD_SnackBag");                                 // 간식 = 시안의 복주머니
+        Sprite room = LoadSprite("Background/BG_Room.png");          // 시작 화면 그림에서 글자를 지운 방
+        Sprite startBackground = LoadSprite("Background/BG_Start.png");  // 시작 화면의 빈 방 (물건은 위에 하나씩 올려요)
+        Sprite iconTrash = LoadSprite("UI/Draw_TrashIcon.png"), iconClose = LoadSprite("UI/Mix_CloseIcon.png");
 
         // 카메라 (UI 는 Canvas 가 그리지만, 카메라가 하나는 있어야 해요)
         var cam = new GameObject("Main Camera").AddComponent<Camera>();
@@ -116,7 +112,7 @@ public static class MvpSceneBuilder
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         Transform root = canvasGo.transform;
 
-        // 배경 : 맨 뒤에 한 장만 깔고, 시작 화면(StartBG)과 게임 중(RoomBG)에 GameManager 가 바꿔요. 화면 비율이 달라도 꽉 채움
+        // 배경 : 맨 뒤에 한 장만 깔고, 시작 화면(BG_Start)과 게임 중(BG_Room)에 GameManager 가 바꿔요. 화면 비율이 달라도 꽉 채움
         var bg = NewImage("Background", root, Color.white);
         bg.sprite = startBackground;
         Stretch(bg.rectTransform);
@@ -134,25 +130,26 @@ public static class MvpSceneBuilder
         var gm = gmGo.AddComponent<GameManager>();
         var judge = gmGo.AddComponent<OpenAIJudge>();
 
-        // ── HUD (게임 중에만 보임) : 팀 시안 그대로 — 위 줄 로고 · 단계 · 일시정지 / 아랫줄 간식, 오른쪽 긴 향 ──
+        // ── HUD (게임 중에만 보임) : 위 줄 오른쪽에 남은 간식 복주머니 · 일시정지, 오른쪽 긴 향 ──
         //   좌표는 시안 그림(2248x3952) 픽셀 그대로 적고, PlaceM 이 화면(1080x1899) 크기로 바꿔요.
         var hud = NewEmpty("HUD", canvas);
-        TeamImage("Logo", hud, T("Logo"), 186, 106, 860, 344);
-        var stageTag = TeamImage("StageTag", hud, T("StagePill"), 948, 108, 1720, 344);
-        var stageText = NewText("StageText", stageTag.transform, "", 46, Vector2.zero, Vector2.zero, bold: true);
-        Stretch(stageText.rectTransform, 12);
-        var pauseImg = TeamImage("PauseButton", hud, T("Pause"), 1908, 112, 2136, 344);
+        var pauseImg = TeamImage("PauseButton", hud, T("HUD_PauseButton"), 1880, 112, 2108, 344);
         pauseImg.raycastTarget = true;
         var pauseButton = pauseImg.gameObject.AddComponent<Button>();
 
-        var snackTag = TeamImage("SnackTag", hud, T("SnackPill"), 108, 424, 880, 708);
-        var snackText = NewText("SnackText", snackTag.transform, "간식 3개", 46, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left, bold: true);
-        Anchor(snackText.rectTransform, 0f, 0.5f, new Vector2((358 - 108) * K, 0), new Vector2((850 - 358) * K, 100));
+        // 복주머니 3개 : 간식을 쓰면 왼쪽부터 흐려져요 (GameManager.UpdateSnacks)
+        var snackRow = NewEmpty("SnackRow", hud);
+        var snackIcons = new Image[3];
+        for (int i = 0; i < snackIcons.Length; i++)
+        {
+            float x0 = 1192 + i * 220;
+            snackIcons[i] = TeamImage("Snack_" + i, snackRow, snack, x0, 127, x0 + 182, 329);
+        }
 
         // 향 : 줄기가 위에서부터 타고, 불꽃 · 재 · 연기가 끝을 따라 움직여요 (IncenseBurn)
         var timerGroup = NewEmpty("TimerGroup", hud);
-        TeamImage("IncenseHolder", timerGroup, T("IncenseHolder"), 1950, 2190, 2210, 2542);   // 놋쇠 촛대 (향은 잔 안에 꽂혀요)
-        var incenseBar = TeamImage("Incense", timerGroup, T("IncenseStick"), 2006, 1172, 2153, 2228);
+        TeamImage("IncenseHolder", timerGroup, T("Incense_Holder"), 1950, 2190, 2210, 2542);   // 놋쇠 촛대 (향은 잔 안에 꽂혀요)
+        var incenseBar = TeamImage("Incense", timerGroup, T("Incense_Stick"), 2006, 1172, 2153, 2228);
         incenseBar.type = Image.Type.Filled;
         incenseBar.fillMethod = Image.FillMethod.Vertical;
         incenseBar.fillOrigin = (int)Image.OriginVertical.Bottom;
@@ -170,27 +167,26 @@ public static class MvpSceneBuilder
         Anchor(incenseTip, 0.5f, 0f, Vector2.zero, new Vector2(70, 0));
         var incenseSmoke = new Image[14];
         for (int i = 0; i < incenseSmoke.Length; i++)
-            incenseSmoke[i] = IncenseFx("IncenseFx_Smoke", incenseBar.transform, T("SoftPuff"), Vector2.zero, new Vector2(64, 64), Color.clear);
-        var incenseAsh = IncenseFx("IncenseFx_Ash", incenseTip, T("IncenseAsh"), new Vector2(0, 40), new Vector2(70, 4), Color.white);
-        var incenseGlow = IncenseFx("IncenseFx_Glow", incenseTip, T("SoftPuff"), new Vector2(0, -35), new Vector2(150, 150), Color.clear);
-        IncenseFx("IncenseFx_Ember", incenseTip, T("IncenseEmber"), new Vector2(0, -8), new Vector2(70, 38), Color.white);
-        var incenseFlame = IncenseFx("IncenseFx_Flame", incenseTip, T("IncenseFlame"), new Vector2(0, 8), new Vector2(66, 88), Color.white);
-        var incenseFallingAsh = IncenseFx("IncenseFx_FallingAsh", incenseBar.transform, T("IncenseAsh"), Vector2.zero, new Vector2(34, 42), Color.white);
+            incenseSmoke[i] = IncenseFx("IncenseFx_Smoke", incenseBar.transform, T("Common_SoftPuff"), Vector2.zero, new Vector2(64, 64), Color.clear);
+        var incenseAsh = IncenseFx("IncenseFx_Ash", incenseTip, T("Incense_Ash"), new Vector2(0, 40), new Vector2(70, 4), Color.white);
+        var incenseGlow = IncenseFx("IncenseFx_Glow", incenseTip, T("Common_SoftPuff"), new Vector2(0, -35), new Vector2(150, 150), Color.clear);
+        IncenseFx("IncenseFx_Ember", incenseTip, T("Incense_Ember"), new Vector2(0, -8), new Vector2(70, 38), Color.white);
+        var incenseFlame = IncenseFx("IncenseFx_Flame", incenseTip, T("Incense_Flame"), new Vector2(0, 8), new Vector2(66, 88), Color.white);
+        var incenseFallingAsh = IncenseFx("IncenseFx_FallingAsh", incenseBar.transform, T("Incense_Ash"), Vector2.zero, new Vector2(34, 42), Color.white);
         incenseFallingAsh.enabled = false;
-        var timerText = NewText("TimerText", timerGroup, "60초", 34, Vector2.zero, Vector2.zero, bold: true);
+        var timerText = NewText("TimerText", timerGroup, "60", 34, Vector2.zero, Vector2.zero, bold: true);
         PlaceM(timerText.rectTransform, 1940, 2548, 2220, 2672);      // 글자 높이(약 49)가 들어가게
-        foreach (TMP_Text t in new[] { stageText, snackText, timerText })
-            t.textWrappingMode = TextWrappingModes.NoWrap;        // 이름표 글자는 한 줄로
+        timerText.textWrappingMode = TextWrappingModes.NoWrap;        // 이름표 글자는 한 줄로
 
-        // ── 1. 시작 화면 : 배경(StartBG) 위에 로고 · 주인공 · 도깨비 · 문구 · 버튼 · 톱니바퀴를 하나씩 올려요 ──
-        //   부품을 오린 방법은 Docs/src/art_pipeline/cut_title_parts.py (좌표도 같아요)
+        // ── 1. 시작 화면 : 배경(BG_Start) 위에 로고 · 주인공 · 도깨비 · 문구 · 버튼 · 톱니바퀴를 하나씩 올려요 ──
+        //   부품을 오린 방법은 Tools/docs/art_pipeline/cut_title_parts.py (좌표도 같아요)
         var title = NewEmpty("TitlePanel", canvas);
-        TeamImage("TitleBoy", title, T("TitleBoy"), 432, 1620, 1080, 2820);
-        TeamImage("TitleDokkaebi", title, T("TitleDokkaebi"), 1088, 2000, 1932, 2864);
-        TeamImage("TitleLogo", title, T("TitleLogo"), 300, 160, 1948, 1356);
-        TeamImage("TitleTagline", title, T("TitleTagline"), 304, 2920, 1948, 3160);
-        TeamImage("TitleGear", title, T("TitleGear"), 1920, 3608, 2208, 3892);
-        var startImg = TeamImage("StartButton", title, T("TitleStartButton"), 188, 3192, 2060, 3608);
+        TeamImage("TitleBoy", title, boyNormal, 298, 1512, 1204, 2892);
+        TeamImage("TitleDokkaebi", title, dokkaebi, 1012, 1962, 2078, 3002);
+        TeamImage("TitleLogo", title, T("Title_Logo"), 300, 160, 1948, 1356);
+        TeamImage("TitleTagline", title, T("Title_Tagline"), 304, 2920, 1948, 3160);
+        TeamImage("TitleGear", title, T("Title_Gear"), 1920, 3608, 2208, 3892);
+        var startImg = TeamImage("StartButton", title, T("Title_StartButton"), 188, 3192, 2060, 3608);
         startImg.raycastTarget = true;
         var startGameButton = startImg.gameObject.AddComponent<Button>();
         var startColors = startGameButton.colors;
@@ -206,7 +202,7 @@ public static class MvpSceneBuilder
         NewSprite("Boy", introCard, boyNormal, new Vector2(-180, 250), new Vector2(270, 270));
         NewSprite("Dokkaebi", introCard, dokkaebi, new Vector2(180, 250), new Vector2(270, 270));
         var introStory = NewText("Story", introCard, "", 34, new Vector2(0, 525), new Vector2(900, 255));
-        var rulesCard = NewCard("RulesCard", introCard, new Vector2(0, 780), new Vector2(900, 440), white: true);   // 바깥 카드 안쪽에 딱 들어가게
+        var rulesCard = NewCard("RulesCard", introCard, new Vector2(0, 780), new Vector2(900, 440));   // 바깥 카드 안쪽에 딱 들어가게
         var introRules = NewText("Rules", rulesCard, "", 29, Vector2.zero, Vector2.zero, TextAlignmentOptions.TopLeft);
         Stretch(introRules.rectTransform, 30);
         var observeButton = NewButton("ObserveButton", intro, "기억할 모습 보기", new Vector2(0, 1435), new Vector2(720, 130));
@@ -215,7 +211,7 @@ public static class MvpSceneBuilder
 
         // ── 3. 관찰 화면 : 팀 시안(그림 9) — 빼꼼한 도깨비 + 말풍선 + 테이프 쪽지 + 3·2·1 ──
         var observe = NewEmpty("ObservePanel", canvas);
-        var observeCard = TeamImage("Card", observe, T("ObserveCard"), 300, 590, 2010, 3040);
+        var observeCard = TeamImage("Card", observe, T("Observe_Card"), 300, 590, 2010, 3040);
         float[] cardBox = { 300, 590, 2010, 3040 };
         var observeImage = NewImage("TargetImage", observeCard.transform, Color.white);
         PlaceIn(observeImage.rectTransform, cardBox, 500, 1300, 1740, 2440);
@@ -231,34 +227,35 @@ public static class MvpSceneBuilder
         string[] countBoxes = { "Count3", "Count2", "Count1" };
         float[][] countXY = { new float[] { 528, 3088, 872, 3436 }, new float[] { 952, 3092, 1300, 3440 }, new float[] { 1380, 3092, 1728, 3440 } };
         var countDots = new Image[3];
-        var countGlyphs = new Image[3];
+        var countGlyphs = new TMP_Text[3];
         var countSparkles = new GameObject[3];
         for (int i = 0; i < 3; i++)
         {
             float[] b = countXY[i];
-            countDots[i] = TeamImage(countBoxes[i], observe, i == 0 ? T("CountOn") : T("CountOff"), b[0], b[1], b[2], b[3]);
-            countGlyphs[i] = NewImage("Number", countDots[i].transform, i == 0 ? Color.white : Color.black);
-            countGlyphs[i].sprite = T("Glyph" + (3 - i));
-            countGlyphs[i].raycastTarget = false;
+            countDots[i] = TeamImage(countBoxes[i], observe, i == 0 ? T("Observe_CountOn") : T("Observe_CountOff"), b[0], b[1], b[2], b[3]);
+            countGlyphs[i] = NewText("Number", countDots[i].transform, (3 - i).ToString(), 124, Vector2.zero, Vector2.zero);
+            countGlyphs[i].color = i == 0 ? Color.white : Color.black;
+            countGlyphs[i].fontStyle = FontStyles.Bold;                     // 시안 숫자처럼 굵게
             Stretch(countGlyphs[i].rectTransform);
+            countGlyphs[i].margin = new Vector4(0, 10, 0, 0);               // 숫자를 동그라미 가운데로
             // 반짝이 : 시안에서 3 왼쪽 위에 있던 자리 (동그라미 기준 같은 거리)
-            var sp = TeamImage("Sparkle", observe, T("CountSparkle"), b[0] - 127, b[1] + 29, b[0] + 12, b[1] + 112);
+            var sp = TeamImage("Sparkle", observe, T("Observe_Sparkle"), b[0] - 138, b[1] + 17, b[0] - 8, b[1] + 162);
             countSparkles[i] = sp.gameObject;
         }
-        NewText("CountGuide", observe, "잠시 뒤 쪽지가 사라져요", 38, Vector2.zero, Vector2.zero, bold: true);
-        PlaceM(observe.Find("CountGuide").GetComponent<RectTransform>(), 300, 3478, 1950, 3590);
-        TeamImage("FlameDeco", observe, T("FlameDeco"), 840, 3631, 1521, 3839);
+        TeamImage("FlameDeco", observe, T("Observe_FlameDeco"), 790, 3530, 1471, 3738);
 
         // ── 4. 그리기 화면 : 팀 시안(그림 10) — 클립보드 쪽지, 물감 판, 도구, "다 그렸어!" ──
         var draw = NewEmpty("DrawPanel", canvas);
-        TeamImage("BoardFrame", draw, T("Clipboard"), 116, 636, 1940, 2632);
-        var drawTitle = NewText("Guide", draw, "", 54, Vector2.zero, Vector2.zero, bold: true);
-        PlaceM(drawTitle.rectTransform, 470, 965, 1590, 1105);
-        drawTitle.enableAutoSizing = true; drawTitle.fontSizeMin = 34; drawTitle.fontSizeMax = 54;   // 긴 이름도 한 줄에
+        // 그림판은 틀 뒤에 있고, 틀의 종이 면은 투명해요. 그래서 하얀 면 전체에 그려지고 잉크가 둥근 모서리를 넘지 않아요.
         var boardGo = new GameObject("Board", typeof(RectTransform), typeof(RawImage), typeof(DrawingBoard));
         boardGo.transform.SetParent(draw, false);
-        PlaceM(boardGo.GetComponent<RectTransform>(), 358, 1150, 1698, 2490);   // 쪽지 종이 안 정사각형
+        PlaceM(boardGo.GetComponent<RectTransform>(), 230, 643, 1845, 2550);    // 틀의 종이 면보다 테두리 밑으로 살짝 넓게
         var board = boardGo.GetComponent<DrawingBoard>();
+        TeamImage("BoardFrame", draw, T("Draw_ClipboardFrame"), 140, 424, 1918, 2618);
+        var drawTitle = NewText("Guide", draw, "", 54, Vector2.zero, Vector2.zero, bold: true);
+        PlaceM(drawTitle.rectTransform, 470, 745, 1600, 885);
+        drawTitle.enableAutoSizing = true; drawTitle.fontSizeMin = 34; drawTitle.fontSizeMax = 54;   // 긴 이름도 한 줄에
+        drawTitle.raycastTarget = false;                                        // 글자 밑에도 그릴 수 있게
 
         var toolBarGo = new GameObject("ToolBar", typeof(RectTransform), typeof(ToolBar));
         toolBarGo.transform.SetParent(draw, false);
@@ -267,14 +264,15 @@ public static class MvpSceneBuilder
         Transform tb = toolBarGo.transform;
 
         // 물감 판 + 시안의 물감 동그라미 (단계마다 쓸 수 있는 색만 보여요)
-        TeamImage("PaletteBoard", tb, T("PaletteEmpty"), 126, 2686, 1644, 3085);
+        // 아래 세 줄의 양 끝을 x 140 ~ 2108 로 맞췄어요. (물감 줄 / 도구 줄)
+        TeamImage("PaletteBoard", tb, T("Draw_PaletteBoard"), 140, 2670, 1658, 3069);
         var colorRow = NewEmpty("ColorRow", tb);
         string[] colorNames = { "검정", "빨강", "노랑", "파랑" };
-        string[] blobNames = { "BlobBlack", "BlobRed", "BlobYellow", "BlobBlue" };
-        float[][] blobXY =
+        string[] blobNames = { "Draw_PaintBlack", "Draw_PaintRed", "Draw_PaintYellow", "Draw_PaintBlue" };
+        float[][] blobXY =                                                      // 물감 판 자리에 맞춘 좌표
         {
-            new float[] { 406, 2760, 584, 2936 }, new float[] { 632, 2795, 814, 2975 },
-            new float[] { 852, 2818, 1038, 3002 }, new float[] { 1070, 2802, 1257, 2986 },
+            new float[] { 420, 2744, 598, 2920 }, new float[] { 646, 2779, 828, 2959 },
+            new float[] { 866, 2802, 1052, 2986 }, new float[] { 1084, 2786, 1271, 2970 },
         };
         var colorButtons = new GameObject[4];
         var colorFrames = new GameObject[4];
@@ -286,27 +284,29 @@ public static class MvpSceneBuilder
             colorButtons[i] = colorButtonComps[i].transform.parent.gameObject;
         }
         // 섞은 색 칸 : 시안의 다섯 번째 동그라미 (명암만 남긴 흰 동그라미에 섞은 색을 곱해 칠해요)
-        var mixedSlot = TeamTool("MixedSlot", colorRow, T("BlobMixed"), 1292, 2766, 1478, 2950, 16, out GameObject mixedFrame);
+        var mixedSlot = TeamTool("MixedSlot", colorRow, T("Draw_PaintMixed"), 1306, 2750, 1492, 2934, 16, out GameObject mixedFrame);
         mixedSlot.GetComponent<Image>().color = EmptySlotColor;
         // 색 섞기 버튼 (ColorRow 안에 있어서 단계마다 같이 보이고 숨어요)
-        var mixOpen = TeamTool("MixOpen", colorRow, T("MixButton"), 1632, 2684, 2048, 3080, 0, out GameObject mixOpenFrame);
+        var mixOpen = TeamTool("MixOpen", colorRow, T("Draw_MixButton"), 1692, 2672, 2108, 3068, 0, out GameObject mixOpenFrame);
         Object.DestroyImmediate(mixOpenFrame);
 
-        // 도구 줄 : 연필 · 지우개 · 되돌리기 · 굵기 (+ 모두 지우기는 쪽지 오른쪽 아래 모서리)
+        // 도구 줄 : 연필 · 지우개 · 되돌리기 · 모두 지우기 · 굵기
         var toolRow = NewEmpty("ToolRow", tb);
-        var pencilButton = TeamTool("Pencil", toolRow, T("PencilButton"), 311, 3115, 647, 3435, 8, out GameObject pencilFrame);
-        var eraserButton = TeamTool("Eraser", toolRow, T("EraserButton"), 720, 3116, 1056, 3436, 8, out GameObject eraserFrame);
-        var undoButton = TeamTool("Undo", toolRow, T("UndoButton"), 1128, 3116, 1464, 3436, 0, out GameObject undoFrame);
-        var clearButton = TeamTool("Clear", toolRow, T("RoundButton"), 1714, 2390, 1854, 2530, 0, out GameObject clearFrame);
+        var pencilButton = TeamTool("Pencil", toolRow, T("Draw_PencilButton"), 140, 3116, 460, 3420, 8, out GameObject pencilFrame);
+        var eraserButton = TeamTool("Eraser", toolRow, T("Draw_EraserButton"), 512, 3116, 832, 3420, 8, out GameObject eraserFrame);
+        var undoButton = TeamTool("Undo", toolRow, T("Draw_UndoButton"), 884, 3116, 1204, 3420, 0, out GameObject undoFrame);
+        var clearButton = TeamTool("Clear", toolRow, T("Draw_ClearButton"), 1256, 3116, 1576, 3420, 0, out GameObject clearFrame);
         Object.DestroyImmediate(undoFrame);
         Object.DestroyImmediate(clearFrame);
         var trashIcon = NewImage("Icon", clearButton.transform, Color.white);
         trashIcon.sprite = iconTrash; trashIcon.preserveAspect = true; trashIcon.raycastTarget = false;
-        Stretch(trashIcon.rectTransform, 16);
-        TeamImage("SizePill", toolRow, T("SizePill"), 1536, 3140, 2060, 3420);
+        Stretch(trashIcon.rectTransform, 22);
+        var sizePill = TeamImage("SizePill", toolRow, pillCream, 1628, 3128, 2108, 3408);
+        sizePill.type = Image.Type.Sliced;
+        sizePill.pixelsPerUnitMultiplier = 1f / K;
         var sizeFrames = new GameObject[3];
         var sizeButtons = new Button[3];
-        float[][] dotXY = { new float[] { 1624, 3264, 1672, 3312 }, new float[] { 1744, 3248, 1816, 3320 }, new float[] { 1868, 3224, 1988, 3344 } };
+        float[][] dotXY = { new float[] { 1694, 3244, 1742, 3292 }, new float[] { 1814, 3232, 1886, 3304 }, new float[] { 1938, 3208, 2058, 3328 } };
         for (int i = 0; i < 3; i++)                                         // 회색 점 = 고를 수 있음, 까만 점 = 지금 굵기
         {
             float[] b = dotXY[i];
@@ -328,16 +328,16 @@ public static class MvpSceneBuilder
         }
 
         // 다 그렸어! (간식 1개 사용) : 시안 버튼 그림 그대로
-        var submitImg = TeamImage("SubmitButton", draw, T("SubmitButton"), 241, 3488, 1987, 3850);
+        var submitImg = TeamImage("SubmitButton", draw, T("Draw_SubmitButton"), 251, 3474, 1997, 3836);
         submitImg.raycastTarget = true;
         var submitButton = submitImg.gameObject.AddComponent<Button>();
         var submitColors = submitButton.colors;
         submitColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.55f);   // 빈 쪽지면 흐리게
         submitButton.colors = submitColors;
 
-        // 혼색 팔레트 (색 섞기를 누르면 물감 판 + 도구 줄 자리를 딱 덮으며 열림. 시안 x 116~2052, y 2676~3462)
+        // 혼색 팔레트 (색 섞기를 누르면 물감 줄 + 도구 줄 자리를 딱 덮으며 열림)
         var mixerGo = NewCard("MixerPanel", draw, Vector2.zero, Vector2.zero);
-        PlaceM((RectTransform)mixerGo, 116, 2676, 2052, 3462);
+        PlaceM((RectTransform)mixerGo, 124, 2660, 2124, 3440);
         var mixerCard = mixerGo.GetComponent<Image>();
         var mixer = mixerGo.gameObject.AddComponent<ColorMixer>();
         Transform mx = mixerGo;
@@ -370,10 +370,10 @@ public static class MvpSceneBuilder
         Stretch(judgeStatus.rectTransform, 20);
         var judgeDokkaebi = NewSprite("Dokkaebi", judgeP, dokkaebiThink, new Vector2(-220, 480), new Vector2(360, 360));
         judgeDokkaebi.gameObject.AddComponent<SimpleAnim>(); // 갸웃갸웃 고민
-        var noteCard = NewCard("Note", judgeP, new Vector2(230, 500), new Vector2(320, 320), white: true);
+        var noteCard = NewCard("Note", judgeP, new Vector2(230, 500), new Vector2(320, 320));
         var judgeDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         judgeDrawing.transform.SetParent(noteCard, false);
-        Stretch(judgeDrawing.rectTransform, 14);
+        FitDrawing(judgeDrawing.rectTransform, 320, 14);
         NewSprite("Snack", judgeP, snack, new Vector2(20, 745), new Vector2(90, 90));   // 도깨비와 쪽지 사이
 
         // 판정은 자동이라 버튼이 없어요. AI 오류가 났을 때만 "다시 제출" 버튼이 보여요.
@@ -393,18 +393,18 @@ public static class MvpSceneBuilder
         Place(resultItem.rectTransform, new Vector2(0, 205), new Vector2(350, 350));   // 뿅 하고 커져도 카드에 가리지 않게
         resultItem.preserveAspect = true;
         resultItem.gameObject.AddComponent<SimpleAnim>().kind = SimpleAnim.Kind.Pop; // 뿅 하고 나타남
-        var myCard = NewCard("MyCard", result, new Vector2(350, 260), new Vector2(230, 230), white: true);
+        var myCard = NewCard("MyCard", result, new Vector2(350, 260), new Vector2(230, 230));
         NewText("MyLabel", myCard, "내 그림", 28, new Vector2(0, -40), new Vector2(230, 40), bold: true);
         var resultMine = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         resultMine.transform.SetParent(myCard, false);
-        Stretch(resultMine.rectTransform, 12);
+        FitDrawing(resultMine.rectTransform, 230, 12);
         var resultCard = NewCard("ResultCard", result, new Vector2(0, 590), new Vector2(980, 700));
         var resultTitle = NewText("ResultTitle", resultCard, "", 48, new Vector2(0, 30), new Vector2(920, 80), bold: true);
         var resultFeatures = NewText("FeatureList", resultCard, "", 33, new Vector2(0, 118), new Vector2(860, 380), TextAlignmentOptions.TopLeft);
-        var boyFace = NewSprite("BoyFace", resultCard, faceNormal, new Vector2(-350, 500), new Vector2(180, 180));
+        var boyFace = NewSprite("BoyFace", resultCard, faceSurprised, new Vector2(-350, 500), new Vector2(180, 180));
         var boyMark = NewText("SurprisedMark", resultCard, "!?", 56, new Vector2(-350, 410), new Vector2(110, 88), bold: true);   // 소년 바로 위
         boyMark.color = new Color32(214, 80, 66, 255);   // 당황했을 때만 보이는 "!?"
-        var bubble = NewCard("Bubble", resultCard, new Vector2(110, 515), new Vector2(680, 150), white: true);
+        var bubble = NewCard("Bubble", resultCard, new Vector2(110, 515), new Vector2(680, 150));
         var boyLine = NewText("BoyLine", bubble, "", 34, Vector2.zero, Vector2.zero, TextAlignmentOptions.Left);
         Stretch(boyLine.rectTransform, 22);
         var resultSnack = NewText("SnackLeft", result, "", 36, new Vector2(0, 1310), new Vector2(1000, 60), bold: true);
@@ -415,12 +415,12 @@ public static class MvpSceneBuilder
 
         // ── 7. 비교 화면 ──
         var compare = NewEmpty("ComparePanel", canvas);
-        var mineCard = NewCard("MyCard", compare, new Vector2(-250, 290), new Vector2(460, 460), white: true);
+        var mineCard = NewCard("MyCard", compare, new Vector2(-250, 290), new Vector2(460, 460));
         NewText("MyLabel", mineCard, "내 그림", 40, new Vector2(0, -62), new Vector2(460, 60), bold: true);
         var compareMine = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         compareMine.transform.SetParent(mineCard, false);
-        Stretch(compareMine.rectTransform, 16);
-        var origCard = NewCard("OriginalCard", compare, new Vector2(250, 290), new Vector2(460, 460), white: true);
+        FitDrawing(compareMine.rectTransform, 460, 16);
+        var origCard = NewCard("OriginalCard", compare, new Vector2(250, 290), new Vector2(460, 460));
         NewText("OriginalLabel", origCard, "원본", 40, new Vector2(0, -62), new Vector2(460, 60), bold: true);
         var compareOriginal = NewImage("Original", origCard, Color.white);
         Stretch(compareOriginal.rectTransform, 30);
@@ -490,8 +490,7 @@ public static class MvpSceneBuilder
         Set(so, "toolBar", toolBar);
         Set(so, "judge", judge);
         Set(so, "hud", hud.gameObject);
-        Set(so, "snackText", snackText);
-        Set(so, "stageText", stageText);
+        SetArray(so, "snackIcons", snackIcons);
         Set(so, "timerGroup", timerGroup.gameObject);
         Set(so, "timerText", timerText);
         var burn = timerGroup.gameObject.AddComponent<IncenseBurn>();
@@ -528,8 +527,8 @@ public static class MvpSceneBuilder
         SetArray(so, "observeCountDots", countDots);
         SetArray(so, "observeCountGlyphs", countGlyphs);
         SetArray(so, "observeCountSparkles", countSparkles);
-        Set(so, "countOnSprite", T("CountOn"));
-        Set(so, "countOffSprite", T("CountOff"));
+        Set(so, "countOnSprite", T("Observe_CountOn"));
+        Set(so, "countOffSprite", T("Observe_CountOff"));
         Set(so, "drawTitle", drawTitle);
         Set(so, "submitButton", submitButton);
         Set(so, "judgeDrawing", judgeDrawing);
@@ -688,7 +687,7 @@ public static class MvpSceneBuilder
         stage.newRule = newRule;
         stage.learnedRules = learned;
         stage.targetDescription = description;
-        stage.originalSprite = LoadSprite($"{file}/Original.png");
+        stage.originalSprite = LoadSprite($"{file}/{file.Substring(file.IndexOf('_') + 1)}_Original.png");
         stage.features = new Feature[features.Length];
         for (int i = 0; i < features.Length; i++)
         {
@@ -707,7 +706,7 @@ public static class MvpSceneBuilder
         else EditorUtility.SetDirty(stage);
     }
 
-    // 판정 조합마다 돌려줄 그림 : Wrong-Bag-XO.png (O 맞음, X 틀림). 아직 없으면 「그림 준비 중」
+    // 판정 조합마다 돌려줄 그림 : Bag_Wrong_XO.png (O 맞음, X 틀림)
     static Sprite[] LoadWrongSprites(string file, int featureCount)
     {
         string key = file.Substring(file.IndexOf('_') + 1);
@@ -716,7 +715,7 @@ public static class MvpSceneBuilder
         {
             var code = new char[featureCount];
             for (int i = 0; i < featureCount; i++) code[i] = (mask & (1 << (featureCount - 1 - i))) != 0 ? 'X' : 'O';
-            sprites[mask] = LoadSprite($"{file}/Wrong-{key}-{new string(code)}.png") ?? LoadSprite("UI/ArtComing.png");
+            sprites[mask] = LoadSprite($"{file}/{key}_Wrong_{new string(code)}.png");
         }
         return sprites;
     }
@@ -733,7 +732,7 @@ public static class MvpSceneBuilder
             var stage = AssetDatabase.LoadAssetAtPath<StageData>(path);
             stage.wrongSprites = LoadWrongSprites(System.IO.Path.GetFileNameWithoutExtension(path), stage.features.Length);
             foreach (Sprite s in stage.wrongSprites)
-                if (s != null && !AssetDatabase.GetAssetPath(s).EndsWith("ArtComing.png")) connected++;
+                if (s != null) connected++;
             EditorUtility.SetDirty(stage);
         }
         AssetDatabase.SaveAssets();
@@ -755,14 +754,14 @@ public static class MvpSceneBuilder
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var importer = AssetImporter.GetAtPath(path) as TextureImporter;
             if (importer == null) continue;
-            Vector4 border = Vector4.zero;                       // 늘려 쓰는 그림은 모서리를 고정 (9-slice). TeamUI 는 시안의 절반 크기
-            if (path.EndsWith("TeamUI/TeamCard.png")) border = new Vector4(40, 40, 40, 40);
-            if (path.EndsWith("TeamUI/TeamPillCoral.png")) border = new Vector4(91, 0, 91, 0);
-            if (path.EndsWith("TeamUI/TeamPillCream.png")) border = new Vector4(70, 0, 70, 0);
+            Vector4 border = Vector4.zero;                       // 늘려 쓰는 그림은 모서리를 고정 (9-slice)
+            if (path.EndsWith("UI/Common_Card.png")) border = new Vector4(80, 80, 80, 80);
+            if (path.EndsWith("UI/Common_ButtonCoral.png")) border = new Vector4(182, 0, 182, 0);
+            if (path.EndsWith("UI/Common_ButtonCream.png")) border = new Vector4(140, 0, 140, 0);
 
             // 외곽선이 또렷하게 : 시안 UI · 시작 화면은 압축하지 않고(압축하면 가는 진갈색 선이 뭉개져요),
             //   모든 그림에 밉맵(미리 줄여 둔 그림)을 켜서 작은 화면에서 크게 줄어들어도 선이 끊기지 않게
-            bool crisp = path.Contains("/TeamUI/") || path.EndsWith("Background/StartBG.png");
+            bool crisp = path.Contains("/UI/") || path.EndsWith("Background/BG_Start.png");
             var compression = crisp ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
             if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
                 || importer.spriteBorder != border || importer.textureCompression != compression
@@ -854,12 +853,12 @@ public static class MvpSceneBuilder
     }
 
     // 크림(또는 흰) 카드 : 진갈색 굵은 테두리가 있는 둥근 네모
-    static Transform NewCard(string name, Transform parent, Vector2 pos, Vector2 size, bool white = false)
+    static Transform NewCard(string name, Transform parent, Vector2 pos, Vector2 size)
     {
         var img = NewImage(name, parent, Color.white);
-        img.sprite = white ? whiteCardSprite : cardSprite;
+        img.sprite = cardSprite;
         img.type = Image.Type.Sliced;
-        img.pixelsPerUnitMultiplier = 0.5f / K;                         // 모서리 둥글기를 시안과 같은 크기로 (카드 그림은 시안의 절반 크기)
+        img.pixelsPerUnitMultiplier = 1f / K;                           // 모서리 둥글기를 시안과 같은 크기로 (카드 그림은 시안 크기)
         Place(img.rectTransform, pos, size);
         return img.transform;
     }
@@ -926,7 +925,7 @@ public static class MvpSceneBuilder
     const float K = 1080f / 2248f;
     const float FrameHeight = 3952f * K;      // ≈ 1899
 
-    static Sprite T(string name) => LoadSprite("TeamUI/" + name + ".png");
+    static Sprite T(string name) => LoadSprite("UI/" + name + ".png");
 
     // 시안의 상자 (x0,y0)-(x1,y1) 자리에 놓기 (부모 = 화면 크기 패널)
     static void PlaceM(RectTransform rt, float x0, float y0, float x1, float y1)
@@ -958,7 +957,7 @@ public static class MvpSceneBuilder
         holder.transform.SetParent(parent, false);
         PlaceM(holder.GetComponent<RectTransform>(), x0, y0, x1, y1);
         var ring = NewImage("Frame", holder.transform, Color.white);
-        ring.sprite = T("SelectRing");
+        ring.sprite = T("Common_SelectRing");
         ring.raycastTarget = false;
         Stretch(ring.rectTransform, -ringPad * K);
         frame = ring.gameObject;
@@ -967,6 +966,14 @@ public static class MvpSceneBuilder
         img.preserveAspect = true;
         Stretch(img.rectTransform);
         return img.gameObject.AddComponent<Button>();
+    }
+
+    // 세로로 긴 내 그림을 정사각형 카드 가운데에 비율 그대로 놓기
+    static void FitDrawing(RectTransform rt, float cardSize, float padding)
+    {
+        float height = cardSize - padding * 2f;
+        float width = height * DrawingBoard.TextureWidth / DrawingBoard.TextureHeight;
+        Anchor(rt, 0.5f, 0.5f, Vector2.zero, new Vector2(width, height));
     }
 
     // 화면 전체 패널을 dy 만큼 아래로 (안의 것들이 같이 내려가요)
