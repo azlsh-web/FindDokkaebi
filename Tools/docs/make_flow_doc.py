@@ -3,6 +3,7 @@
 #   먼저 Unity 메뉴 "게임 플로우 사진 찍기"를 실행하세요 (AI 를 부르지 않아요). 사진을 줄여서 Docs/기획/플로우_사진 으로 옮기고 PDF 를 만들어요.
 import csv
 import html as esc
+from datetime import date
 import os
 import re
 import shutil
@@ -102,7 +103,7 @@ figcaption { font-size: 8.6px; line-height: 1.3; margin-top: 3px; } figcaption b
 """
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>게임 플로우</title><style>{CSS}</style></head><body>
-<h1>찾아라! 도깨비 게임 플로우</h1><p class='sub'>2026-11-05 기준 · <code>feature/game-feel</code> 브랜치 · 사진 {len(rows)}장</p>
+<h1>찾아라! 도깨비 게임 플로우</h1><p class='sub'>{date.today()} 기준 · <code>feature/game-feel</code> 브랜치 · 사진 {len(rows)}장</p>
 <div class='note'><b>사진을 찍을 때 AI 판정을 보내지 않았어요.</b> 판정 결과를 미리 정해 넣고 손그림을 제출했어요. 도깨비 대사는 상황마다 무작위로 나오므로 사진은 그중 하나예요. 모든 대사는 <code>13_대사_트리.md</code>에 있어요.</div>
 <h2>흐름</h2><pre>{FLOW}</pre>
 <h2>단계마다 다른 것</h2>{STAGE_TABLE}

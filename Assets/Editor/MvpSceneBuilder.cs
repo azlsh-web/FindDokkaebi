@@ -84,7 +84,7 @@ public static class MvpSceneBuilder
         Sprite dokkaebi = LoadSprite("Characters/Char_Dokkaebi_Normal.png");
         Sprite dokkaebiThink = LoadSprite("Characters/Char_Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
         Sprite dokkaebiSwing = LoadSprite("Characters/Char_Dokkaebi_Swing.png");    // 결과 : 방망이를 휘둘러요
-        Sprite dokkaebiNoBat = LoadSprite("Characters/Char_Dokkaebi_NoBat.png");    // 1단계 : 방망이를 찾기 전 (임시 그림)
+        Sprite dokkaebiNoBat = LoadSprite("Characters/Char_Dokkaebi_NoBat.png");    // 방망이를 찾기 전 (아트팀 그림)
         Sprite faceDokkaebi = LoadSprite("Characters/Char_DokkaebiFace_Normal.png");
         Sprite picnic = LoadSprite("Background/BG_Picnic.png");                     // 이야기 종료 (임시 그림)
         Sprite friend = LoadSprite("Stage5_Friend/Friend_Original.png");

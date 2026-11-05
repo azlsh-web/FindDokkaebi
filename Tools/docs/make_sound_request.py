@@ -1,6 +1,7 @@
 # 12_사운드팀_전달사항.pdf : 사운드팀에 보내는 요청
 #   python Tools/docs/make_sound_request.py
 #   파일 이름은 Assets/Scripts/Sfx.cs 와 대조해요. 어긋나면 멈춰요.
+from datetime import date
 import os
 import re
 import sys
@@ -93,7 +94,7 @@ figcaption b { color: #2b2622; font-size: 10.5px; }
 """
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사운드팀 전달사항</title><style>{CSS}</style></head><body>
-<h1>찾아라! 도깨비 사운드팀 전달사항</h1><p class='sub'>2026-11-05 기준 · 출품 마감 2026-11-08(일)</p>
+<h1>찾아라! 도깨비 사운드팀 전달사항</h1><p class='sub'>{date.today()} 기준 · 출품 마감 2026-11-08(일)</p>
 <div class='note'><b>소리 파일 {len(in_doc)}개를 부탁드려요.</b> 배경음 {len(BGM)}곡과 효과음 {len(SFX)}개예요. 넣고 확인할 시간이 필요해서 <b>11월 7일(토)까지</b> 받으면 좋겠어요. 시간이 모자라면 <b>먼저 {len(first)}개</b>부터 보내 주세요. 없는 파일은 조용히 넘어가서 일부만 있어도 게임은 돌아가요.</div>
 <h2>게임 분위기</h2>
 <p>주인공과 도깨비가 사라진 소풍 준비물을 찾는 아기자기하고 장난스러운 게임이에요. 플레이어가 기억해서 그린 쪽지대로 도깨비가 물건을 찾아오고, 그림이 틀리면 엉뚱한 물건을 가져와 놀려요. 전시장에서 플레이하므로 오래 들어도 피곤하지 않아야 해요.</p>

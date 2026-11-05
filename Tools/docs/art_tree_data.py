@@ -29,12 +29,12 @@ TREE = [
     ]),
     ("2. 대화 + 도깨비의 쪽지", "Frame/DialoguePanel", [
         ("Boy", "Characters/Char_Boy_Normal", TEAM),
-        ("Dokkaebi (1단계)", "Characters/Char_Dokkaebi_NoBat", TEMP),
+        ("Dokkaebi (1단계)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("Dokkaebi (2단계부터)", "Characters/Char_Dokkaebi_Normal", TEAM),
         ("NoteCard, DialogueBox", "UI/Common_Card", CODE),
         ("DialogueBox/Face (주인공 기쁨)", "Characters/Char_BoyFace_Happy", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Face (주인공 놀람)", "Characters/Char_BoyFace_Surprised", TEAM + " 그림에서 얼굴만 자름"),
-        ("DialogueBox/Face (도깨비)", "Characters/Char_DokkaebiFace_Normal", TEMP),
+        ("DialogueBox/Face (도깨비)", "Characters/Char_DokkaebiFace_Normal", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Arrow", "UI/Common_NextArrow", CODE),
     ]),
     ("3. 관찰", "Frame/ObservePanel", [
@@ -72,7 +72,7 @@ TREE = [
     ]),
     ("7. 결과", "Frame/ResultPanel", [
         ("Dokkaebi (성공)", "Characters/Char_Dokkaebi_Swing", TEAM),
-        ("Dokkaebi (1단계 실패)", "Characters/Char_Dokkaebi_NoBat", TEMP),
+        ("Dokkaebi (1단계 실패)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("ReturnedItem", "물건별 원본 또는 Wrong (아래 단계 폴더)", ""),
         ("RetryButton 아이콘", "UI/Result_IconRetry", CODE),
         ("GiveUpButton 아이콘", "UI/Result_IconGiveUp", CODE),
@@ -86,7 +86,7 @@ TREE = [
         ("Boy", "Characters/Char_Boy_Happy", TEAM),
         ("FriendSlot", "물건별 원본 (아래 단계 폴더)", ""),
         ("Dokkaebi", "Characters/Char_Dokkaebi_Normal", TEAM),
-        ("Dokkaebi (방망이를 못 찾았을 때)", "Characters/Char_Dokkaebi_NoBat", TEMP),
+        ("Dokkaebi (방망이를 못 찾았을 때)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("Mat · Bag · Gimbap · BatSlot", "받은 물건 (아래 단계 폴더)", ""),
     ]),
 ]
@@ -103,19 +103,18 @@ STAGES = [
 #   (파일, 폴더, 묶음, 크기, 자리, 그려 줄 내용)
 ZIP_FOLDER = "FindDokkaebi_Art"
 GROUPS = [
-    ("먼저", "먼저 필요한 그림", "지금 개발 쪽 임시 그림이라 전시에서 가장 눈에 띄어요."),
+    ("먼저", "먼저 필요한 그림", "지금 개발 쪽 임시 그림이라 전시에서 가장 눈에 띄어요. 이야기 종료 화면 전체를 차지해요."),
     ("향", "시간이 되면 부탁드리는 그림", "이전에 요청한 향과 촛대예요. 늦으면 지금 그림으로 출품해요."),
     ("선택", "있으면 좋은 그림", "도깨비 표정이 하나뿐이라 대사와 표정이 어울리지 않을 때가 있어요. 받으면 개발 쪽에서 코드를 연결해요."),
 ]
 REQUEST = [
     ("BG_Picnic", "Background", "먼저", (2248, 3952), "이야기 종료 배경", "소풍 잔디밭. 화면 아래쪽 넓게 잔디와 돗자리가 놓일 자리가 필요해요. 캐릭터와 물건을 위에 따로 올리니 배경만 그려 주세요. 다른 배경처럼 투명 없이 꽉 채워 주세요."),
-    ("Char_Dokkaebi_NoBat", "Characters", "먼저", (980, 956), "1단계 대화와 결과. 방망이를 못 찾으면 이야기 종료까지", "방망이를 잃어버린 빈손 도깨비. 결과 화면에서 물건을 내미는 모습으로도 써요. `Char_Dokkaebi_Normal`과 같은 자세와 칸으로 그려 주세요. 지금 그림은 방망이를 지운 흔적이 왼쪽에 남아 있어요."),
-    ("Char_DokkaebiFace_Normal", "Characters", "먼저", (660, 560), "모든 도깨비 대사의 얼굴", "대사 상자에 작게 나오는 도깨비 얼굴. 주인공 얼굴(`Char_BoyFace_Happy`)처럼 얼굴만 나오게, 방망이 없이 그려 주세요."),
     ("Incense_Holder", "UI", "향", (130, 176), "그리기 화면 오른쪽의 촛대", "향 줄기가 위쪽 잔 안으로 들어가요. 금색 놋쇠 느낌으로 그려 주세요."),
     ("Incense_Stick", "UI", "향", (74, 552), "타들어 가는 향 줄기", "게임이 위에서부터 잘라 내며 타들어 가요. 위아래 굵기를 일정하게, 칸 가운데에 그려 주세요."),
     ("Incense_Ember", "UI", "향", (74, 40), "줄기 끝의 불씨", "줄기와 같은 폭의 칸에 가운데 맞춰 그려 주세요."),
     ("Incense_Flame", "UI", "향", (90, 120), "줄기 끝의 불꽃", "아래쪽을 기준으로 흔들려요. 아래 끝이 칸 바닥 가운데에 닿게 그려 주세요."),
     ("Incense_Ash", "UI", "향", (74, 150), "타고 남은 재", "끝에 납작하게 붙기도 하고 떨어지기도 해요. 뭉툭한 재 덩어리로 그려 주세요."),
+    ("Char_DokkaebiFace_Normal", "Characters", "선택", (660, 560), "도깨비 대사의 기본 얼굴", "대사 상자에 작게 나오는 얼굴. 지금은 받은 빈손 도깨비 그림에서 얼굴만 잘라 써요. 따로 그려 주시면 바꿔 넣어요."),
     ("Char_DokkaebiFace_Tease", "Characters", "선택", (660, 560), "틀렸을 때 도깨비 대사", "엉뚱한 물건을 내밀며 놀리는 얼굴. 예) 「짠! 네가 그린 대로 찾아왔지?」"),
     ("Char_DokkaebiFace_Proud", "Characters", "선택", (660, 560), "맞았을 때 도깨비 대사", "뿌듯한 얼굴. 예) 「가방 여기 있다! 어때, 나 잘 찾지?」"),
 ]

@@ -25,6 +25,7 @@ static class MvpFlowShots
     const string OutDir = "Temp/FlowShots";
     const string RunningKey = "MvpFlowShots.Running";
     static double nextFlagCheck;
+    static bool refreshed;      // 코드가 바뀌어 컴파일되면 스크립트가 다시 불려서 false 로 돌아가요
 
     static MvpFlowShots()
     {
@@ -53,6 +54,16 @@ static class MvpFlowShots
         if (EditorApplication.timeSinceStartup < nextFlagCheck) return;
         nextFlagCheck = EditorApplication.timeSinceStartup + 1.0;
         if (!File.Exists(Flag) || EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode) return;
+
+        // Unity 가 다른 창 뒤에 있으면 바뀐 코드를 아직 안 읽었을 수 있어요. 먼저 새로 읽고, 다음 확인 때 찍어요.
+        if (!refreshed)
+        {
+            refreshed = true;
+            AssetDatabase.Refresh();
+            nextFlagCheck = EditorApplication.timeSinceStartup + 5.0;   // 컴파일이 시작될 시간을 줘요 (Play 중에 컴파일되면 촬영이 끊겨요)
+            return;
+        }
+        refreshed = false;
         File.Delete(Flag);
         Run();
     }

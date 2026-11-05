@@ -3,6 +3,7 @@
 #   요청 목록은 art_tree_data.REQUEST 하나예요. 받은 ZIP 을 넣는 스크립트(apply_art_zip.py)도 같은 목록을 써요.
 import base64
 import io
+from datetime import date
 import os
 import sys
 
@@ -61,18 +62,16 @@ CSS = BASE_CSS + """
 .small { font-size: 10px; color: #6d645c; } tr, figure, .keep { break-inside: avoid; }
 pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px; font-family: Consolas, monospace; font-size: 11px; line-height: 1.4; }
 .note { background: #fbf3e4; border-left: 4px solid #d9a441; padding: 8px 12px; margin: 10px 0; }
-.shots { display: flex; gap: 12px; } figure { margin: 0; flex: 1; } figure img { width: 100%; border: 1px solid #ddd6cc; border-radius: 4px; }
+.shots { display: flex; gap: 12px; } figure { margin: 0; width: 30%; } figure img { width: 100%; border: 1px solid #ddd6cc; border-radius: 4px; }
 figcaption { font-size: 10.5px; color: #6d645c; margin-top: 3px; text-align: center; }
 """
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아트팀 전달사항</title><style>{CSS}</style></head><body>
-<h1>찾아라! 도깨비 아트팀 전달사항</h1><p class='sub'>2026-11-05 기준 · 출품 마감 2026-11-08(일)</p>
-<div class='note'><b>먼저 그림 {len(first)}장을 부탁드려요.</b> 소풍 배경, 빈손 도깨비, 도깨비 얼굴이에요. 지금은 개발 쪽 임시 그림이에요. 넣고 확인할 시간이 필요해서 <b>11월 7일(토)까지</b> 받으면 좋겠어요. 일부만 먼저 보내셔도 돼요.</div>
+<h1>찾아라! 도깨비 아트팀 전달사항</h1><p class='sub'>{date.today()} 기준 · 출품 마감 2026-11-08(일)</p>
+<div class='note'><b>먼저 소풍 배경 {len(first)}장을 부탁드려요.</b> 지금은 개발 쪽 임시 그림이에요. 넣고 확인할 시간이 필요해서 <b>11월 7일(토)까지</b> 받으면 좋겠어요. 일부만 먼저 보내셔도 돼요.</div>
 <h2>임시 그림이 나오는 화면</h2>
 <div class='shots'>
 {shot('이야기 종료', '전부 찾았을 때', '소풍 배경')}
-{shot('1단계', '시작 대화 2', '빈손 도깨비와 도깨비 얼굴')}
-{shot('1단계를 못 찾았을 때', '맞혀도 빈손', '결과 화면의 빈손 도깨비')}
 {shot('1단계', '그리기 시작', '향과 촛대')}
 </div>
 {sections}
@@ -93,7 +92,7 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아
 <p>아래 구조 그대로 ZIP 하나로 묶어 주세요. 있는 파일만 넣으면 돼요. 수정본은 ZIP 이름만 <code>_v2</code>, <code>_v3</code>으로 올리고 바뀐 파일만 넣어 주세요.</p>
 <pre>{tree}</pre></div>
 <div class='keep'><h2>받은 뒤 (개발 쪽)</h2>
-<p>아래 명령이 이름 · 비율 · 투명 배경을 검사하고, 문제가 없으면 같은 이름 파일을 덮어써요. 있으면 좋은 표정 2장은 코드 연결도 필요해요.</p>
+<p>아래 명령이 이름 · 비율 · 투명 배경을 검사하고, 문제가 없으면 같은 이름 파일을 덮어써요. 놀림 · 뿌듯 표정 2장은 코드 연결도 필요해요.</p>
 <pre>python Tools/docs/apply_art_zip.py 받은파일.zip          (검사만)
 python Tools/docs/apply_art_zip.py 받은파일.zip --apply  (검사 후 덮어쓰기)</pre></div>
 </body></html>"""

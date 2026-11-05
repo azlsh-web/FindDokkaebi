@@ -41,18 +41,12 @@ for y in range(1014, 1120):
         px[x, y] = cream
 logo.save(S + 'UI/Title_Logo.png', optimize=True)
 
-# ── 빈손 도깨비 · 도깨비 얼굴 (임시) ──
-d = Image.open(S + 'Characters/Char_Dokkaebi_Normal.png').convert('RGBA')
-mask = Image.new('L', d.size, 0)
-ImageDraw.Draw(mask).polygon(
-    [(60, 300), (188, 300), (193, 348), (216, 368), (270, 380), (282, 470), (284, 522), (216, 540), (216, 640), (60, 640)],
-    fill=255)
-d = Image.composite(Image.new('RGBA', d.size, (0, 0, 0, 0)), d, mask)
-green = d.getpixel((250, 600))
-ImageDraw.Draw(d).ellipse((216, 528, 306, 632), fill=green, outline=(15, 10, 5, 255), width=5)
-d.save(S + 'Characters/Char_Dokkaebi_NoBat.png', optimize=True)
-
-face = d.crop((180, 40, 840, 600))
+# ── 빈손 도깨비 : 아트팀에게 받은 그림. 대사 상자 얼굴은 여기서 얼굴만 잘라요 ──
+empty = Image.open('ArtSource/원본/받은그림/Dokkaebi_EmptyHand.png').convert('RGBA')
+empty.save(S + 'Characters/Char_Dokkaebi_NoBat.png', optimize=True)
+face = Image.new('RGBA', (660, 560), (0, 0, 0, 0))
+face.alpha_composite(empty.crop((180, 40, 840, 548)), (0, 26))
+face.paste((0, 0, 0, 0), (0, 500, 110, 560))     # 왼쪽 아래에 들어온 팔 끝 지우기
 face.save(S + 'Characters/Char_DokkaebiFace_Normal.png', optimize=True)
 
 # ── 도구 버튼 : 아이콘의 긴 변을 원 지름의 56% 로 똑같이 맞춰요 ──
