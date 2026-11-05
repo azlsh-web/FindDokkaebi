@@ -42,7 +42,7 @@ public class ToolBar : MonoBehaviour
         new Color32(250, 210, 40, 255),  // 노랑
         new Color32(40, 90, 220, 255),   // 파랑
     };
-    static readonly int[] PenSizes = { 3, 6, 12 };
+    static readonly int[] PenSizes = { 3, 5, 10 };
 
     const int MixedSlot = 4;    // selectedColor 가 4 면 혼합색
     const int Eraser = -1;      // selectedColor 가 -1 이면 지우개

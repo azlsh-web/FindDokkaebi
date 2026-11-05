@@ -23,8 +23,11 @@ static class MvpLayoutCheck
     // 시안 그림 자체가 원래 겹쳐 그려진 것 (시안과 같으면 괜찮아요)
     static readonly string[][] Intended =
     {
-        new[] { "DrawPanel/BoardFrame", "DrawPanel/Clip" },
-        new[] { "ObservePanel/Sparkle", "ObservePanel/Count" },
+        new[] { "DrawPanel/BoardFrame", "DrawPanel/Board" },   // 그림판은 틀의 뚫린 종이 면 뒤에 있어요
+        new[] { "JudgePanel/MyDrawingBack", "JudgePanel/SnackOut" },   // 간식이 내 그림 앞을 지나 빠져나가요
+        new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
+        new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
+        new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
     };
 
     class Item
@@ -62,7 +65,7 @@ static class MvpLayoutCheck
         var items = new List<Item>();
         foreach (Graphic g in canvas.GetComponentsInChildren<Graphic>(false))
         {
-            if (!g.enabled || g.color.a < 0.05f || g.name == "Background") continue;
+            if (!g.enabled || g.color.a < 0.05f || g.name == "Background" || g.name.StartsWith("IncenseFx") || g.name == "IncenseHolder") continue;   // 움직이는 향 연출 · 향이 꽂힌 촛대는 배치 검사에서 빼요
             var item = new Item { g = g, path = Path(g.transform, canvas), r = WorldRect(g.rectTransform, scale) };
             if (g is TMP_Text t)
             {
@@ -89,7 +92,7 @@ static class MvpLayoutCheck
                     item.alpha = Alpha(img.sprite);
                     if (img.preserveAspect && img.type == Image.Type.Simple) item.r = Fit(item.r, img.sprite.rect.size);
                 }
-                if (img.type == Image.Type.Filled) item.alpha = null;      // 향 막대 등 : 상자 그대로
+                if (img.type == Image.Type.Filled || img.type == Image.Type.Sliced) item.alpha = null;      // 향 막대 · 늘린 카드 등 : 상자 그대로
             }
             items.Add(item);
         }
@@ -125,7 +128,7 @@ static class MvpLayoutCheck
         // 4) 화면 밖 (시작 화면 · 일시정지 화면은 화면 전체를 덮는 그림이라 제외)
         foreach (Item it in items)
         {
-            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel")) continue;
+            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
             Rect o = Opaque(it);
             if (o.width <= 0) continue;
             if (o.xMin < frameR.xMin - 2 || o.xMax > frameR.xMax + 2 || o.yMin < frameR.yMin - 2 || o.yMax > frameR.yMax + 2)

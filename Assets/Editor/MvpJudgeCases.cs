@@ -18,7 +18,7 @@ using Object = UnityEngine.Object;
 //
 // 실행 : 메뉴 Tools → 찾아라도깨비 → 판정 전수 검사  (또는 Temp/mvp_judgecases.flag 파일)
 // 결과 : Temp/JudgeCases/  (결과 화면 캡처 PNG, 손그림 PNG, results.csv)
-//        → Docs/판정_전수검사_리포트.pdf 는 이 결과로 만들어요.
+//        → Docs/기록/8_경우의_수_테스트_보고서.pdf 는 이 결과로 만들어요.
 //
 // 기대 판정 = 그린 그대로 (기준끼리 서로 영향을 주지 않아요)
 [InitializeOnLoad]
@@ -125,6 +125,7 @@ static class MvpJudgeCases
                 currentStage = c.stage;
             }
             SetField(gm, "thinkSeconds", 0.15f);   // 검사에서는 도깨비 고민을 짧게
+            SetField(gm, "roamLoopSeconds", 0.05f);
             SetField(gm, "snacks", 3);             // 간식이 떨어지지 않게
             Call(gm, "StartDraw", false);
 

@@ -10,7 +10,7 @@ compatibility_date = "2026-10-01"
 # 웹 게임 주소 (GitHub Pages). 여러 개면 쉼표로
 ALLOWED_ORIGINS = "https://azlsh-web.github.io"
 MODEL = "gpt-6-luna"           # OpenAI 를 쓸 때
-GEMINI_MODEL = "gemini-3.5-flash"   # Gemini 를 쓸 때 (무료 등급 : 하루 약 20번)
+GEMINI_MODEL = "gemini-3-flash-preview"   # Gemini 를 쓸 때 (무료 등급 : 하루 약 20번)
 GEMINI_THINKING = "low"             # 생각 양 : low(빠름) / medium / high
 
 # 같은 IP 가 1분(60초)에 20번 넘게 보내면 거절

@@ -10,7 +10,7 @@ using UnityEngine;
 //   - 결과 모양은 AI 판정과 똑같이 Verdict(present[], notes[]) 라서 결과 화면은 그대로예요.
 //
 // 원리 (3단계)
-//   1) 쪽지 512x512 픽셀을 4x4 씩 묶어 128x128 칸으로 줄이고,
+//   1) 쪽지에서 잉크가 들어가는 정사각형을 잘라 128x128 칸으로 줄이고,
 //      칸마다 HSV(색상·채도·밝기)로 "흰색/검정/빨강/노랑/파랑/초록/주황/보라/갈색" 중 하나로 분류해요.
 //   2) 모양 계산 도구 : 그림이 있는 칸(잉크), 선으로 닫힌 안쪽(구멍), 덩어리(연결된 칸들), 줄 단위 길이 …
 //   3) 특징마다 StageData 의 Feature.check 에 적힌 계산을 해서 present(그림)/absent(빠뜨림)를 정해요.
@@ -134,16 +134,39 @@ public static class LocalJudge
 
         public Picture(Color32[] px, int w, int h)
         {
-            int bw = w / N, bh = h / N;
+            // 그림판은 세로로 길어요. 잉크가 다 들어가는 정사각형 창을 잘라 N x N 칸으로 줄여요.
+            //   잉크가 가로 폭 안에 들어가면 창 = 가로 폭 (512 → 칸마다 4x4 픽셀)
+            int inkBottom = h, inkTop = -1;
+            for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++)
+            {
+                if (Classify(px[y * w + x]) == White) continue;
+                if (y < inkBottom) inkBottom = y;
+                inkTop = y;
+                break;
+            }
+            int side = Mathf.Max(w, inkTop - inkBottom + 1);
+            int originX = (w - side) / 2;                       // 창이 그림보다 크면 남는 곳은 빈 종이로 봐요
+            int originY = side >= h || inkTop < 0 ? (h - side) / 2 : Mathf.Clamp((inkBottom + inkTop + 1 - side) / 2, 0, h - side);
+            float cell = side / (float)N;
+
             var counts = new int[10];
             for (int cy = 0; cy < N; cy++)
             for (int cx = 0; cx < N; cx++)
             {
                 Array.Clear(counts, 0, counts.Length);
                 float vSum = 0f;
-                for (int y = cy * bh; y < (cy + 1) * bh; y++)
-                for (int x = cx * bw; x < (cx + 1) * bw; x++)
+                int y0 = originY + Mathf.FloorToInt(cy * cell), y1 = originY + Mathf.FloorToInt((cy + 1) * cell);
+                int x0 = originX + Mathf.FloorToInt(cx * cell), x1 = originX + Mathf.FloorToInt((cx + 1) * cell);
+                for (int y = y0; y < y1; y++)
+                for (int x = x0; x < x1; x++)
                 {
+                    if (x < 0 || x >= w || y < 0 || y >= h)
+                    {
+                        counts[White]++;
+                        vSum += 1f;
+                        continue;
+                    }
                     Color32 c = px[y * w + x];
                     counts[Classify(c)]++;
                     Color.RGBToHSV(c.a < 128 ? (Color)Color.white : (Color)c, out _, out _, out float v);
@@ -158,7 +181,7 @@ public static class LocalJudge
                 }
                 int i = cy * N + cx;
                 cls[i] = nonWhite >= 2 ? best : White;
-                val[i] = vSum / (bw * bh);
+                val[i] = vSum / ((x1 - x0) * (y1 - y0));
             }
 
             ink = Mask(i => cls[i] != White);
