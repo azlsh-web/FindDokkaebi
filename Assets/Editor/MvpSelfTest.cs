@@ -26,7 +26,7 @@ using Object = UnityEngine.Object;
 //   - 화면 흐름 검사에서는 "이번엔 이 특징을 빠뜨렸다"는 결과를 미리 정해서 넣어요 (LocalJudge.TestOverride).
 //
 // 시나리오
-//   시작 → 1~5단계 (각 단계 : 대화 → 쪽지 → 관찰 → 그리기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
+//   시작 → 1~5단계 (각 단계 : 대화 → 쪽지(2단계부터) → 관찰 → 그리기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
 //   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
 //   + 2단계 : 간식 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
@@ -283,16 +283,25 @@ static class MvpSelfTest
                 Check(IsOn("DialoguePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Room", $"{st.Title} 대화 화면 (배경은 BG_Room)");
                 Check(!IsOn("HUD"), "대화 중에는 간식과 일시정지를 숨긴다");
                 Check(IsOn("DialoguePanel/Boy"), "주인공이 보인다");
-                if (s == 0) Check(!IsOn("DialoguePanel/Dokkaebi"), "맨 처음에는 주인공 혼자 놀란다");
+                if (s == 0) Check(!IsOn("DialoguePanel/Dokkaebi"), "맨 처음에는 주인공 혼자 말한다");
                 Shot($"s{s + 1}_dialogue");
                 Then(() =>
                 {
+                    if (!GameScript.HasNote(s))
+                    {
+                        for (int k = 0; k < 40 && !IsOn("DialoguePanel/Dokkaebi"); k++) Gm().DialogueTap();
+                        int line = (int)Gm().GetType().GetField("dialogueLine", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
+                        Check(line == GameScript.OpeningAloneLines, "도깨비는 주인공 혼잣말이 끝난 뒤 등장한다");
+                        for (int k = 0; k < 40 && !IsOn("ObservePanel"); k++) Gm().DialogueTap();
+                        Check(!Find("DialoguePanel/NoteArea/NoteCard").gameObject.activeSelf, "쪽지가 없는 단계는 대화 뒤 바로 관찰한다");
+                        return;
+                    }
                     for (int k = 0; k < 12 && !IsOn("DialoguePanel/NoteArea/NoteCard"); k++) Gm().DialogueTap();
                     Check(IsOn("DialoguePanel/NoteArea/NoteCard"), "대사가 끝나면 쪽지가 나온다");
                     Check(!IsOn("DialoguePanel/Boy") && !IsOn("DialoguePanel/Dokkaebi"), "쪽지가 나오면 캐릭터는 사라진다");
                 });
             });
-            Add(0.5f, $"{st.Title} 쪽지", () =>
+            if (GameScript.HasNote(s)) Add(0.5f, $"{st.Title} 쪽지", () =>
             {
                 int rows = 0;
                 for (int k = 1; k <= 5; k++) if (IsOn($"DialoguePanel/NoteArea/NoteCard/Row_{k}")) rows++;

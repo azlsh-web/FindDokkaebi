@@ -94,9 +94,10 @@ def stage_tree(i):
         wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), random_list("주인공(놀람)", boy_part)))
     wrong.append(N(f"전부 틀림 (물건: {WRONG_ITEM[i]})" if i else f"틀림 (기준이 하나라 곧 전부 틀림, 물건: {WRONG_ITEM[i]})",
                    random_list("도깨비", allwrong[i]), random_list("주인공(놀람)", boy_wrong)))
+    note = N(f"도깨비의 쪽지 — 제목 `{i + 1}단계 {target}`", N("판정 기준", *rows), f"도깨비: {card[i]}") if card[i] else "쪽지 없이 바로 관찰"
     return N(f"{i + 1}단계 {target}",
              N("시작 대화 (순서대로)", *[f"{FACE[f]}: {t}" for f, t in intro[i]]),
-             N(f"도깨비의 쪽지 — 제목 `{i + 1}단계 {target}`", N("판정 기준", *rows), f"도깨비: {card[i]}"),
+             note,
              N("그리기 — 쪽지 제목", f"기억나는 {target}{'을' if (ord(target[-1]) - 0xAC00) % 28 else '를'} 그려 줘"),
              N("결과",
                N("전부 맞음 (물건: 진짜)", random_list("도깨비", success[i]), random_list("주인공(기쁨)", boy_ok)),

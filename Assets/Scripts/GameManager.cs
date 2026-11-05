@@ -18,6 +18,7 @@ using UnityEngine.UI;
 //                                                                                          ↓ 다음 단계 (5단계 뒤엔)
 //                                                                                     [이야기 종료]
 //
+// 1단계는 쪽지 없이 대화 뒤 바로 관찰로 넘어가요.
 // 1단계에서 방망이를 못 찾으면 도깨비는 이야기가 끝날 때까지 빈손이에요.
 //
 // 화면 구조
@@ -280,7 +281,7 @@ public class GameManager : MonoBehaviour
         GameScript.Line line = GameScript.IntroLines(stageIndex)[dialogueLine];
         dialogueBox.Say(line.text, FaceOf(line.face));
 
-        bool alone = stageIndex == 0 && dialogueLine == 0;
+        bool alone = stageIndex == 0 && dialogueLine < GameScript.OpeningAloneLines;
         boyTargetPos = alone ? BoyAlonePos : BoyWithPos;
         boyTargetSize = alone ? BoyAloneSize : BoyWithSize;
         if (!alone) dialogueDokkaebi.SetActive(true);
@@ -320,7 +321,7 @@ public class GameManager : MonoBehaviour
             dialogueLine++;
             SayIntroLine();
         }
-        else if (!noteCard.activeSelf)
+        else if (!noteCard.activeSelf && GameScript.HasNote(stageIndex))
         {
             // 쪽지가 나오면 캐릭터는 사라지고, 도깨비가 주의할 점을 말해요
             dialogueBoy.gameObject.SetActive(false);

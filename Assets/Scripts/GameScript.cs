@@ -16,24 +16,38 @@ public static class GameScript
         public Line(Face face, string text) { this.face = face; this.text = text; }
     }
 
-    // 단계별 시작 대화 (2~3줄)
+    // 오프닝에서 도깨비가 나오기 전에 주인공 혼자 말하는 줄 수
+    public const int OpeningAloneLines = 3;
+
+    // 단계별 시작 대화. 1단계는 게임 전체의 오프닝이에요.
     static readonly Line[][] Intro =
     {
         new[]
         {
-            new Line(Face.BoySurprised, "소풍 준비물이 모두 어디 갔지?!"),
-            new Line(Face.Dokkaebi, "내 방망이도 없어졌어! 쪽지에 그려 주면 찾아 올게."),
-            new Line(Face.Dokkaebi, "간식 한 개면 돼. 잘 기억해 둬!"),
+            new Line(Face.BoyHappy, "안녕! 혹시… 날 도와주러 온 도깨비야?"),
+            new Line(Face.BoySurprised, "아니라고? 음… 그래도 도와줄 거지? 나 소풍 준비물을 전부 잃어버렸거든."),
+            new Line(Face.BoyHappy, "잃어버린 물건을 쪽지에 그려서 도깨비한테 부탁하면 찾아준대!"),
+            new Line(Face.Dokkaebi, "방금 누가 내 이름 불렀어?"),
+            new Line(Face.BoySurprised, "와, 진짜 도깨비다! 내 소풍 준비물 좀 찾아줘!"),
+            new Line(Face.Dokkaebi, "찾아줄 수는 있지. 대신 달달한 간식을 줘야 해."),
+            new Line(Face.Dokkaebi, "그런데 지금 당장은 안 돼. 도깨비로서 좀 창피한 얘기지만… 나도 방망이를 잃어버렸거든."),
+            new Line(Face.Dokkaebi, "방망이가 있어야 물건을 제대로 찾을 수 있어."),
+            new Line(Face.Dokkaebi, "방망이 찾는 걸 도와주면, 네 물건도 전부 찾아줄게."),
+            new Line(Face.BoyHappy, "좋아! 그럼 도깨비 말고, 너! 날 도와준다고 했지?"),
+            new Line(Face.BoyHappy, "도깨비가 보여주는 방망이 모양을 잘 기억해서 쪽지에 그려 줘."),
+            new Line(Face.BoyHappy, "모양이 다르면 엉뚱한 물건이 온대!"),
         },
         new[]
         {
-            new Line(Face.Dokkaebi, "이제 준비물을 담을 가방을 찾자."),
-            new Line(Face.Dokkaebi, "이번엔 무늬도 잘 봐!"),
+            new Line(Face.BoyHappy, "먼저 소풍 준비물을 담을 가방부터 찾아줘!"),
+            new Line(Face.Dokkaebi, "좋아! 네가 잃어버린 가방을 떠올려서 쪽지에 그려 줘."),
+            new Line(Face.Dokkaebi, "이번엔 모양만으로는 부족해. 무늬도 잘 그려야 해!"),
         },
         new[]
         {
-            new Line(Face.BoyHappy, "잔디밭에 펼칠 돗자리도 필요해."),
-            new Line(Face.Dokkaebi, "이번엔 색이 중요해. 순서도 잘 봐!"),
+            new Line(Face.BoyHappy, "이제 잔디밭에 펼칠 돗자리가 필요해."),
+            new Line(Face.Dokkaebi, "네가 잃어버린 돗자리를 떠올려서 그대로 그려 줘."),
+            new Line(Face.Dokkaebi, "모양이랑 무늬에 색깔까지! 이번엔 색도 잘 칠해야 해!"),
         },
         new[]
         {
@@ -49,9 +63,10 @@ public static class GameScript
     };
 
     // 쪽지가 나올 때 도깨비가 하는 말. 색 조합은 알려 주지 않아요.
+    // 비워 둔 단계는 쪽지 없이 대화 뒤 바로 관찰로 넘어가요 (1단계).
     static readonly string[] Card =
     {
-        "여기 적힌 건 꼭 그려 줘. 안 그리면 엉뚱한 걸 가져올 거야!",
+        "",
         "이번엔 주머니 안쪽 줄무늬도 꼭 넣어 줘!",
         "띠의 색 순서가 중요해. 위에서부터 차례로 봐 둬!",
         "재료 색을 잘 봐 둬. 어떤 색을 섞을지는 네가 찾아봐!",
@@ -86,18 +101,19 @@ public static class GameScript
         new[] { "논에 서 있길래 데려왔어! 네 그림이랑 닮았던걸?", "말이 좀 없지만... 네 친구 맞지? 히히." },
     };
 
-    static readonly string[] BoySuccess = { "맞아, 바로 이거야!", "고마워 도깨비야!" };
-    static readonly string[] BoyPartial = { "어, 어라?! 이건 아닌데...!", "뭔가 다른데...?! 더 잘 그려 볼걸!" };
-    static readonly string[] BoyAllWrong = { "이, 이게 뭐야?! 내 그림이 그렇게 이상해?!", "헉...! 특징을 더 그려 줘야겠어!" };
+    static readonly string[] BoySuccess = { "맞아! 바로 이거야!" };
+    static readonly string[] BoyPartial = { "어… 이게 아닌데. 간식 하나 더 줄 테니까 다시 그려 볼까?" };
+    static readonly string[] BoyAllWrong = { "어… 이게 아닌데. 간식 하나 더 줄 테니까 다시 그려 볼까?" };
 
-    public const string BoyOutOfSnacks = "어떡해, 간식이 다 떨어졌어...!";
-    public const string JudgeError = "쪽지가 잘 안 보여! 간식 돌려줄게.";
+    public const string BoyOutOfSnacks = "어떡해… 간식이 다 떨어졌어.";
+    public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
     public const string EndingAsk = "소풍 즐거웠지? 처음으로 돌아갈까?";
 
     static string Pick(string[] list) => list[Random.Range(0, list.Length)];
 
     public static Line[] IntroLines(int stageIndex) => Intro[stageIndex];
     public static string CardLine(int stageIndex) => Card[stageIndex];
+    public static bool HasNote(int stageIndex) => !string.IsNullOrEmpty(Card[stageIndex]);
 
     /// <summary>도깨비 결과 대사. outcome : 0 전부 맞음, 1 일부 틀림, 2 전부 틀림</summary>
     public static string DokkaebiResult(int stageIndex, int outcome) =>

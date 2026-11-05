@@ -247,11 +247,14 @@ static class MvpFlowShots
             }
 
             // 쪽지 → 관찰
-            yield return Wait(0.4f);
-            FinishBoxes();
-            yield return Snap("도깨비의 쪽지 : 판정 기준");
-            FinishBoxes();
-            gm.DialogueTap();
+            if (GameScript.HasNote(s))
+            {
+                yield return Wait(0.4f);
+                FinishBoxes();
+                yield return Snap("도깨비의 쪽지 : 판정 기준");
+                FinishBoxes();
+                gm.DialogueTap();
+            }
             yield return Snap("관찰 3초", 0.7f);
 
             // 그리기

@@ -74,7 +74,7 @@ arch = [
     "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불꽃 · 재 · 연기가 따라 움직임, 10초 전 강조. 그림은 <code>Tools/docs/art_pipeline/cut_incense.py</code></td><td>향 움직임</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>코드로 만든 움직임 전부 : 등장 · 걷기 · 두리번 · 간식 · 물건 착지 · 채점 표시 · 꽃가루 (Kind 하나씩)</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
-    "Title ─StartGame→ Dialogue(대사 → 쪽지) ─StartObserve→ Observe(3초) ─자동→ Draw(60초)\n"
+    "Title ─StartGame→ Dialogue(대사 → 쪽지, 1단계는 쪽지 없음) ─StartObserve→ Observe(3초) ─자동→ Draw(60초)\n"
     "Draw ─Submit(간식-1)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
     "Result ─틀림 + 간식 남음→ 다시(Retry : 이전 그림에 이어, 60초) 또는 포기(ShowCompare)\n"
     "Result ─성공 또는 간식 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번→ Title\n"

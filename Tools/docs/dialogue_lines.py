@@ -80,7 +80,8 @@ def read_lines(path=SOURCE):
         a, b = intro[i]
         for k, m in enumerate(re.finditer(r'new Line\(Face\.(\w+),\s*"((?:[^"\\]|\\.)*)"\)', src[a:b])):
             add(f"{code}-시작-{k + 1}", label, "시작 대화 (순서대로)", FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
-        add(f"{code}-쪽지", label, "쪽지가 나올 때", "도깨비", *card[i])
+        if card[i][0]:      # 비어 있으면 쪽지 없이 바로 관찰해요 (1단계)
+            add(f"{code}-쪽지", label, "쪽지가 나올 때", "도깨비", *card[i])
         for key, title, ranges in (("맞음", "전부 맞음 (무작위)", success), ("일부", "일부 틀림 (무작위)", partial), ("틀림", "전부 틀림 (무작위)", wrong)):
             if key == "일부" and i == 0:
                 continue    # 1단계는 기준이 하나라 일부 틀림이 없어요
