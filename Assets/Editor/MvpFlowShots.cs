@@ -274,8 +274,8 @@ static class MvpFlowShots
                 var toolBar = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
                 var mixer = MvpSelfTest.Find("DrawPanel/MixerPanel").GetComponent<ColorMixer>();
                 toolBar.OpenMixer();
-                if (st.colorMode == ColorMode.MixTwo) { mixer.TogglePick(1); mixer.TogglePick(2); }
-                else { mixer.TogglePick(0); mixer.TogglePick(1); mixer.TogglePick(2); }
+                if (st.colorMode == ColorMode.MixTwo) { mixer.AddPaint(1); mixer.AddPaint(2); }
+                else { mixer.AddPaint(0); mixer.AddPaint(0); mixer.AddPaint(1); mixer.AddPaint(1); mixer.AddPaint(2); }
                 yield return Snap("색 섞기 팔레트");
                 mixer.Apply();
             }

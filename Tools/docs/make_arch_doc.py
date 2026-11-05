@@ -68,7 +68,7 @@ arch = [
     "<tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 색 모드 · 원본 그림 · 특징 목록 · O·X 조합별 그림 <code>wrongSprites</code>). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr>"
     "<tr><td><code>DrawingBoard</code></td><td>512×604 쪽지 (클립보드의 하얀 면과 같은 비율) : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처. 그림판은 종이 면이 뚫린 틀 뒤에 있어서 잉크가 둥근 모서리 안에만 보이고, 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
     "<tr><td><code>ToolBar</code></td><td>색 · 연필 · 지우개 · 굵기 버튼, 고른 표시, 단계마다 색 버튼 보이기/숨기기</td><td>도구 버튼</td></tr>"
-    "<tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 재료 고르기 → 결과 색 (MixTable) → 섞은 색 칸</td><td>섞는 규칙</td></tr>"
+    "<tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 물감을 누를 때마다 한 번씩 넣기 · 되돌리기 → 넣은 비율로 계산한 색 (Mix) → 섞은 색 칸</td><td>섞는 규칙</td></tr>"
     "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
     "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불꽃 · 재 · 연기가 따라 움직임, 10초 전 강조. 그림은 <code>Tools/docs/art_pipeline/cut_incense.py</code></td><td>향 움직임</td></tr>"

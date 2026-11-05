@@ -139,7 +139,7 @@ public class ToolBar : MonoBehaviour
     // ───────────── 내부 ─────────────
 
     // 팔레트에서 색을 다 섞으면 불려요 → 혼합색 칸에 저장하고 바로 그 색 선택
-    void OnMixed(Color color, string colorName)
+    void OnMixed(Color color)
     {
         hasMixed = true;
         mixedColor = color;

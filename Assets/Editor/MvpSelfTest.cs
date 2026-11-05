@@ -30,7 +30,7 @@ using Object = UnityEngine.Object;
 //   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
 //   + 2단계 : 간식 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
-//   + 4·5단계 : 혼색 팔레트 (노랑+파랑=초록, 빨강+노랑+파랑=갈색)
+//   + 4·5단계 : 혼색 팔레트 (노랑 1:파랑 1=초록, 빨강 2:노랑 2:파랑 1=갈색, 되돌리기)
 //   → 이야기 종료 화면 기록 확인
 //   + 방망이를 못 찾았을 때 : 이야기 종료까지 도깨비가 빈손이고 소풍 장면에 대파가 놓이는지
 //
@@ -206,8 +206,11 @@ static class MvpSelfTest
         Add(1.0f, "기본 함수", () =>
         {
             Check(GameManager.Josa("가방", "을", "를") == "을" && GameManager.Josa("방망이", "을", "를") == "를", "조사(을/를) 고르기");
-            Check(ColorMixer.MixTable(false, true, true, out _, out string g) && g == "초록", "노랑 + 파랑 = 초록");
-            Check(ColorMixer.MixTable(true, true, true, out _, out string b) && b == "갈색", "빨강 + 노랑 + 파랑 = 갈색");
+            Check(LocalJudge.Classify(ColorMixer.Mix(0, 1, 1)) == (int)InkColor.Green + 1, "노랑 1 : 파랑 1 = 초록");
+            Check(LocalJudge.Classify(ColorMixer.Mix(1, 1, 0)) == (int)InkColor.Orange + 1, "빨강 1 : 노랑 1 = 주황");
+            Check(LocalJudge.Classify(ColorMixer.Mix(1, 1, 1)) == (int)InkColor.Black + 1, "빨강 1 : 노랑 1 : 파랑 1 = 검정");
+            Check(LocalJudge.Classify(ColorMixer.Mix(2, 2, 1)) == (int)InkColor.Brown + 1, "빨강 2 : 노랑 2 : 파랑 1 = 갈색");
+            Check(ColorMixer.Mix(4, 4, 2).Equals(ColorMixer.Mix(2, 2, 1)), "넣은 횟수가 달라도 비율이 같으면 같은 색");
             foreach (StageData s in Stages())
             {
                 string prompt = OpenAIJudge.BuildPrompt(s);
@@ -558,14 +561,19 @@ static class MvpSelfTest
             Check(IsOn("DrawPanel/MixerPanel"), "색 섞기를 누르면 팔레트가 열린다");
             if (st.colorMode == ColorMode.MixTwo)
             {
-                mixer.TogglePick(1); mixer.TogglePick(2);
-                mixer.TogglePick(0); // 두 색 혼합 단계에서는 세 번째 재료는 안 골라져야 함
-                Check(Text("DrawPanel/MixerPanel/Recipe") == "노랑 + 파랑 = 초록", "두 색 혼합 : " + Text("DrawPanel/MixerPanel/Recipe"));
+                mixer.AddPaint(1); mixer.AddPaint(2);
+                mixer.AddPaint(0); // 두 색 혼합 단계에서는 세 번째 물감이 안 들어가야 함
+                Check(MixerPreview() == ColorMixer.Mix(0, 1, 1), "두 색 혼합 : 세 번째 물감은 안 들어간다");
             }
             else
             {
-                mixer.TogglePick(0); mixer.TogglePick(1); mixer.TogglePick(2);
-                Check(Text("DrawPanel/MixerPanel/Recipe") == "빨강 + 노랑 + 파랑 = 갈색", "자유 혼합 : " + Text("DrawPanel/MixerPanel/Recipe"));
+                mixer.AddPaint(0); mixer.AddPaint(1); mixer.AddPaint(2);
+                Check(MixerPreview() == ColorMixer.Mix(1, 1, 1), "자유 혼합 : 세 색을 한 번씩 넣으면 검은색에 가깝다");
+                mixer.AddPaint(0); mixer.AddPaint(1);
+                Check(MixerPreview() == ColorMixer.Mix(2, 2, 1), "자유 혼합 : 2:2:1 로 넣으면 갈색");
+                mixer.UndoPaint();
+                Check(MixerPreview() == ColorMixer.Mix(2, 1, 1), "되돌리기 : 마지막에 넣은 물감이 빠진다");
+                mixer.AddPaint(1);
             }
             LayoutOnly($"s{st.stageNumber}_mixer");                     // 팔레트가 열린 화면도 배치 검사
             mixer.Apply();
@@ -581,6 +589,9 @@ static class MvpSelfTest
     }
 
     // ───────────── 도우미 ─────────────
+
+    // 팔레트 미리보기 칸의 지금 색
+    static Color MixerPreview() => Find("DrawPanel/MixerPanel/PreviewEdge/Preview").GetComponent<UnityEngine.UI.Image>().color;
 
     static GameManager Gm() => Object.FindFirstObjectByType<GameManager>();
 

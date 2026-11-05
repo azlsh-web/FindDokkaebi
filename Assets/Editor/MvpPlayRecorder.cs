@@ -192,7 +192,7 @@ class PlayDirector : MonoBehaviour
         yield return Line(V(165, 258), V(347, 260));
         yield return Line(V(165, 285), V(347, 287));
         yield return Line(V(165, 312), V(347, 310));
-        yield return Mix("Material_빨강", "Material_노랑", "Material_파랑");
+        yield return Mix("Material_빨강", "Material_빨강", "Material_노랑", "Material_노랑", "Material_파랑");
         yield return Tool("ToolRow/Size_2");
         yield return Scribble(178, 72, 236, 214, 14);
         yield return Scribble(282, 72, 340, 214, 14);
@@ -242,7 +242,7 @@ class PlayDirector : MonoBehaviour
         yield return Wait(hold);
     }
 
-    // 혼색 : 팔레트 열기 → 재료 고르기 → 섞어서 칠하기
+    // 혼색 : 팔레트 열기 → 물감 넣기 → 섞어서 칠하기
     IEnumerator Mix(params string[] materials)
     {
         yield return Tool("ColorRow/MixOpen");

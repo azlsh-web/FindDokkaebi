@@ -384,27 +384,33 @@ public static class MvpSceneBuilder
         var mixerCard = mixerGo.GetComponent<Image>();
         var mixer = mixerGo.gameObject.AddComponent<ColorMixer>();
         Transform mx = mixerGo;
-        var mixGuide = NewText("Guide", mx, "", 36, new Vector2(-40, 22), new Vector2(720, 56), bold: true);
         var closeRow = NewRow("CloseRow", mx, 16, 72);
         Place(closeRow.GetComponent<RectTransform>(), new Vector2(405, 16), new Vector2(80, 72));
         var mixClose = NewRoundTool("CloseButton", closeRow, iconClose, Color.white, 64, out GameObject closeFrame);
         Object.DestroyImmediate(closeFrame);
-        var materialRow = NewRow("MaterialRow", mx, 84, 112);
-        Place(materialRow.GetComponent<RectTransform>(), new Vector2(0, 84), new Vector2(860, 112));
-        var materialFrames = new GameObject[3];
+        // 왼쪽 물감 3개를 누르면 오른쪽 큰 동그라미의 색이 바로 바뀌어요
+        var materialRow = NewRow("MaterialRow", mx, 70, 150);
+        Place(materialRow.GetComponent<RectTransform>(), new Vector2(-140, 70), new Vector2(560, 150));
         var materialButtons = new Button[3];
         for (int i = 0; i < 3; i++)
         {
-            materialButtons[i] = NewRoundTool("Material_" + colorNames[i + 1], materialRow, null, ToolBar.Palette[i + 1], 96, out materialFrames[i]);
+            materialButtons[i] = NewRoundTool("Material_" + colorNames[i + 1], materialRow, null, ToolBar.Palette[i + 1], 130, out GameObject materialFrame);
+            Object.DestroyImmediate(materialFrame);
+            materialButtons[i].transform.parent.gameObject.AddComponent<CanvasGroup>();  // 못 누를 때 통째로 흐리게
+            var materialColors = materialButtons[i].colors;
+            materialColors.disabledColor = Color.white;                                   // 어두워지지 않게
+            materialButtons[i].colors = materialColors;
         }
         var swatchEdge = NewImage("PreviewEdge", mx, OutlineColor);
         swatchEdge.sprite = circleSprite;
-        Place(swatchEdge.rectTransform, new Vector2(-300, 212), new Vector2(76, 76));
-        var swatch = NewImage("Preview", swatchEdge.transform, EmptySlotColor);
+        Place(swatchEdge.rectTransform, new Vector2(250, 40), new Vector2(190, 190));
+        var swatch = NewImage("Preview", swatchEdge.transform, Color.white);
         swatch.sprite = circleSprite;
-        Stretch(swatch.rectTransform, 5);
-        var recipe = NewText("Recipe", mx, "", 38, new Vector2(60, 214), new Vector2(600, 72), TextAlignmentOptions.Left, bold: true);
-        var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(0, 298), new Vector2(480, 66));
+        Stretch(swatch.rectTransform, 6);
+        var mixUndo = TeamTool("UndoButton", mx, T("Draw_UndoButton"), 0, 0, 1, 1, 0, out GameObject mixUndoFrame);
+        Object.DestroyImmediate(mixUndoFrame);
+        Place((RectTransform)mixUndo.transform.parent, new Vector2(-300, 262), new Vector2(100, 95));
+        var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(40, 272), new Vector2(480, 76));
 
         // ── 5. 판정 대기 : 내 그림은 떠 있고, 도깨비는 가운데서 좁게 오가요 ──
         var judgeP = NewPanel("JudgePanel", canvas);
@@ -621,7 +627,8 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(undoButton.onClick, toolBar.Undo);
         UnityEventTools.AddPersistentListener(clearButton.onClick, toolBar.ClearAll);
 
-        for (int i = 0; i < 3; i++) UnityEventTools.AddIntPersistentListener(materialButtons[i].onClick, mixer.TogglePick, i);
+        for (int i = 0; i < 3; i++) UnityEventTools.AddIntPersistentListener(materialButtons[i].onClick, mixer.AddPaint, i);
+        UnityEventTools.AddPersistentListener(mixUndo.onClick, mixer.UndoPaint);
         UnityEventTools.AddPersistentListener(mixApply.onClick, mixer.Apply);
         UnityEventTools.AddPersistentListener(mixClose.onClick, mixer.Close);
 
@@ -727,10 +734,9 @@ public static class MvpSceneBuilder
         jso.ApplyModifiedPropertiesWithoutUndo();
 
         var mso = new SerializedObject(mixer);
-        SetArray(mso, "materialFrames", materialFrames);
+        SetArray(mso, "materialButtons", materialButtons);
         Set(mso, "previewSwatch", swatch);
-        Set(mso, "recipeText", recipe);
-        Set(mso, "guideText", mixGuide);
+        Set(mso, "undoButton", mixUndo);
         Set(mso, "applyButton", mixApply);
         mso.ApplyModifiedPropertiesWithoutUndo();
 
@@ -792,7 +798,7 @@ public static class MvpSceneBuilder
 
         CreateStage("Stage5_Friend", 5, "친구", ColorMode.MixFree,
             "소풍 준비물을 다 찾았어요!\n그런데 같이 가기로 한 친구가 안 보여요.\n도깨비가 친구도 찾아 준대요.\n친구의 머리와 옷 색을 잘 보세요.",
-            "두 가지 이상 색을 자유롭게 섞어요.\n예) 빨강 + 노랑 + 파랑 = 갈색",
+            "두 가지 이상 색을 자유롭게 섞어요.\n많이 넣은 색에 따라 섞인 색이 달라져요.",
             "모양 · 무늬 · 삼원색 · 두 색 혼합",
             "정면에서 본 친구입니다. 양 갈래로 묶은 갈색 머리, 살구색(주황 계열) 반팔 상의, 앞주머니에 천 조각을 덧댄 파란 멜빵 반바지를 입고 노란 신발을 신었습니다. 갈색은 세 색 혼합, 주황은 두 색 혼합으로 만드는 색입니다.",
             ("양 갈래 머리", "머리 양옆으로 묶은 머리 두 갈래가 구분되어야 합니다. 단발이나 한 갈래 머리는 인정하지 않습니다."),

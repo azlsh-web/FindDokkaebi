@@ -63,7 +63,8 @@ TREE = [
     ("5. 색 섞기", "Frame/DrawPanel/MixerPanel", [
         ("MixerPanel", "UI/Common_Card", CODE),
         ("CloseButton", "UI/Mix_CloseIcon", CODE),
-        ("Swatch", "UI/Common_Circle", CODE),
+        ("Preview", "UI/Common_Circle", CODE),
+        ("UndoButton", "UI/Draw_UndoButton", G10 + ", 아이콘 크기를 맞춤"),
         ("ApplyButton", "UI/Common_ButtonCoral", G10),
     ]),
     ("6. 판정 대기", "Frame/JudgePanel", [
