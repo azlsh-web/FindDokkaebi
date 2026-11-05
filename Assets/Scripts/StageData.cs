@@ -48,7 +48,7 @@ public enum AutoCheck
     PantsColor,         // 하의의 주된 색이 color
     ColorBands,         // 외곽 안이 색 띠 네 줄로 나뉨 (돗자리)
     ColorInZone,        // 그림의 위(area=Head)·가운데(Body)·아래(Legs) 부분에 color 가 충분히 있다 (친구)
-    BatShape,           // 긴 손잡이 + 더 굵은 머리 + 돌기 (방망이 형태)
+    BatShape,           // 굵은 머리 + 돌기 (방망이 형태)
     BagShape,           // 네모 몸체 + 위쪽 손잡이 + 앞주머니 (가방 형태)
     BandOrder,          // 맨 위와 맨 아래가 파랑, 그 사이에 위에서부터 빨강 · 노랑 (돗자리 색)
     IngredientLayout,   // 재료가 위에 둘, 아래에 하나 (김밥 배치)

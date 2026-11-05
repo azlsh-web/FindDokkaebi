@@ -190,8 +190,30 @@ static class MvpFlowShots
         {
             MvpSelfTest.Expect(st, miss);
             gm.Submit();
+            if (judgeCaption != null) yield return GiveShots();
+            else PassGive();
             if (judgeCaption != null) yield return Snap(judgeCaption, 1.5f);
             yield return Until(ResultShown);
+        }
+
+        // 건네기 대사를 사진 없이 넘겨요
+        void PassGive()
+        {
+            for (int i = 0; i < 8 && IsOn("DialoguePanel"); i++) { FinishBoxes(); gm.DialogueTap(); }
+        }
+
+        // 건네기 : 주인공 → 먹기 → 읽기
+        IEnumerator GiveShots()
+        {
+            string[] names = { "건네기 : 쪽지와 간식", "건네기 : 도깨비가 간식을 먹음", "건네기 : 도깨비가 쪽지를 읽음" };
+            for (int i = 0; i < names.Length; i++)
+            {
+                yield return Wait(0.5f);
+                FinishBoxes();
+                yield return Snap(names[i]);
+                FinishBoxes();
+                gm.DialogueTap();
+            }
         }
 
         // 도깨비 대사 → 주인공 대사까지 찍어요
@@ -235,8 +257,9 @@ static class MvpFlowShots
             StageData st = stages[s];
             section = $"{st.stageNumber}단계 {st.targetName}";
 
-            // 대화
-            GameScript.Line[] lines = GameScript.IntroLines(s);
+            // 대화 (오프닝 대사는 저절로 넘어가지만, 사진을 찍으려고 직접 넘겨요)
+            bool batLost = (bool)typeof(GameManager).GetField("batLost", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm);
+            GameScript.Line[] lines = GameScript.IntroLines(s, batLost);
             for (int i = 0; i < lines.Length; i++)
             {
                 yield return Wait(0.5f);
@@ -246,16 +269,7 @@ static class MvpFlowShots
                 gm.DialogueTap();
             }
 
-            // 쪽지 → 관찰
-            if (GameScript.HasNote(s))
-            {
-                yield return Wait(0.4f);
-                FinishBoxes();
-                yield return Snap("도깨비의 쪽지 : 판정 기준");
-                FinishBoxes();
-                gm.DialogueTap();
-            }
-            yield return Snap("관찰 3초", 0.7f);
+            yield return Snap("떠올리기 3초", 0.7f);
 
             // 그리기
             yield return Until(() => IsOn("DrawPanel"));
@@ -305,6 +319,7 @@ static class MvpFlowShots
                 // 판정 오류 : 간식을 돌려주고 그림으로 돌아가요
                 yield return Snap("다시 : 이전 그림에 이어 그리기", 0.8f);
                 gm.Submit();
+                PassGive();
                 yield return Wait(0.8f);
                 MvpSelfTest.Invoke(gm, "OnJudgeError", "사진용 가짜 오류");
                 yield return Wait(0.4f);

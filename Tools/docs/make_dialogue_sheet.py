@@ -66,7 +66,7 @@ for r, row in enumerate(rows, 3):
     ws.row_dimensions[r].height = 36
 
 end = len(rows) + 2
-ws.freeze_panes = "F3"
+ws.freeze_panes = "A3"
 ws.auto_filter.ref = f"A2:H{end}"
 ws.conditional_formatting.add(f"G3:G{end}", FormulaRule(formula=[f'AND(ISNUMBER(G3),G3>{LIMIT})'], font=Font(name=FONT, bold=True, color="D8352A")))
 

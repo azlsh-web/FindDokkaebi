@@ -17,6 +17,15 @@ using Object = UnityEngine.Object;
 //   - 메뉴 Tools → 찾아라도깨비 → 자동 플레이 테스트
 //   - 또는 Temp/mvp_selftest.flag 파일이 생기면 자동 실행 (Claude 가 원격으로 검사할 때 사용)
 //
+// 일부만 돌리기 (고친 곳만 빠르게 확인, 커밋 전에는 전체를 한 번)
+//   - 메뉴 Tools → 찾아라도깨비 → 부분 테스트
+//   - 또는 flag 파일에 그룹 이름을 적어요 (예: stage3 ending). 비어 있으면 전체예요.
+//   logic  : 조사 · 색 섞기 · 단계 데이터         judge  : 손그림 판정
+//            (이 둘만 고르면 Play 에 들어가지 않아요)
+//   title  : 시작 화면                            stage1 ~ stage5 : 그 단계의 화면 흐름
+//   ending : 이야기 종료 · 방망이를 못 찾은 경우
+//   단계나 엔딩만 돌릴 때는 앞 단계를 건너뛰고 그 자리에서 시작해요 (EntryStep).
+//
 // 하는 일
 //   Play 모드에 들어가서 사람이 버튼을 누르는 대신 GameManager·ToolBar 의 함수를 차례로 부르고,
 //   마우스로 그리는 대신 그림판에 가짜 드래그 이벤트를 보내요.
@@ -26,7 +35,7 @@ using Object = UnityEngine.Object;
 //   - 화면 흐름 검사에서는 "이번엔 이 특징을 빠뜨렸다"는 결과를 미리 정해서 넣어요 (LocalJudge.TestOverride).
 //
 // 시나리오
-//   시작 → 1~5단계 (각 단계 : 대화 → 쪽지(2단계부터) → 관찰 → 그리기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
+//   시작 → 1~5단계 (각 단계 : 대화 → 떠올리기 → 쪽지 쓰기 → 건네기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
 //   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
 //   + 2단계 : 간식 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
@@ -47,22 +56,26 @@ static class MvpSelfTest
     const string Flag = "Temp/mvp_selftest.flag";
     const string OutDir = "Temp/SelfTest";
     const string RunningKey = "MvpSelfTest.Running";
+    const string GroupsKey = "MvpSelfTest.Groups";
+    static readonly string[] AllGroups = { "logic", "judge", "title", "stage1", "stage2", "stage3", "stage4", "stage5", "ending" };
 
     // 한 단계 = (앞 단계 후 기다릴 초, 이름, 할 일, [조건])
     //   until 이 있으면 그 조건이 참이 될 때까지(최대 20초) 기다린 뒤 실행해요.
     //   Unity 창이 뒤에 있으면 게임 시계가 느려져서, 정해진 초 대신 "화면이 바뀔 때까지" 기다리는 게 안전해요.
-    struct Step { public float wait; public string name; public Action run; public Func<bool> until; }
+    struct Step { public float wait; public string name; public Action run; public Func<bool> until; public string group; }
     static double untilDeadline = -1;
 
     static List<Step> steps;
     static int index;
     static double nextTime;
     static double nextFlagCheck;
+    static bool refreshed;
     static readonly List<string> report = new List<string>();
     static int failCount;
     static int shotCount;
     static Action pending;
     static double pendingTime;
+    static string scope = "";       // 부분 실행이면 결과 줄에 "부분(그룹) " 을 적어요
 
     static MvpSelfTest()
     {
@@ -71,9 +84,26 @@ static class MvpSelfTest
     }
 
     [MenuItem("Tools/찾아라도깨비/자동 플레이 테스트")]
-    public static void Run()
+    public static void Run() => RunGroups("all");
+
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/규칙 (logic)")] static void RunLogic() => RunGroups("logic");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/손그림 판정 (judge)")] static void RunJudge() => RunGroups("judge");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/시작 화면 (title)")] static void RunTitle() => RunGroups("title");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/1단계 (stage1)")] static void RunStage1() => RunGroups("stage1");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/2단계 (stage2)")] static void RunStage2() => RunGroups("stage2");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/3단계 (stage3)")] static void RunStage3() => RunGroups("stage3");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/4단계 (stage4)")] static void RunStage4() => RunGroups("stage4");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/5단계 (stage5)")] static void RunStage5() => RunGroups("stage5");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/이야기 종료 (ending)")] static void RunEnding() => RunGroups("ending");
+
+    // text : 돌릴 그룹 이름들 (빈칸 · 쉼표로 구분). 비어 있거나 all 이면 전체
+    static void RunGroups(string text)
     {
         if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+
+        var names = new List<string>(text.ToLowerInvariant().Split(new[] { ' ', ',', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries));
+        if (names.Count == 0 || names.Contains("all")) names = new List<string>(AllGroups);
+        string unknown = string.Join(" ", names.FindAll(n => Array.IndexOf(AllGroups, n) < 0));
 
         // Game 씬이 열려 있지 않으면 열기
         if (EditorSceneManager.GetActiveScene().path != ScenePath)
@@ -86,9 +116,33 @@ static class MvpSelfTest
         if (Directory.Exists(OutDir)) Directory.Delete(OutDir, true);
         Directory.CreateDirectory(OutDir);
 
+        // 이름을 잘못 적으면 아무것도 안 돌고 통과한 것처럼 보이지 않게, 실패로 남겨요
+        if (unknown != "")
+        {
+            string message = $"[SelfTest] FAIL 없는 그룹 : {unknown} (쓸 수 있는 이름 : {string.Join(" ", AllGroups)})";
+            File.WriteAllText(Path.Combine(OutDir, "result.txt"), message);
+            Debug.LogWarning(message);
+            return;
+        }
+
+        // 화면이 필요 없는 그룹만 고르면 Play 에 들어가지 않아요
+        if (names.TrueForAll(n => n == "logic" || n == "judge"))
+        {
+            Begin(names.ToArray());
+            foreach (Step s in steps)
+            {
+                try { s.run(); }
+                catch (Exception e) { Fail($"{s.name}: 예외 {e.GetType().Name} {e.Message}"); }
+            }
+            index = steps.Count;
+            Finish();
+            return;
+        }
+
         // Unity 창이 뒤에 있어도 게임이 멈추지 않게 (Project Settings → Player → Run In Background)
         PlayerSettings.runInBackground = true;
 
+        SessionState.SetString(GroupsKey, string.Join(" ", names));
         SessionState.SetBool(RunningKey, true);
         EditorApplication.EnterPlaymode();
     }
@@ -106,8 +160,19 @@ static class MvpSelfTest
             return;
         }
         if (EditorApplication.isPlayingOrWillChangePlaymode) return;
+
+        // Unity 가 다른 창 뒤에 있으면 바뀐 코드를 아직 안 읽었을 수 있어요. 옛날 코드를 검사하지 않게 먼저 새로 읽어요.
+        if (!refreshed)
+        {
+            refreshed = true;
+            AssetDatabase.Refresh();
+            nextFlagCheck = EditorApplication.timeSinceStartup + 2.0;   // 컴파일이 시작될 시간
+            return;
+        }
+        refreshed = false;
+        string groups = File.ReadAllText(Flag);
         File.Delete(Flag);
-        Run();
+        RunGroups(groups);
     }
 
     static void OnPlayModeChanged(PlayModeStateChange change)
@@ -116,16 +181,73 @@ static class MvpSelfTest
         if (!SessionState.GetBool(RunningKey, false)) return;
         SessionState.SetBool(RunningKey, false);
 
+        Begin(SessionState.GetString(GroupsKey, "").Split(' '));
+        nextTime = EditorApplication.timeSinceStartup + Math.Max(steps[0].wait, 1.0);   // 게임이 준비될 시간
+        EditorApplication.update += Tick;
+    }
+
+    static void Begin(string[] groups)
+    {
         OpenAIJudge.DisableAI = true;  // 테스트에서는 AI 를 부르지 않음 (요금 X)
         report.Clear();
         failCount = 0;
         shotCount = 0;
         pending = null;
         Application.logMessageReceived += OnLog;
-        steps = BuildSteps();
+        bool whole = groups.Length == AllGroups.Length;
+        scope = whole ? "" : $"부분({string.Join(" ", groups)}) ";
+        steps = whole ? BuildSteps() : Pick(BuildSteps(), groups);
         index = 0;
-        nextTime = EditorApplication.timeSinceStartup + steps[0].wait;
-        EditorApplication.update += Tick;
+    }
+
+    // 고른 그룹의 단계만 남겨요. 단계 · 엔딩은 앞 그룹 없이 시작할 수 있게 입구를 끼워 넣어요
+    static List<Step> Pick(List<Step> all, string[] groups)
+    {
+        var picked = new List<Step>();
+        string last = null;
+        foreach (Step s in all)
+        {
+            if (Array.IndexOf(groups, s.group) < 0) continue;
+            if (s.group != last && (s.group.StartsWith("stage") || s.group == "ending")) picked.Add(EntryStep(s.group));
+            last = s.group;
+            picked.Add(s);
+        }
+        return picked;
+    }
+
+    static Step EntryStep(string group)
+    {
+        if (group != "ending")
+        {
+            int number = int.Parse(group.Substring("stage".Length));
+            return new Step { wait = 0.3f, name = group + " 입구", group = group, run = () => StartAt(number) };
+        }
+        return new Step
+        {
+            wait = 0.3f, name = "ending 입구", group = group, run = () =>
+            {
+                // 전체 실행이 끝났을 때와 같은 기록 : 2단계만 포기해서 간식 0개 + 엉뚱한 물건, 나머지는 찾고 간식 1개
+                StartAt(1);
+                StageData[] stages = Stages();
+                var hidden = BindingFlags.NonPublic | BindingFlags.Instance;
+                var snacksLeft = (int[])typeof(GameManager).GetField("snacksLeft", hidden).GetValue(Gm());
+                var items = (Sprite[])typeof(GameManager).GetField("itemsFound", hidden).GetValue(Gm());
+                for (int i = 0; i < stages.Length; i++)
+                {
+                    snacksLeft[i] = i == 1 ? 0 : 1;
+                    items[i] = i == 1 ? stages[i].wrongSprites[stages[i].wrongSprites.Length - 1] : stages[i].originalSprite;
+                }
+                SetPrivate(Gm(), "stageIndex", stages.Length - 1);
+                Gm().NextStage();
+            }
+        };
+    }
+
+    static void StartAt(int stageNumber)
+    {
+        SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
+        SetPrivate(Gm(), "editorStartStage", stageNumber);
+        Gm().StartGame();
     }
 
     // 정해진 시간이 지나면 다음 단계 실행
@@ -177,7 +299,7 @@ static class MvpSelfTest
         LocalJudge.TestOverride = null;
         pending = null;
         int passCount = report.FindAll(l => l.StartsWith("  PASS")).Count;
-        string summary = failCount == 0 ? $"[SelfTest] 전체 PASS ({passCount}개)" : $"[SelfTest] FAIL {failCount}개 / PASS {passCount}개";
+        string summary = failCount == 0 ? $"[SelfTest] {(scope == "" ? "전체 " : scope)}PASS ({passCount}개)" : $"[SelfTest] {scope}FAIL {failCount}개 / PASS {passCount}개";
         report.Add(summary);
         Directory.CreateDirectory(OutDir);
         File.WriteAllLines(Path.Combine(OutDir, "result.txt"), report);
@@ -199,8 +321,11 @@ static class MvpSelfTest
     static List<Step> BuildSteps()
     {
         var list = new List<Step>();
-        void Add(float wait, string name, Action run, Func<bool> until = null) => list.Add(new Step { wait = wait, name = name, run = run, until = until });
-        bool ResultShown() => IsOn("ResultPanel") && Find("ResultPanel/ReturnedItem").localScale.x > 0.99f; // 결과 + 뿅 애니메이션 끝
+        string group = "logic";     // 아래 Add 들이 속할 그룹
+        void Add(float wait, string name, Action run, Func<bool> until = null) => list.Add(new Step { wait = wait, name = name, run = run, until = until, group = group });
+        // 제출한 뒤 건네기 대사를 끝까지 넘겨요 (주인공 → 먹기 → 읽기 → 찾으러 가기)
+        void PassGive() { if (IsOn("DialoguePanel/GiveNote") || (IsOn("DialoguePanel") && IsOn("HUD"))) Gm().DialogueTap(); }
+        bool ResultShown() { PassGive(); return IsOn("ResultPanel") && Find("ResultPanel/ReturnedItem").localScale.x > 0.99f; } // 결과 + 뿅 애니메이션 끝
 
         // 0) 코드 단위 확인 (화면 없이)
         Add(1.0f, "기본 함수", () =>
@@ -225,6 +350,7 @@ static class MvpSelfTest
         // 0-2) (참고) 팀 아트 원본·엉뚱한 물건 그림을 자동 판정에 넣어 보기
         //   팀 그림은 굵은 테두리·명암이 있는 완성 그림이라, 손그림용 자동 판정과 꼭 맞지는 않아요.
         //   그래서 통과/실패로 세지 않고 결과만 기록해요. (실제 판정 검사는 아래 손그림 · 판정 전수 검사)
+        group = "judge";
         Add(0.1f, "자동 판정", () =>
         {
             LocalJudge.TestOverride = null;
@@ -257,6 +383,7 @@ static class MvpSelfTest
         });
 
         // 1) 시작 화면
+        group = "title";
         Add(0.2f, "시작 화면", () =>
         {
             SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
@@ -276,43 +403,33 @@ static class MvpSelfTest
             int s = si;                 // 람다 안에서 쓸 복사본
             StageData st = stages[s];
             bool last = s == stages.Length - 1;
+            group = $"stage{s + 1}";
 
-            // 대화 → 쪽지
+            // 대화 → 떠올리기
             Add(1.2f, $"{st.Title} 대화", () =>
             {
                 Check(IsOn("DialoguePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Room", $"{st.Title} 대화 화면 (배경은 BG_Room)");
                 Check(!IsOn("HUD"), "대화 중에는 간식과 일시정지를 숨긴다");
                 Check(IsOn("DialoguePanel/Boy"), "주인공이 보인다");
-                if (s == 0) Check(!IsOn("DialoguePanel/Dokkaebi"), "맨 처음에는 주인공 혼자 말한다");
+                Check(!IsOn("DialoguePanel/GiveNote"), "대화 중에는 쪽지가 없다");
+                if (s == 0)
+                {
+                    Check(!IsOn("DialoguePanel/Dokkaebi"), "맨 처음에는 주인공 혼자 말한다");
+                    Check(IsOn("DialoguePanel/Opening/Bag") && !IsOn("DialogueDim"), "오프닝은 어둡게 하지 않고 준비물이 보인다");
+                }
+                else Check(!IsOn("DialoguePanel/Opening"), "오프닝 그림은 1단계에만 나온다");
+                if (s == 1) Check(Text("DialoguePanel/DialogueBox/Line").StartsWith("방망이도 찾았으니") || s != 1, "방망이를 찾았으면 2단계 첫 대사가 달라진다");
                 Shot($"s{s + 1}_dialogue");
                 Then(() =>
                 {
-                    if (!GameScript.HasNote(s))
+                    if (s == 0)
                     {
                         for (int k = 0; k < 40 && !IsOn("DialoguePanel/Dokkaebi"); k++) Gm().DialogueTap();
                         int line = (int)Gm().GetType().GetField("dialogueLine", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
                         Check(line == GameScript.OpeningAloneLines, "도깨비는 주인공 혼잣말이 끝난 뒤 등장한다");
-                        for (int k = 0; k < 40 && !IsOn("ObservePanel"); k++) Gm().DialogueTap();
-                        Check(!Find("DialoguePanel/NoteArea/NoteCard").gameObject.activeSelf, "쪽지가 없는 단계는 대화 뒤 바로 관찰한다");
-                        return;
+                        Check(!IsOn("DialoguePanel/Opening") && IsOn("DialogueDim"), "도깨비가 나오면 오프닝 그림이 사라지고 어두워진다");
                     }
-                    for (int k = 0; k < 12 && !IsOn("DialoguePanel/NoteArea/NoteCard"); k++) Gm().DialogueTap();
-                    Check(IsOn("DialoguePanel/NoteArea/NoteCard"), "대사가 끝나면 쪽지가 나온다");
-                    Check(!IsOn("DialoguePanel/Boy") && !IsOn("DialoguePanel/Dokkaebi"), "쪽지가 나오면 캐릭터는 사라진다");
-                });
-            });
-            if (GameScript.HasNote(s)) Add(0.5f, $"{st.Title} 쪽지", () =>
-            {
-                int rows = 0;
-                for (int k = 1; k <= 5; k++) if (IsOn($"DialoguePanel/NoteArea/NoteCard/Row_{k}")) rows++;
-                Check(rows == st.features.Length, $"쪽지에 판정 기준 {st.features.Length}개");
-                Check(Text("DialoguePanel/NoteArea/NoteCard/Row_1/Text").StartsWith("1."), "기준에 번호가 있다");
-                Check(Find("DialoguePanel/DialogueBox").GetComponent<DialogueBox>() != null, "쪽지와 함께 도깨비 대사");
-                Shot($"s{s + 1}_note");
-                Then(() =>
-                {
-                    Gm().DialogueTap();     // 글자 다 보이기
-                    Gm().DialogueTap();     // 관찰 시작
+                    for (int k = 0; k < 40 && !IsOn("ObservePanel"); k++) Gm().DialogueTap();
                 });
             });
 
@@ -320,7 +437,9 @@ static class MvpSelfTest
             Add(0.4f, $"{st.Title} 관찰", () =>
             {
                 Check(IsOn("ObservePanel") && Find("ObservePanel/Card/TargetImage").GetComponent<Image>().sprite == st.originalSprite, "원본 그림을 보여준다");
-                Check(IsOn("ObservePanel/CountEdge/CountText"), "가운데 숫자 하나");
+                Check(IsOn("ObservePanel/CountEdge/CountText"), "숫자 하나");
+                Check(IsOn("ObservePanel/DokkaebiRecall") == (s == 0) && IsOn("ObservePanel/BoyRecall") == (s != 0), "1단계는 도깨비, 그 뒤는 주인공이 떠올린다");
+                Check(Find("DialoguePanel") != null && !IsOn("DialoguePanel"), "떠올리는 장면은 대사 없이 나온다");
                 if (s == 0) Shot($"s{s + 1}_observe");
             });
 
@@ -334,6 +453,7 @@ static class MvpSelfTest
                 Check(IsOn("DrawPanel/ToolBar/ColorRow/Color_빨강") == primaries, $"빨강 버튼은 {(primaries ? "보임" : "숨김")}");
                 Check(IsOn("DrawPanel/ToolBar/ColorRow/MixOpen") == mixing, $"색 섞기 버튼은 {(mixing ? "보임" : "숨김")}");
                 Check(!Find("DrawPanel/SubmitButton").GetComponent<Button>().interactable, "빈 쪽지면 제출 비활성");
+                Check(Text("DrawPanel/Guide") == GameScript.NoteText(s), "쪽지 글이 적혀 있다");
                 DrawStage(st);
             }, () => IsOn("DrawPanel"));
             Add(0.8f, $"{st.Title} 그린 뒤", () =>
@@ -372,7 +492,19 @@ static class MvpSelfTest
                     new GameObject("SelfTestShot").AddComponent<ShotHelper>().path = Path.Combine(OutDir, "extra_incense_8s.png");
                     Then(() => SetPrivate(Gm(), "timeLeft", 0.3f));
                 }
-                else Then(() => Gm().Submit());
+                else Then(() =>
+                {
+                    Gm().Submit();
+                    if (s != 0) return;
+                    // 건네기 : 그림이 적힌 쪽지 → 위쪽 간식이 날아가며 하나 줄어요
+                    Check(IsOn("DialoguePanel/GiveNote") && IsOn("HUD") && SnacksLit() == 3, "건네기 : 쪽지가 보이고 아직 간식은 그대로");
+                    Check(Find("DialoguePanel/GiveNote/MyDrawing").GetComponent<RawImage>().texture == Board().Texture, "쪽지에 내가 그린 그림");
+                    Check(Text("DialoguePanel/GiveNote/Text") == GameScript.NoteText(s), "쪽지에 글이 적혀 있다");
+                    Shot("s1_give");
+                    Gm().DialogueTap();
+                    Gm().DialogueTap();
+                    Check(SnacksLit() == 2 && IsOn("DialoguePanel/SnackOut"), "건네면 간식 -1, 간식이 도깨비에게 날아간다");
+                });
             });
 
             // 판정 대기
@@ -400,7 +532,7 @@ static class MvpSelfTest
                         Gm().Submit();
                     });
                 }
-            }, () => IsOn("JudgePanel"));
+            }, () => { PassGive(); return IsOn("JudgePanel") && ((RectTransform)Find("JudgePanel/DokkaebiEnter")).anchoredPosition.x > -95f; });
 
             if (s == 1)
             {
@@ -495,6 +627,7 @@ static class MvpSelfTest
         }
 
         // 이야기 종료
+        group = "ending";
         Add(3.2f, "이야기 종료", () =>
         {
             Check(IsOn("EndingPanel") && !IsOn("HUD"), "이야기 종료 화면");

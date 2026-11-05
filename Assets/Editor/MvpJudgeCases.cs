@@ -222,7 +222,7 @@ static class MvpJudgeCases
         var s = new HandSketch();
         switch (stage)
         {
-            case 0: // 방망이 : F1 형태 (긴 손잡이 + 굵은 머리 + 돌기)
+            case 0: // 방망이 : F1 형태 (굵은 머리 + 돌기)
             {
                 Vector2 c = V(256, 335);
                 s.Line(k, pen, 2f, V(250, 40), V(253, 140), V(256, c.y - 84));

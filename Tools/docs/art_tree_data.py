@@ -27,18 +27,23 @@ TREE = [
         ("TitleLogo", "UI/Title_Logo", G11 + ", 문구를 지움"),
         ("StartButton", "UI/Common_ButtonCoral", G10),
     ]),
-    ("2. 대화 + 도깨비의 쪽지", "Frame/DialoguePanel", [
+    ("2. 대화 + 오프닝 + 건네기", "Frame/DialoguePanel", [
         ("Boy", "Characters/Char_Boy_Normal", TEAM),
         ("Dokkaebi (1단계)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("Dokkaebi (2단계부터)", "Characters/Char_Dokkaebi_Normal", TEAM),
-        ("NoteCard, DialogueBox", "UI/Common_Card", CODE),
+        ("GiveNote, DialogueBox", "UI/Common_Card", CODE),
+        ("Opening/Bag · Mat · Gimbap", "물건별 원본 (아래 단계 폴더)", ""),
+        ("Opening/Idea/Pencil", "UI/Draw_PencilButton", TEAM),
+        ("Opening/Idea/Snack, SnackOut", "UI/HUD_SnackBag", TEAM),
         ("DialogueBox/Face (주인공 기쁨)", "Characters/Char_BoyFace_Happy", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Face (주인공 놀람)", "Characters/Char_BoyFace_Surprised", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Face (도깨비)", "Characters/Char_DokkaebiFace_Normal", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Arrow", "UI/Common_NextArrow", CODE),
     ]),
-    ("3. 관찰", "Frame/ObservePanel", [
-        ("Card", "UI/Common_Card", CODE),
+    ("3. 떠올리기", "Frame/ObservePanel", [
+        ("Card (말풍선)", "UI/Common_Card", CODE),
+        ("BoyRecall/Boy", "Characters/Char_Boy_Normal", TEAM),
+        ("DokkaebiRecall/Dokkaebi (1단계)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("TargetImage", "물건별 원본 (아래 단계 폴더)", ""),
         ("CountText", "3 · 2 · 1 은 게임 글자 (Jua)", ""),
     ]),
@@ -69,7 +74,6 @@ TREE = [
     ]),
     ("6. 판정 대기", "Frame/JudgePanel", [
         ("Dokkaebi", "Characters/Char_Dokkaebi_Think", TEAM),
-        ("SnackOut", "UI/HUD_SnackBag", G9),
     ]),
     ("7. 결과", "Frame/ResultPanel", [
         ("Dokkaebi (성공)", "Characters/Char_Dokkaebi_Swing", TEAM),
@@ -116,6 +120,6 @@ REQUEST = [
     ("Incense_Flame", "UI", "향", (90, 120), "줄기 끝의 불꽃", "아래쪽을 기준으로 흔들려요. 아래 끝이 칸 바닥 가운데에 닿게 그려 주세요."),
     ("Incense_Ash", "UI", "향", (74, 150), "타고 남은 재", "끝에 납작하게 붙기도 하고 떨어지기도 해요. 뭉툭한 재 덩어리로 그려 주세요."),
     ("Char_DokkaebiFace_Normal", "Characters", "선택", (660, 560), "도깨비 대사의 기본 얼굴", "대사 상자에 작게 나오는 얼굴. 지금은 받은 빈손 도깨비 그림에서 얼굴만 잘라 써요. 따로 그려 주시면 바꿔 넣어요."),
-    ("Char_DokkaebiFace_Tease", "Characters", "선택", (660, 560), "틀렸을 때 도깨비 대사", "엉뚱한 물건을 내밀며 놀리는 얼굴. 예) 「짠! 네가 그린 대로 찾아왔지?」"),
+    ("Char_DokkaebiFace_Tease", "Characters", "선택", (660, 560), "틀렸을 때 도깨비 대사", "엉뚱한 물건을 내밀며 놀리는 얼굴. 예) 「짠! 네 그림이랑 똑같지?」"),
     ("Char_DokkaebiFace_Proud", "Characters", "선택", (660, 560), "맞았을 때 도깨비 대사", "뿌듯한 얼굴. 예) 「가방 여기 있다! 어때, 나 잘 찾지?」"),
 ]

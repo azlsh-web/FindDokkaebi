@@ -217,6 +217,7 @@ class PlayDirector : MonoBehaviour
     {
         yield return Wait(0.4f);
         yield return Click("DrawPanel/SubmitButton");
+        yield return PassGive();
         yield return WaitResult(3f);
         while (On("ResultPanel"))
         {
@@ -225,6 +226,16 @@ class PlayDirector : MonoBehaviour
         }
         yield return Wait(2.5f);
         yield return Click("ComparePanel/TapButton");
+    }
+
+    // 건네기 : 쪽지와 간식을 건네고 도깨비가 찾으러 갈 때까지
+    IEnumerator PassGive()
+    {
+        while (On("DialoguePanel"))
+        {
+            yield return Wait(0.9f);
+            yield return Click("DialoguePanel/TapButton");
+        }
     }
 
     IEnumerator TapUntilChoice()

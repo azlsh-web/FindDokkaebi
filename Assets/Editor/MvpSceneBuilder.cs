@@ -124,6 +124,14 @@ public static class MvpSceneBuilder
         fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent; // 비율 유지하며 화면을 꽉 채움
         fitter.aspectRatio = 2248f / 3952f;
         bg.raycastTarget = false;
+
+        // 대사 중 어두운 막 : 고정 크기인 Frame 밖(Canvas 바로 아래)에 둬서 어떤 화면 비율에서도 꽉 차요. 켜고 끄기는 GameManager.ShowPanel
+        //   SimpleAnim 의 FadeIn 은 끝에 불투명도 1 로 만들어서, 그림이 아닌 CanvasGroup 으로 페이드해야 42% 가 유지돼요 (NewPanel)
+        var dialogueDim = NewPanel("DialogueDim", root);
+        var dialogueDimImage = dialogueDim.gameObject.AddComponent<Image>();
+        dialogueDimImage.color = new Color(40f / 255f, 24f / 255f, 10f / 255f, 0.42f);
+        dialogueDimImage.raycastTarget = false;
+
         var frameGo = new GameObject("Frame", typeof(RectTransform));        // 시안 크기 화면 (가운데)
         frameGo.transform.SetParent(root, false);
         Anchor(frameGo.GetComponent<RectTransform>(), 0.5f, 0.5f, Vector2.zero, new Vector2(1080, FrameHeight));
@@ -197,11 +205,43 @@ public static class MvpSceneBuilder
         startGameButton.GetComponentInChildren<TMP_Text>().fontSize = 96;
         startGameButton.GetComponentInChildren<TMP_Text>().color = Color.white;
 
-        // ── 2. 대화 화면 : 얼굴 + 대사 상자, 마지막에 도깨비의 쪽지 ──
+        // ── 2. 대화 화면 : 캐릭터 + 대사 상자. 오프닝 그림과 건네기 쪽지도 여기에 있어요 ──
         var dialogue = NewPanel("DialoguePanel", canvas);
-        var dim = NewImage("Dim", dialogue, new Color(40f / 255f, 24f / 255f, 10f / 255f, 0.42f));
-        Stretch(dim.rectTransform);
-        dim.raycastTarget = false;
+        // 오프닝 : 물건 그림은 GameManager 가 단계 데이터에서 넣어요
+        var openingGroup = NewEmpty("Opening", dialogue);
+        var openingBag = MImage("Bag", openingGroup, null, 12, 300, 84, 84);
+        var openingMat = MImage("Mat", openingGroup, null, 262, 340, 90, 56);
+        var openingGimbap = MImage("Gimbap", openingGroup, null, 24, 418, 58, 58);
+        var openingItems = new SimpleAnim[3];
+        openingItems[0] = Anim(openingBag.gameObject, SimpleAnim.Kind.None, 0.5f, 0f, 0f);
+        openingItems[1] = Anim(openingMat.gameObject, SimpleAnim.Kind.None, 0.5f, 0f, 0f);
+        openingItems[2] = Anim(openingGimbap.gameObject, SimpleAnim.Kind.None, 0.5f, 0f, 0f);
+        var openingAsk = NewEmpty("Ask", openingGroup);
+        for (int i = 0; i < 3; i++)
+        {
+            var ask = NewText("Question_" + i, openingAsk, "?", 126, Vector2.zero, Vector2.zero);
+            M(ask.rectTransform, new[] { 30, 288, 34 }[i], new[] { 310, 330, 414 }[i], 50, 50);
+            ask.color = new Color32(200, 72, 60, 255);
+            Anim(ask.gameObject, SimpleAnim.Kind.Look, 2f, 0f, 0f);
+        }
+        var openingIdea = NewEmpty("Idea", openingGroup);
+        var ideaNote = NewCard("Note", openingIdea, Vector2.zero, Vector2.zero);
+        M((RectTransform)ideaNote, 96, 120, 64, 76);
+        Anim(ideaNote.gameObject, SimpleAnim.Kind.Pop, 0.45f, 0f, 0f);
+        var ideaPencil = NewImage("Pencil", ideaNote, Color.white);
+        ideaPencil.sprite = T("Draw_PencilButton");
+        ideaPencil.preserveAspect = true;
+        ideaPencil.raycastTarget = false;
+        Stretch(ideaPencil.rectTransform, 24);
+        var ideaSnack = MImage("Snack", openingIdea, snack, 196, 136, 62, 68);
+        Anim(ideaSnack.gameObject, SimpleAnim.Kind.Pop, 0.45f, 0.2f, 0f);
+        var openingCall = NewEmpty("Call", openingGroup);
+        var callLeft = NewText("Left", openingCall, "((", 150, Vector2.zero, Vector2.zero);
+        M(callLeft.rectTransform, 34, 236, 54, 70);
+        var callRight = NewText("Right", openingCall, "))", 150, Vector2.zero, Vector2.zero);
+        M(callRight.rectTransform, 272, 236, 54, 70);
+        Anim(callLeft.gameObject, SimpleAnim.Kind.Look, 0.8f, 0f, 0f);
+        Anim(callRight.gameObject, SimpleAnim.Kind.Look, 0.8f, 0f, 0f);
 
         var boyHolderGo = new GameObject("Boy", typeof(RectTransform));
         boyHolderGo.transform.SetParent(dialogue, false);
@@ -226,66 +266,48 @@ public static class MvpSceneBuilder
         Stretch(dokImage.rectTransform);
         var dokImageAnim = Anim(dokImage.gameObject, SimpleAnim.Kind.None, 0.8f, 0f, 15f);
 
-        // 쪽지 : 대화 상자 위 빈 공간 가운데에 놓여요. 기준 수에 따라 높이가 달라져요.
-        var noteAreaGo = new GameObject("NoteArea", typeof(RectTransform), typeof(VerticalLayoutGroup));
-        noteAreaGo.transform.SetParent(dialogue, false);
-        M((RectTransform)noteAreaGo.transform, 28, 24, 304, 477);
-        var noteAreaLayout = noteAreaGo.GetComponent<VerticalLayoutGroup>();
-        noteAreaLayout.childAlignment = TextAnchor.MiddleCenter;
-        noteAreaLayout.childControlWidth = noteAreaLayout.childControlHeight = true;
-        noteAreaLayout.childForceExpandWidth = true;
-        noteAreaLayout.childForceExpandHeight = false;
-        var note = NewCard("NoteCard", noteAreaGo.transform, Vector2.zero, Vector2.zero);
-        var noteLayout = note.gameObject.AddComponent<VerticalLayoutGroup>();
-        noteLayout.padding = new RectOffset(48, 48, 72, 48);
-        noteLayout.spacing = 18;
-        noteLayout.childControlWidth = noteLayout.childControlHeight = true;
-        noteLayout.childForceExpandWidth = true;
-        noteLayout.childForceExpandHeight = false;
-        var noteAnim = Anim(note.gameObject, SimpleAnim.Kind.CardIn, 0.28f, 0f, 0f);
-        note.gameObject.AddComponent<CanvasGroup>();
-        var tape = NewImage("Tape", note, new Color32(245, 201, 107, 255));
-        tape.raycastTarget = false;
-        tape.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
-        Place(tape.rectTransform, new Vector2(0, -42), new Vector2(216, 84));
-        var noteHeader = NewText("Header", note, "도깨비의 쪽지", 45, Vector2.zero, Vector2.zero);
-        noteHeader.color = SubTextColor;
-        var noteTitle = NewText("Title", note, "", 102, Vector2.zero, Vector2.zero);
-        var noteRows = new GameObject[5];
-        var noteBacks = new Image[5];
-        var noteTexts = new TMP_Text[5];
-        for (int i = 0; i < 5; i++)
-        {
-            var row = NewImage("Row_" + (i + 1), note, Color.clear);
-            row.raycastTarget = false;
-            var rowLayout = row.gameObject.AddComponent<VerticalLayoutGroup>();
-            rowLayout.padding = new RectOffset(24, 24, 18, 18);
-            rowLayout.childControlWidth = rowLayout.childControlHeight = true;
-            rowLayout.childForceExpandWidth = true;
-            rowLayout.childForceExpandHeight = false;
-            noteTexts[i] = NewText("Text", row.transform, "", 54, Vector2.zero, Vector2.zero, TextAlignmentOptions.TopLeft);
-            noteRows[i] = row.gameObject;
-            noteBacks[i] = row;
-        }
+        // 건네기 : 그림과 글이 적힌 쪽지. 간식은 위쪽 간식 자리에서 도깨비에게 날아가요.
+        var giveNote = NewCard("GiveNote", dialogue, Vector2.zero, Vector2.zero);
+        M((RectTransform)giveNote, 82, 58, 190, 192);
+        giveNote.gameObject.AddComponent<CanvasGroup>();
+        var giveNoteAnim = Anim(giveNote.gameObject, SimpleAnim.Kind.Float, 3f, 0f, 30f, 2f);
+        var giveNoteText = NewText("Text", giveNote, "", 42, Vector2.zero, Vector2.zero);
+        PIn(giveNoteText.rectTransform, 12, 8, 166, 40);
+        giveNoteText.enableAutoSizing = true; giveNoteText.fontSizeMin = 30; giveNoteText.fontSizeMax = 42;
+        var giveNoteDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
+        giveNoteDrawing.transform.SetParent(giveNote, false);
+        PIn(giveNoteDrawing.rectTransform, 22, 46, 146, 138);
+        giveNoteDrawing.raycastTarget = false;
+        var giveSnack = MImage("SnackOut", dialogue, snack, 191, 20, 30, 33);
+        Anim(giveSnack.gameObject, SimpleAnim.Kind.SnackOut, 0.7f, 0f, 0f);
         var dialogueBoxComp = NewDialogueBox(dialogue, faceSurprised);
         NewTap("TapButton", dialogue);
         var dialogueTapButton = dialogue.Find("TapButton").GetComponent<Button>();
 
-        // ── 3. 관찰 화면 : 원본과 가운데 숫자만 ──
+        // ── 3. 떠올리기 화면 : 말풍선 속 원본과 숫자. 2단계부터 주인공, 1단계는 도깨비가 떠올려요 ──
         var observe = NewPanel("ObservePanel", canvas);
         var observeCard = NewCard("Card", observe, Vector2.zero, Vector2.zero);
-        M((RectTransform)observeCard, 26, 64, 308, 360);
+        M((RectTransform)observeCard, 24, 30, 312, 352);
+        observeCard.GetComponent<Image>().pixelsPerUnitMultiplier = 0.4f / K;  // 말풍선처럼 더 둥글게
+        var observeBoyGroup = NewEmpty("BoyRecall", observe);
+        BubbleDot(observeBoyGroup, 100, 392, 30);
+        BubbleDot(observeBoyGroup, 84, 428, 18);
+        MImage("Boy", observeBoyGroup, boyNormal, 4, 448, 150, 228);
+        var observeDokGroup = NewEmpty("DokkaebiRecall", observe);
+        BubbleDot(observeDokGroup, 236, 392, 30);
+        BubbleDot(observeDokGroup, 254, 428, 18);
+        MImage("Dokkaebi", observeDokGroup, dokkaebiNoBat, 176, 446, 176, 172);
         var observeImage = NewImage("TargetImage", observeCard, Color.white);
         Stretch(observeImage.rectTransform, 60);
         observeImage.preserveAspect = true;
         observeImage.raycastTarget = false;
-        var countEdge = MImage("CountEdge", observe, circleSprite, 125, 452, 110, 110);
+        var countEdge = MImage("CountEdge", observe, circleSprite, 216, 462, 96, 96);
         countEdge.color = OutlineColor;
         var countFill = NewImage("CountFill", countEdge.transform, new Color32(242, 119, 107, 255));
         countFill.sprite = circleSprite;
         countFill.raycastTarget = false;
         Stretch(countFill.rectTransform, 15);
-        var observeCount = NewText("CountText", countEdge.transform, "3", 216, Vector2.zero, Vector2.zero);
+        var observeCount = NewText("CountText", countEdge.transform, "3", 186, Vector2.zero, Vector2.zero);
         Stretch(observeCount.rectTransform);
         observeCount.color = Color.white;
         var observeCountAnim = Anim(observeCount.gameObject, SimpleAnim.Kind.NumPop, 0.25f, 0f, 0f);
@@ -421,8 +443,11 @@ public static class MvpSceneBuilder
         Anim(judgeDrawingBack.gameObject, SimpleAnim.Kind.Float, 3f, 0f, 30f, 2f);
         var judgeDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         judgeDrawing.transform.SetParent(judgeDrawingBack.transform, false);
-        Stretch(judgeDrawing.rectTransform, 15);
+        PIn(judgeDrawing.rectTransform, 8, 28, 134, 142);
         judgeDrawing.raycastTarget = false;
+        var judgeNoteText = NewText("Text", judgeDrawingBack.transform, "", 30, Vector2.zero, Vector2.zero);
+        PIn(judgeNoteText.rectTransform, 6, 5, 138, 24);
+        judgeNoteText.enableAutoSizing = true; judgeNoteText.fontSizeMin = 22; judgeNoteText.fontSizeMax = 30;
 
         var dokEnterGo = new GameObject("DokkaebiEnter", typeof(RectTransform));
         dokEnterGo.transform.SetParent(judgeP, false);
@@ -446,8 +471,6 @@ public static class MvpSceneBuilder
         dust.raycastTarget = false;
         Anchor(dust.rectTransform, 0.2f, 0f, new Vector2(0, 54), new Vector2(78, 78));
         Anim(dust.gameObject, SimpleAnim.Kind.Dust, 1.2f, 0f, 24f);
-        var judgeSnack = MImage("SnackOut", judgeP, snack, 191, 20, 30, 33);
-        Anim(judgeSnack.gameObject, SimpleAnim.Kind.SnackOut, 0.8f, 0f, 0f);
 
         // ── 6. 결과 화면 : 물건은 바닥에, 대사를 누르면 순서대로 ──
         var result = NewPanel("ResultPanel", canvas);
@@ -669,6 +692,7 @@ public static class MvpSceneBuilder
         Set(so, "endingPanel", ending.gameObject);
         Set(so, "endingBackground", picnic);
         Set(so, "dialoguePanel", dialogue.gameObject);
+        Set(so, "dialogueDim", dialogueDim.gameObject);
         Set(so, "faceBoySurprised", faceSurprised);
         Set(so, "faceBoyHappy", faceHappy);
         Set(so, "faceDokkaebi", faceDokkaebi);
@@ -681,14 +705,22 @@ public static class MvpSceneBuilder
         Set(so, "dialogueDokkaebi", dokHolderGo);
         Set(so, "dialogueDokkaebiImage", dokImage);
         Set(so, "dialogueDokkaebiAnim", dokImageAnim);
-        Set(so, "noteCard", note.gameObject);
-        Set(so, "noteTitle", noteTitle);
-        SetArray(so, "noteRows", noteRows);
-        SetArray(so, "noteRowBacks", noteBacks);
-        SetArray(so, "noteRowTexts", noteTexts);
+        Set(so, "openingGroup", openingGroup.gameObject);
+        SetArray(so, "openingItems", openingItems);
+        Set(so, "openingAsk", openingAsk.gameObject);
+        Set(so, "openingIdea", openingIdea.gameObject);
+        Set(so, "openingCall", openingCall.gameObject);
+        Set(so, "giveNote", giveNote.gameObject);
+        Set(so, "giveNoteAnim", giveNoteAnim);
+        Set(so, "giveNoteText", giveNoteText);
+        Set(so, "giveNoteDrawing", giveNoteDrawing);
+        Set(so, "giveSnackOut", giveSnack.rectTransform);
+        Set(so, "observeCountEdge", countEdge.rectTransform);
+        Set(so, "observeBoy", observeBoyGroup.gameObject);
+        Set(so, "observeDokkaebi", observeDokGroup.gameObject);
+        Set(so, "judgeNoteText", judgeNoteText);
         Set(so, "observeCount", observeCount);
         Set(so, "observeCountAnim", observeCountAnim);
-        Set(so, "judgeSnackOut", judgeSnack.rectTransform);
         Set(so, "resultBox", resultBoxComp);
         Set(so, "resultItemShadow", itemShadow.gameObject);
         Set(so, "resultSparkles", sparkles.gameObject);
@@ -741,8 +773,10 @@ public static class MvpSceneBuilder
         mso.ApplyModifiedPropertiesWithoutUndo();
 
         // 처음에는 시작 화면만 보이게 (게임 시작 시 GameManager 도 같은 처리를 해요)
-        foreach (Transform p in new[] { dialogue, observe, draw, judgeP, result, compare, ending }) p.gameObject.SetActive(false);
-        note.gameObject.SetActive(false);
+        foreach (Transform p in new[] { dialogue, dialogueDim, observe, draw, judgeP, result, compare, ending }) p.gameObject.SetActive(false);
+        giveNote.gameObject.SetActive(false);
+        giveSnack.gameObject.SetActive(false);
+        openingGroup.gameObject.SetActive(false);
         mixerCard.gameObject.SetActive(false);
         pause.gameObject.SetActive(false);
         hud.gameObject.SetActive(false);
@@ -766,8 +800,8 @@ public static class MvpSceneBuilder
             "소풍 준비물이 모두 사라졌어요!\n쪽지에 그림을 그려 간식과 함께 두면\n도깨비가 물건을 찾아준대요.\n그런데 도깨비가 먼저 부탁해요.\n\"내 방망이부터 찾아 줘!\"",
             "검은 펜으로 모양(형태)을 그려요.\n지우개 · 선 굵기 · 되돌리기 · 모두 지우기를 쓸 수 있어요.",
             "",
-            "가늘고 긴 손잡이와, 손잡이보다 굵은 머리가 이어진 도깨비방망이입니다. 머리에는 짧게 튀어나온 돌기가 여러 개 있고, 손잡이에는 리본이 묶여 있습니다. 검은색으로 형태만 표현하는 단계이며, 색은 판정하지 않습니다.",
-            ("긴 손잡이 + 굵은 머리 + 돌기", "가늘고 긴 손잡이 한쪽 끝에 손잡이보다 굵은 머리가 이어져 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다."));
+            "굵은 머리에 손잡이가 이어진 도깨비방망이입니다. 머리에는 짧게 튀어나온 돌기가 여러 개 있고, 손잡이에는 리본이 묶여 있습니다. 검은색으로 형태만 표현하는 단계이며, 색은 판정하지 않습니다.",
+            ("굵은 머리 + 돌기", "굵은 머리가 표현되어 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다. 손잡이의 유무와 길이는 판정하지 않습니다."));
 
         CreateStage("Stage2_Bag", 2, "가방", ColorMode.BlackOnly,
             "방망이를 찾은 도깨비가 신이 났어요.\n\"이제 네 물건을 찾아 줄게!\"\n먼저 소풍 가방을 찾아요.\n주머니 안의 줄무늬를 잘 보세요.",
@@ -1197,6 +1231,17 @@ public static class MvpSceneBuilder
     {
         rt.pivot = new Vector2(0.5f, 0f);
         rt.anchoredPosition += new Vector2(0f, -rt.sizeDelta.y);
+    }
+
+    // 생각 말풍선으로 이어지는 작은 동그라미 (테두리 + 속)
+    static void BubbleDot(Transform parent, float x, float y, float size)
+    {
+        var edge = MImage("BubbleDot", parent, circleSprite, x, y, size, size);
+        edge.color = OutlineColor;
+        var fill = NewImage("Fill", edge.transform, new Color32(255, 253, 246, 255));
+        fill.sprite = circleSprite;
+        fill.raycastTarget = false;
+        Stretch(fill.rectTransform, 10);
     }
 
     static SimpleAnim Anim(GameObject go, SimpleAnim.Kind kind, float time, float delay, float distance, float angle = 0f)

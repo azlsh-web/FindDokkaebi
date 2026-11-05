@@ -24,7 +24,7 @@ static class MvpLayoutCheck
     static readonly string[][] Intended =
     {
         new[] { "DrawPanel/BoardFrame", "DrawPanel/Board" },   // 그림판은 틀의 뚫린 종이 면 뒤에 있어요
-        new[] { "JudgePanel/MyDrawingBack", "JudgePanel/SnackOut" },   // 간식이 내 그림 앞을 지나 빠져나가요
+        new[] { "JudgePanel/MyDrawingBack", "JudgePanel/DokkaebiEnter" },   // 간식이 내 그림 앞을 지나 빠져나가요
         new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
         new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요

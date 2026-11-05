@@ -74,8 +74,8 @@ arch = [
     "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불꽃 · 재 · 연기가 따라 움직임, 10초 전 강조. 그림은 <code>Tools/docs/art_pipeline/cut_incense.py</code></td><td>향 움직임</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>코드로 만든 움직임 전부 : 등장 · 걷기 · 두리번 · 간식 · 물건 착지 · 채점 표시 · 꽃가루 (Kind 하나씩)</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
-    "Title ─StartGame→ Dialogue(대사 → 쪽지, 1단계는 쪽지 없음) ─StartObserve→ Observe(3초) ─자동→ Draw(60초)\n"
-    "Draw ─Submit(간식-1)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
+    "Title ─StartGame→ Dialogue(1단계는 오프닝부터) ─StartObserve→ Observe(3초 떠올리기) ─자동→ Draw(60초 쪽지 쓰기) ─Submit→ Give(건네기)\n"
+    "Give ─터치(간식-1, 대사 3줄)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
     "Result ─틀림 + 간식 남음→ 다시(Retry : 이전 그림에 이어, 60초) 또는 포기(ShowCompare)\n"
     "Result ─성공 또는 간식 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번→ Title\n"
     "1단계를 못 찾으면 batLost : 이야기 종료까지 도깨비 그림이 빈손(dokkaebiNoBat)\n"
@@ -104,7 +104,7 @@ arch = [
     "<tr><td class='k'>단계 데이터</td><td><code>CreateStageDataFiles</code> : 이야기 · 규칙 · 특징(이름 · 기준 글) · 그림 연결. 씬 만들 때마다 덮어써요</td></tr></table>",
     "<h2>6. 도구 (Tools → 찾아라도깨비, 또는 Temp/ 의 flag 파일)</h2><table><tr><th>도구</th><th>파일</th><th>하는 일</th></tr>"
     "<tr><td>MVP 씬 만들기</td><td>MvpSceneBuilder · MvpAutoBuild</td><td>씬을 처음부터 만들기 (mvp_rebuild.flag). 바뀐 코드를 먼저 읽어 들인 뒤 만들어요</td></tr>"
-    "<tr><td>자동 플레이 테스트</td><td>MvpSelfTest · MvpLayoutCheck</td><td>5단계 흐름 · 규칙 · 버튼 · 펜(그림판 밖) 확인 + 화면 캡처(Temp/SelfTest) + 배치 숫자 검사(걸쳐 겹침 · 글자 넘침 · 화면 밖) (mvp_selftest.flag)</td></tr>"
+    "<tr><td>자동 플레이 테스트</td><td>MvpSelfTest · MvpLayoutCheck</td><td>5단계 흐름 · 규칙 · 버튼 · 펜(그림판 밖) 확인 + 화면 캡처(Temp/SelfTest) + 배치 숫자 검사(걸쳐 겹침 · 글자 넘침 · 화면 밖) (mvp_selftest.flag). 메뉴의 부분 테스트나 flag 파일에 적은 그룹(logic · judge · title · stage1~5 · ending)만 따로 돌릴 수 있어요. 커밋 전에는 전체를 한 번 돌려요</td></tr>"
     "<tr><td>게임 플로우 사진 찍기</td><td>MvpFlowShots</td><td>AI 없이 경우마다 화면을 멈춘 뒤 찍어요 (Temp/FlowShots, mvp_flowshots.flag). 문서는 <code>Tools/docs/make_flow_doc.py</code></td></tr><tr><td>판정 전수 검사</td><td>MvpJudgeCases · HandSketch</td><td>특징 조합 62가지(방망이 굵은 펜 포함 64번) 손그림을 계산식 판정에 넣어 보기 (mvp_judgecases.flag)</td></tr>"
     "<tr><td>글꼴 굽기</td><td>MvpFontBake</td><td>Jua SDF (mvp_font.flag)</td></tr>"
     "<tr><td>웹 빌드</td><td>MvpWebGLBuild</td><td>Builds/WebGL + 판정 서버 프롬프트 내보내기 (mvp_webgl.flag)</td></tr>"

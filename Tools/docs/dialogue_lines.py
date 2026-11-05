@@ -72,27 +72,44 @@ def read_lines(path=SOURCE):
         rows.append({"id": num, "stage": stage, "scene": scene, "who": who, "text": unescape(text), "start": a, "end": b})
 
     intro, success, partial, wrong = (_groups(src, n) for n in ("Intro", "DokkaebiSuccess", "DokkaebiPartial", "DokkaebiAllWrong"))
-    card = _strings(src, *_block(src, "Card"))
-    assert len(intro) == len(card) == len(success) == len(partial) == len(wrong) == len(STAGES)
+    note = _strings(src, *_block(src, "Note"))
+    read = _strings(src, *_block(src, "GiveRead"))
+    assert len(intro) == len(note) == len(read) == len(success) == len(partial) == len(wrong) == len(STAGES)
+
+    def const(name):
+        m = re.search(r"const string " + name + r' = "((?:[^"\\]|\\.)*)"', src)
+        assert m, name
+        return m.group(1), m.start(1), m.end(1)
+
+    def lead(name):
+        m = re.search(name + r' = new Line\(Face\.Dokkaebi, "((?:[^"\\]|\\.)*)"\)', src)
+        assert m, name
+        return m.group(1), m.start(1), m.end(1)
 
     for i, stage in enumerate(STAGES):
         label, code = f"{i + 1}단계 {stage}", f"S{i + 1}"
         a, b = intro[i]
+        if i == 1:
+            add(f"{code}-시작-찾음", label, "방망이를 찾았을 때 (시작 대화 맨 앞)", "도깨비", *lead("BatFound"))
+            add(f"{code}-시작-못찾음", label, "방망이를 못 찾았을 때 (시작 대화 맨 앞)", "도깨비", *lead("BatLost"))
         for k, m in enumerate(re.finditer(r'new Line\(Face\.(\w+),\s*"((?:[^"\\]|\\.)*)"\)', src[a:b])):
             add(f"{code}-시작-{k + 1}", label, "시작 대화 (순서대로)", FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
-        if card[i][0]:      # 비어 있으면 쪽지 없이 바로 관찰해요 (1단계)
-            add(f"{code}-쪽지", label, "쪽지가 나올 때", "도깨비", *card[i])
+        add(f"{code}-쪽지글", label, "쪽지에 적힌 글", "(쪽지 글)", *note[i])
+        add(f"{code}-건네기-1", label, "쪽지와 간식을 건넬 때 (순서대로)", FACE["BoyHappy"], *const("GiveBoy"))
+        add(f"{code}-건네기-2", label, "쪽지와 간식을 건넬 때 (순서대로)", "도깨비", *const("GiveEat"))
+        add(f"{code}-건네기-3", label, "쪽지와 간식을 건넬 때 (순서대로)", "도깨비", *read[i])
         for key, title, ranges in (("맞음", "전부 맞음 (무작위)", success), ("일부", "일부 틀림 (무작위)", partial), ("틀림", "전부 틀림 (무작위)", wrong)):
             if key == "일부" and i == 0:
                 continue    # 1단계는 기준이 하나라 일부 틀림이 없어요
             for k, s in enumerate(_strings(src, *ranges[i])):
                 add(f"{code}-{key}-{k + 1}", label, title, "도깨비", *s)
 
-    for key, name, title, who in (("맞음", "BoySuccess", "전부 맞음 (무작위)", FACE["BoyHappy"]),
-                                  ("일부", "BoyPartial", "일부 틀림 (무작위)", FACE["BoySurprised"]),
-                                  ("틀림", "BoyAllWrong", "전부 틀림 (무작위)", FACE["BoySurprised"])):
-        for k, s in enumerate(_strings(src, *_block(src, name))):
-            add(f"주인공-{key}-{k + 1}", "모든 단계", title, who, *s)
+    for num, stage, title, who, name in (("주인공-맞음-방망이", "1단계 방망이", "전부 맞음", FACE["BoyHappy"], "BoyBatSuccess"),
+                                         ("주인공-맞음-1", "2~5단계", "전부 맞음", FACE["BoyHappy"], "BoySuccess"),
+                                         ("주인공-일부-1", "2~5단계", "일부 틀림", FACE["BoySurprised"], "BoyWrong"),
+                                         ("주인공-틀림-1", "2~5단계", "전부 틀림", FACE["BoySurprised"], "BoyWrong"),
+                                         ("주인공-틀림-방망이", "1단계 방망이", "전부 틀림", FACE["BoySurprised"], "BoyBatWrong")):
+        add(num, stage, title, who, *const(name))
 
     for num, stage, scene, who, const in (("주인공-간식없음", "모든 단계", "간식을 다 쓰고 틀렸을 때", FACE["BoySurprised"], "BoyOutOfSnacks"),
                                           ("도깨비-오류", "모든 단계", "판정 서버 오류", "도깨비", "JudgeError"),

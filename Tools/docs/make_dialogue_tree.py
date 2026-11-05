@@ -37,14 +37,14 @@ def groups(name):
 
 
 intro = [re.findall(r'new Line\(Face\.(\w+), "(.*?)"\)', g) for g in re.findall(r"new\[\]\s*\{(.*?)\n        \}", block("Intro"), re.S)]
-card = strings(block("Card"))
+note = strings(block("Note"))
+give_read = strings(block("GiveRead"))
+bat_found = re.search(r'BatFound = new Line\(Face\.Dokkaebi, "(.*?)"\)', src).group(1)
+bat_lost = re.search(r'BatLost = new Line\(Face\.Dokkaebi, "(.*?)"\)', src).group(1)
 success = [strings(g) for g in groups("DokkaebiSuccess")]
 partial = [strings(g) for g in groups("DokkaebiPartial")]
 allwrong = [strings(g) for g in groups("DokkaebiAllWrong")]
-boy_ok = strings(re.search(r"BoySuccess = \{(.*?)\};", src).group(1))
-boy_part = strings(re.search(r"BoyPartial = \{(.*?)\};", src).group(1))
-boy_wrong = strings(re.search(r"BoyAllWrong = \{(.*?)\};", src).group(1))
-assert len(intro) == len(card) == len(success) == len(partial) == len(allwrong) == 5
+assert len(intro) == len(note) == len(give_read) == len(success) == len(partial) == len(allwrong) == 5
 
 DATA = ["Stage1_Bat", "Stage2_Bag", "Stage3_Mat", "Stage4_Gimbap", "Stage5_Friend"]
 WRONG_ITEM = {0: "대파", 1: "항아리", 2: "파전", 3: "고무신", 4: "허수아비"}
@@ -88,19 +88,23 @@ def random_list(who, lines):
 
 def stage_tree(i):
     target, feats = stage_data(DATA[i])
-    rows = [f"{k + 1}. {f}" for k, f in enumerate(feats)]
+    boy_ok = const("BoyBatSuccess") if i == 0 else const("BoySuccess")
+    boy_wrong = const("BoyBatWrong") if i == 0 else const("BoyWrong")
     wrong = []
     if i > 0:
-        wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), random_list("주인공(놀람)", boy_part)))
+        wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), f"주인공(놀람): {boy_wrong}"))
     wrong.append(N(f"전부 틀림 (물건: {WRONG_ITEM[i]})" if i else f"틀림 (기준이 하나라 곧 전부 틀림, 물건: {WRONG_ITEM[i]})",
-                   random_list("도깨비", allwrong[i]), random_list("주인공(놀람)", boy_wrong)))
-    note = N(f"도깨비의 쪽지 — 제목 `{i + 1}단계 {target}`", N("판정 기준", *rows), f"도깨비: {card[i]}") if card[i] else "쪽지 없이 바로 관찰"
+                   random_list("도깨비", allwrong[i]), f"주인공(놀람): {boy_wrong}"))
+    start = [f"{FACE[f]}: {t}" for f, t in intro[i]]
+    if i == 1:
+        start = [N("맨 앞 (1단계 결과에 따라)", f"방망이를 찾음 — 도깨비: {bat_found}", f"못 찾음 — 도깨비: {bat_lost}")] + start
     return N(f"{i + 1}단계 {target}",
-             N("시작 대화 (순서대로)", *[f"{FACE[f]}: {t}" for f, t in intro[i]]),
-             note,
-             N("그리기 — 쪽지 제목", f"기억나는 {target}{'을' if (ord(target[-1]) - 0xAC00) % 28 else '를'} 그려 줘"),
+             N("시작 대화 (순서대로)", *start),
+             "떠올리기 3초 — 대사 없음" + (" (도깨비가 떠올려요)" if i == 0 else " (주인공이 떠올려요)"),
+             N("쪽지 쓰기 — 쪽지에 적힌 글", note[i]),
+             N("건네기 (순서대로)", f"주인공(기쁨): {const('GiveBoy')}", f"도깨비: {const('GiveEat')}", f"도깨비: {give_read[i]}"),
              N("결과",
-               N("전부 맞음 (물건: 진짜)", random_list("도깨비", success[i]), random_list("주인공(기쁨)", boy_ok)),
+               N("전부 맞음 (물건: 진짜)", random_list("도깨비", success[i]), f"주인공(기쁨): {boy_ok}"),
                *wrong))
 
 
@@ -115,8 +119,7 @@ tree = [
 
 screen = [
     N("대사 상자 바깥의 글자",
-      N("도깨비의 쪽지", "머리글: 도깨비의 쪽지"),
-      N("관찰", "가운데 숫자: 3, 2, 1"),
+      N("떠올리기", "숫자: 3, 2, 1"),
       N("그리기", "남은 초 숫자 (향 옆)", "버튼: 다 그렸어!"),
       N("색 섞기 (4·5단계)", "버튼: 섞어서 칠하기"),
       N("판정 대기", "도깨비 머리 위: ?"),
