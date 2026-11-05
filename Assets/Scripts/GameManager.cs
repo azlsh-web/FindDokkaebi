@@ -327,6 +327,8 @@ public class GameManager : MonoBehaviour
             dialogueDokkaebiAnim.Play(dokkaebiTalks ? SimpleAnim.Kind.Gentle : SimpleAnim.Kind.None);
     }
 
+    const float OpeningItemAlpha = 0.28f;
+
     // 오프닝 그림 : 가방 → 돗자리 · 김밥이 사라지고, 쪽지와 간식을 떠올린 뒤 도깨비를 불러요
     void ShowOpeningBeat(int line)
     {
@@ -338,9 +340,12 @@ public class GameManager : MonoBehaviour
         openingCall.SetActive(line == 3);
         if (line == 0)
         {
-            openingItems[0].GetComponent<Image>().sprite = stages[1].originalSprite;
-            openingItems[1].GetComponent<Image>().sprite = stages[2].originalSprite;
-            openingItems[2].GetComponent<Image>().sprite = stages[3].originalSprite;
+            // 방에 진짜 놓인 물건이 아니라 "있어야 할 자리"로 보이게 흐리게 그려요
+            for (int i = 0; i < openingItems.Length; i++)
+            {
+                openingItems[i].GetComponent<Image>().sprite = stages[i + 1].originalSprite;
+                openingItems[i].SetBaseAlpha(OpeningItemAlpha);    // Play 가 투명도를 되돌리므로 SimpleAnim 에 알려 줘요
+            }
             PlayVanish(0, 1.3f);
             openingItems[1].Play(SimpleAnim.Kind.None);
             openingItems[2].Play(SimpleAnim.Kind.None);

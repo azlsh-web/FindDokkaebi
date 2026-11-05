@@ -106,6 +106,15 @@ public class SimpleAnim : MonoBehaviour
 
     public void Play() => Play(kind);
 
+    /// <summary>움직임이 끝나고 돌아갈 기본 투명도를 바꿔요 (흐리게 그리는 그림)</summary>
+    public void SetBaseAlpha(float a)
+    {
+        Cache();
+        baseAlpha = a;
+        captured = true;
+        SetAlpha(a);
+    }
+
     void ResetPose()
     {
         if (!captured) return;
