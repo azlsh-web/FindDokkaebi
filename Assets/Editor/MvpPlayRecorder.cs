@@ -247,8 +247,8 @@ class PlayDirector : MonoBehaviour
     {
         yield return Tool("ColorRow/MixOpen");
         yield return Wait(0.4f);
-        foreach (string m in materials) { yield return Click("DrawPanel/MixerPanel/MaterialRow/" + m + "/Button"); yield return Wait(0.35f); }
-        yield return Wait(0.6f);
+        foreach (string m in materials) { yield return Click("DrawPanel/MixerPanel/MaterialRow/" + m + "/Button"); yield return Wait(0.5f); }
+        yield return Wait(1.2f);
         yield return Click("DrawPanel/MixerPanel/ApplyButton");
         yield return Wait(0.3f);
     }

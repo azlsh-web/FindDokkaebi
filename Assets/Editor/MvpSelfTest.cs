@@ -572,18 +572,25 @@ static class MvpSelfTest
             {
                 mixer.AddPaint(1); mixer.AddPaint(2);
                 mixer.AddPaint(0); // 두 색 혼합 단계에서는 세 번째 물감이 안 들어가야 함
-                Check(MixerPreview() == ColorMixer.Mix(0, 1, 1), "두 색 혼합 : 세 번째 물감은 안 들어간다");
+                Check(mixer.ResultColor == ColorMixer.Mix(0, 1, 1), "두 색 혼합 : 세 번째 물감은 안 들어간다");
             }
             else
             {
                 mixer.AddPaint(0); mixer.AddPaint(1); mixer.AddPaint(2);
-                Check(MixerPreview() == ColorMixer.Mix(1, 1, 1), "자유 혼합 : 세 색을 한 번씩 넣으면 검은색에 가깝다");
+                Check(mixer.ResultColor == ColorMixer.Mix(1, 1, 1), "자유 혼합 : 세 색을 한 번씩 넣으면 검은색에 가깝다");
+                Check(MixerPreview() != mixer.ResultColor, "물감을 넣어도 색이 한 번에 바뀌지 않는다");
+                Check(Find("DrawPanel/MixerPanel/PaintDrop") != null, "물감을 누르면 물방울이 뿌려진다");
                 mixer.AddPaint(0); mixer.AddPaint(1);
-                Check(MixerPreview() == ColorMixer.Mix(2, 2, 1), "자유 혼합 : 2:2:1 로 넣으면 갈색");
+                Check(mixer.ResultColor == ColorMixer.Mix(2, 2, 1), "자유 혼합 : 2:2:1 로 넣으면 갈색");
+                mixer.SkipAnimation();
                 mixer.UndoPaint();
-                Check(MixerPreview() == ColorMixer.Mix(2, 1, 1), "되돌리기 : 마지막에 넣은 물감이 빠진다");
+                Check(mixer.ResultColor == ColorMixer.Mix(2, 1, 1), "되돌리기 : 마지막에 넣은 물감이 빠진다");
+                Check(mixer.DropCount > 0, "되돌리기 : 물방울이 물감으로 돌아간다");
+                Check(MixerPreview() != mixer.ResultColor, "되돌리기 : 색이 한 번에 바뀌지 않는다");
                 mixer.AddPaint(1);
             }
+            mixer.SkipAnimation();
+            Check(MixerPreview() == mixer.ResultColor, "움직임이 끝나면 만든 색이 보인다");
             LayoutOnly($"s{st.stageNumber}_mixer");                     // 팔레트가 열린 화면도 배치 검사
             mixer.Apply();
             Check(!IsOn("DrawPanel/MixerPanel"), "섞어서 칠하면 팔레트가 닫힌다");
