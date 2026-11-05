@@ -14,7 +14,6 @@ public static class Sfx
     public const string Count = "sfx_count";
     public const string SnackIn = "sfx_snack_in";
     public const string Submit = "sfx_submit";
-    public const string Step = "sfx_step";
     public const string Item = "sfx_item";
     public const string Success = "sfx_success";
     public const string Fail = "sfx_fail";

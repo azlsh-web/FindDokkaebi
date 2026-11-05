@@ -85,7 +85,6 @@ public static class MvpSceneBuilder
         Sprite dokkaebiThink = LoadSprite("Characters/Char_Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
         Sprite dokkaebiSwing = LoadSprite("Characters/Char_Dokkaebi_Swing.png");    // 결과 : 방망이를 휘둘러요
         Sprite dokkaebiNoBat = LoadSprite("Characters/Char_Dokkaebi_NoBat.png");    // 1단계 : 방망이를 찾기 전 (임시 그림)
-        Sprite dokkaebiDaepa = LoadSprite("Characters/Char_Dokkaebi_Daepa.png");    // 1단계를 못 찾았을 때 (임시 그림)
         Sprite faceDokkaebi = LoadSprite("Characters/Char_DokkaebiFace_Normal.png");
         Sprite picnic = LoadSprite("Background/BG_Picnic.png");                     // 이야기 종료 (임시 그림)
         Sprite friend = LoadSprite("Stage5_Friend/Friend_Original.png");
@@ -186,14 +185,14 @@ public static class MvpSceneBuilder
         PlaceM(timerText.rectTransform, 1940, 2548, 2220, 2672);      // 글자 높이(약 49)가 들어가게
         timerText.textWrappingMode = TextWrappingModes.NoWrap;        // 이름표 글자는 한 줄로
 
-        // ── 1. 시작 화면 : 로고 · 캐릭터 · 소풍 가기 버튼만 ──
+        // ── 1. 시작 화면 : 로고 · 캐릭터 · 시작 버튼만 ──
         var title = NewPanel("TitlePanel", canvas);
         var titleBoy = MImage("TitleBoy", title, boyNormal, 44, 250, 150, 228);
         Anim(titleBoy.gameObject, SimpleAnim.Kind.Gentle, 1.2f, 0f, 15f);
         var titleDok = MImage("TitleDokkaebi", title, dokkaebi, 158, 318, 176, 172);
         Anim(titleDok.gameObject, SimpleAnim.Kind.Gentle, 1.2f, 0.5f, 15f);
         MImage("TitleLogo", title, T("Title_Logo"), 48, 30, 264, 192);
-        var startGameButton = NewButton("StartButton", title, "소풍 가기", Vector2.zero, new Vector2(780, 210));
+        var startGameButton = NewButton("StartButton", title, "게임 시작하기", Vector2.zero, new Vector2(780, 210));
         M((RectTransform)startGameButton.transform, 50, 516, 260, 70);
         startGameButton.GetComponentInChildren<TMP_Text>().fontSize = 96;
         startGameButton.GetComponentInChildren<TMP_Text>().color = Color.white;
@@ -544,17 +543,6 @@ public static class MvpSceneBuilder
         Anchor(scoreArrow.rectTransform, 1f, 0f, new Vector2(-42, 36), new Vector2(54, 54));
         var compareTapButton = NewTap("TapButton", compare);
 
-        // ── 1단계를 못 찾았을 때 : 대파를 든 도깨비가 아차차! 하고 뛰어나갔다가 방망이를 들고 돌아와요 ──
-        var oops = NewPanel("OopsPanel", canvas);
-        MImage("Boy", oops, boyNormal, 10, 256, 150, 228);
-        var oopsHold = MImage("Hold", oops, dokkaebiDaepa, 140, 296, 200, 195);
-        var oopsRun = MImage("Run", oops, dokkaebiDaepa, 140, 296, 200, 195);
-        Anim(oopsRun.gameObject, SimpleAnim.Kind.RunOff, 1f, 0f, 960f);
-        var oopsBack = MImage("Back", oops, dokkaebi, 140, 296, 200, 195);
-        Anim(oopsBack.gameObject, SimpleAnim.Kind.RunBack, 0.8f, 0f, 960f);
-        var oopsBoxComp = NewDialogueBox(oops, faceSurprised);
-        var oopsTapButton = NewTap("TapButton", oops);
-
         // ── 8. 이야기 종료 : 소풍 장면. 캐릭터는 땅에 서 있고, 물건 옆에 남은 간식 ──
         var ending = NewPanel("EndingPanel", canvas);
         Image Standing(string name, Sprite sprite, float x, float y, float w, float h, float delay)
@@ -566,7 +554,7 @@ public static class MvpSceneBuilder
         }
         Standing("Boy", boyHappy, 6, 224, 120, 183, 0f);
         var endFriend = Standing("FriendSlot", friend, 90, 233, 170, 170, 0.3f);
-        Standing("Dokkaebi", dokkaebi, 226, 290, 130, 127, 0.6f);
+        var endDokkaebi = Standing("Dokkaebi", dokkaebi, 226, 290, 130, 127, 0.6f);
         Image Item(string name, float x, float y, float w, float h, float delay)
         {
             var img = MImage(name, ending, null, x, y, w, h);
@@ -620,7 +608,6 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(giveUpButton.onClick, gm.ShowCompare);
         UnityEventTools.AddPersistentListener(resultTapButton.onClick, gm.ResultTap);
         UnityEventTools.AddPersistentListener(compareTapButton.onClick, gm.NextStage);
-        UnityEventTools.AddPersistentListener(oopsTapButton.onClick, gm.OopsTap);
         UnityEventTools.AddPersistentListener(endingTapButton.onClick, gm.EndingTap);
         UnityEventTools.AddPersistentListener(pauseButton.onClick, gm.TogglePause);
         UnityEventTools.AddPersistentListener(resumeButton.onClick, gm.TogglePause);
@@ -675,7 +662,6 @@ public static class MvpSceneBuilder
         Set(so, "endingPanel", ending.gameObject);
         Set(so, "endingBackground", picnic);
         Set(so, "dialoguePanel", dialogue.gameObject);
-        Set(so, "oopsPanel", oops.gameObject);
         Set(so, "faceBoySurprised", faceSurprised);
         Set(so, "faceBoyHappy", faceHappy);
         Set(so, "faceDokkaebi", faceDokkaebi);
@@ -706,10 +692,7 @@ public static class MvpSceneBuilder
         SetArray(so, "scoreTexts", scoreTexts);
         SetArray(so, "scoreCircles", scoreCircles);
         SetArray(so, "scoreSlashes", scoreSlashes);
-        Set(so, "oopsBox", oopsBoxComp);
-        Set(so, "oopsHold", oopsHold.gameObject);
-        Set(so, "oopsRun", oopsRun.gameObject);
-        Set(so, "oopsBack", oopsBack.gameObject);
+        Set(so, "endingDokkaebi", endDokkaebi);
         Set(so, "endingBox", endingBoxComp);
         SetArray(so, "endingItems", new[] { endBat, endBag, endMat, endGimbap, endFriend });
         SetArray(so, "endingSnacks", endingSnacks);
@@ -752,7 +735,7 @@ public static class MvpSceneBuilder
         mso.ApplyModifiedPropertiesWithoutUndo();
 
         // 처음에는 시작 화면만 보이게 (게임 시작 시 GameManager 도 같은 처리를 해요)
-        foreach (Transform p in new[] { dialogue, observe, draw, judgeP, result, compare, oops, ending }) p.gameObject.SetActive(false);
+        foreach (Transform p in new[] { dialogue, observe, draw, judgeP, result, compare, ending }) p.gameObject.SetActive(false);
         note.gameObject.SetActive(false);
         mixerCard.gameObject.SetActive(false);
         pause.gameObject.SetActive(false);

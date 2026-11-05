@@ -92,9 +92,6 @@ public static class GameScript
 
     public const string BoyOutOfSnacks = "어떡해, 간식이 다 떨어졌어...!";
     public const string JudgeError = "쪽지가 잘 안 보여! 간식 돌려줄게.";
-    public const string Oops1 = "아차차! 이건 대파잖아...";
-    public const string Oops2 = "잠깐만, 내가 직접 찾아올게!";
-    public const string Oops3 = "찾았다! 내 방망이!";
     public const string EndingAsk = "소풍 즐거웠지? 처음으로 돌아갈까?";
 
     static string Pick(string[] list) => list[Random.Range(0, list.Length)];

@@ -324,27 +324,26 @@ static class MvpFlowShots
 
             if (s == 0)
             {
-                // 1단계를 못 찾은 경우 : 채점표 → 대파 → 뛰어나감 → 방망이를 들고 돌아옴
+                // 1단계를 못 찾은 경우 : 채점표 → 2단계부터 끝까지 빈손
                 section = "1단계를 못 찾았을 때";
-                ((bool[])typeof(GameManager).GetField("cleared", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm))[0] = false;
+                var hidden = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+                ((bool[])typeof(GameManager).GetField("cleared", hidden).GetValue(gm))[0] = false;
                 MvpSelfTest.SetPrivate(gm, "lastPresent", new[] { false });
                 gm.ShowCompare();
                 yield return Snap("채점표 : 빗금", 2.8f);
                 gm.NextStage();
                 yield return Wait(0.5f);
                 FinishBoxes();
-                yield return Snap("대파를 든 도깨비");
-                FinishBoxes();
-                gm.OopsTap();
-                yield return Wait(0.2f);
-                FinishBoxes();
-                yield return Snap("도깨비가 뛰어나감", 0.3f);
-                yield return Until(() => IsOn("OopsPanel/Back"));
+                yield return Snap("2단계 대화 : 도깨비가 빈손", 0.8f);
+                MvpSelfTest.Invoke(gm, "ShowResult", new object[] { new[] { true, true }, null });
+                yield return Until(ResultShown);
                 yield return Wait(0.3f);
                 FinishBoxes();
-                yield return Snap("방망이를 들고 돌아옴", 0.8f);
-                FinishBoxes();
-                gm.OopsTap();
+                yield return Snap("다음 단계를 맞혀도 빈손", 0.6f);
+
+                // 사진을 위해 방망이를 찾은 흐름으로 돌아가요
+                MvpSelfTest.SetPrivate(gm, "batLost", false);
+                MvpSelfTest.Invoke(gm, "StartStage", 1);
             }
             else if (s < stages.Length - 1) gm.NextStage();
         }
@@ -370,15 +369,16 @@ static class MvpFlowShots
 
             // 포기한 단계가 있을 때 : 받은 엉뚱한 물건이 그대로 놓여요
             yield return Wait(0.5f);
+            MvpSelfTest.SetPrivate(gm, "batLost", true);
             int[] left2 = { 0, 0, 1, 0, 0 };
             for (int i = 0; i < stages.Length; i++)
             {
                 snacksLeft[i] = left2[i];
                 Sprite[] wrong = stages[i].wrongSprites;
-                items[i] = i == 0 ? stages[0].originalSprite : i == 2 ? stages[2].originalSprite : wrong[wrong.Length - 1];
+                items[i] = i == 2 ? stages[2].originalSprite : wrong[wrong.Length - 1];
             }
             MvpSelfTest.Invoke(gm, "ShowEnding");
-            yield return Snap("포기한 단계가 있을 때 : 엉뚱한 물건이 그대로 놓임", 3.5f);
+            yield return Snap("포기한 단계가 있을 때 : 엉뚱한 물건이 놓이고 도깨비는 빈손", 3.5f);
         }
     }
 }

@@ -1,9 +1,14 @@
-# Docs/기획/13_대사_트리.md : 게임의 모든 대사와 화면 글자를 흐름 순서대로 트리로 정리해요.
+# Docs/기획/13_대사_트리.md 와 .pdf : 게임의 모든 대사와 화면 글자를 흐름 순서대로 트리로 정리해요.
 #   python Tools/docs/make_dialogue_tree.py
 #   대사는 Assets/Scripts/GameScript.cs 에서, 판정 기준은 Assets/Data 에서 바로 읽어요. 손으로 옮겨 적지 않아서 게임과 어긋나지 않아요.
+import html as esc
 import json
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from doc_pdf import BASE_CSS, write_pdf
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 src = open(os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs"), encoding="utf-8").read()
@@ -99,15 +104,11 @@ def stage_tree(i):
 
 
 tree = [
-    N("시작 화면", "버튼: 소풍 가기"),
+    N("시작 화면", "버튼: 게임 시작하기"),
     *[stage_tree(i) for i in range(5)],
     N("어느 단계든 나오는 대사",
       N("간식을 다 쓰고 틀렸을 때", f"주인공(놀람): {const('BoyOutOfSnacks')}", "이때는 위 주인공 결과 대사 대신 이 대사가 나와요."),
       N("판정 서버 오류 (간식을 돌려줘요)", f"도깨비: {const('JudgeError')}")),
-    N("1단계를 끝내 못 찾았을 때 (채점표 뒤, 2단계 전)",
-      f"대파를 든 도깨비: {const('Oops1')}",
-      f"뛰어나가는 도깨비: {const('Oops2')}",
-      f"방망이를 들고 돌아온 도깨비: {const('Oops3')}"),
     N("이야기 종료", "글자 없이 소풍 장면", f"화면을 누르면 도깨비: {const('EndingAsk')}"),
 ]
 
@@ -125,7 +126,7 @@ screen = [
 
 text = f"""# 대사 트리
 
-게임에 나오는 모든 대사를 흐름 순서대로 정리했어요. 고칠 때는 `Assets/Scripts/GameScript.cs`만 고치면 돼요.
+게임에 나오는 모든 대사를 흐름 순서대로 정리했어요. 기획 수정은 [대사 수정표](../전달/14_대사_수정표.xlsx)로 받아요. 코드에서 고칠 때는 `Assets/Scripts/GameScript.cs`만 고치면 돼요.
 
 이 문서는 코드에서 자동으로 만들어요. 코드를 고친 뒤 아래 명령을 다시 실행하세요.
 
@@ -164,3 +165,26 @@ out = os.path.join(ROOT, "Docs", "기획", "13_대사_트리.md")
 os.makedirs(os.path.dirname(out), exist_ok=True)
 open(out, "w", encoding="utf-8", newline="\n").write(text)
 print("13_대사_트리.md", len(text))
+
+
+# PDF : 큰 가지마다 제목을 두고 한 묶음으로 보여 줘요
+def branch(label, kids):
+    return f"<section><h2>{esc.escape(label)}</h2><pre>{esc.escape(chr(10).join(render(kids)))}</pre></section>"
+
+
+CSS = BASE_CSS + """
+section { break-inside: avoid; }
+pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px 12px; margin: 0; white-space: pre-wrap;
+      font-family: Consolas, 'Malgun Gothic', monospace; font-size: 11px; line-height: 1.55; }
+ul { margin: 6px 0 12px; padding-left: 18px; }
+"""
+html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>대사 트리</title><style>{CSS}</style></head><body>
+<h1>찾아라! 도깨비 대사 트리</h1><p class='sub'>게임에 나오는 모든 대사를 흐름 순서대로 정리했어요. 코드에서 자동으로 만든 문서예요.</p>
+<ul><li><b>순서대로:</b> 위에서 아래로 차례로 나와요.</li>
+<li><b>N개 중 하나:</b> 그 상황이 올 때마다 무작위로 하나를 골라요.</li>
+<li><b>얼굴:</b> 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨 두 가지이고, 도깨비는 한 가지예요.</li>
+<li><b>색 조합:</b> 색을 어떻게 섞는지는 대사에서 알려 주지 않아요.</li></ul>
+{"".join(branch(label, kids) for label, kids in tree)}
+{"".join(branch(label, kids) for label, kids in screen)}
+</body></html>"""
+print("13_대사_트리.pdf", write_pdf(html, os.path.splitext(out)[0] + ".pdf"))

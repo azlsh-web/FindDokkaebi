@@ -9,7 +9,7 @@ using UnityEngine.UI;
 // 글로 설명하는 대신 대사와 그림으로 진행해요. 대사나 화면을 누르면 순서대로 넘어가요.
 //
 //   [시작 화면]
-//       ↓ 소풍 가기
+//       ↓ 게임 시작하기
 //   [대화 → 도깨비의 쪽지] → [관찰 3초] → [그리기 60초] → [제출: 간식 -1] → [판정 대기] → [결과]
 //                                             ↑                                            │
 //                                             └──────── 다시 (이전 그림에 이어 그리기) ─────┤ (실패 + 간식 남음)
@@ -18,7 +18,7 @@ using UnityEngine.UI;
 //                                                                                          ↓ 다음 단계 (5단계 뒤엔)
 //                                                                                     [이야기 종료]
 //
-// 1단계에서 방망이를 못 찾으면 채점표 뒤에 도깨비가 스스로 찾아오는 장면(Oops)이 나와요.
+// 1단계에서 방망이를 못 찾으면 도깨비는 이야기가 끝날 때까지 빈손이에요.
 //
 // 화면 구조
 //   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요. 한 번에 패널 하나만 켜요.
@@ -32,7 +32,7 @@ using UnityEngine.UI;
 // 대사는 GameScript, 소리는 Sfx 에 있어요.
 public class GameManager : MonoBehaviour
 {
-    enum State { Title, Dialogue, Observe, Draw, Judge, Result, Compare, Oops, Ending }
+    enum State { Title, Dialogue, Observe, Draw, Judge, Result, Compare, Ending }
     enum ResultPhase { Dokkaebi, Boy, Choose, Error }
 
     // ───────────── Inspector 에서 연결하는 것들 ─────────────
@@ -76,7 +76,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject judgePanel;
     [SerializeField] GameObject resultPanel;
     [SerializeField] GameObject comparePanel;
-    [SerializeField] GameObject oopsPanel;
     [SerializeField] GameObject endingPanel;
 
     [Header("캐릭터 그림")]
@@ -133,15 +132,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject[] scoreCircles;     // 맞으면 초록 동그라미
     [SerializeField] GameObject[] scoreSlashes;     // 틀리면 빨간 빗금
 
-    [Header("1단계를 못 찾았을 때 : 도깨비가 스스로 찾아와요")]
-    [SerializeField] DialogueBox oopsBox;
-    [SerializeField] GameObject oopsHold;           // 대파를 든 도깨비
-    [SerializeField] GameObject oopsRun;            // 뛰어나가는 도깨비
-    [SerializeField] GameObject oopsBack;           // 방망이를 들고 돌아온 도깨비
-    [SerializeField] float oopsRunSeconds = 1.8f;
-
     [Header("이야기 종료 화면 : 물건과 남은 간식 (방망이, 가방, 돗자리, 김밥, 친구 순)")]
     [SerializeField] DialogueBox endingBox;
+    [SerializeField] Image endingDokkaebi;
     [SerializeField] Image[] endingItems;
     [SerializeField] GameObject[] endingSnacks;     // 단계마다 3개씩 차례로
 
@@ -172,8 +165,7 @@ public class GameManager : MonoBehaviour
     int lastCount;
     int outcome;            // 0 전부 맞음, 1 일부 틀림, 2 전부 틀림
     bool[] lastPresent;
-    bool batLost;           // 1단계를 못 찾음
-    int oopsPhase;
+    bool batLost;           // 1단계를 못 찾음 : 이야기가 끝날 때까지 도깨비가 빈손이에요
     bool endingAsking;
     Vector2 boyTargetPos, boyTargetSize;
 
@@ -226,7 +218,7 @@ public class GameManager : MonoBehaviour
         ShowPanel(titlePanel);
     }
 
-    /// <summary>[버튼] 소풍 가기</summary>
+    /// <summary>[버튼] 게임 시작하기</summary>
     public void StartGame()
     {
         Sfx.Play(Sfx.Tap);
@@ -270,7 +262,7 @@ public class GameManager : MonoBehaviour
         noteCard.SetActive(false);
         dialogueBoy.gameObject.SetActive(true);
         dialogueDokkaebi.SetActive(false);
-        dialogueDokkaebiImage.sprite = index == 0 ? dokkaebiNoBat : dokkaebiNormal;
+        dialogueDokkaebiImage.sprite = index == 0 || batLost ? dokkaebiNoBat : dokkaebiNormal;
         FillNote();
         ShowPanel(dialoguePanel);
 
@@ -472,7 +464,7 @@ public class GameManager : MonoBehaviour
         resultItemImage.enabled = false;
         resultItemShadow.SetActive(false);
         resultSparkles.SetActive(false);
-        resultDokkaebi.sprite = stageIndex == 0 ? dokkaebiNoBat : dokkaebiNormal;
+        resultDokkaebi.sprite = stageIndex == 0 || batLost ? dokkaebiNoBat : dokkaebiNormal;
         choiceRow.SetActive(false);
         ShowPanel(resultPanel);
         resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
@@ -510,8 +502,8 @@ public class GameManager : MonoBehaviour
         resultSparkles.SetActive(success);
         choiceRow.SetActive(false);
 
-        // 1단계를 못 찾았으면 도깨비는 아직 빈손이에요
-        bool batMissing = stageIndex == 0 && !success;
+        // 1단계를 틀렸거나 못 찾고 넘어왔으면 도깨비는 빈손이에요
+        bool batMissing = (stageIndex == 0 && !success) || batLost;
         resultDokkaebi.sprite = batMissing ? dokkaebiNoBat : dokkaebiSwing;
         ShowPanel(resultPanel);
         resultDokkaebiAnim.Play(SimpleAnim.Kind.Swing);
@@ -535,7 +527,7 @@ public class GameManager : MonoBehaviour
         {
             bool wrong = outcome != 0;
             resultPhase = ResultPhase.Boy;
-            resultDokkaebi.sprite = stageIndex == 0 && wrong ? dokkaebiNoBat : dokkaebiNormal;
+            resultDokkaebi.sprite = (stageIndex == 0 && wrong) || batLost ? dokkaebiNoBat : dokkaebiNormal;
             resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
             string line = wrong && snacks <= 0 ? GameScript.BoyOutOfSnacks : GameScript.BoyResult(outcome);
             resultBox.Say(line, wrong ? faceBoySurprised : faceBoyHappy);
@@ -580,8 +572,7 @@ public class GameManager : MonoBehaviour
         }
 
         snacksLeft[stageIndex] = snacks;
-        batLost = stageIndex == 0 && !cleared[0];
-        if (batLost) itemsFound[0] = stages[0].originalSprite;   // 도깨비가 스스로 찾아오니 소풍에는 진짜 방망이
+        if (stageIndex == 0) batLost = !cleared[0];
         Sfx.Play(Sfx.Mark);
         ShowPanel(comparePanel);
     }
@@ -590,60 +581,8 @@ public class GameManager : MonoBehaviour
     public void NextStage()
     {
         Sfx.Play(Sfx.Tap);
-        if (stageIndex == 0 && batLost)
-        {
-            batLost = false;
-            ShowOops();
-        }
-        else if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
+        if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
         else ShowEnding();
-    }
-
-    // ───────────── 1단계를 못 찾았을 때 ─────────────
-
-    void ShowOops()
-    {
-        state = State.Oops;
-        oopsPhase = 0;
-        hud.SetActive(false);
-        oopsHold.SetActive(true);
-        oopsRun.SetActive(false);
-        oopsBack.SetActive(false);
-        ShowPanel(oopsPanel);
-        oopsBox.Say(GameScript.Oops1, faceDokkaebi);
-    }
-
-    /// <summary>[화면 터치] 대파 → 뛰어나가기 → 방망이를 들고 돌아오기 → 2단계</summary>
-    public void OopsTap()
-    {
-        if (state != State.Oops) return;
-        if (oopsBox.FinishTyping()) return;
-        if (oopsPhase == 0)
-        {
-            Sfx.Play(Sfx.Tap);
-            oopsPhase = 1;
-            oopsHold.SetActive(false);
-            oopsRun.SetActive(true);
-            Sfx.Play(Sfx.Step);
-            oopsBox.Say(GameScript.Oops2, faceDokkaebi);
-            StartCoroutine(OopsReturn());
-        }
-        else if (oopsPhase == 2)
-        {
-            Sfx.Play(Sfx.Tap);
-            StartStage(1);
-        }
-    }
-
-    IEnumerator OopsReturn()
-    {
-        yield return new WaitForSeconds(oopsRunSeconds);
-        if (state != State.Oops || oopsPhase != 1) yield break;
-        oopsPhase = 2;
-        oopsRun.SetActive(false);
-        oopsBack.SetActive(true);
-        Sfx.Play(Sfx.Item);
-        oopsBox.Say(GameScript.Oops3, faceDokkaebi);
     }
 
     // ───────────── 이야기 종료 ─────────────
@@ -656,6 +595,7 @@ public class GameManager : MonoBehaviour
         backgroundImage.sprite = endingBackground;
         endingAsking = false;
         endingBox.gameObject.SetActive(false);
+        endingDokkaebi.sprite = batLost ? dokkaebiNoBat : dokkaebiNormal;
         for (int i = 0; i < endingItems.Length; i++)
         {
             endingItems[i].sprite = itemsFound[i] != null ? itemsFound[i] : stages[i].originalSprite;
@@ -719,7 +659,7 @@ public class GameManager : MonoBehaviour
     // 패널 하나만 켜고 나머지는 끄기
     void ShowPanel(GameObject panel)
     {
-        GameObject[] all = { titlePanel, dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, oopsPanel, endingPanel };
+        GameObject[] all = { titlePanel, dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel };
         foreach (GameObject p in all) p.SetActive(p == panel);
     }
 

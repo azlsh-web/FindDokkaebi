@@ -45,7 +45,7 @@ arch = [
     "<h2>1. 한눈에</h2><table>"
     "<tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr>"
     "<tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr>"
-    "<tr><td class='k'>화면</td><td>패널 9개 (시작 · 대화 · 관찰 · 그리기 · 판정 · 결과 · 채점표 · 대파 장면 · 종료) 중 하나만 켜고, 그리기부터 채점표까지 위에 HUD. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
+    "<tr><td class='k'>화면</td><td>패널 8개 (시작 · 대화 · 관찰 · 그리기 · 판정 · 결과 · 채점표 · 종료) 중 하나만 켜고, 그리기부터 채점표까지 위에 HUD. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
     "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/기획/5_기획_변경_기록.md</code>). 실패하면 간식 돌려주고 다시 제출</td></tr>"
     "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>main</code> (보호 브랜치, PR 로 합침)</td></tr></table>",
     "<h2>2. 폴더</h2><pre>"
@@ -78,7 +78,7 @@ arch = [
     "Draw ─Submit(간식-1)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
     "Result ─틀림 + 간식 남음→ 다시(Retry : 이전 그림에 이어, 60초) 또는 포기(ShowCompare)\n"
     "Result ─성공 또는 간식 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번→ Title\n"
-    "Compare ─1단계를 못 찾음→ Oops(대파 → 뛰어나감 → 방망이) → Dialogue(2단계)\n"
+    "1단계를 못 찾으면 batLost : 이야기 종료까지 도깨비 그림이 빈손(dokkaebiNoBat)\n"
     "Judge ─AI 실패→ (간식+1) Result(오류 대사) ─터치→ Draw(그리던 그림)\n"
     "그리기 화면 ─TogglePause→ 일시정지 (Time.timeScale 0)</pre>",
     "<h3>결과 규칙 (ShowResult)</h3><p>특징이 n개면 2ⁿ가지. 전부 맞음 → 진짜 물건 A / 일부 → 그 조합의 A' / 전부 틀림 → 완전히 다른 물건 B (<code>StageData.WrongSpriteFor</code>). 실패했고 간식이 남으면 「다시」 · 「포기」 버튼이 대사 상자 자리에 나와요. 결과 화면에는 O · X 목록이 없고, 채점표에서만 보여 줘요.</p>",

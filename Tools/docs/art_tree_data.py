@@ -82,14 +82,11 @@ TREE = [
         ("Slash", "UI/Score_Slash", CODE),
         ("OriginalCard", "물건별 원본 (아래 단계 폴더)", ""),
     ]),
-    ("9. 1단계를 못 찾았을 때", "Frame/OopsPanel", [
-        ("Hold, Run", "Characters/Char_Dokkaebi_Daepa", TEMP),
-        ("Back", "Characters/Char_Dokkaebi_Normal", TEAM),
-    ]),
-    ("10. 이야기 종료", "Frame/EndingPanel", [
+    ("9. 이야기 종료", "Frame/EndingPanel", [
         ("Boy", "Characters/Char_Boy_Happy", TEAM),
         ("FriendSlot", "물건별 원본 (아래 단계 폴더)", ""),
         ("Dokkaebi", "Characters/Char_Dokkaebi_Normal", TEAM),
+        ("Dokkaebi (방망이를 못 찾았을 때)", "Characters/Char_Dokkaebi_NoBat", TEMP),
         ("Mat · Bag · Gimbap · BatSlot", "받은 물건 (아래 단계 폴더)", ""),
     ]),
 ]
@@ -112,8 +109,7 @@ GROUPS = [
 ]
 REQUEST = [
     ("BG_Picnic", "Background", "먼저", (2248, 3952), "이야기 종료 배경", "소풍 잔디밭. 화면 아래쪽 넓게 잔디와 돗자리가 놓일 자리가 필요해요. 캐릭터와 물건을 위에 따로 올리니 배경만 그려 주세요. 다른 배경처럼 투명 없이 꽉 채워 주세요."),
-    ("Char_Dokkaebi_NoBat", "Characters", "먼저", (980, 956), "1단계 대화, 1단계 결과", "방망이를 잃어버린 빈손 도깨비. `Char_Dokkaebi_Normal`과 같은 자세와 칸으로 그려 주세요. 지금 그림은 방망이를 지운 흔적이 왼쪽에 남아 있어요."),
-    ("Char_Dokkaebi_Daepa", "Characters", "먼저", (980, 956), "1단계를 못 찾았을 때", "방망이 대신 대파(`Bat_Wrong_X`)를 든 도깨비. 같은 자세와 칸으로 그려 주세요. 뛰어나갈 때도 이 그림을 써요."),
+    ("Char_Dokkaebi_NoBat", "Characters", "먼저", (980, 956), "1단계 대화와 결과. 방망이를 못 찾으면 이야기 종료까지", "방망이를 잃어버린 빈손 도깨비. 결과 화면에서 물건을 내미는 모습으로도 써요. `Char_Dokkaebi_Normal`과 같은 자세와 칸으로 그려 주세요. 지금 그림은 방망이를 지운 흔적이 왼쪽에 남아 있어요."),
     ("Char_DokkaebiFace_Normal", "Characters", "먼저", (660, 560), "모든 도깨비 대사의 얼굴", "대사 상자에 작게 나오는 도깨비 얼굴. 주인공 얼굴(`Char_BoyFace_Happy`)처럼 얼굴만 나오게, 방망이 없이 그려 주세요."),
     ("Incense_Holder", "UI", "향", (130, 176), "그리기 화면 오른쪽의 촛대", "향 줄기가 위쪽 잔 안으로 들어가요. 금색 놋쇠 느낌으로 그려 주세요."),
     ("Incense_Stick", "UI", "향", (74, 552), "타들어 가는 향 줄기", "게임이 위에서부터 잘라 내며 타들어 가요. 위아래 굵기를 일정하게, 칸 가운데에 그려 주세요."),
@@ -122,5 +118,4 @@ REQUEST = [
     ("Incense_Ash", "UI", "향", (74, 150), "타고 남은 재", "끝에 납작하게 붙기도 하고 떨어지기도 해요. 뭉툭한 재 덩어리로 그려 주세요."),
     ("Char_DokkaebiFace_Tease", "Characters", "선택", (660, 560), "틀렸을 때 도깨비 대사", "엉뚱한 물건을 내밀며 놀리는 얼굴. 예) 「짠! 네가 그린 대로 찾아왔지?」"),
     ("Char_DokkaebiFace_Proud", "Characters", "선택", (660, 560), "맞았을 때 도깨비 대사", "뿌듯한 얼굴. 예) 「가방 여기 있다! 어때, 나 잘 찾지?」"),
-    ("Char_DokkaebiFace_Oops", "Characters", "선택", (660, 560), "대파 장면, 판정 오류 대사", "아차 하는 당황한 얼굴. 예) 「아차차! 이건 대파잖아...」"),
 ]

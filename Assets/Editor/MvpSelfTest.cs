@@ -27,11 +27,12 @@ using Object = UnityEngine.Object;
 //
 // 시나리오
 //   시작 → 1~5단계 (각 단계 : 대화 → 쪽지 → 관찰 → 그리기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
-//   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기, 방망이를 못 찾았을 때의 장면
+//   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
 //   + 2단계 : 간식 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
 //   + 4·5단계 : 혼색 팔레트 (노랑+파랑=초록, 빨강+노랑+파랑=갈색)
 //   → 이야기 종료 화면 기록 확인
+//   + 방망이를 못 찾았을 때 : 이야기 종료까지 도깨비가 빈손이고 소풍 장면에 대파가 놓이는지
 //
 // 결과
 //   - Console 에 [SelfTest] 전체 PASS / FAIL n개
@@ -256,11 +257,10 @@ static class MvpSelfTest
         Add(0.2f, "시작 화면", () =>
         {
             SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
-            SetPrivate(Gm(), "oopsRunSeconds", 0.2f);
             Check(IsOn("TitlePanel") && !IsOn("HUD"), "시작 화면 (HUD 숨김)");
             Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "시작 화면 배경은 StartBG");
             Check(Find("TitlePanel/TitleLogo") != null && Find("TitlePanel/StartButton").GetComponent<Button>() != null, "시작 화면 물건은 따로 올려져 있다");
-            Check(Text("TitlePanel/StartButton/Label") == "소풍 가기", "시작 버튼은 소풍 가기");
+            Check(Text("TitlePanel/StartButton/Label") == "게임 시작하기", "시작 버튼은 게임 시작하기");
             Check(Find("TitlePanel").Find("TitleTagline") == null && Find("TitlePanel").Find("TitleGear") == null, "문구와 설정 버튼이 없다");
             Check(Find("JudgePanel/DokkaebiEnter/Roam/Step/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
             Shot("title");
@@ -477,40 +477,9 @@ static class MvpSelfTest
                 if (s == 1) Check(!IsOn("ComparePanel/Paper/Row_1/Circle") && IsOn("ComparePanel/Paper/Row_1/Slash"), "틀리면 빨간 빗금");
                 else Check(IsOn("ComparePanel/Paper/Row_1/Circle"), "맞으면 초록 동그라미");
                 if (s <= 1 || last) Shot($"s{s + 1}_compare");
-                if (s == 0)
-                {
-                    // 1단계를 못 찾은 경우의 장면도 확인해요
-                    Then(() =>
-                    {
-                        SetPrivate(Gm(), "batLost", true);
-                        Gm().NextStage();
-                        Check(IsOn("OopsPanel") && IsOn("OopsPanel/Hold"), "1단계를 못 찾으면 대파를 든 도깨비");
-                        Check(!IsOn("HUD"), "이 장면에서는 HUD 를 숨긴다");
-                        Shot("s1_oops");
-                        Then(() =>
-                        {
-                            Gm().OopsTap();
-                            Gm().OopsTap();
-                            Check(IsOn("OopsPanel/Run"), "도깨비가 뛰어나간다");
-                        });
-                    });
-                }
-                else if (s <= 1 || last) Then(() => Gm().NextStage());
+                if (s <= 1 || last) Then(() => Gm().NextStage());
                 else Gm().NextStage();
             });
-            if (s == 0)
-            {
-                Add(0.3f, "도깨비가 방망이를 찾아왔다", () =>
-                {
-                    Check(IsOn("OopsPanel/Back"), "방망이를 들고 돌아온다");
-                    Gm().OopsTap();
-                    Gm().OopsTap();
-                    Check(IsOn("DialoguePanel"), "그다음 2단계가 시작된다");
-                    Invoke(Gm(), "StartStage", 0);      // 시나리오는 단계 순서대로 다시 이어가요
-                    SetPrivate(Gm(), "stageIndex", 0);
-                    Gm().NextStage();
-                }, () => IsOn("OopsPanel/Back"));
-            }
         }
 
         // 이야기 종료
@@ -538,6 +507,30 @@ static class MvpSelfTest
         Add(0.3f, "처음으로", () =>
         {
             Check(IsOn("TitlePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "처음으로 돌아왔다 (배경도 StartBG)");
+        });
+
+        // 1단계를 못 찾으면 이야기가 끝날 때까지 도깨비가 빈손이고, 소풍 장면에 대파가 놓여요
+        Add(0.3f, "방망이를 못 찾음", () =>
+        {
+            Sprite Shown(string path) => Find(path).GetComponent<Image>().sprite;
+            const string NoBat = "Char_Dokkaebi_NoBat";
+            Gm().StartGame();
+            Invoke(Gm(), "ShowResult", new object[] { new[] { false }, null });
+            Gm().ShowCompare();
+            Gm().NextStage();
+            Check(IsOn("DialoguePanel"), "채점표 다음은 바로 2단계 대화");
+            Check(Shown("DialoguePanel/Dokkaebi/Image").name == NoBat, "방망이를 못 찾으면 2단계 대화에서 빈손");
+            Invoke(Gm(), "ShowResult", new object[] { new[] { true, true }, null });
+            Check(Shown("ResultPanel/Dokkaebi").name == NoBat, "다음 단계를 맞혀도 빈손");
+            TapResult();
+            Check(Shown("ResultPanel/Dokkaebi").name == NoBat, "주인공이 말할 때도 빈손");
+            Gm().ShowCompare();
+            SetPrivate(Gm(), "stageIndex", stages.Length - 1);
+            Gm().NextStage();
+            Check(IsOn("EndingPanel") && Shown("EndingPanel/Dokkaebi").name == NoBat, "이야기 종료에서도 빈손");
+            Check(Shown("EndingPanel/BatSlot") == stages[0].wrongSprites[1], "소풍 장면에는 대파가 놓인다");
+            for (int k = 0; k < 3; k++) Gm().EndingTap();
+            Check(IsOn("TitlePanel"), "빈손으로 끝나도 처음으로 돌아간다");
         });
 
         return list;
