@@ -1,5 +1,5 @@
 # 3_아트_구조.pdf : 게임 그림이 화면마다 어떻게 들어가 있는지 트리로 정리해요.
-#   python make_art_structure.py <FindDokkaebi 폴더>
+#   python Tools/docs/make_art_structure.py
 #   트리에 없는 그림이 씬에서 쓰이거나, 없는 파일을 적으면 멈춰요. 문서가 실제 게임과 어긋나지 않게 하려고요.
 import base64, io, itertools, os, re, sys
 from PIL import Image
@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from art_tree_data import REQUEST, STAGES, TREE
 from doc_pdf import BASE_CSS, write_pdf
 
-ROOT = os.path.abspath(sys.argv[1])
+ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 SP = os.path.join(ROOT, "Assets", "Sprites")
 
 def norm(p):
@@ -81,7 +81,7 @@ ul.tree ul > li:last-child::before { bottom: auto; height: 18px; }
 pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px; font-size: 11px; line-height: 1.5; font-family: Consolas, monospace; }
 """
 
-p = ["<h1>찾아라! 도깨비 아트 구조</h1><p class='sub'>게임에 들어간 그림 파일이 화면과 오브젝트에 어떻게 연결돼 있는지 정리한 문서예요. 2026-11-04 기준이며, 씬과 단계 데이터의 실제 참조와 대조해 만들었어요.</p>"]
+p = ["<h1>찾아라! 도깨비 아트 구조</h1><p class='sub'>게임에 들어간 그림 파일이 화면과 오브젝트에 어떻게 연결돼 있는지 정리한 문서예요. 2026-11-05 기준이며, 씬과 단계 데이터의 실제 참조와 대조해 만들었어요.</p>"]
 counts = {k: len([e for e in existing if e.split("/")[0] == k]) for k in ("Background", "Characters", "UI")}
 stage_total = sum(len([e for e in existing if e.startswith(s[1] + "/")]) for s in STAGES)
 p.append(f"<h2>한눈에</h2><p><b>게임 그림은 전부 <code>Assets/Sprites</code> 안에 있어요.</b> 파일 {len(existing)}장을 모두 게임에서 써요.</p>")
@@ -93,8 +93,8 @@ p.append(f"""<pre>Assets/Sprites/
 ├─ Stage3_Mat/      돗자리 8장         Mat_Original, Mat_Wrong_OX조합
 ├─ Stage4_Gimbap/   김밥 16장          Gimbap_Original, Gimbap_Wrong_OX조합
 ├─ Stage5_Friend/   친구 32장          Friend_Original, Friend_Wrong_OX조합
-└─ UI/              화면 부품 {counts['UI']}장     Common · HUD · Incense · Title · Observe · Draw · Mix</pre>""")
-p.append("<table><tr><th>출처</th><th>뜻</th></tr><tr><td>아트팀</td><td>아트 담당자에게 받은 그림</td></tr><tr><td>Codex</td><td>원본을 바탕으로 Codex가 만든 그림</td></tr><tr><td>기획서 그림 N</td><td>기획서 시안에서 오린 부품</td></tr><tr><td>코드로 그림</td><td>개발 쪽에서 만든 그림. <b>아트팀 요청</b>이라고 적힌 것은 받으면 같은 이름으로 바뀌어요 (4번 문서)</td></tr></table>")
+└─ UI/              화면 부품 {counts['UI']}장     Common · HUD · Incense · Title · Draw · Mix · Result · Score</pre>""")
+p.append("<table><tr><th>출처</th><th>뜻</th></tr><tr><td>아트팀</td><td>아트 담당자에게 받은 그림</td></tr><tr><td>Codex</td><td>원본을 바탕으로 Codex가 만든 그림</td></tr><tr><td>기획서 그림 N</td><td>기획서 시안에서 오린 부품</td></tr><tr><td>코드로 그림</td><td>개발 쪽에서 코드로 만든 그림</td></tr><tr><td>개발 임시 그림</td><td>아트팀 그림이 오기 전까지 쓰는 그림. <b>아트팀 요청</b>이라고 적힌 것은 받으면 같은 이름으로 바뀌어요 (4번 문서)</td></tr></table>")
 
 requested = {r[0] for r in REQUEST}
 p.append("<h2>화면별 트리</h2><ul class='tree'>")
@@ -119,4 +119,4 @@ for name, folder, key, n, other, origin in STAGES:
     p.append(f"</div><p class='src'>모두 Codex. <code>{key}_Wrong_{'X' * n}</code>은 완전히 다른 물건 {other}이에요.</p>")
 
 html = f"<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아트 구조</title><style>{CSS}</style></head><body>{''.join(p)}</body></html>"
-print("3_아트_구조.pdf", write_pdf(html, os.path.join(ROOT, "Docs", "3_아트_구조.pdf")))
+print("3_아트_구조.pdf", write_pdf(html, os.path.join(ROOT, "Docs", "개발", "3_아트_구조.pdf")))

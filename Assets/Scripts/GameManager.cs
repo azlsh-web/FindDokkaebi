@@ -500,7 +500,7 @@ public class GameManager : MonoBehaviour
         cleared[stageIndex] = success;
         outcome = success ? 0 : count > 0 ? 1 : 2;
 
-        // 판정 기준이 n개면 경우의 수는 2ⁿ 가지예요 (Docs/6_엉뚱한_물건_제작.md)
+        // 판정 기준이 n개면 경우의 수는 2ⁿ 가지예요 (Docs/기록/6_엉뚱한_물건_제작.md)
         //   전부 맞음 → 진짜 물건 A / 일부만 맞음 → 그 조합대로 틀린 A' / 전부 틀림 → 완전히 다른 물건 B
         Sprite item = success ? Stage.originalSprite : Stage.WrongSpriteFor(present);
         resultItemImage.sprite = item;

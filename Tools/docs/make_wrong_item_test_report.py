@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from doc_pdf import write_pdf
 
 ROOT = os.path.abspath(sys.argv[1])
-DOCS = os.path.join(ROOT, "Docs")
+DOCS = os.path.join(ROOT, "Docs", "기록")
 CASES = os.path.join(ROOT, "Temp", "JudgeCases")
 SELF = os.path.join(ROOT, "Temp", "SelfTest", "result.txt")
 NAME = "8_경우의_수_테스트_보고서"

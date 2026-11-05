@@ -598,7 +598,7 @@ static class MvpSelfTest
         Gm().ResultTap();
     }
 
-    static StageData[] Stages()
+    internal static StageData[] Stages()
     {
         var so = new SerializedObject(Gm());
         SerializedProperty p = so.FindProperty("stages");
@@ -609,7 +609,7 @@ static class MvpSelfTest
 
     // Canvas 아래에서 이름 경로로 찾기 (꺼져 있는 오브젝트도 찾을 수 있어요)
     //   게임 화면들은 Canvas/Frame(시안 크기 화면) 안에, 시작·일시정지 화면은 Canvas 바로 아래에 있어요.
-    static Transform Find(string path)
+    internal static Transform Find(string path)
     {
         Transform canvas = GameObject.Find("Canvas").transform;
         Transform t = canvas.Find("Frame/" + path) ?? canvas.Find(path);
@@ -617,7 +617,7 @@ static class MvpSelfTest
         return t;
     }
 
-    static bool IsOn(string path) => Find(path).gameObject.activeInHierarchy;
+    internal static bool IsOn(string path) => Find(path).gameObject.activeInHierarchy;
     static string Text(string path) => Find(path).GetComponent<TMP_Text>().text;
     static DrawingBoard Board() => Find("DrawPanel/Board").GetComponent<DrawingBoard>();
 
@@ -632,7 +632,7 @@ static class MvpSelfTest
     static int Count(string text, string word) => text.Split(new[] { word }, StringSplitOptions.None).Length - 1;
 
     // 다음 판정 결과를 미리 정해 두기. miss = 빠뜨릴 특징 번호 (-1 = 전부 빠뜨림, -2 = 전부 그림)
-    static void Expect(StageData stage, int miss)
+    internal static void Expect(StageData stage, int miss)
     {
         LocalJudge.TestOverride = st =>
         {
@@ -663,12 +663,12 @@ static class MvpSelfTest
     }
 
     // 손그림은 HandSketch.cs 로 만들어요 (판정 전수 검사와 같이 씀)
-    static readonly Color32 InkBlack = HandSketch.Black;
+    internal static readonly Color32 InkBlack = HandSketch.Black;
 
     static Color32 C(int i) => ToolBar.Palette[i];          // 0 검정, 1 빨강, 2 노랑, 3 파랑
-    static Vector2 V(float x, float y) => new Vector2(x, y);
+    internal static Vector2 V(float x, float y) => new Vector2(x, y);
 
-    static Texture2D HandBat(bool spikes)
+    internal static Texture2D HandBat(bool spikes)
     {
         var s = new HandSketch()
             .Line(InkBlack, 4, 2f, V(248, 40), V(252, 140), V(256, 246))               // 한 줄로 그은 손잡이
@@ -686,7 +686,7 @@ static class MvpSelfTest
     }
 
     // 시안 그림처럼 동그라미 여러 개를 이어 그린 구름 머리
-    static Texture2D HandCloudBat()
+    internal static Texture2D HandCloudBat()
     {
         var s = new HandSketch().Line(InkBlack, 4, 2f, V(248, 40), V(252, 140), V(256, 246));
         foreach (float a in new[] { 20f, 75f, 130f, 185f, 250f, 330f })
@@ -697,7 +697,7 @@ static class MvpSelfTest
         return s.Tex();
     }
 
-    static Texture2D HandBag(bool stripes = true)
+    internal static Texture2D HandBag(bool stripes = true)
     {
         var s = new HandSketch()
             .Line(InkBlack, 4, 2f, V(100, 60), V(412, 64), V(408, 330), V(104, 326), V(100, 60))   // 몸체
@@ -710,7 +710,7 @@ static class MvpSelfTest
         return s.Tex();
     }
 
-    static Texture2D HandMat(bool bands, bool endsBlue = true)
+    internal static Texture2D HandMat(bool bands, bool endsBlue = true)
     {
         var s = new HandSketch();
         if (bands)
@@ -725,7 +725,7 @@ static class MvpSelfTest
         return s.Tex();
     }
 
-    static Texture2D HandGimbap(bool green = true)
+    internal static Texture2D HandGimbap(bool green = true)
     {
         Color32 mixedGreen = new Color32(40, 160, 60, 255);  // 노랑 + 파랑 으로 섞은 초록
         var s = new HandSketch()
@@ -736,7 +736,7 @@ static class MvpSelfTest
         return s.Tex();
     }
 
-    static Texture2D HandFriend(bool brownHair = true)
+    internal static Texture2D HandFriend(bool brownHair = true)
     {
         Color32 orange = new Color32(245, 140, 30, 255), brown = new Color32(130, 80, 40, 255);   // 섞어서 만든 주황 · 갈색
         return new HandSketch()
@@ -774,6 +774,12 @@ static class MvpSelfTest
             case 4: tex = HandGimbap(green: allDrawn); break;
             default: tex = HandFriend(brownHair: allDrawn); break;
         }
+        LoadSketch(tex);
+    }
+
+    // 손그림을 쪽지에 올려요 (흐름 사진 도구도 같이 써요)
+    internal static void LoadSketch(Texture2D tex)
+    {
         Color32[] px = tex.GetPixels32();
         var paper = new Color32(253, 252, 245, 255);                 // 손그림의 흰 종이 → 쪽지 종이 색
         for (int i = 0; i < px.Length; i++)
@@ -813,12 +819,12 @@ static class MvpSelfTest
     }
 
     // private 함수·변수 건드리기 (테스트에서만)
-    static void Invoke(object target, string method, params object[] args)
+    internal static void Invoke(object target, string method, params object[] args)
     {
         target.GetType().GetMethod(method, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(target, args);
     }
 
-    static void SetPrivate(object target, string field, object value)
+    internal static void SetPrivate(object target, string field, object value)
     {
         target.GetType().GetField(field, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(target, value);
     }
