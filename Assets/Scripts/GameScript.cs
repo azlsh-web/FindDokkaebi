@@ -17,7 +17,7 @@ public static class GameScript
         public Line(Face face, string text) { this.face = face; this.text = text; }
     }
 
-    // 오프닝 : 도깨비가 나오기 전에 주인공 혼자 말하는 줄 수. 이 대사들은 그림과 함께 저절로 넘어가요.
+    // 오프닝 : 도깨비가 나오기 전에 주인공 혼자 말하는 줄 수. 이 대사들은 그림과 함께 나오고, 터치하면 넘어가요.
     public const int OpeningAloneLines = 4;
 
     // 단계별 시작 대화. 1단계는 게임 전체의 오프닝이에요.
@@ -67,12 +67,12 @@ public static class GameScript
         new[]
         {
             new Line(Face.BoySurprised, "아차! 친구랑 만나기로 한 것도 깜빡했어!"),
-            new Line(Face.Dokkaebi, "큰일이야, 네 친구가 길을 잃었대!"),
+            new Line(Face.Dokkaebi, "큰일이야, 네 친구가 길을 잃었나 봐!"),
             new Line(Face.BoySurprised, "같이 가야 하는데! 꼭 찾아 줘."),
             new Line(Face.Dokkaebi, "어떻게 생긴 친구야?"),
             new Line(Face.BoySurprised, "양 갈래로 묶은 갈색 머리야."),
-            new Line(Face.BoySurprised, "파란 멜빵바지에 주황 상의를 입었고, 주머니에는 천 조각을 덧댔어."),
-            new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 찾아올게. 이번엔 세 가지 색도 섞어야 해!"),
+            new Line(Face.BoySurprised, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
+            new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 데려올게. 이번엔 세 가지 색도 섞어야 해!"),
         },
     };
 
@@ -87,7 +87,7 @@ public static class GameScript
         "도깨비야, 이 가방 찾아 줘!",
         "도깨비야, 이 돗자리 찾아 줘!",
         "도깨비야, 이 김밥 찾아 줘!",
-        "도깨비야, 이 친구 찾아 줘!",
+        "도깨비야, 내 친구 좀 찾아 줘!",
     };
 
     // 쪽지와 간식을 건넬 때 : 주인공 → 도깨비 → 도깨비
@@ -99,7 +99,7 @@ public static class GameScript
         "음, 이 가방이구나. 좋아, 찾아올게!",
         "음, 이 돗자리구나. 좋아, 찾아올게!",
         "음, 이 김밥이구나. 좋아, 찾아올게!",
-        "음, 이 친구구나. 좋아, 찾아올게!",
+        "음, 이 친구구나. 좋아, 데려올게!",
     };
 
     // 결과 대사 : [단계 - 1] 별 전부 맞음 / 일부 틀림 / 전부 틀림
@@ -109,7 +109,7 @@ public static class GameScript
         new[] { "가방 여기 있다! 어때, 나 잘 찾지?", "쪽지 보고 한 번에 찾았어!" },
         new[] { "돗자리 찾았다! 앉으면 딱이겠어.", "쪽지가 또렷해서 금방 찾았어!" },
         new[] { "김밥 찾았다! 한 줄만 나 주면 안 돼?", "쪽지 보니까 배고프더라. 바로 찾았지!" },
-        new[] { "네 친구 찾았다! 저쪽에서 울고 있더라고.", "여기 있었네! 이제 소풍 가자!" },
+        new[] { "네 친구 찾았다! 저쪽에서 울고 있더라고.", "데려왔어! 너를 많이 기다렸대." },
     };
 
     // 방망이는 기준이 하나라 일부 틀림이 없어요
@@ -131,11 +131,13 @@ public static class GameScript
         new[] { "논에 서 있길래 데려왔어! 네 그림이랑 닮았던걸?", "말이 좀 없지만... 네 친구 맞지? 히히." },
     };
 
-    // 주인공 반응 : 1단계는 방망이 전용, 2~5단계는 공통
+    // 주인공 반응 : 1단계는 방망이, 2~4단계는 물건 공통, 5단계는 친구 (사람이라 친구에게 하는 말로)
     const string BoyBatSuccess = "다행이다! 이제 힘이 좀 나?";
     const string BoyBatWrong = "미안해… 간식 하나 더 줄 테니까 다시 그려 볼까?";
     const string BoySuccess = "맞아! 바로 이거야! 이번엔 안 잃어버려야지.";
     const string BoyWrong = "어… 이게 아닌데. 간식 하나 더 줄 테니까 다시 그려 볼까?";
+    const string BoyFriendSuccess = "다행이다! 많이 무서웠지? 이제 같이 소풍 가자!";
+    const string BoyFriendWrong = "어… 내 친구가 아니야. 간식 하나 더 줄 테니까 다시 그려 볼까?";
 
     public const string BoyOutOfSnacks = "어떡해… 간식이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
@@ -164,6 +166,7 @@ public static class GameScript
     public static string BoyResult(int stageIndex, int outcome)
     {
         if (stageIndex == 0) return outcome == 0 ? BoyBatSuccess : BoyBatWrong;
+        if (stageIndex == 4) return outcome == 0 ? BoyFriendSuccess : BoyFriendWrong;
         return outcome == 0 ? BoySuccess : BoyWrong;
     }
 

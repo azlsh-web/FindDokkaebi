@@ -105,9 +105,11 @@ def read_lines(path=SOURCE):
                 add(f"{code}-{key}-{k + 1}", label, title, "도깨비", *s)
 
     for num, stage, title, who, name in (("주인공-맞음-방망이", "1단계 방망이", "전부 맞음", FACE["BoyHappy"], "BoyBatSuccess"),
-                                         ("주인공-맞음-1", "2~5단계", "전부 맞음", FACE["BoyHappy"], "BoySuccess"),
-                                         ("주인공-일부-1", "2~5단계", "일부 틀림", FACE["BoySurprised"], "BoyWrong"),
-                                         ("주인공-틀림-1", "2~5단계", "전부 틀림", FACE["BoySurprised"], "BoyWrong"),
+                                         ("주인공-맞음-1", "2~4단계", "전부 맞음", FACE["BoyHappy"], "BoySuccess"),
+                                         ("주인공-일부-1", "2~4단계", "일부 틀림", FACE["BoySurprised"], "BoyWrong"),
+                                         ("주인공-틀림-1", "2~4단계", "전부 틀림", FACE["BoySurprised"], "BoyWrong"),
+                                         ("주인공-맞음-친구", "5단계 친구", "전부 맞음", FACE["BoyHappy"], "BoyFriendSuccess"),
+                                         ("주인공-틀림-친구", "5단계 친구", "일부 틀림 · 전부 틀림", FACE["BoySurprised"], "BoyFriendWrong"),
                                          ("주인공-틀림-방망이", "1단계 방망이", "전부 틀림", FACE["BoySurprised"], "BoyBatWrong")):
         add(num, stage, title, who, *const(name))
 

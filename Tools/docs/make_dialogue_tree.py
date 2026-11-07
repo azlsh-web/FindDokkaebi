@@ -88,8 +88,8 @@ def random_list(who, lines):
 
 def stage_tree(i):
     target, feats = stage_data(DATA[i])
-    boy_ok = const("BoyBatSuccess") if i == 0 else const("BoySuccess")
-    boy_wrong = const("BoyBatWrong") if i == 0 else const("BoyWrong")
+    boy_ok = const("BoyBatSuccess" if i == 0 else "BoyFriendSuccess" if i == 4 else "BoySuccess")
+    boy_wrong = const("BoyBatWrong" if i == 0 else "BoyFriendWrong" if i == 4 else "BoyWrong")
     wrong = []
     if i > 0:
         wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), f"주인공(놀람): {boy_wrong}"))
