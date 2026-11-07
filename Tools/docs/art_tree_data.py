@@ -7,18 +7,18 @@ TREE = [
     ("맨 뒤 배경", "Canvas/Background", [
         ("시작 화면", "Background/BG_Start", TEAM),
         ("게임 중", "Background/BG_Room", TEAM + ", 투명한 가장자리는 주변 색으로 채움"),
-        ("이야기 종료", "Background/BG_Picnic", TEMP),
+        ("이야기 종료", "Background/BG_Picnic", TEAM + ", 왼쪽 가장자리의 투명한 줄은 옆 색으로 채움"),
     ]),
     ("HUD (그리기부터 채점표까지)", "Frame/HUD", [
         ("SnackRow/Snack_0~2", "UI/HUD_SnackBag", G9 + ", 쓴 간식은 왼쪽부터 흐리게"),
         ("PauseButton", "UI/HUD_PauseButton", G9),
     ]),
     ("향과 촛대 (그리는 동안)", "Frame/HUD/TimerGroup", [
-        ("IncenseHolder", "UI/Incense_Holder", TEMP),
-        ("Incense", "UI/Incense_Stick", TEMP),
-        ("IncenseFx_Tip/Ember", "UI/Incense_Ember", TEMP),
-        ("IncenseFx_Tip/Flame", "UI/Incense_Flame", TEMP),
-        ("IncenseFx_Tip/Ash, FallingAsh", "UI/Incense_Ash", TEMP),
+        ("IncenseHolder", "UI/Incense_Holder", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
+        ("Incense", "UI/Incense_Stick", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
+        ("IncenseFx_Tip/Ember", "UI/Incense_Ember", TEAM),
+        ("IncenseFx_Tip/Flame", "UI/Incense_Flame", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
+        ("IncenseFx_Tip/Ash, FallingAsh", "UI/Incense_Ash", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
         ("IncenseFx_Smoke, Glow", "UI/Common_SoftPuff", CODE),
     ]),
     ("1. 시작", "Frame/TitlePanel", [
@@ -37,7 +37,9 @@ TREE = [
         ("Opening/Idea/Snack, SnackOut", "UI/HUD_SnackBag", TEAM),
         ("DialogueBox/Face (주인공 기쁨)", "Characters/Char_BoyFace_Happy", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Face (주인공 놀람)", "Characters/Char_BoyFace_Surprised", TEAM + " 그림에서 얼굴만 자름"),
-        ("DialogueBox/Face (도깨비)", "Characters/Char_DokkaebiFace_Normal", TEAM + " 그림에서 얼굴만 자름"),
+        ("DialogueBox/Face (도깨비)", "Characters/Char_DokkaebiFace_Normal", TEAM),
+        ("DialogueBox/Face (도깨비 뿌듯 · 맞았을 때)", "Characters/Char_DokkaebiFace_Proud", TEAM),
+        ("DialogueBox/Face (도깨비 놀림 · 틀렸을 때)", "Characters/Char_DokkaebiFace_Tease", TEAM),
         ("DialogueBox/Arrow", "UI/Common_NextArrow", CODE),
     ]),
     ("3. 떠올리기", "Frame/ObservePanel", [
@@ -119,7 +121,7 @@ REQUEST = [
     ("Incense_Ember", "UI", "향", (74, 40), "줄기 끝의 불씨", "줄기와 같은 폭의 칸에 가운데 맞춰 그려 주세요."),
     ("Incense_Flame", "UI", "향", (90, 120), "줄기 끝의 불꽃", "아래쪽을 기준으로 흔들려요. 아래 끝이 칸 바닥 가운데에 닿게 그려 주세요."),
     ("Incense_Ash", "UI", "향", (74, 150), "타고 남은 재", "끝에 납작하게 붙기도 하고 떨어지기도 해요. 뭉툭한 재 덩어리로 그려 주세요."),
-    ("Char_DokkaebiFace_Normal", "Characters", "선택", (660, 560), "도깨비 대사의 기본 얼굴", "대사 상자에 작게 나오는 얼굴. 지금은 받은 빈손 도깨비 그림에서 얼굴만 잘라 써요. 따로 그려 주시면 바꿔 넣어요."),
-    ("Char_DokkaebiFace_Tease", "Characters", "선택", (660, 560), "틀렸을 때 도깨비 대사", "엉뚱한 물건을 내밀며 놀리는 얼굴. 예) 「짠! 네 그림이랑 똑같지?」"),
-    ("Char_DokkaebiFace_Proud", "Characters", "선택", (660, 560), "맞았을 때 도깨비 대사", "뿌듯한 얼굴. 예) 「가방 여기 있다! 어때, 나 잘 찾지?」"),
+    ("Char_DokkaebiFace_Normal", "Characters", "선택", (660, 560), "도깨비 대사의 기본 얼굴", "대사 상자에 작게 나오는 얼굴. 받은 그림을 넣었어요."),
+    ("Char_DokkaebiFace_Tease", "Characters", "선택", (660, 560), "틀렸을 때 도깨비 대사", "엉뚱한 물건을 내밀며 놀리는 얼굴. 받은 그림을 넣었어요. 예) 「짠! 네 그림이랑 똑같지?」"),
+    ("Char_DokkaebiFace_Proud", "Characters", "선택", (660, 560), "맞았을 때 도깨비 대사", "뿌듯한 얼굴. 받은 그림을 넣었어요. 예) 「가방 여기 있다! 어때, 나 잘 찾지?」"),
 ]

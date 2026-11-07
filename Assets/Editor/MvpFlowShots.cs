@@ -257,7 +257,7 @@ static class MvpFlowShots
             StageData st = stages[s];
             section = $"{st.stageNumber}단계 {st.targetName}";
 
-            // 대화 (오프닝 대사는 저절로 넘어가지만, 사진을 찍으려고 직접 넘겨요)
+            // 대화 (모든 대사는 터치로 넘겨요)
             bool batLost = (bool)typeof(GameManager).GetField("batLost", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm);
             GameScript.Line[] lines = GameScript.IntroLines(s, batLost);
             for (int i = 0; i < lines.Length; i++)

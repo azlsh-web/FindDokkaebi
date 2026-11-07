@@ -86,7 +86,9 @@ public static class MvpSceneBuilder
         Sprite dokkaebiSwing = LoadSprite("Characters/Char_Dokkaebi_Swing.png");    // 결과 : 방망이를 휘둘러요
         Sprite dokkaebiNoBat = LoadSprite("Characters/Char_Dokkaebi_NoBat.png");    // 방망이를 찾기 전 (아트팀 그림)
         Sprite faceDokkaebi = LoadSprite("Characters/Char_DokkaebiFace_Normal.png");
-        Sprite picnic = LoadSprite("Background/BG_Picnic.png");                     // 이야기 종료 (임시 그림)
+        Sprite faceDokkaebiProud = LoadSprite("Characters/Char_DokkaebiFace_Proud.png");
+        Sprite faceDokkaebiTease = LoadSprite("Characters/Char_DokkaebiFace_Tease.png");
+        Sprite picnic = LoadSprite("Background/BG_Picnic.png");                     // 이야기 종료 (아트팀 그림)
         Sprite friend = LoadSprite("Stage5_Friend/Friend_Original.png");
         Sprite snack = T("HUD_SnackBag");                                 // 간식 = 시안의 복주머니
         Sprite room = LoadSprite("Background/BG_Room.png");          // 시작 화면 그림에서 글자를 지운 방
@@ -696,6 +698,8 @@ public static class MvpSceneBuilder
         Set(so, "faceBoySurprised", faceSurprised);
         Set(so, "faceBoyHappy", faceHappy);
         Set(so, "faceDokkaebi", faceDokkaebi);
+        Set(so, "faceDokkaebiProud", faceDokkaebiProud);
+        Set(so, "faceDokkaebiTease", faceDokkaebiTease);
         Set(so, "dokkaebiNormal", dokkaebi);
         Set(so, "dokkaebiNoBat", dokkaebiNoBat);
         Set(so, "dokkaebiSwing", dokkaebiSwing);

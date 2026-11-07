@@ -571,6 +571,7 @@ static class MvpSelfTest
                 {
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[1], "판정 조합에 맞는 물건이 왔다");
                     if (s == 0) Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_NoBat", "1단계를 틀리면 도깨비는 빈손");
+                    Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_DokkaebiFace_Tease", "틀리면 도깨비는 놀리는 얼굴");
                     if (s == 0 || s == 4) Shot($"s{s + 1}_result_partial");
                     Action next = () =>
                     {
@@ -596,6 +597,7 @@ static class MvpSelfTest
                 {
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");
                     Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Swing", "성공하면 방망이를 휘두른다");
+                    Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_DokkaebiFace_Proud", "맞히면 도깨비는 뿌듯한 얼굴");
                     TapResult();
                     Check(!IsOn("ResultPanel/ChoiceRow"), "성공하면 다시 · 포기 버튼이 없다");
                     Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_BoyFace_Happy", "성공하면 기쁜 표정");

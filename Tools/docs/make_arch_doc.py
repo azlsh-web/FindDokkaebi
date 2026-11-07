@@ -71,7 +71,7 @@ arch = [
     "<tr><td><code>ColorMixer</code></td><td>색 섞기 카드 : 물감을 누를 때마다 한 번씩 넣기 (물방울이 날아가고 색이 천천히 바뀜) · 되돌리기 (물방울이 원래 물감으로 돌아감) → 넣은 비율로 계산한 색 (Mix) → 섞은 색 칸</td><td>섞는 규칙</td></tr>"
     "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
-    "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불꽃 · 재 · 연기가 따라 움직임, 10초 전 강조. 그림은 <code>Tools/docs/art_pipeline/cut_incense.py</code></td><td>향 움직임</td></tr>"
+    "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불씨 위에 재가 쌓였다 떨어지며 불꽃이 재 위에 얹혀 따라 움직임, 연기, 10초 전 강조. 그림은 아트팀 원본을 <code>Tools/docs/art_pipeline/fit_incense_art.py</code>로 칸에 맞춤</td><td>향 움직임</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>코드로 만든 움직임 전부 : 등장 · 걷기 · 두리번 · 간식 · 물건 착지 · 채점 표시 · 꽃가루 (Kind 하나씩)</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
     "Title ─StartGame→ Dialogue(1단계는 오프닝부터) ─StartObserve→ Observe(3초 떠올리기) ─자동→ Draw(60초 쪽지 쓰기) ─Submit→ Give(건네기)\n"

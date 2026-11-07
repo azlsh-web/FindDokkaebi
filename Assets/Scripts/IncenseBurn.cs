@@ -26,6 +26,8 @@ public class IncenseBurn : MonoBehaviour
     [SerializeField] float maxAshHeight = 70f;
     [Tooltip("향 전체가 타는 동안 재가 떨어지는 횟수")]
     [SerializeField] int ashDrops = 5;
+    [Tooltip("재가 쌓이기 시작하는 높이 (불씨 그림의 윗면)")]
+    [SerializeField] float ashBottom = 24f;
 
     const float SmokeLife = 3.2f;
     const float SmokeRise = 270f;
@@ -33,6 +35,7 @@ public class IncenseBurn : MonoBehaviour
     const float AshFallDistance = 150f;
 
     Color normalTextColor;
+    float flameBaseY;
     float fallTime = -1f;
     float fallStartY;
     int lastAshStep;
@@ -40,6 +43,7 @@ public class IncenseBurn : MonoBehaviour
     void Awake()
     {
         normalTextColor = secondsText.color;
+        flameBaseY = flame.anchoredPosition.y;
     }
 
     /// <summary>remaining = 남은 비율 (1 → 0), seconds = 남은 초</summary>
@@ -73,7 +77,7 @@ public class IncenseBurn : MonoBehaviour
         glow.rectTransform.localScale = Vector3.one * (urgent ? 1.5f : 1f) * Mathf.Lerp(0.9f, 1.15f, flicker);
     }
 
-    // 재 : 탄 만큼 쌓이다가 일정하게 뚝 떨어져요
+    // 재 : 불씨 위에 탄 만큼 쌓이다가 일정하게 뚝 떨어져요. 불꽃은 쌓인 재 꼭대기에 얹혀 같이 오르내려요.
     void ShowAsh(float burned, float tipY)
     {
         float steps = burned * ashDrops;
@@ -89,6 +93,8 @@ public class IncenseBurn : MonoBehaviour
         Vector2 size = ash.sizeDelta;
         size.y = Mathf.Max(4f, maxAshHeight * (steps - step));
         ash.sizeDelta = size;
+        ash.anchoredPosition = new Vector2(ash.anchoredPosition.x, ashBottom);
+        flame.anchoredPosition = new Vector2(flame.anchoredPosition.x, flameBaseY + size.y);
 
         bool falling = fallTime >= 0f && fallTime < AshFallTime;
         fallingAsh.enabled = falling;

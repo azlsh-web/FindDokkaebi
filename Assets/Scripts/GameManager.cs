@@ -19,7 +19,7 @@ using UnityEngine.UI;
 //                                                                                              [이야기 종료]
 //
 // 쪽지는 주인공이 도깨비에게 써 주는 것이에요. 판정 기준은 시작 대화의 생김새 대사로 알려 줘요.
-// 오프닝은 준비물이 사라지는 그림과 함께 대사가 저절로 넘어가요. 떠올리기는 2단계부터 주인공, 1단계는 도깨비가 해요.
+// 오프닝은 준비물이 사라지는 그림과 함께 보여 줘요. 모든 대사는 터치해야 넘어가요. 떠올리기는 2단계부터 주인공, 1단계는 도깨비가 해요.
 // 1단계에서 방망이를 못 찾으면 도깨비는 이야기가 끝날 때까지 빈손이에요.
 //
 // 화면 구조
@@ -85,6 +85,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] Sprite faceBoySurprised;
     [SerializeField] Sprite faceBoyHappy;
     [SerializeField] Sprite faceDokkaebi;
+    [SerializeField] Sprite faceDokkaebiProud;     // 맞았을 때 : 뿌듯한 얼굴
+    [SerializeField] Sprite faceDokkaebiTease;     // 틀렸을 때 : 놀리는 얼굴
     [SerializeField] Sprite dokkaebiNormal;
     [SerializeField] Sprite dokkaebiNoBat;          // 1단계 : 방망이를 찾기 전
     [SerializeField] Sprite dokkaebiSwing;
@@ -185,9 +187,9 @@ public class GameManager : MonoBehaviour
     bool[] lastPresent;
     bool batLost;           // 1단계를 못 찾음 : 이야기가 끝날 때까지 도깨비가 빈손이에요
     bool endingAsking;
-    bool opening;           // 오프닝 대사가 저절로 넘어가는 중
+    bool opening;           // 오프닝 : 도깨비가 나오기 전, 주인공 혼자 말하는 중
     int giveStep;           // 건네기 : 0 주인공, 1 먹기, 2 읽기
-    Coroutine openingRoutine, noteRoutine;
+    Coroutine noteRoutine;
     Vector2 boyTargetPos, boyTargetSize;
 
     StageData Stage => stages[stageIndex];
@@ -288,7 +290,7 @@ public class GameManager : MonoBehaviour
         dialogueDokkaebiImage.sprite = index == 0 || batLost ? dokkaebiNoBat : dokkaebiNormal;
         ShowPanel(dialoguePanel);
 
-        opening = index == 0;                       // 맨 처음에는 주인공 혼자, 대사가 저절로 넘어가요
+        opening = index == 0;                       // 맨 처음에는 주인공 혼자 말해요
         openingGroup.SetActive(opening);
         dialogueDim.SetActive(!opening);
         boyTargetPos = opening ? BoyAlonePos : BoyWithPos;
@@ -311,8 +313,6 @@ public class GameManager : MonoBehaviour
         if (opening)
         {
             ShowOpeningBeat(dialogueLine);
-            if (openingRoutine != null) StopCoroutine(openingRoutine);
-            openingRoutine = StartCoroutine(OpeningAuto(dialogueLine));
         }
         else
         {
@@ -362,13 +362,6 @@ public class GameManager : MonoBehaviour
         openingItems[item].delay = delay;
         openingItems[item].popTime = 0.5f;
         openingItems[item].Play(SimpleAnim.Kind.Vanish);
-    }
-
-    IEnumerator OpeningAuto(int line)
-    {
-        while (dialogueBox.IsTyping) yield return null;
-        yield return new WaitForSeconds(1.7f);
-        if (state == State.Dialogue && opening && dialogueLine == line) NextIntroLine();
     }
 
     void NextIntroLine()
@@ -646,7 +639,7 @@ public class GameManager : MonoBehaviour
         resultDokkaebiAnim.Play(SimpleAnim.Kind.Swing);
         Sfx.Play(Sfx.Item);
         Sfx.Play(success ? Sfx.Success : Sfx.Fail);
-        resultBox.Say(GameScript.DokkaebiResult(stageIndex, outcome), faceDokkaebi);
+        resultBox.Say(GameScript.DokkaebiResult(stageIndex, outcome), success ? faceDokkaebiProud : faceDokkaebiTease);
     }
 
     /// <summary>[화면 터치] 도깨비 대사 → 주인공 대사 → 다시 · 포기 또는 채점표</summary>

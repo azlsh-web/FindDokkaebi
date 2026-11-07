@@ -41,13 +41,23 @@ for y in range(1014, 1120):
         px[x, y] = cream
 logo.save(S + 'UI/Title_Logo.png', optimize=True)
 
-# ── 빈손 도깨비 : 아트팀에게 받은 그림. 대사 상자 얼굴은 여기서 얼굴만 잘라요 ──
+# ── 빈손 도깨비 : 아트팀에게 받은 그림 ──
 empty = Image.open('ArtSource/원본/받은그림/Dokkaebi_EmptyHand.png').convert('RGBA')
 empty.save(S + 'Characters/Char_Dokkaebi_NoBat.png', optimize=True)
-face = Image.new('RGBA', (660, 560), (0, 0, 0, 0))
-face.alpha_composite(empty.crop((180, 40, 840, 548)), (0, 26))
-face.paste((0, 0, 0, 0), (0, 500, 110, 560))     # 왼쪽 아래에 들어온 팔 끝 지우기
-face.save(S + 'Characters/Char_DokkaebiFace_Normal.png', optimize=True)
+
+# ── 도깨비 대사 얼굴 (기본 · 뿌듯 · 놀림) : 아트팀 그림의 빈 여백을 세 장 똑같이 잘라 660x560 에 맞춰요 ──
+#    여백째 넣으면 대사 상자에서 얼굴이 작아 보여요. 세 장을 같은 범위로 잘라야 표정이 바뀔 때 얼굴이 흔들리지 않아요.
+faces = {n: Image.open(f'ArtSource/원본/받은그림/DokkaebiFace/Char_DokkaebiFace_{n}.png').convert('RGBA')
+         for n in ('Normal', 'Proud', 'Tease')}
+boxes = [im.getchannel('A').getbbox() for im in faces.values()]
+box = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+fw, fh = box[2] - box[0], box[3] - box[1]
+k = min(644 / fw, 524 / fh)
+fw, fh = round(fw * k), round(fh * k)
+for n, im in faces.items():
+    face = Image.new('RGBA', (660, 560), (0, 0, 0, 0))
+    face.alpha_composite(im.crop(box).resize((fw, fh), Image.LANCZOS), ((660 - fw) // 2, (560 - fh) // 2))
+    face.save(S + f'Characters/Char_DokkaebiFace_{n}.png', optimize=True)
 
 # ── 도구 버튼 : 아이콘의 긴 변을 원 지름의 56% 로 똑같이 맞춰요 ──
 base = Image.open(keep('UI/Draw_ClearButton.png')).convert('RGBA')
