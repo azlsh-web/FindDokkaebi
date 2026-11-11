@@ -1,4 +1,4 @@
-# 12_사운드팀_전달사항.pdf : 사운드팀에 보내는 요청
+# 사운드.pdf : 사운드팀에 보내는 요청
 #   python Tools/docs/make_sound_request.py
 #   파일 이름은 Assets/Scripts/Sfx.cs 와 대조해요. 어긋나면 멈춰요.
 from datetime import date
@@ -131,5 +131,5 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사
 </body></html>"""
 
 os.makedirs(os.path.join(ROOT, "Temp", "DocsHtml"), exist_ok=True)
-open(os.path.join(ROOT, "Temp", "DocsHtml", "12_사운드팀_전달사항.html"), "w", encoding="utf-8").write(html)
-print("12_사운드팀_전달사항.pdf", write_pdf(html, os.path.join(OUT, "12_사운드팀_전달사항.pdf")))
+open(os.path.join(ROOT, "Temp", "DocsHtml", "사운드.html"), "w", encoding="utf-8").write(html)
+print("사운드.pdf", write_pdf(html, os.path.join(OUT, "사운드.pdf")))

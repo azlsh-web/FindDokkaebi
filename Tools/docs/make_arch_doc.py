@@ -115,8 +115,8 @@ arch = [
     "<tr><td>플레이 영상</td><td>MvpPlayRecorder</td><td>자동 플레이를 프레임으로 저장. 시연 영상은 Unity Recorder 로 찍은 <code>Recordings/시연용영상.mp4</code> (git 에 안 올림)</td></tr></table>",
     "<h2>7. 자주 하는 수정</h2><table><tr><th>하고 싶은 것</th><th>방법</th></tr>"
     "<tr><td>엉뚱한 물건 · 캐릭터를 바꿔요</td><td><code>Assets/Sprites/Stage*/물건_Wrong_*.png</code> 저장 → mvp_wrongart.flag → 웹 빌드. 캐릭터는 <code>Assets/Sprites/Characters</code> 의 같은 이름으로 덮어쓰기 → 웹 빌드</td></tr>"
-    "<tr><td>아트팀 그림 ZIP 이 왔어요</td><td><code>python Tools/docs/apply_art_zip.py 받은파일.zip --apply</code> → 자동 테스트 → 웹 빌드 (<code>Docs/전달/4_아트팀_전달사항.pdf</code>)</td></tr>"
-    "<tr><td>소리 파일이 왔어요</td><td><code>Assets/Resources/Sound</code>에 넣기 (<code>Docs/전달/12_사운드팀_전달사항.pdf</code>)</td></tr><tr><td>대사를 고치고 싶어요</td><td><code>GameScript.cs</code> → 새 글자가 있으면 글꼴 굽기 → <code>python Tools/docs/make_dialogue_tree.py</code></td></tr><tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr>"
+    "<tr><td>아트팀 그림 ZIP 이 왔어요</td><td><code>python Tools/docs/apply_art_zip.py 받은파일.zip --apply</code> → 자동 테스트 → 웹 빌드 (<code>Docs/전달/아트.pdf</code>)</td></tr>"
+    "<tr><td>소리 파일이 왔어요</td><td><code>Assets/Resources/Sound</code>에 넣기 (<code>Docs/전달/사운드.pdf</code>)</td></tr><tr><td>대사를 고치고 싶어요</td><td><code>GameScript.cs</code> → 새 글자가 있으면 글꼴 굽기 → <code>python Tools/docs/make_dialogue_tree.py</code></td></tr><tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr>"
     "<tr><td>특징 · 판정 기준</td><td>CreateStageDataFiles 의 특징 글 → 씬 만들기 → 판정 서버 프롬프트 내보내기 → wrangler deploy (결과 화면의 특징 이름도 바뀌었으면 웹 빌드도)</td></tr>"
     "<tr><td>판정 기준을 바꿨어요</td><td>판정 서버 배포와 웹 빌드를 함께 (기준 수가 달라지면 예전 웹 게임과 서버가 맞지 않아요)</td></tr>"
     "<tr><td>웹에 올리기</td><td>웹 빌드 → Builds/WebGL/Build 를 gh-pages 브랜치에 커밋 · 푸시 (GitHub Pages)</td></tr></table>",

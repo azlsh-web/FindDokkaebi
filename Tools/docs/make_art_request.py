@@ -1,4 +1,4 @@
-# 4_아트팀_전달사항.pdf : 아트팀에 보내는 요청
+# 아트.pdf : 아트팀에 보내는 요청
 #   python Tools/docs/make_art_request.py
 #   요청했던 그림 9장은 모두 받아서 지금은 새 요청이 없어요 (2026-11-08).
 #   받은 그림 목록은 art_tree_data.REQUEST 에 남겨 두었고, 받은 ZIP 을 넣는 apply_art_zip.py 가 써요.
@@ -23,5 +23,5 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아
 </body></html>"""
 
 os.makedirs(os.path.join(ROOT, "Temp", "DocsHtml"), exist_ok=True)
-open(os.path.join(ROOT, "Temp", "DocsHtml", "4_아트팀_전달사항.html"), "w", encoding="utf-8").write(html)
-print("4_아트팀_전달사항.pdf", write_pdf(html, os.path.join(OUT, "4_아트팀_전달사항.pdf")))
+open(os.path.join(ROOT, "Temp", "DocsHtml", "아트.html"), "w", encoding="utf-8").write(html)
+print("아트.pdf", write_pdf(html, os.path.join(OUT, "아트.pdf")))

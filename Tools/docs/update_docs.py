@@ -23,7 +23,7 @@ DOC_DATA = ("Tools/docs/art_tree_data.py", "Tools/docs/make_", "Tools/docs/dialo
 SCRIPTS = ["make_dialogue_tree.py", "make_dialogue_sheet.py", "make_art_structure.py", "make_flow_doc.py",
            "make_art_request.py", "make_sound_request.py", "make_arch_doc.py"]
 GENERATED = ["Docs/기획/13_대사_트리.md", "Docs/기획/13_대사_트리.pdf", "Docs/기획/1_게임_플로우.pdf", "Docs/기획/플로우_사진",
-             "Docs/전달/14_대사_수정표.xlsx", "Docs/전달/4_아트팀_전달사항.pdf", "Docs/전달/12_사운드팀_전달사항.pdf",
+             "Docs/전달/14_대사_수정표.xlsx", "Docs/전달/아트.pdf", "Docs/전달/사운드.pdf",
              "Docs/개발/2_MVP_아키텍처.pdf", "Docs/개발/3_아트_구조.pdf"]
 REMINDER = """
 [문서] 사람이 판단해야 하는 내용은 자동으로 바뀌지 않아요. 달라졌다면 함께 고쳐 주세요.
