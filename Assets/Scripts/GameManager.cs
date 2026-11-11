@@ -658,8 +658,11 @@ public class GameManager : MonoBehaviour
         resultSparkles.SetActive(success);
         choiceRow.SetActive(false);
 
-        // 1단계를 틀렸거나 못 찾고 넘어왔으면 도깨비는 빈손이에요
-        bool batMissing = (stageIndex == 0 && !success) || batLost;
+        // 방망이는 화면에 하나만 보여요.
+        //   1단계 : 맞히면 방망이가 물건 자리에 놓여 있으니 도깨비는 빈손 (주인공이 말할 때 집어 들어요, ResultTap)
+        //           틀리면 엉뚱한 물건이 왔으니 역시 빈손
+        //   2단계부터 : 1단계를 못 찾고 넘어왔으면(batLost) 빈손, 아니면 방망이를 휘둘러요
+        bool batMissing = stageIndex == 0 || batLost;
         resultDokkaebi.sprite = batMissing ? dokkaebiNoBat : dokkaebiSwing;
         ShowPanel(resultPanel);
         resultDokkaebiAnim.Play(SimpleAnim.Kind.Swing);
@@ -684,6 +687,13 @@ public class GameManager : MonoBehaviour
             bool wrong = outcome != 0;
             resultPhase = ResultPhase.Boy;
             resultDokkaebi.sprite = (stageIndex == 0 && wrong) || batLost ? dokkaebiNoBat : dokkaebiNormal;
+            // 1단계를 맞혔으면 도깨비가 바닥의 방망이를 집어 들어요 : 바닥 방망이 · 그림자 · 반짝이를 치워요
+            if (stageIndex == 0 && !wrong)
+            {
+                resultItemImage.enabled = false;
+                resultItemShadow.SetActive(false);
+                resultSparkles.SetActive(false);
+            }
             resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
             string line = wrong && candies <= 0 ? GameScript.BoyOutOfSnacks : GameScript.BoyResult(stageIndex, outcome);
             resultBox.Say(line, wrong ? faceBoySad : faceBoyHappy);     // 엉뚱한 물건 · 간식 없음 : 우는 얼굴
@@ -760,6 +770,9 @@ public class GameManager : MonoBehaviour
             candyTotal += candiesLeft[i];
             chocolateTotal += chocolatesLeft[i];
         }
+        // 방망이는 화면에 하나만 : 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비워요.
+        //   못 찾았으면 도깨비는 빈손이고 그 자리에 받은 엉뚱한 물건이 놓여요.
+        endingItems[0].gameObject.SetActive(batLost);
         for (int k = 0; k < endingCandies.Length; k++) endingCandies[k].SetActive(k < candyTotal);
         for (int k = 0; k < endingChocolates.Length; k++) endingChocolates[k].SetActive(k < chocolateTotal);
         Sfx.Bgm(Sfx.BgmPicnic);

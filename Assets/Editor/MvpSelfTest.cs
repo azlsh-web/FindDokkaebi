@@ -652,9 +652,14 @@ static class MvpSelfTest
                 Add(0.3f, $"{st.Title} 성공", () =>
                 {
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");
-                    Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Swing", "성공하면 방망이를 휘두른다");
+                    if (s == 0) Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_NoBat", "1단계를 맞히면 도깨비는 빈손으로 방망이를 내민다");
+                    else Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Swing", "성공하면 방망이를 휘두른다");
                     Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_DokkaebiFace_Proud", "맞히면 도깨비는 뿌듯한 얼굴");
+                    CheckOneBat("결과 : 도깨비 대사");
                     TapResult();
+                    if (s == 0) Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal"
+                                      && !Find("ResultPanel/ReturnedItem").GetComponent<Image>().enabled, "1단계를 맞히면 주인공이 말할 때 도깨비가 방망이를 집어 든다");
+                    CheckOneBat("결과 : 주인공 대사");
                     Check(!IsOn("ResultPanel/ChoiceRow"), "성공하면 다시 · 포기 버튼이 없다");
                     Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_BoyFace_Happy", "성공하면 기쁜 표정");
                     Shot($"s{s + 1}_result_success");
@@ -692,6 +697,8 @@ static class MvpSelfTest
             Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Picnic", "소풍 배경");
             Check(Find("EndingPanel/BagSlot").GetComponent<Image>().sprite == stages[1].wrongSprites[stages[1].wrongSprites.Length - 1], "포기한 2단계는 받은 엉뚱한 물건이 놓인다");
             Check(Find("EndingPanel/MatSlot").GetComponent<Image>().sprite == stages[2].originalSprite, "찾은 물건은 진짜가 놓인다");
+            Check(Find("EndingPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal" && !IsOn("EndingPanel/BatSlot"),
+                  "방망이를 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비어 있다");
             int candiesLeft = SumInts("candiesLeft"), chocolatesLeft = SumInts("chocolatesLeft");
             Check(ShownCount("EndingPanel/Candy_") == candiesLeft && ShownCount("EndingPanel/Chocolate_") == chocolatesLeft,
                   $"단계마다 남은 사탕 {candiesLeft} · 초콜릿 {chocolatesLeft}개가 돗자리에 모여 있다");
@@ -783,6 +790,10 @@ static class MvpSelfTest
             }
             mixer.SkipAnimation();
             Check(MixerPreview() == mixer.ResultColor, "움직임이 끝나면 만든 색이 보인다");
+            // 그리기가 막 시작돼서 간식이 아직 날아 들어오는 중일 수 있어요. 날아오는 사탕끼리 잠깐 겹친 걸
+            // 배치 문제로 잡지 않게, 간식 움직임을 끝낸(제자리에 둔) 뒤 검사해요.
+            foreach (SimpleAnim a in (SimpleAnim[])typeof(GameManager).GetField("snackAnims", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm()))
+                a.enabled = false;
             LayoutOnly($"s{st.stageNumber}_mixer");                     // 팔레트가 열린 화면도 배치 검사
             mixer.Apply();
             Check(!IsOn("DrawPanel/MixerPanel"), "섞어서 칠하면 팔레트가 닫힌다");
@@ -1089,8 +1100,25 @@ static class MvpSelfTest
         foreach (string line in layout) report.Add("        " + line);
     }
 
+    // 방망이는 한 화면에 하나만 보여야 해요 (도깨비가 든 방망이 + 바닥 · 돗자리의 방망이 그림을 함께 세요).
+    //   채점표는 원본을 옆에 놓고 비교하는 종이라서 세지 않아요.
+    static void CheckOneBat(string where)
+    {
+        Sprite batItem = Stages()[0].originalSprite;
+        Transform compare = Find("ComparePanel");
+        int count = 0;
+        foreach (Image img in GameObject.Find("Canvas").GetComponentsInChildren<Image>())   // 켜진 것만 찾아요
+        {
+            if (!img.enabled || img.sprite == null || img.transform.IsChildOf(compare)) continue;
+            string n = img.sprite.name;
+            if (img.sprite == batItem || n == "Char_Dokkaebi_Normal" || n == "Char_Dokkaebi_Swing") count++;
+        }
+        Check(count <= 1, $"방망이는 한 화면에 하나만 : {where}" + (count <= 1 ? "" : $" ({count}개 보임)"));
+    }
+
     static void Shot(string name)
     {
+        CheckOneBat(name);
         // 화면 배치 숫자 검사 (걸쳐 겹침 · 글자 겹침 · 글자 넘침 · 화면 밖)
         List<string> layout = MvpLayoutCheck.Check(name);
         Check(layout.Count == 0, $"배치 검사 : {name}" + (layout.Count == 0 ? " (겹침 · 넘침 없음)" : $" 문제 {layout.Count}개"));
