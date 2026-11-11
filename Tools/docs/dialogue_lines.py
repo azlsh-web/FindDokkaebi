@@ -8,7 +8,7 @@ from PIL import ImageFont
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 SOURCE = os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs")
 STAGES = ["방망이", "가방", "돗자리", "김밥", "친구"]
-FACE = {"BoySurprised": "주인공 (놀람)", "BoyHappy": "주인공 (기쁨)", "Dokkaebi": "도깨비"}
+FACE = {"BoySurprised": "주인공 (놀람)", "BoyHappy": "주인공 (기쁨)", "BoySad": "주인공 (울음)", "Dokkaebi": "도깨비"}
 
 # 대사 상자 크기 : MvpSceneBuilder.NewDialogueBox (글자 칸 폭 663, 글자 크기 48, 세 줄까지 들어가요)
 BOX_WIDTH, FONT_SIZE, MAX_LINES = 663, 48, 3
@@ -106,14 +106,14 @@ def read_lines(path=SOURCE):
 
     for num, stage, title, who, name in (("주인공-맞음-방망이", "1단계 방망이", "전부 맞음", FACE["BoyHappy"], "BoyBatSuccess"),
                                          ("주인공-맞음-1", "2~4단계", "전부 맞음", FACE["BoyHappy"], "BoySuccess"),
-                                         ("주인공-일부-1", "2~4단계", "일부 틀림", FACE["BoySurprised"], "BoyWrong"),
-                                         ("주인공-틀림-1", "2~4단계", "전부 틀림", FACE["BoySurprised"], "BoyWrong"),
+                                         ("주인공-일부-1", "2~4단계", "일부 틀림", FACE["BoySad"], "BoyWrong"),
+                                         ("주인공-틀림-1", "2~4단계", "전부 틀림", FACE["BoySad"], "BoyWrong"),
                                          ("주인공-맞음-친구", "5단계 친구", "전부 맞음", FACE["BoyHappy"], "BoyFriendSuccess"),
-                                         ("주인공-틀림-친구", "5단계 친구", "일부 틀림 · 전부 틀림", FACE["BoySurprised"], "BoyFriendWrong"),
-                                         ("주인공-틀림-방망이", "1단계 방망이", "전부 틀림", FACE["BoySurprised"], "BoyBatWrong")):
+                                         ("주인공-틀림-친구", "5단계 친구", "일부 틀림 · 전부 틀림", FACE["BoySad"], "BoyFriendWrong"),
+                                         ("주인공-틀림-방망이", "1단계 방망이", "전부 틀림", FACE["BoySad"], "BoyBatWrong")):
         add(num, stage, title, who, *const(name))
 
-    for num, stage, scene, who, const in (("주인공-간식없음", "모든 단계", "간식을 다 쓰고 틀렸을 때", FACE["BoySurprised"], "BoyOutOfSnacks"),
+    for num, stage, scene, who, const in (("주인공-간식없음", "모든 단계", "사탕을 다 쓰고 틀렸을 때", FACE["BoySad"], "BoyOutOfSnacks"),
                                           ("도깨비-오류", "모든 단계", "판정 서버 오류", "도깨비", "JudgeError"),
                                           ("도깨비-마무리", "이야기 종료", "화면을 누른 뒤", "도깨비", "EndingAsk")):
         m = re.search(r"const string " + const + r' = "((?:[^"\\]|\\.)*)"', src)

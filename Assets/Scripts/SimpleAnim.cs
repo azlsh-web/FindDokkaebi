@@ -39,6 +39,7 @@ public class SimpleAnim : MonoBehaviour
         Land,       // 위에서 날아와 자리 잡기 (물건)
         Fall,       // 꽃가루 떨어지기
         FillIn,     // 채워지며 그려지기 (채점 동그라미 · 빗금)
+        SlideLeft,  // 오른쪽에서 왼쪽으로 들어오기 (사탕). 씬에 숫자로 저장되니 새 종류는 맨 뒤에 붙여요
     }
 
     public Kind kind = Kind.Sway;
@@ -248,6 +249,15 @@ public class SimpleAnim : MonoBehaviour
             case Kind.SlideRight:
                 {
                     float k = p < 0.8f ? Mathf.Lerp(-distance, 18f, Ease(p / 0.8f)) : Mathf.Lerp(18f, 0f, (p - 0.8f) / 0.2f);
+                    Move(k, 0f);
+                    SetAlpha(waiting ? 0f : baseAlpha * Mathf.Clamp01(p / 0.15f));
+                    if (p >= 1f) enabled = false;       // 다 들어오면 끝 (쓴 간식 흐리게 하는 색을 덮어쓰지 않게)
+                    break;
+                }
+
+            case Kind.SlideLeft:
+                {
+                    float k = p < 0.8f ? Mathf.Lerp(distance, -18f, Ease(p / 0.8f)) : Mathf.Lerp(-18f, 0f, (p - 0.8f) / 0.2f);
                     Move(k, 0f);
                     SetAlpha(waiting ? 0f : baseAlpha * Mathf.Clamp01(p / 0.15f));
                     if (p >= 1f) enabled = false;       // 다 들어오면 끝 (쓴 간식 흐리게 하는 색을 덮어쓰지 않게)

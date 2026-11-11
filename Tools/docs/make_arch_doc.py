@@ -46,7 +46,7 @@ arch = [
     "<tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr>"
     "<tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr>"
     "<tr><td class='k'>화면</td><td>패널 8개 (시작 · 대화 · 관찰 · 그리기 · 판정 · 결과 · 채점표 · 종료) 중 하나만 켜고, 그리기부터 채점표까지 위에 HUD. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
-    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/기획/5_기획_변경_기록.md</code>). 실패하면 간식 돌려주고 다시 제출</td></tr>"
+    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/기획/5_기획_변경_기록.md</code>). 실패하면 사탕을 돌려주고 다시 제출</td></tr>"
     "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>main</code> (보호 브랜치, PR 로 합침)</td></tr></table>",
     "<h2>2. 폴더</h2><pre>"
     "FindDokkaebi/\n"
@@ -64,7 +64,7 @@ arch = [
     "  Builds/WebGL/       웹 빌드 결과 (git 에 안 올림)\n"
     "  UserSettings/OpenAI.json   (선택) 판정 서버 주소가 비어 있을 때만 쓰는 OpenAI 키 — git 에 안 올림</pre>",
     "<h2 class='pb'>3. 게임 코드 (Assets/Scripts)</h2><table><tr><th>파일</th><th>하는 일</th><th>주로 고칠 때</th></tr>"
-    "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식 · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 일시정지</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/기획/13_대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요</td><td>소리 연결</td></tr>"
+    "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식(단계마다 사탕 2 · 초콜릿 2) · 돋보기 · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 일시정지</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/기획/13_대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요</td><td>소리 연결</td></tr>"
     "<tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 색 모드 · 원본 그림 · 특징 목록 · O·X 조합별 그림 <code>wrongSprites</code>). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr>"
     "<tr><td><code>DrawingBoard</code></td><td>512×604 쪽지 (클립보드의 하얀 면과 같은 비율) : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처. 그림판은 종이 면이 뚫린 틀 뒤에 있어서 잉크가 둥근 모서리 안에만 보이고, 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
     "<tr><td><code>ToolBar</code></td><td>색 · 연필 · 지우개 · 굵기 버튼, 고른 표시, 단계마다 색 버튼 보이기/숨기기</td><td>도구 버튼</td></tr>"
@@ -72,16 +72,17 @@ arch = [
     "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
     "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불씨 위에 재가 쌓였다 떨어지며 불꽃이 재 위에 얹혀 따라 움직임, 연기, 10초 전 강조. 그림은 아트팀 원본을 <code>Tools/docs/art_pipeline/fit_incense_art.py</code>로 칸에 맞춤</td><td>향 움직임</td></tr>"
+    "<tr><td><code>MagnifierPeek</code></td><td>돋보기 : 화면을 어둡게 덮고 렌즈 안에만 그림판 자리에 고정된 원본이 보여요. 렌즈는 손가락을 따라가고 3초 뒤 닫혀요 (덮개가 누르기를 받아서 그동안 그릴 수 없음)</td><td>돋보기 연출</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>코드로 만든 움직임 전부 : 등장 · 걷기 · 두리번 · 간식 · 물건 착지 · 채점 표시 · 꽃가루 (Kind 하나씩)</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
     "Title ─StartGame→ Dialogue(1단계는 오프닝부터) ─StartObserve→ Observe(3초 떠올리기) ─자동→ Draw(60초 쪽지 쓰기) ─Submit→ Give(건네기)\n"
-    "Give ─터치(간식-1, 대사 3줄)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
-    "Result ─틀림 + 간식 남음→ 다시(Retry : 이전 그림에 이어, 60초) 또는 포기(ShowCompare)\n"
-    "Result ─성공 또는 간식 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번→ Title\n"
+    "Give ─터치(사탕-1, 대사 3줄)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
+    "Result ─틀림 + 사탕 남음→ 다시(Retry : 이전 그림에 이어, 60초) 또는 포기(ShowCompare)\n"
+    "Result ─성공 또는 사탕 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번→ Title\n"
     "1단계를 못 찾으면 batLost : 이야기 종료까지 도깨비 그림이 빈손(dokkaebiNoBat)\n"
-    "Judge ─AI 실패→ (간식+1) Result(오류 대사) ─터치→ Draw(그리던 그림)\n"
+    "Judge ─AI 실패→ (사탕+1) Result(오류 대사) ─터치→ Draw(그리던 그림)\n"
     "그리기 화면 ─TogglePause→ 일시정지 (Time.timeScale 0)</pre>",
-    "<h3>결과 규칙 (ShowResult)</h3><p>특징이 n개면 2ⁿ가지. 전부 맞음 → 진짜 물건 A / 일부 → 그 조합의 A' / 전부 틀림 → 완전히 다른 물건 B (<code>StageData.WrongSpriteFor</code>). 실패했고 간식이 남으면 「다시」 · 「포기」 버튼이 대사 상자 자리에 나와요. 결과 화면에는 O · X 목록이 없고, 채점표에서만 보여 줘요.</p>",
+    "<h3>결과 규칙 (ShowResult)</h3><p>특징이 n개면 2ⁿ가지. 전부 맞음 → 진짜 물건 A / 일부 → 그 조합의 A' / 전부 틀림 → 완전히 다른 물건 B (<code>StageData.WrongSpriteFor</code>). 실패했고 사탕이 남으면 「다시」 · 「포기」 버튼이 대사 상자 자리에 나와요. 결과 화면에는 O · X 목록이 없고, 채점표에서만 보여 줘요.</p>",
     "<h2>4. 판정이 흐르는 길</h2><pre>"
     "제출 → board.Texture → PNG → base64\n"
     "  ├ (판정 서버 주소 있음 = 보통)  판정 서버 POST /judge {stage, image}\n"
@@ -89,7 +90,7 @@ arch = [
     "  │            → Google Gemini (GEMINI_MODEL). 서버는 미국(aws:us-east-1)에서 돌아요 (홍콩에서 보내면 Gemini 가 거절)\n"
     "  └ (서버 주소 없음)  UserSettings/OpenAI.json 키로 OpenAI Responses API 에 바로\n"
     "← AI JSON {inputStatus, features:[{featureId, status, evidence}]} → present = (status == present) → ShowResult\n"
-    "실패(연결 · 키 · JSON) → OnJudgeError : 간식 돌려주고 오류 대사 → 터치하면 그리던 그림으로</pre>"
+    "실패(연결 · 키 · JSON) → OnJudgeError : 사탕 돌려주고 오류 대사 → 터치하면 그리던 그림으로</pre>"
     "<div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 판정 서버 프롬프트 내보내기(<code>Server/judge/stages.json</code>) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. 프롬프트는 서버에 있어서 웹 게임은 다시 빌드하지 않아도 돼요. "
     "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 한도는 모델 · 프로젝트마다 달라요 (미국 태평양 시간 자정에 다시 채워짐 : 한국 시간 오후 5시, 서머타임 때는 오후 4시). 모델을 바꾸려면 <code>Server/judge/wrangler.toml</code> 의 <code>GEMINI_MODEL</code> → <code>npx wrangler deploy</code>. 서버는 503 은 다시 시도하고, 429 는 바로 멈춰 Google 의 제한 내용을 보여 줘요. Gemini 가 45초 안에 답하지 않으면 끊어요.</div>"
     "<h3>판정 검증 (기획서 8장 다시 하기)</h3><p>부록 A 그림 4장 + 부록 B 프롬프트 원문(<code>Server/judge/appendix_b.json</code>)으로 그림마다 한 번씩 판정 → 2026-10-27 Gemini 로 4장 모두 기획서 표와 같은 결과. "

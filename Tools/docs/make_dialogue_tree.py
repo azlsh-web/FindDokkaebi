@@ -12,7 +12,7 @@ from doc_pdf import BASE_CSS, write_pdf
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 src = open(os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs"), encoding="utf-8").read()
-FACE = {"BoySurprised": "주인공(놀람)", "BoyHappy": "주인공(기쁨)", "Dokkaebi": "도깨비"}
+FACE = {"BoySurprised": "주인공(놀람)", "BoyHappy": "주인공(기쁨)", "BoySad": "주인공(울음)", "Dokkaebi": "도깨비"}
 
 
 def block(name):
@@ -92,9 +92,9 @@ def stage_tree(i):
     boy_wrong = const("BoyBatWrong" if i == 0 else "BoyFriendWrong" if i == 4 else "BoyWrong")
     wrong = []
     if i > 0:
-        wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), f"주인공(놀람): {boy_wrong}"))
+        wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), f"주인공(울음): {boy_wrong}"))
     wrong.append(N(f"전부 틀림 (물건: {WRONG_ITEM[i]})" if i else f"틀림 (기준이 하나라 곧 전부 틀림, 물건: {WRONG_ITEM[i]})",
-                   random_list("도깨비", allwrong[i]), f"주인공(놀람): {boy_wrong}"))
+                   random_list("도깨비", allwrong[i]), f"주인공(울음): {boy_wrong}"))
     start = [f"{FACE[f]}: {t}" for f, t in intro[i]]
     if i == 1:
         start = [N("맨 앞 (1단계 결과에 따라)", f"방망이를 찾음 — 도깨비: {bat_found}", f"못 찾음 — 도깨비: {bat_lost}")] + start
@@ -112,7 +112,7 @@ tree = [
     N("시작 화면", "버튼: 게임 시작하기"),
     *[stage_tree(i) for i in range(5)],
     N("어느 단계든 나오는 대사",
-      N("간식을 다 쓰고 틀렸을 때", f"주인공(놀람): {const('BoyOutOfSnacks')}", "이때는 위 주인공 결과 대사 대신 이 대사가 나와요."),
+      N("사탕을 다 쓰고 틀렸을 때", f"주인공(울음): {const('BoyOutOfSnacks')}", "이때는 위 주인공 결과 대사 대신 이 대사가 나와요."),
       N("판정 서버 오류 (간식을 돌려줘요)", f"도깨비: {const('JudgeError')}")),
     N("이야기 종료", "글자 없이 소풍 장면", f"화면을 누르면 도깨비: {const('EndingAsk')}"),
 ]
@@ -141,7 +141,7 @@ python Tools/docs/make_dialogue_tree.py
 
 - **순서대로:** 위에서 아래로 차례로 나와요.
 - **N개 중 하나:** 그 상황이 올 때마다 무작위로 하나를 골라요.
-- **얼굴:** 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨 두 가지이고, 도깨비는 한 가지예요.
+- **얼굴:** 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨, 울음(틀렸을 때) 세 가지이고, 도깨비는 한 가지예요.
 - **색 조합:** 색을 어떻게 섞는지는 대사에서 알려 주지 않아요.
 
 ## 대사
@@ -185,7 +185,7 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>대
 <h1>찾아라! 도깨비 대사 트리</h1><p class='sub'>게임에 나오는 모든 대사를 흐름 순서대로 정리했어요. 코드에서 자동으로 만든 문서예요.</p>
 <ul><li><b>순서대로:</b> 위에서 아래로 차례로 나와요.</li>
 <li><b>N개 중 하나:</b> 그 상황이 올 때마다 무작위로 하나를 골라요.</li>
-<li><b>얼굴:</b> 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨 두 가지이고, 도깨비는 한 가지예요.</li>
+<li><b>얼굴:</b> 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨, 울음(틀렸을 때) 세 가지이고, 도깨비는 한 가지예요.</li>
 <li><b>색 조합:</b> 색을 어떻게 섞는지는 대사에서 알려 주지 않아요.</li></ul>
 {"".join(branch(label, kids) for label, kids in tree)}
 {"".join(branch(label, kids) for label, kids in screen)}

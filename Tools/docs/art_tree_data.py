@@ -10,7 +10,9 @@ TREE = [
         ("이야기 종료", "Background/BG_Picnic", TEAM + ", 왼쪽 가장자리의 투명한 줄은 옆 색으로 채움"),
     ]),
     ("HUD (그리기부터 채점표까지)", "Frame/HUD", [
-        ("SnackRow/Snack_0~2", "UI/HUD_SnackBag", G9 + ", 쓴 간식은 왼쪽부터 흐리게"),
+        ("MagnifierButton (돋보기)", "UI/Magnifier_Icon", TEAM + " 렌즈가 막힌 돋보기, 여백을 잘라 냄"),
+        ("ChocolateRow/Chocolate_0~1 (돋보기에 씀)", "UI/HUD_Chocolate", TEAM + ", 여백을 잘라 냄. 돋보기에 붙이고, 쓴 것은 오른쪽부터 흐리게"),
+        ("CandyRow/Candy_0~1 (쪽지를 건넬 때 씀)", "UI/HUD_Candy", TEAM + ", 여백을 잘라 냄. 쓴 것은 왼쪽부터 흐리게"),
         ("PauseButton", "UI/HUD_PauseButton", G9),
     ]),
     ("향과 촛대 (그리는 동안)", "Frame/HUD/TimerGroup", [
@@ -34,9 +36,11 @@ TREE = [
         ("GiveNote, DialogueBox", "UI/Common_Card", CODE),
         ("Opening/Bag · Mat · Gimbap", "물건별 원본 (아래 단계 폴더)", ""),
         ("Opening/Idea/Pencil", "UI/Draw_PencilButton", TEAM),
-        ("Opening/Idea/Snack, SnackOut", "UI/HUD_SnackBag", TEAM),
+        ("Opening/Idea/Snack, SnackOut", "UI/HUD_Candy", TEAM),
         ("DialogueBox/Face (주인공 기쁨)", "Characters/Char_BoyFace_Happy", TEAM + " 그림에서 얼굴만 자름"),
         ("DialogueBox/Face (주인공 놀람)", "Characters/Char_BoyFace_Surprised", TEAM + " 그림에서 얼굴만 자름"),
+        ("DialogueBox/Face (주인공 울음 · 결과 화면에서 틀렸을 때)", "Characters/Char_BoyFace_Sad", TEAM + " 그림에서 얼굴만 자름"),
+        ("(아직 안 씀) 우는 주인공 전신", "Characters/Char_Boy_Sad", TEAM + ", 얼굴만 잘라 위 얼굴로 씀"),
         ("DialogueBox/Face (도깨비)", "Characters/Char_DokkaebiFace_Normal", TEAM),
         ("DialogueBox/Face (도깨비 뿌듯 · 맞았을 때)", "Characters/Char_DokkaebiFace_Proud", TEAM),
         ("DialogueBox/Face (도깨비 놀림 · 틀렸을 때)", "Characters/Char_DokkaebiFace_Tease", TEAM),
@@ -66,6 +70,8 @@ TREE = [
         ("굵기 점 · 색 미리보기", "UI/Common_Circle", CODE),
         ("고른 도구 표시", "UI/Common_SelectRing", CODE),
         ("SubmitButton", "UI/Draw_SubmitButton", G10),
+        ("MagnifierPeek/Lens/Frame", "UI/Magnifier_Frame", TEAM + " 렌즈가 뚫린 돋보기, 둘레의 옅은 막을 지움"),
+        ("MagnifierPeek/Lens/Hole (렌즈 모양, 안에 원본)", "UI/Common_Circle", CODE),
     ]),
     ("5. 색 섞기", "Frame/DrawPanel/MixerPanel", [
         ("MixerPanel", "UI/Common_Card", CODE),
@@ -82,6 +88,7 @@ TREE = [
         ("Dokkaebi (1단계 실패)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("ReturnedItem", "물건별 원본 또는 Wrong (아래 단계 폴더)", ""),
         ("RetryButton 아이콘", "UI/Result_IconRetry", CODE),
+        ("RetryButton/Cost", "UI/HUD_Candy", TEAM),
         ("GiveUpButton 아이콘", "UI/Result_IconGiveUp", CODE),
     ]),
     ("8. 채점표", "Frame/ComparePanel", [
@@ -91,6 +98,8 @@ TREE = [
     ]),
     ("9. 이야기 종료", "Frame/EndingPanel", [
         ("Boy", "Characters/Char_Boy_Happy", TEAM),
+        ("Candy_1~10 (단계마다 남은 사탕을 더해 돗자리에)", "UI/HUD_Candy", TEAM),
+        ("Chocolate_1~10 (단계마다 남은 초콜릿을 더해 돗자리에)", "UI/HUD_Chocolate", TEAM),
         ("FriendSlot", "물건별 원본 (아래 단계 폴더)", ""),
         ("Dokkaebi", "Characters/Char_Dokkaebi_Normal", TEAM),
         ("Dokkaebi (방망이를 못 찾았을 때)", "Characters/Char_Dokkaebi_NoBat", TEAM),

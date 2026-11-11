@@ -8,7 +8,7 @@ using UnityEngine;
 // 특징 이름은 결과 대사에 넣지 않아요 (정답 힌트가 되니까요). 판정 기준은 시작 대화의 생김새 대사로 알려 줘요.
 public static class GameScript
 {
-    public enum Face { BoySurprised, BoyHappy, Dokkaebi }
+    public enum Face { BoySurprised, BoyHappy, Dokkaebi, BoySad }
 
     public struct Line
     {
@@ -139,7 +139,7 @@ public static class GameScript
     const string BoyFriendSuccess = "다행이다! 많이 무서웠지? 이제 같이 소풍 가자!";
     const string BoyFriendWrong = "어… 내 친구가 아니야. 간식 하나 더 줄 테니까 다시 그려 볼까?";
 
-    public const string BoyOutOfSnacks = "어떡해… 간식이 다 떨어졌어.";
+    public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
     public const string EndingAsk = "소풍 즐거웠지? 처음으로 돌아갈까?";
 

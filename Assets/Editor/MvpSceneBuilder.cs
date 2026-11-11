@@ -81,6 +81,7 @@ public static class MvpSceneBuilder
         Sprite boyHappy = LoadSprite("Characters/Char_Boy_Happy.png");
         Sprite faceHappy = LoadSprite("Characters/Char_BoyFace_Happy.png");
         Sprite faceSurprised = LoadSprite("Characters/Char_BoyFace_Surprised.png");
+        Sprite faceSad = LoadSprite("Characters/Char_BoyFace_Sad.png");                 // 틀렸을 때 · 간식이 떨어졌을 때
         Sprite dokkaebi = LoadSprite("Characters/Char_Dokkaebi_Normal.png");
         Sprite dokkaebiThink = LoadSprite("Characters/Char_Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
         Sprite dokkaebiSwing = LoadSprite("Characters/Char_Dokkaebi_Swing.png");    // 결과 : 방망이를 휘둘러요
@@ -90,7 +91,8 @@ public static class MvpSceneBuilder
         Sprite faceDokkaebiTease = LoadSprite("Characters/Char_DokkaebiFace_Tease.png");
         Sprite picnic = LoadSprite("Background/BG_Picnic.png");                     // 이야기 종료 (아트팀 그림)
         Sprite friend = LoadSprite("Stage5_Friend/Friend_Original.png");
-        Sprite snack = T("HUD_SnackBag");                                 // 간식 = 시안의 복주머니
+        Sprite snack = T("HUD_Candy");                                    // 사탕 : 쪽지를 건넬 때 (아트팀 그림)
+        Sprite chocolate = T("HUD_Chocolate");                            // 초콜릿 : 돋보기를 쓸 때 (아트팀 그림)
         Sprite room = LoadSprite("Background/BG_Room.png");          // 시작 화면 그림에서 글자를 지운 방
         Sprite startBackground = LoadSprite("Background/BG_Start.png");  // 시작 화면의 빈 방 (물건은 위에 하나씩 올려요)
         Sprite iconClose = LoadSprite("UI/Mix_CloseIcon.png");
@@ -144,24 +146,48 @@ public static class MvpSceneBuilder
         var gm = gmGo.AddComponent<GameManager>();
         var judge = gmGo.AddComponent<OpenAIJudge>();
 
-        // ── HUD (게임 중에만 보임) : 위 줄 오른쪽에 남은 간식 복주머니 · 일시정지, 오른쪽 긴 향 ──
+        // ── HUD (게임 중에만 보임) : 위 줄에 돋보기 · 초콜릿 · 사탕 · 일시정지, 오른쪽 긴 향 ──
         //   좌표는 시안 그림(2248x3952) 픽셀 그대로 적고, PlaceM 이 화면(1080x1899) 크기로 바꿔요.
         var hud = NewEmpty("HUD", canvas);
         var pauseImg = TeamImage("PauseButton", hud, T("HUD_PauseButton"), 1880, 112, 2108, 344);
         pauseImg.raycastTarget = true;
         var pauseButton = pauseImg.gameObject.AddComponent<Button>();
 
-        // 복주머니 3개 : 간식을 쓰면 왼쪽부터 흐려져요 (GameManager.UpdateSnacks)
-        var snackRow = NewEmpty("SnackRow", hud);
-        var snackIcons = new Image[3];
-        var snackAnims = new SimpleAnim[3];
-        for (int i = 0; i < snackIcons.Length; i++)
+        // 위 줄 : 돋보기 | 초콜릿 2개 (돋보기에 붙여서) | 사탕 2개 | 일시정지. 단계마다 새로 받아요.
+        //   쓴 초콜릿은 오른쪽부터, 쓴 사탕은 왼쪽부터 흐려져요 (GameManager.UpdateSnacks)
+        var magImg = TeamImage("MagnifierButton", hud, T("Magnifier_Icon"), 120, 104, 330, 352);
+        magImg.preserveAspect = true;
+        magImg.raycastTarget = true;
+        var magnifierButton = magImg.gameObject.AddComponent<Button>();
+        var magColors = magnifierButton.colors;
+        magColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.45f);    // 초콜릿이 없으면 흐리게
+        magnifierButton.colors = magColors;
+        const int PerStage = 2;         // 단계마다 받는 사탕 · 초콜릿 수 (GameManager 와 같게)
+        const int SnackCount = 10;      // 이야기 종료에 모아 놓을 수 있는 최대 수 (5단계 x 2)
+        var chocolateIcons = new Image[PerStage];
+        var candyIcons = new Image[PerStage];
+        var snackAnims = new SimpleAnim[PerStage * 2];
+        // 단계 첫 그리기 때 들어오는 움직임 : 초콜릿은 돋보기 뒤에서 오른쪽으로 꺼내지듯이 (가까운 것부터),
+        //   사탕은 오른쪽 화면 밖에서 왼쪽으로 (오른쪽 것부터). fromX = 출발하는 시안 x (가운데)
+        void SnackRow(string row, string item, Sprite sprite, float x0, float step, float w, Image[] icons, int animFrom,
+                      SimpleAnim.Kind kind, float fromX, bool rightFirst)
         {
-            float x0 = 1192 + i * 220;
-            snackIcons[i] = TeamImage("Snack_" + i, snackRow, snack, x0, 127, x0 + 182, 329);
-            snackAnims[i] = Anim(snackIcons[i].gameObject, SimpleAnim.Kind.SlideRight, 0.4f, (snackIcons.Length - 1 - i) * 0.14f, 900f);
-            snackAnims[i].enabled = false;
+            var parent = NewEmpty(row, hud);
+            for (int i = 0; i < PerStage; i++)
+            {
+                float x = x0 + i * step;
+                icons[i] = TeamImage($"{item}_{i}", parent, sprite, x, 132, x + w, 324);
+                icons[i].preserveAspect = true;
+                float distance = Mathf.Abs(x + w * 0.5f - fromX) * K;
+                float delay = (rightFirst ? PerStage - 1 - i : i) * 0.14f;
+                snackAnims[animFrom + i] = Anim(icons[i].gameObject, kind, 0.45f, delay, distance);
+                snackAnims[animFrom + i].enabled = false;
+            }
         }
+        SnackRow("ChocolateRow", "Chocolate", chocolate, 340, 200, 180, chocolateIcons, 0, SimpleAnim.Kind.SlideRight, 225, rightFirst: false);
+        SnackRow("CandyRow", "Candy", snack, 1420, 230, 200, candyIcons, PerStage, SimpleAnim.Kind.SlideLeft, 2360, rightFirst: true);
+        magImg.transform.SetAsLastSibling();    // 초콜릿은 돋보기 뒤에서,
+        pauseImg.transform.SetAsLastSibling();  // 사탕은 일시정지 버튼 뒤를 지나 나와요
 
         // 향 : 줄기가 위에서부터 타고, 불꽃 · 재 · 연기가 끝을 따라 움직여요 (IncenseBurn)
         var timerGroup = NewEmpty("TimerGroup", hud);
@@ -402,6 +428,47 @@ public static class MvpSceneBuilder
         submitColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.55f);   // 빈 쪽지면 흐리게
         submitButton.colors = submitColors;
 
+        // 둘러보기 : 화면을 어둡게 덮고, 렌즈 안에만 그림판 자리에 놓인 원본이 보여요 (MagnifierPeek)
+        var peekGo = NewImage("MagnifierPeek", draw, new Color(0f, 0f, 0f, 0.4f));    // 덮개가 누르기를 모두 받아서 그릴 수 없어요
+        Stretch(peekGo.rectTransform);
+        var peek = peekGo.gameObject.AddComponent<MagnifierPeek>();
+        var peekArea = new GameObject("Area", typeof(RectTransform)).GetComponent<RectTransform>();
+        peekArea.SetParent(peekGo.transform, false);
+        PlaceM(peekArea, 230, 643, 1845, 2550);                                 // 그림판과 같은 자리
+        // 돋보기 그림(362x484)의 렌즈 구멍 : 가운데 (169, 174), 지름 약 230
+        const float lensHole = 280f, frameW = 362f, frameH = 484f, holeX = 169f, holeY = 174f, holeD = 230f;
+        float lensScale = lensHole / holeD;
+        var lens = new GameObject("Lens", typeof(RectTransform)).GetComponent<RectTransform>();
+        lens.SetParent(peekGo.transform, false);
+        lens.sizeDelta = new Vector2(frameW, frameH) * lensScale;
+        lens.pivot = new Vector2(holeX / frameW, 1f - holeY / frameH);           // 기준점 = 렌즈 구멍 가운데
+        var lensMask = NewImage("Hole", lens, Color.white);
+        lensMask.sprite = circleSprite;
+        lensMask.raycastTarget = false;
+        lensMask.rectTransform.anchorMin = lensMask.rectTransform.anchorMax = lens.pivot;
+        lensMask.rectTransform.anchoredPosition = Vector2.zero;
+        lensMask.rectTransform.sizeDelta = Vector2.one * (lensHole + 12f);      // 테두리 밑까지
+        lensMask.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+        var peekView = NewImage("View", lensMask.transform, new Color32(253, 252, 245, 255));   // 쪽지 종이 색
+        peekView.raycastTarget = false;
+        peekView.rectTransform.sizeDelta = peekArea.sizeDelta;
+        var peekOriginal = NewImage("Original", peekView.transform, Color.white);
+        peekOriginal.preserveAspect = true;
+        peekOriginal.raycastTarget = false;
+        Stretch(peekOriginal.rectTransform, 70);
+        var lensFrame = NewImage("Frame", lens, Color.white);
+        lensFrame.sprite = T("Magnifier_Frame");
+        lensFrame.raycastTarget = false;
+        Stretch(lensFrame.rectTransform);
+        var lensAnim = Anim(lens.gameObject, SimpleAnim.Kind.Pop, 0.3f, 0f, 0f);
+        var pso = new SerializedObject(peek);
+        Set(pso, "area", peekArea);
+        Set(pso, "lens", lens);
+        Set(pso, "view", peekView.rectTransform);
+        Set(pso, "original", peekOriginal);
+        Set(pso, "lensAnim", lensAnim);
+        pso.ApplyModifiedPropertiesWithoutUndo();
+
         // 혼색 팔레트 (색 섞기를 누르면 물감 줄 + 도구 줄 자리를 딱 덮으며 열림)
         var mixerGo = NewCard("MixerPanel", draw, Vector2.zero, Vector2.zero);
         PlaceM((RectTransform)mixerGo, 124, 2660, 2124, 3440);
@@ -596,17 +663,19 @@ public static class MvpSceneBuilder
         var endBag = Item("BagSlot", 50, 418, 74, 66, 0.7f);
         var endGimbap = Item("GimbapSlot", 150, 468, 62, 62, 1.2f);
         var endBat = Item("BatSlot", 246, 416, 66, 90, 1.7f);
-        // 물건 옆 간식 : 순서는 방망이, 가방, 돗자리, 김밥, 친구
-        float[][] snackSpots = { new float[] { 316, 424, 2.2f }, new float[] { 128, 424, 1.2f }, new float[] { 22, 490, 0.7f }, new float[] { 216, 472, 1.7f }, new float[] { 222, 250, 2.5f } };
-        var endingSnacks = new GameObject[15];
-        for (int i = 0; i < 5; i++)
-            for (int k = 0; k < 3; k++)
-            {
-                float[] spot = snackSpots[i];
-                var s = MImage($"Snack_{i + 1}_{k + 1}", ending, snack, spot[0], spot[1] + k * 17, 15, 16);
-                Anim(s.gameObject, SimpleAnim.Kind.Pop, 0.35f, spot[2] + k * 0.1f, 0f);
-                endingSnacks[i * 3 + k] = s.gameObject;
-            }
+        // 단계마다 남은 간식을 모두 더해 돗자리 오른쪽 아래에 사탕, 왼쪽 아래에 초콜릿으로 모아 놓아요 (두 줄로 5개씩)
+        var endingCandies = new GameObject[SnackCount];
+        var endingChocolates = new GameObject[SnackCount];
+        for (int k = 0; k < SnackCount; k++)
+        {
+            float dx = (k % 5) * 17f, dy = (k / 5) * 15f;
+            var c = MImage($"Candy_{k + 1}", ending, snack, 232 + dx + (k / 5) * 8f, 516 + dy, 22, 16);
+            Anim(c.gameObject, SimpleAnim.Kind.Pop, 0.35f, 2.2f + k * 0.06f, 0f);
+            endingCandies[k] = c.gameObject;
+            var h = MImage($"Chocolate_{k + 1}", ending, chocolate, 26 + dx + (k / 5) * 8f, 524 + dy, 17, 20);
+            Anim(h.gameObject, SimpleAnim.Kind.Pop, 0.35f, 2.6f + k * 0.06f, 0f);
+            endingChocolates[k] = h.gameObject;
+        }
         Color32[] confettiColors = { new Color32(242, 119, 107, 255), new Color32(245, 201, 107, 255), new Color32(90, 167, 217, 255) };
         float[][] confetti = { new float[] { 40, 3.2f, 0f }, new float[] { 110, 2.6f, 0.5f }, new float[] { 190, 3.5f, 1f }, new float[] { 260, 2.9f, 0.2f }, new float[] { 325, 3.3f, 1.4f } };
         for (int i = 0; i < confetti.Length; i++)
@@ -628,6 +697,7 @@ public static class MvpSceneBuilder
         var resumeButton = NewButton("ResumeButton", pauseCard, "계속하기", new Vector2(0, 260), new Vector2(520, 130));
 
         // HUD 가 패널보다 위에 그려지도록 맨 뒤로 보내기 (Hierarchy 아래쪽일수록 앞에 그려짐). 일시정지 화면은 그보다 위
+        peekGo.transform.SetAsLastSibling();    // 둘러보는 동안은 색 섞기 판까지 덮어요
         hud.SetAsLastSibling();
         pause.SetAsLastSibling();
 
@@ -635,6 +705,7 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(startGameButton.onClick, gm.StartGame);
         UnityEventTools.AddPersistentListener(dialogueTapButton.onClick, gm.DialogueTap);
         UnityEventTools.AddPersistentListener(submitButton.onClick, gm.Submit);
+        UnityEventTools.AddPersistentListener(magnifierButton.onClick, gm.MagnifierTap);
         UnityEventTools.AddPersistentListener(retryButton.onClick, gm.Retry);
         UnityEventTools.AddPersistentListener(giveUpButton.onClick, gm.ShowCompare);
         UnityEventTools.AddPersistentListener(resultTapButton.onClick, gm.ResultTap);
@@ -665,7 +736,8 @@ public static class MvpSceneBuilder
         Set(so, "toolBar", toolBar);
         Set(so, "judge", judge);
         Set(so, "hud", hud.gameObject);
-        SetArray(so, "snackIcons", snackIcons);
+        SetArray(so, "chocolateIcons", chocolateIcons);
+        SetArray(so, "candyIcons", candyIcons);
         SetArray(so, "snackAnims", snackAnims);
         Set(so, "timerGroup", timerGroup.gameObject);
         Set(so, "timerText", timerText);
@@ -697,6 +769,9 @@ public static class MvpSceneBuilder
         Set(so, "dialogueDim", dialogueDim.gameObject);
         Set(so, "faceBoySurprised", faceSurprised);
         Set(so, "faceBoyHappy", faceHappy);
+        Set(so, "faceBoySad", faceSad);
+        Set(so, "magnifierButton", magnifierButton);
+        Set(so, "magnifierPeek", peek);
         Set(so, "faceDokkaebi", faceDokkaebi);
         Set(so, "faceDokkaebiProud", faceDokkaebiProud);
         Set(so, "faceDokkaebiTease", faceDokkaebiTease);
@@ -738,7 +813,8 @@ public static class MvpSceneBuilder
         Set(so, "endingDokkaebi", endDokkaebi);
         Set(so, "endingBox", endingBoxComp);
         SetArray(so, "endingItems", new[] { endBat, endBag, endMat, endGimbap, endFriend });
-        SetArray(so, "endingSnacks", endingSnacks);
+        SetArray(so, "endingCandies", endingCandies);
+        SetArray(so, "endingChocolates", endingChocolates);
         Set(so, "observeImage", observeImage);
         Set(so, "drawTitle", drawTitle);
         Set(so, "submitButton", submitButton);
@@ -782,6 +858,7 @@ public static class MvpSceneBuilder
         giveSnack.gameObject.SetActive(false);
         openingGroup.gameObject.SetActive(false);
         mixerCard.gameObject.SetActive(false);
+        peekGo.gameObject.SetActive(false);
         pause.gameObject.SetActive(false);
         hud.gameObject.SetActive(false);
 

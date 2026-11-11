@@ -24,8 +24,11 @@ static class MvpLayoutCheck
     static readonly string[][] Intended =
     {
         new[] { "DrawPanel/BoardFrame", "DrawPanel/Board" },   // 그림판은 틀의 뚫린 종이 면 뒤에 있어요
+        new[] { "DrawPanel/MagnifierPeek/Lens/Hole", "DrawPanel/MagnifierPeek/Lens/Frame" },
         new[] { "JudgePanel/MyDrawingBack", "JudgePanel/DokkaebiEnter" },   // 간식이 내 그림 앞을 지나 빠져나가요
         new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
+        new[] { "EndingPanel/Candy_", "EndingPanel/Candy_" },   // 남은 간식은 돗자리에 수북이 모아 놓아요
+        new[] { "EndingPanel/Chocolate_", "EndingPanel/Chocolate_" },
         new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
     };
@@ -129,6 +132,7 @@ static class MvpLayoutCheck
         foreach (Item it in items)
         {
             if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
+            if (it.path.StartsWith("HUD/ChocolateRow") || it.path.StartsWith("HUD/CandyRow")) continue;   // 단계 첫 그리기 때 왼쪽 화면 밖에서 들어오는 중일 수 있어요
             Rect o = Opaque(it);
             if (o.width <= 0) continue;
             if (o.xMin < frameR.xMin - 2 || o.xMax > frameR.xMax + 2 || o.yMin < frameR.yMin - 2 || o.yMax > frameR.yMax + 2)

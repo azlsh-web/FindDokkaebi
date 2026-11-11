@@ -10,10 +10,10 @@ using UnityEngine.UI;
 //
 //   [시작 화면]
 //       ↓ 게임 시작하기
-//   [오프닝 (1단계)] → [대화] → [떠올리기 3초] → [쪽지 쓰기 60초] → [건네기: 간식 -1] → [판정 대기] → [결과]
+//   [오프닝 (1단계)] → [대화] → [떠올리기 3초] → [쪽지 쓰기 60초] → [건네기: 사탕 -1] → [판정 대기] → [결과]
 //                                                   ↑                                               │
 //                                                   └────────── 다시 (이전 그림에 이어 그리기) ──────┤ (실패 + 간식 남음)
-//                                                                                                   ↓ 성공 / 포기 / 간식 없음
+//                                                                                                   ↓ 성공 / 포기 / 사탕 없음
 //                                                                                                [채점표]
 //                                                                                                   ↓ 다음 단계 (5단계 뒤엔)
 //                                                                                              [이야기 종료]
@@ -26,7 +26,9 @@ using UnityEngine.UI;
 //   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요. 한 번에 패널 하나만 켜요.
 //   - 위쪽 HUD(간식, 일시정지, 향)는 그리기부터 채점표까지만 보여요.
 //
-// 간식 규칙 : 단계마다 3개, 제출할 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
+// 간식 규칙 : 단계마다 사탕 2개 · 초콜릿 2개를 새로 받아요.
+//   사탕 : 쪽지를 건넬 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
+//   초콜릿 : 돋보기 1번에 1개. 그리는 중에 맨 위 돋보기를 누르면 렌즈 안으로 원본을 3초 둘러봐요. 향은 계속 타요.
 //
 // 판정 : 항상 자동이에요. 도깨비의 찾는 동작은 한 바퀴씩 반복하고, 응답이 오면 그 바퀴를 마치고 넘어가요.
 //   AI 오류가 나면 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
@@ -43,9 +45,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] StageData[] stages;
 
     [Header("규칙 (기획서 수치)")]
-    [SerializeField] int snacksPerStage = 3;
+    [SerializeField] int candiesPerStage = 2;       // 쪽지를 건넬 때 쓰는 사탕 (단계마다)
+    [SerializeField] int chocolatesPerStage = 2;    // 돋보기에 쓰는 초콜릿 (단계마다)
     [SerializeField] float observeSeconds = 3f;
     [SerializeField] float drawSeconds = 60f;
+    [SerializeField] float peekSeconds = 3f;        // 돋보기로 둘러보는 시간
 
     [Header("다른 스크립트")]
     [SerializeField] DrawingBoard board;
@@ -54,7 +58,9 @@ public class GameManager : MonoBehaviour
 
     [Header("HUD")]
     [SerializeField] GameObject hud;
-    [SerializeField] Image[] snackIcons;            // 오른쪽 위 복주머니 (쓴 간식은 흐리게)
+    [SerializeField] Button magnifierButton;        // 맨 위 왼쪽 돋보기 (초콜릿 1개로 둘러보기)
+    [SerializeField] Image[] chocolateIcons;        // 돋보기 바로 오른쪽 초콜릿 (쓴 것은 오른쪽부터 흐리게)
+    [SerializeField] Image[] candyIcons;            // 그 오른쪽 사탕 (쓴 것은 왼쪽부터 흐리게)
     [SerializeField] SimpleAnim[] snackAnims;       // 단계 첫 그리기 때 들어오는 움직임
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
     [SerializeField] TMP_Text timerText;            // 남은 초 숫자 "58"
@@ -84,6 +90,7 @@ public class GameManager : MonoBehaviour
     [Header("캐릭터 그림")]
     [SerializeField] Sprite faceBoySurprised;
     [SerializeField] Sprite faceBoyHappy;
+    [SerializeField] Sprite faceBoySad;             // 틀렸을 때 · 간식이 떨어졌을 때 : 우는 얼굴
     [SerializeField] Sprite faceDokkaebi;
     [SerializeField] Sprite faceDokkaebiProud;     // 맞았을 때 : 뿌듯한 얼굴
     [SerializeField] Sprite faceDokkaebiTease;     // 틀렸을 때 : 놀리는 얼굴
@@ -124,6 +131,7 @@ public class GameManager : MonoBehaviour
     [Header("그리기 화면")]
     [SerializeField] TMP_Text drawTitle;
     [SerializeField] Button submitButton;
+    [SerializeField] MagnifierPeek magnifierPeek;   // 렌즈로 원본 둘러보기
 
     [Header("판정 대기 화면")]
     [SerializeField] RawImage judgeDrawing;         // 화면 한 곳에 떠 있는 내 쪽지
@@ -149,11 +157,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject[] scoreCircles;     // 맞으면 초록 동그라미
     [SerializeField] GameObject[] scoreSlashes;     // 틀리면 빨간 빗금
 
-    [Header("이야기 종료 화면 : 물건과 남은 간식 (방망이, 가방, 돗자리, 김밥, 친구 순)")]
+    [Header("이야기 종료 화면 : 물건 (방망이, 가방, 돗자리, 김밥, 친구 순)과 끝까지 남은 간식")]
     [SerializeField] DialogueBox endingBox;
     [SerializeField] Image endingDokkaebi;
     [SerializeField] Image[] endingItems;
-    [SerializeField] GameObject[] endingSnacks;     // 단계마다 3개씩 차례로
+    [SerializeField] GameObject[] endingCandies;    // 돗자리에 모아 놓은 남은 사탕 (단계마다 남은 것을 모두 더해요)
+    [SerializeField] GameObject[] endingChocolates; // 돗자리에 모아 놓은 남은 초콜릿
 
     static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);
 
@@ -171,12 +180,14 @@ public class GameManager : MonoBehaviour
     State state;
     ResultPhase resultPhase;
     int stageIndex;
-    int snacks;
+    int candies;            // 이번 단계에 남은 사탕
+    int chocolates;         // 이번 단계에 남은 초콜릿
+    int[] candiesLeft;      // 단계별로 끝날 때 남은 사탕 (이야기 종료에서 모아 놓아요)
+    int[] chocolatesLeft;
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;
     bool[] cleared;
-    int[] snacksLeft;
     Sprite[] itemsFound;    // 단계별로 마지막에 받은 물건 (이야기 종료 장면에 놓여요)
     int judgeTicket;        // 제출할 때마다 +1. 늦게 도착한 옛 판정 결과를 버리는 데 써요.
     float judgeStartTime;
@@ -247,9 +258,10 @@ public class GameManager : MonoBehaviour
         Sfx.Play(Sfx.Tap);
         attempts = new int[stages.Length];
         cleared = new bool[stages.Length];
-        snacksLeft = new int[stages.Length];
         itemsFound = new Sprite[stages.Length];
         batLost = false;
+        candiesLeft = new int[stages.Length];
+        chocolatesLeft = new int[stages.Length];
         backgroundImage.sprite = gameBackground;
         int first = 0;
 #if UNITY_EDITOR
@@ -259,7 +271,8 @@ public class GameManager : MonoBehaviour
         {
             cleared[i] = true;
             attempts[i] = 1;
-            snacksLeft[i] = snacksPerStage - 1;
+            candiesLeft[i] = candiesPerStage - 1;
+            chocolatesLeft[i] = chocolatesPerStage;
             itemsFound[i] = stages[i].originalSprite;
         }
 #endif
@@ -272,7 +285,8 @@ public class GameManager : MonoBehaviour
     {
         state = State.Dialogue;
         stageIndex = index;
-        snacks = snacksPerStage;
+        candies = candiesPerStage;
+        chocolates = chocolatesPerStage;
         snackIntroPending = true;
         lastPresent = null;
         toolBar.Setup(Stage.colorMode);
@@ -428,13 +442,14 @@ public class GameManager : MonoBehaviour
         timerGroup.SetActive(true);
         Sfx.Bgm(Sfx.BgmDraw);
         ShowPanel(drawPanel);
+        magnifierPeek.Stop();
         UpdateSnacks();
         if (!keepDrawing) noteRoutine = StartCoroutine(WriteNote());
 
         if (snackIntroPending)
         {
             snackIntroPending = false;
-            foreach (SimpleAnim a in snackAnims) a.Play(SimpleAnim.Kind.SlideRight);
+            foreach (SimpleAnim a in snackAnims) a.Play();     // 초콜릿은 돋보기 뒤에서 오른쪽으로, 사탕은 오른쪽 끝에서 왼쪽으로
             Sfx.Play(Sfx.SnackIn);
         }
     }
@@ -450,10 +465,21 @@ public class GameManager : MonoBehaviour
         drawTitle.maxVisibleCharacters = int.MaxValue;
     }
 
+    /// <summary>[버튼] 맨 위 돋보기 : 그리는 중에 초콜릿 1개로 렌즈 안의 원본을 잠깐 둘러봐요 (향은 계속 타요)</summary>
+    public void MagnifierTap()
+    {
+        if (state != State.Draw || magnifierPeek.Active || chocolates <= 0) return;
+        Sfx.Play(Sfx.Tap);
+        chocolates--;
+        UpdateSnacks();
+        magnifierPeek.Begin(Stage.originalSprite, peekSeconds);
+    }
+
     /// <summary>[버튼] 다 그렸어 (또는 시간 초과로 자동 제출) : 쪽지와 간식을 건네러 가요</summary>
     public void Submit()
     {
         if (state != State.Draw) return;
+        magnifierPeek.Stop();
 
         state = State.Give;
         savedDrawTime = Mathf.Max(timeLeft, 10f);
@@ -490,13 +516,13 @@ public class GameManager : MonoBehaviour
         if (giveStep == 0)
         {
             giveStep = 1;
-            int usedBefore = snacksPerStage - snacks;
-            snacks--;
+            int usedBefore = candiesPerStage - candies;
+            candies--;
             attempts[stageIndex]++;
             UpdateSnacks();
-            // 방금 쓴 간식 자리에서 도깨비에게 날아가요
+            // 방금 쓴 사탕 자리에서 도깨비에게 날아가요
             Vector2 p = giveSnackOut.anchoredPosition;
-            p.x = snackIcons[Mathf.Clamp(usedBefore, 0, snackIcons.Length - 1)].rectTransform.anchoredPosition.x;
+            p.x = candyIcons[Mathf.Clamp(usedBefore, 0, candyIcons.Length - 1)].rectTransform.anchoredPosition.x;
             giveSnackOut.anchoredPosition = p;
             giveSnackOut.gameObject.SetActive(true);
             giveNoteAnim.Play(SimpleAnim.Kind.NoteGive);
@@ -579,11 +605,11 @@ public class GameManager : MonoBehaviour
         ShowResult(verdict.present, verdict.notes);
     }
 
-    // AI 판정이 실패했을 때 : 간식 돌려주고, 대사를 누르면 그림으로 돌아가요
+    // AI 판정이 실패했을 때 : 사탕을 돌려주고, 대사를 누르면 그림으로 돌아가요
     void OnJudgeError(string message)
     {
         if (state != State.Judge) return;
-        snacks++;
+        candies++;
         attempts[stageIndex]--;
         judgeTicket++;      // 이 제출은 끝난 것으로 (늦게 오는 결과는 무시)
         UpdateSnacks();
@@ -659,10 +685,10 @@ public class GameManager : MonoBehaviour
             resultPhase = ResultPhase.Boy;
             resultDokkaebi.sprite = (stageIndex == 0 && wrong) || batLost ? dokkaebiNoBat : dokkaebiNormal;
             resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
-            string line = wrong && snacks <= 0 ? GameScript.BoyOutOfSnacks : GameScript.BoyResult(stageIndex, outcome);
-            resultBox.Say(line, wrong ? faceBoySurprised : faceBoyHappy);
+            string line = wrong && candies <= 0 ? GameScript.BoyOutOfSnacks : GameScript.BoyResult(stageIndex, outcome);
+            resultBox.Say(line, wrong ? faceBoySad : faceBoyHappy);     // 엉뚱한 물건 · 간식 없음 : 우는 얼굴
         }
-        else if (outcome != 0 && snacks > 0)
+        else if (outcome != 0 && candies > 0)
         {
             // 대사 상자 자리에 다시 · 포기 버튼이 나란히 나와요
             resultPhase = ResultPhase.Choose;
@@ -701,7 +727,8 @@ public class GameManager : MonoBehaviour
             scoreSlashes[i].SetActive(!ok);
         }
 
-        snacksLeft[stageIndex] = snacks;
+        candiesLeft[stageIndex] = candies;
+        chocolatesLeft[stageIndex] = chocolates;
         if (stageIndex == 0) batLost = !cleared[0];
         Sfx.Play(Sfx.Mark);
         ShowPanel(comparePanel);
@@ -717,7 +744,7 @@ public class GameManager : MonoBehaviour
 
     // ───────────── 이야기 종료 ─────────────
 
-    /// <summary>소풍 장면 : 물건이 날아와 놓이고, 물건 옆에 남은 간식이 나와요</summary>
+    /// <summary>소풍 장면 : 물건이 날아와 놓이고, 단계마다 남은 간식이 돗자리에 모여요.</summary>
     void ShowEnding()
     {
         state = State.Ending;
@@ -726,12 +753,15 @@ public class GameManager : MonoBehaviour
         endingAsking = false;
         endingBox.gameObject.SetActive(false);
         endingDokkaebi.sprite = batLost ? dokkaebiNoBat : dokkaebiNormal;
+        int candyTotal = 0, chocolateTotal = 0;
         for (int i = 0; i < endingItems.Length; i++)
         {
             endingItems[i].sprite = itemsFound[i] != null ? itemsFound[i] : stages[i].originalSprite;
-            for (int k = 0; k < snacksPerStage; k++)
-                endingSnacks[i * snacksPerStage + k].SetActive(k < snacksLeft[i]);
+            candyTotal += candiesLeft[i];
+            chocolateTotal += chocolatesLeft[i];
         }
+        for (int k = 0; k < endingCandies.Length; k++) endingCandies[k].SetActive(k < candyTotal);
+        for (int k = 0; k < endingChocolates.Length; k++) endingChocolates[k].SetActive(k < chocolateTotal);
         Sfx.Bgm(Sfx.BgmPicnic);
         Sfx.Play(Sfx.Cheer);
         ShowPanel(endingPanel);
@@ -769,7 +799,8 @@ public class GameManager : MonoBehaviour
     // ───────────── 도우미 함수 ─────────────
 
     Sprite FaceOf(GameScript.Face face) =>
-        face == GameScript.Face.BoySurprised ? faceBoySurprised : face == GameScript.Face.BoyHappy ? faceBoyHappy : faceDokkaebi;
+        face == GameScript.Face.BoySurprised ? faceBoySurprised : face == GameScript.Face.BoyHappy ? faceBoyHappy
+        : face == GameScript.Face.BoySad ? faceBoySad : faceDokkaebi;
 
     // (에디터에서만) 제출한 그림과 판정 결과를 Temp/Submissions 에 저장 → 판정 기준을 조절할 때 참고해요.
     void SaveSubmission(OpenAIJudge.Verdict verdict)
@@ -794,12 +825,23 @@ public class GameManager : MonoBehaviour
         dialogueDim.SetActive(panel == dialoguePanel || panel == observePanel);
     }
 
-    // 남은 간식은 또렷하게, 쓴 간식은 흐리게 (왼쪽부터 흐려져요)
+    // 남은 간식은 또렷하게, 쓴 간식은 흐리게. 사탕은 왼쪽부터, 초콜릿은 (돋보기에서 먼 쪽인) 오른쪽부터 흐려져요.
+    // 초콜릿이 없으면 돋보기도 흐리게
     void UpdateSnacks()
     {
-        int used = snackIcons.Length - snacks;
-        for (int i = 0; i < snackIcons.Length; i++)
-            snackIcons[i].color = i < used ? UsedSnackColor : Color.white;
+        Fade(candyIcons, candies, fromRight: false);
+        Fade(chocolateIcons, chocolates, fromRight: true);
+        magnifierButton.interactable = chocolates > 0;
+    }
+
+    static void Fade(Image[] icons, int left, bool fromRight)
+    {
+        int used = icons.Length - left;
+        for (int i = 0; i < icons.Length; i++)
+        {
+            bool spent = fromRight ? i >= left : i < used;
+            icons[i].color = spent ? UsedSnackColor : Color.white;
+        }
     }
 
     /// <summary>

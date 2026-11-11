@@ -273,7 +273,7 @@ static class MvpFlowShots
 
             // 그리기
             yield return Until(() => IsOn("DrawPanel"));
-            if (s == 0) yield return Snap("간식이 왼쪽에서 들어오는 중", 0.15f);
+            if (s == 0) yield return Snap("간식이 들어오는 중 : 초콜릿은 돋보기 뒤에서, 사탕은 오른쪽에서", 0.2f);
             yield return Snap("그리기 시작 : 빈 쪽지", 1.2f);
 
             if (s == 0)
@@ -284,6 +284,12 @@ static class MvpFlowShots
                 MvpSelfTest.SetPrivate(gm, "timeLeft", 8f);
                 yield return Snap("향이 10초 아래로 남았을 때", 0.8f);
                 MvpSelfTest.SetPrivate(gm, "timeLeft", 60f);
+
+                // 돋보기 : 맨 위 왼쪽 돋보기를 누르면 초콜릿 1개로 렌즈 안의 원본을 3초 둘러봐요
+                gm.MagnifierTap();
+                MvpSelfTest.Find("DrawPanel/MagnifierPeek/Lens").position += new Vector3(-120f, 160f, 0f);
+                yield return Snap("돋보기 : 초콜릿 1개로 렌즈 안의 원본을 3초 둘러봄", 0.5f);
+                MvpSelfTest.Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>().Stop();
             }
 
             if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
@@ -332,23 +338,26 @@ static class MvpFlowShots
             {
                 // ② 일부 틀림 → 포기하면 채점표
                 yield return Snap("다시 : 이전 그림에 이어 그리기", 0.8f);
+                MvpSelfTest.SetPrivate(gm, "candies", 2);      // 사진을 위해 사탕을 채워 다시 · 포기 버튼이 나오게 해요
+                MvpSelfTest.Invoke(gm, "UpdateSnacks");
                 MvpSelfTest.LoadSketch(PartialSketch(s));
                 yield return SubmitAndWait(st, st.features.Length - 1, null);
                 yield return ResultLines("일부 틀림");
-                yield return Snap("다시 · 포기 버튼 (간식 1개 남음)", 0.5f);
+                yield return Snap("다시 · 포기 버튼 (사탕이 남음)", 0.5f);
                 gm.ShowCompare();
                 yield return Snap("포기 : 채점표 (동그라미와 빗금)", 2.8f);
                 gm.Retry();     // 사진을 위해 같은 단계를 이어 가요
 
                 if (s == 1)
                 {
-                    // ③ 간식을 다 썼을 때
+                    // ③ 사탕을 다 썼을 때
                     yield return Wait(0.5f);
+                    MvpSelfTest.SetPrivate(gm, "candies", 1);
                     MvpSelfTest.LoadSketch(Scribble());
                     yield return SubmitAndWait(st, -1, null);
-                    yield return ResultLines("간식을 다 씀");
-                    yield return Snap("간식이 없으면 버튼 없이 채점표", 2.8f);
-                    MvpSelfTest.SetPrivate(gm, "snacks", 1);
+                    yield return ResultLines("사탕을 다 씀");
+                    yield return Snap("사탕이 없으면 버튼 없이 채점표", 2.8f);
+                    MvpSelfTest.SetPrivate(gm, "candies", 1);
                     gm.Retry();
                 }
                 yield return Wait(0.5f);
@@ -390,14 +399,15 @@ static class MvpFlowShots
         {
             section = "이야기 종료";
             var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
-            var snacksLeft = (int[])typeof(GameManager).GetField("snacksLeft", flags).GetValue(gm);
             var items = (Sprite[])typeof(GameManager).GetField("itemsFound", flags).GetValue(gm);
+            var candiesLeft = (int[])typeof(GameManager).GetField("candiesLeft", flags).GetValue(gm);
+            var chocolatesLeft = (int[])typeof(GameManager).GetField("chocolatesLeft", flags).GetValue(gm);
 
-            // 전부 찾았을 때
-            int[] left = { 2, 1, 2, 1, 2 };
-            for (int i = 0; i < stages.Length; i++) { snacksLeft[i] = left[i]; items[i] = stages[i].originalSprite; }
+            // 전부 찾았을 때 : 단계마다 남은 간식이 돗자리에 모여요
+            int[] candy = { 1, 0, 1, 1, 0 }, choc = { 2, 1, 2, 0, 1 };
+            for (int i = 0; i < stages.Length; i++) { items[i] = stages[i].originalSprite; candiesLeft[i] = candy[i]; chocolatesLeft[i] = choc[i]; }
             gm.NextStage();
-            yield return Snap("전부 찾았을 때 : 소풍 장면, 물건 옆에 남은 간식", 3.5f);
+            yield return Snap("전부 찾았을 때 : 소풍 장면, 돗자리에 남은 사탕 · 초콜릿", 3.5f);
             gm.EndingTap();
             yield return Wait(0.3f);
             FinishBoxes();
@@ -408,15 +418,16 @@ static class MvpFlowShots
             // 포기한 단계가 있을 때 : 받은 엉뚱한 물건이 그대로 놓여요
             yield return Wait(0.5f);
             MvpSelfTest.SetPrivate(gm, "batLost", true);
-            int[] left2 = { 0, 0, 1, 0, 0 };
             for (int i = 0; i < stages.Length; i++)
             {
-                snacksLeft[i] = left2[i];
+                candiesLeft[i] = 0;
+                chocolatesLeft[i] = i == 2 ? 1 : 0;
                 Sprite[] wrong = stages[i].wrongSprites;
                 items[i] = i == 2 ? stages[2].originalSprite : wrong[wrong.Length - 1];
             }
             MvpSelfTest.Invoke(gm, "ShowEnding");
             yield return Snap("포기한 단계가 있을 때 : 엉뚱한 물건이 놓이고 도깨비는 빈손", 3.5f);
+
         }
     }
 }
