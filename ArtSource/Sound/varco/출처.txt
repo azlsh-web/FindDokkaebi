@@ -1,0 +1,24 @@
+효과음 출처 : VARCO Sound (NC AI) https://sound.varco.ai
+만든 날 : 2026-11-11
+플랜 : Free (월 1,000포인트, 효과음 한 번 생성에 50포인트, 후보 3개)
+사용 조건 : 무료 플랜 결과물은 개인적 · 비상업적 용도로만 사용 가능. 상업적 이용은 유료 플랜 필요 (https://varco.ai/home/ko/pricing?service=SOUND)
+받은 형식 : 이름은 .wav 이지만 실제는 48kHz 모노 mp3
+
+raw/varco_<이름>_<1~3>.mp3 : 받은 원본 후보
+trimmed/<이름>_<번호>.wav : Tools/sound/varco_trim.py 로 앞 무음 · 길이 · 음량을 다듬은 것
+게임에 넣은 후보 번호는 varco_trim.py 의 PICK 에 있어요.
+
+이름            입력한 문장
+sfx_tap        A single soft, light button tap for a cute children's game UI. Short wooden 'tok' click, very short and gentle, no reverb, no silence before the sound.
+sfx_talk       A tiny, very short soft blip for dialogue text appearing letter by letter in a cute children's game. Single gentle high wooden tick, under 0.05 seconds, quiet, not annoying when repeated quickly.
+sfx_count      Single short wooden clock tick for a countdown, crisp wood block knock, cute game
+sfx_item       Cute cartoon pop as an item suddenly appears, short bouncy boop
+sfx_success    Short bright cheerful success jingle, sparkling ta-da on xylophone and bells, cute children game
+sfx_fail       Funny cartoon boing wobble for a silly mistake, comical spring doing sound
+sfx_submit     Quickly folding a sheet of paper once, short crisp paper fold
+sfx_give       Light cute whoosh of a paper note and candy tossed through the air, then a small cartoon monster happily munching the candy
+sfx_magnifier  Short magical sparkle shimmer as a magnifying glass lens activates, bright cute twinkle
+sfx_snack_in   Three quick playful swishes as small candies and chocolates slide in, cartoon whoosh shh-shh-shk
+sfx_mark       Pencil quickly scratching two short marks on paper, swish swish
+sfx_cheer      Small group of happy children cheering yay with a little clapping, short outdoor picnic celebration
+sfx_land       Small object gently dropping onto a picnic mat on grass, soft light thud

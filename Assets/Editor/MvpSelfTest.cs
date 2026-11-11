@@ -330,6 +330,15 @@ static class MvpSelfTest
         bool ResultShown() { PassGive(); return IsOn("ResultPanel") && Find("ResultPanel/ReturnedItem").localScale.x > 0.99f; } // 결과 + 뿅 애니메이션 끝
 
         // 0) 코드 단위 확인 (화면 없이)
+        Add(0f, "효과음 파일", () =>
+        {
+            // Sfx 의 효과음 이름마다 Resources/Sound 에 파일이 있어야 해요 (배경음은 아직 없어서 빼요)
+            foreach (FieldInfo f in typeof(Sfx).GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (!(f.GetValue(null) is string name) || !name.StartsWith("sfx_")) continue;
+                Check(Resources.Load<AudioClip>("Sound/" + name) != null, "효과음 " + name);
+            }
+        });
         Add(1.0f, "기본 함수", () =>
         {
             Check(GameManager.Josa("가방", "을", "를") == "을" && GameManager.Josa("방망이", "을", "를") == "를", "조사(을/를) 고르기");

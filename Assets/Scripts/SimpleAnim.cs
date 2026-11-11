@@ -141,7 +141,11 @@ public class SimpleAnim : MonoBehaviour
 
     void Update()
     {
+        float before = t;
         t += Time.deltaTime;
+        // 물건이 돗자리에 닿는 순간(움직임의 80%) 톡
+        float touch = delay + popTime * 0.8f;
+        if (kind == Kind.Land && before < touch && t >= touch) Sfx.Play(Sfx.Land);
         Apply();
     }
 

@@ -469,7 +469,7 @@ public class GameManager : MonoBehaviour
     public void MagnifierTap()
     {
         if (state != State.Draw || magnifierPeek.Active || chocolates <= 0) return;
-        Sfx.Play(Sfx.Tap);
+        Sfx.Play(Sfx.Magnifier);
         chocolates--;
         UpdateSnacks();
         magnifierPeek.Begin(Stage.originalSprite, peekSeconds);
@@ -512,7 +512,7 @@ public class GameManager : MonoBehaviour
     void GiveTap()
     {
         if (dialogueBox.FinishTyping()) return;
-        Sfx.Play(Sfx.Tap);
+        Sfx.Play(giveStep == 0 ? Sfx.Give : Sfx.Tap);     // 쪽지와 사탕이 날아갈 때는 건네는 소리
         if (giveStep == 0)
         {
             giveStep = 1;
