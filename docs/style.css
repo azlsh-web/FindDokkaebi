@@ -1,0 +1,42 @@
+
+:root { --bg:#fbf6ec; --card:#fffdf8; --ink:#4a2b16; --sub:#7a604a; --line:#e8dcc8; --accent:#e9776b; --accent-ink:#fff;
+        --chip:#f3e7d3; --code:#f5ecdc; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#1f1a16; --card:#2a231d; --ink:#f3e7d6; --sub:#c4ad95; --line:#3e342b; --accent:#f08a7e; --accent-ink:#2a1a12;
+          --chip:#3a3027; --code:#332a22; }
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 "Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif; }
+a { color:inherit; }
+.wrap { max-width:960px; margin:0 auto; padding:24px 16px 64px; }
+header.top { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin-bottom:8px; }
+header.top h1 { font-size:26px; margin:0; flex:1 1 auto; }
+.meta { color:var(--sub); font-size:14px; margin:0 0 24px; }
+.btn { display:inline-block; padding:8px 16px; border-radius:999px; background:var(--accent); color:var(--accent-ink); text-decoration:none; font-weight:700; }
+.back { display:inline-block; margin-bottom:16px; color:var(--sub); text-decoration:none; }
+h2.sec { font-size:20px; margin:32px 0 4px; }
+p.note { color:var(--sub); margin:0 0 12px; font-size:14px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-top:12px; }
+.card { display:block; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; text-decoration:none; }
+.card:hover { border-color:var(--accent); }
+.card .t { font-weight:700; font-size:17px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.card .d { color:var(--sub); font-size:14px; margin-top:4px; }
+.card .more { margin-top:8px; font-size:14px; }
+.card .more a { color:var(--accent); }
+.chip { font-size:12px; font-weight:600; padding:2px 8px; border-radius:999px; background:var(--chip); color:var(--sub); }
+.doc { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:8px 24px 24px; overflow-wrap:anywhere; }
+.doc table { border-collapse:collapse; width:100%; display:block; overflow-x:auto; font-size:15px; }
+.doc th, .doc td { border:1px solid var(--line); padding:6px 10px; text-align:left; vertical-align:top; }
+.doc th { background:var(--chip); }
+.doc code { background:var(--code); padding:1px 5px; border-radius:6px; font-size:0.92em; }
+.doc pre { background:var(--code); padding:12px; border-radius:10px; overflow-x:auto; }
+.doc pre code { background:none; padding:0; }
+.doc img { max-width:100%; }
+.doc a { color:var(--accent); }
+.shots h2 { font-size:18px; margin:28px 0 8px; }
+.shots .row { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.shots figure { margin:0; background:var(--card); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+.shots img { width:100%; display:block; aspect-ratio:9/16; object-fit:cover; background:var(--chip); }
+.shots figcaption { padding:6px 8px 8px; font-size:13px; }
+.shots figcaption .l { color:var(--sub); display:block; margin-top:2px; }
+@media (max-width:520px) { .doc { padding:4px 14px 16px; } header.top h1 { font-size:22px; } }

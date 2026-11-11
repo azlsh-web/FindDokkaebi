@@ -1,0 +1,488 @@
+<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>기획 변경 기록 · 찾아라! 도깨비</title><link rel='stylesheet' href='../style.css'></head><body><div class='wrap'><a class='back' href='../index.html'>← 문서 목록</a><article class='doc'><h1 id="기획-변경-기록">기획 변경 기록</h1>
+<p>기획서와 달라진 점을 모은 문서예요. 기획서를 기준으로 두고, 바꿔야 하는 내용은 먼저 협의한 뒤 이곳에 남겨요.</p>
+<p>마지막 갱신: 2026-11-11</p>
+<h2 id="변경-요약">변경 요약</h2>
+<table>
+<thead>
+<tr>
+<th>번호</th>
+<th>날짜</th>
+<th>대상</th>
+<th>기획서</th>
+<th>변경 후</th>
+<th>코드</th>
+<th>실제 게임</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>C-01</strong></td>
+<td>2026-11-03</td>
+<td>1단계 방망이 그림</td>
+<td>구름 모양 머리, 손잡이의 가로 줄</td>
+<td><strong>돌기가 있는 머리, 손잡이의 리본</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-02</strong></td>
+<td>2026-11-03</td>
+<td>3단계 돗자리 띠</td>
+<td>왼쪽부터 파랑·빨강·노랑·파랑</td>
+<td><strong>위에서부터 파랑·빨강·노랑·파랑</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-03</strong></td>
+<td>2026-11-03</td>
+<td>판정 기준 수</td>
+<td>단계별 특징 3~5개</td>
+<td><strong>단계 번호만큼 1~5개, 요소마다 기준 1개</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-04</strong></td>
+<td>2026-11-03</td>
+<td>돌려주는 물건</td>
+<td>처음 빠뜨린 특징의 물건, 전부 틀리면 빈손</td>
+<td><strong>O·X 조합(2ⁿ)별 물건, 전부 틀리면 완전히 다른 물건 B</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-05</strong></td>
+<td>2026-11-03</td>
+<td>판정 기준 안내</td>
+<td>그리기 전 규칙만 안내</td>
+<td><strong>대화 뒤 도깨비의 쪽지에 판정 기준 표시</strong> (2026-11-04 C-08로 변경)</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-06</strong></td>
+<td>2026-11-04</td>
+<td>재도전</td>
+<td>빈 쪽지로 다시 그리기</td>
+<td><strong>이전 그림에 이어 그리기, 향은 다시 60초</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-07</strong></td>
+<td>2026-11-04</td>
+<td>틀린 특징 알려 주기</td>
+<td>결과 화면에 특징별 결과</td>
+<td><strong>결과는 물건과 대사로만, O · X는 채점표에서만</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-08</strong></td>
+<td>2026-11-04</td>
+<td>단계 도입</td>
+<td>글로 된 도입 화면</td>
+<td><strong>짧은 대화 + 도깨비의 쪽지. <code>앞에서 배운 규칙</code> 칸 없음</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-09</strong></td>
+<td>2026-11-04</td>
+<td>이야기 종료</td>
+<td>단계별 글 기록</td>
+<td><strong>소풍 장면 완성, 포기한 단계는 받은 엉뚱한 물건이 놓임</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-10</strong></td>
+<td>2026-11-04</td>
+<td>도깨비와 방망이</td>
+<td>항상 방망이를 듦</td>
+<td><strong>1단계는 빈손. 못 찾으면 이야기 종료까지 빈손이고 소풍 장면에 대파가 놓임</strong> (2026-11-05 변경)</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-11</strong></td>
+<td>2026-11-05</td>
+<td>색 섞기</td>
+<td>재료를 고르면 같은 양으로 섞은 색, 빨강+노랑+파랑은 갈색</td>
+<td><strong>물감을 누르면 큰 동그라미로 뿌려지고 색이 천천히 바뀌며, 되돌리면 물방울이 원래 물감으로 돌아감. 1:1:1은 검은색에 가깝고 2:2:1은 갈색. 친구 그림과 판정 기준은 그대로</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-12</strong></td>
+<td>2026-11-05</td>
+<td>오프닝과 대사</td>
+<td>도깨비가 대화 시작부터 함께 나옴, 1단계도 쪽지 표시</td>
+<td><strong>기획자 오프닝 적용. 주인공이 플레이어에게 부탁하고 도깨비는 네 번째 대사에 등장. 1단계는 쪽지 없이 바로 관찰</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-13</strong></td>
+<td>2026-11-05</td>
+<td>방망이 실패 대사</td>
+<td>다른 단계처럼 놀리는 반응</td>
+<td><strong>방망이는 도깨비 물건이라 못 찾으면 언짢아하는 반응</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-14</strong></td>
+<td>2026-11-05</td>
+<td>2~5단계 시작 대화</td>
+<td>물건을 말하면 도깨비가 바로 그리는 법을 설명</td>
+<td><strong>도깨비가 그 물건에 먼저 반응한 뒤 설명</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-15</strong></td>
+<td>2026-11-05</td>
+<td>방망이 판정 기준</td>
+<td>긴 손잡이 + 굵은 머리 + 돌기</td>
+<td><strong>굵은 머리 + 돌기. 손잡이는 판정하지 않음</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-16</strong></td>
+<td>2026-11-05</td>
+<td>쪽지의 의미</td>
+<td>도깨비가 판정 기준 목록을 쪽지로 보여 줌</td>
+<td><strong>쪽지는 주인공이 그림과 글을 적어 간식과 함께 건네는 것. 도깨비의 쪽지 카드를 없애고, 판정 기준은 시작 대화의 생김새 대사로 말함. 원본은 떠올리는 말풍선으로 보여 주고(1단계는 도깨비), 제출 뒤 건네기 대사를 넣음</strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-17</strong></td>
+<td>2026-11-05</td>
+<td>오프닝</td>
+<td>주인공이 대사를 터치로 넘김</td>
+<td><strong>준비물이 흐리게 보였다가 사라지는 그림과 함께 대사 4줄이 나오고, 그다음 도깨비가 나타남. 대사는 터치로 넘김</strong> (2026-11-07 자동 넘김 없앰)</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-18</strong></td>
+<td>2026-11-07</td>
+<td>5단계 친구 대사</td>
+<td>물건과 같은 반응 (<code>맞아! 바로 이거야!</code>, <code>이게 아닌데</code>, <code>찾아올게</code>)</td>
+<td><strong>친구는 사람이라 따로 씀. 찾으면 <code>다행이다! 많이 무서웠지? 이제 같이 소풍 가자!</code>, 틀리면 <code>내 친구가 아니야</code>, 도깨비는 <code>데려올게</code>. 쪽지 글은 <code>내 친구 좀 찾아 줘!</code></strong></td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>C-19</strong></td>
+<td>2026-11-11</td>
+<td>돋보기</td>
+<td>2번 이상 틀리면 돋보기를 얻고, 쓰면 안쪽 원에만 원본이 약 3초 보임</td>
+<td><strong>따로 얻지 않고 초콜릿 1개로 씀. 그리는 중 맨 위 왼쪽 돋보기를 누르면 바로 둘러봄. 렌즈를 끌어 움직이며 3초 보고, 향은 계속 탐. 모든 단계</strong></td>
+<td>✅</td>
+<td>배포 전</td>
+</tr>
+<tr>
+<td><strong>C-20</strong></td>
+<td>2026-11-11</td>
+<td>간식</td>
+<td>단계마다 간식 3개, 제출할 때마다 1개</td>
+<td><strong>단계마다 사탕 2개(쪽지를 건넬 때)와 초콜릿 2개(돋보기)를 따로 받음. 맨 위 줄은 <code>돋보기 \| 초콜릿 \| 사탕 \| 일시정지</code>. 이야기 종료에는 단계마다 남은 간식을 더해 돗자리에 모아 놓음</strong></td>
+<td>✅</td>
+<td>배포 전</td>
+</tr>
+</tbody>
+</table>
+<p>C-19 · C-20은 <a href="10_할_일_목록.html#돋보기-규칙">할 일 목록의 돋보기 규칙</a>에 자세히 적었어요. 같은 날 받은 그림으로 간식을 복주머니에서 사탕 · 초콜릿으로 바꾸고, 틀렸을 때와 사탕이 떨어졌을 때 주인공이 우는 얼굴을 써요. 사탕이 떨어졌을 때 주인공 대사는 <code>어떡해… 사탕이 다 떨어졌어.</code>로 바꿨어요.</p>
+<p>C-11~C-17은 2026-11-05에 판정 서버와 웹 게임에 함께 배포했어요. C-17의 터치 넘김과 C-18은 2026-11-07에 웹 게임에 배포했어요 (판정 서버는 그대로). 대사는 <a href="../전달/14_대사_수정표.xlsx">대사 수정표</a> 기준이고, 문구는 판정에 넣지 않아요. 친구 머리는 갈색으로 유지해요.</p>
+<p>C-06~C-10은 <a href="11_연출_개편_기획.html">연출 개편 기획</a>에 따라 <code>feature/game-feel</code> 브랜치에서 작업했어요. 2026-11-05에 웹 게임에 먼저 배포했어요(시작 버튼 문구, C-10 변경, 받은 빈손 도깨비 그림 포함). 메인 머지는 팀원들이 동의한 뒤에 해요.</p>
+<p>2026-11-03에 판정 서버와 웹 게임에 함께 배포했어요. 실제 AI 판정 확인 결과는 <a href="../기록/8_경우의_수_테스트_보고서.pdf">테스트 보고서</a>에 있어요. 판정 모델은 아래 내용처럼 11월 4일에 다시 바꿨어요.</p>
+<h2 id="변경-내용">변경 내용</h2>
+<h3 id="c-01-방망이-그림">C-01. 방망이 그림</h3>
+<p>새 방망이 그림은 머리에 돌기와 구멍이 있고, 손잡이에 가로 줄 대신 리본이 있어요. 판정 문구도 이 그림에 맞췄어요.</p>
+<h3 id="c-02-돗자리-띠-방향">C-02. 돗자리 띠 방향</h3>
+<p>새 돗자리 그림은 띠가 가로로 놓여 있어서, 띠 순서를 위에서 아래 기준으로 판정해요.</p>
+<h3 id="c-03-판정-기준">C-03. 판정 기준</h3>
+<p>레벨이 올라갈 때마다 평가 요소가 하나씩 늘어나요. 원본에 다른 특징이 더 있어도 아래 기준만 판정해요.</p>
+<table>
+<thead>
+<tr>
+<th>단계</th>
+<th>물건</th>
+<th>형태</th>
+<th>패턴</th>
+<th>삼원색</th>
+<th>2색 혼합</th>
+<th>3색 혼합</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>방망이</td>
+<td>굵은 머리 + 돌기</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>가방</td>
+<td>네모 몸체 + 위쪽 손잡이 + 앞주머니</td>
+<td>주머니 안 가로 줄무늬</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>돗자리</td>
+<td>사각형 외곽</td>
+<td>띠 네 줄</td>
+<td>파랑·빨강·노랑·파랑 순서</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>김밥</td>
+<td>둥근 검은 김 테두리</td>
+<td>위 둘, 아래 하나인 재료 배치</td>
+<td>노란 단무지</td>
+<td>초록 시금치</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>친구</td>
+<td>양 갈래 머리</td>
+<td>주머니 천 조각</td>
+<td>파란 바지</td>
+<td>주황 상의</td>
+<td>갈색 머리</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>이전 기준에서 빠진 것:</strong> 김밥의 흰 밥과 빨간 재료, 친구의 사람 모습은 판정하지 않아요.</li>
+<li><strong>3색 혼합:</strong> 원본의 갈색 머리는 빨강·노랑·파랑을 섞은 색이고, 게임도 3색까지 섞을 수 있어요.</li>
+</ul>
+<h3 id="c-04-돌려주는-물건">C-04. 돌려주는 물건</h3>
+<p>기준이 n개면 경우의 수는 2ⁿ가지이고, 조합마다 정해진 그림을 돌려줘요.</p>
+<table>
+<thead>
+<tr>
+<th>판정 결과</th>
+<th>돌려주는 것</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전부 맞음</td>
+<td>원본 A</td>
+</tr>
+<tr>
+<td>일부만 맞음</td>
+<td>그 조합대로 틀린 A'</td>
+</tr>
+<tr>
+<td>전부 틀림</td>
+<td>완전히 다른 물건 B</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>완전히 다른 물건 B:</strong> 방망이는 대파, 가방은 항아리, 돗자리는 파전, 김밥은 고무신, 친구는 허수아비예요.</li>
+<li><strong>1단계:</strong> 기준이 하나라 A'가 없고, 틀리면 바로 대파가 와요.</li>
+<li><strong>전체 목록:</strong> <a href="../기록/6_엉뚱한_물건_제작.html">6_엉뚱한_물건_제작.md</a></li>
+</ul>
+<h3 id="c-05-판정-기준-안내">C-05. 판정 기준 안내</h3>
+<p>단계 도입 화면에 <strong>이번 판정 기준</strong>을 보여 줘요. 플레이어는 기준을 알고 원본을 관찰해요.</p>
+<h3 id="c-12-오프닝과-대사">C-12. 오프닝과 대사</h3>
+<p>2026-11-05에 기획자가 전달한 대사를 적용했어요. 오프닝은 필수 적용, 나머지는 참고 사항이었어요.</p>
+<table>
+<thead>
+<tr>
+<th>대상</th>
+<th>적용 내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>오프닝</td>
+<td>기획자 문구 그대로. 대사 상자의 세 줄을 넘는 두 대사만 문장 단위로 나눠 12줄이 됐어요</td>
+</tr>
+<tr>
+<td>1단계 쪽지</td>
+<td>판정 기준을 지우면 쪽지에 제목만 남아서, 쪽지를 건너뛰고 바로 관찰해요. 채점표의 기준 이름은 그대로예요</td>
+</tr>
+<tr>
+<td>2·3단계 시작 대화</td>
+<td>기획자 문구로 교체. 4·5단계는 받은 안이 없어 그대로예요</td>
+</tr>
+<tr>
+<td>주인공 판정 대사</td>
+<td>기획자 문구로 교체. 플레이어가 그리는 설정과 맞지 않던 <code>내 그림이 그렇게 이상해?!</code> 같은 대사가 빠졌어요</td>
+</tr>
+<tr>
+<td>판정 오류 · 간식 소진 대사</td>
+<td>기획자 문구로 교체</td>
+</tr>
+<tr>
+<td>도깨비 결과 대사</td>
+<td>단계별 대사 유지. 엉뚱한 물건에 맞춘 농담을 살리기 위해서예요</td>
+</tr>
+<tr>
+<td>일시정지 음량 · 효과음 조절</td>
+<td>아직 없음. 기획자 메모대로 BGM을 넣은 뒤 추가해요</td>
+</tr>
+</tbody>
+</table>
+<h3 id="화면-구조-기획-변경-아님">화면 구조 (기획 변경 아님)</h3>
+<p>시작 화면을 통그림 대신 <strong>배경 위에 물건을 하나씩 올리는 구조</strong>로 바꿨어요. 시작 화면 배경은 <code>BG_Start</code>, 게임 중 배경은 <code>BG_Room</code>이고, 맨 뒤 배경 한 장만 바꿔요.</p>
+<p>그리기 화면의 향은 <strong>놋쇠 촛대에 꽂혀</strong> 타요. 불꽃이 줄기를 따라 내려오고, 재가 떨어지고, 연기가 올라가요. (11/7) 아트팀 그림으로 바꾸면서, 재는 불씨 위에 쌓였다가 뚝 떨어지고 불꽃은 쌓인 재 위에 얹혀 같이 오르내려요. 10초 남으면 불꽃이 커지고 남은 초가 빨갛게 두근거려요.</p>
+<h3 id="그리기-화면-배치와-hud-개편-기획-변경-아님">그리기 화면 배치와 HUD 개편 (기획 변경 아님)</h3>
+<p>2026-11-04에 플레이하기 쉽게 배치를 바꿨어요. 판정 기준과 게임 규칙은 그대로예요.</p>
+<ul>
+<li><strong>HUD:</strong> 로고와 단계 표시(<code>1/5 · 방망이</code>)를 게임 중 모든 화면에서 뺐어요. 위에는 복주머니 3개와 일시정지만 남아요. 단계 번호와 물건 이름은 도입 화면에서 보여 줘요.</li>
+<li><strong>간식:</strong> 글자 대신 복주머니로 보여 줘요. 쓴 간식은 왼쪽부터 흐려져요.</li>
+<li><strong>그림판:</strong> 클립보드의 하얀 면 전체에 그려져요. 크기는 512×512에서 <strong>512×604</strong>로 바뀌었고, 제목 글자 밑에도 그릴 수 있어요. 제목은 제출하는 그림에 들어가지 않아요.</li>
+<li><strong>도구 줄:</strong> 모두 지우기를 쪽지 모서리에서 도구 줄로 옮겼어요. 물감 줄과 도구 줄의 양 끝도 맞췄어요.</li>
+<li><strong>펜 굵기:</strong> 그림판이 커져도 화면에서 굵기가 비슷하도록 펜 반지름을 3 · 6 · 12에서 3 · 5 · 10으로, 지우개를 18에서 15로 바꿨어요.</li>
+<li><strong>치운 그림:</strong> <code>HUD_Capsule</code>, <code>HUD_LogoMark</code>, <code>Draw_Clipboard</code>는 <code>ArtSource/원본/미사용</code>으로 옮겼어요. 지금 틀은 <code>Draw_ClipboardFrame</code>이에요.</li>
+<li><strong>미확인:</strong> 세로로 길어진 그림을 실제 AI 판정으로 시험하지는 않았어요. <a href="../기록/8_경우의_수_테스트_보고서.pdf">경우의 수 테스트 보고서</a>의 화면과 입력 그림도 개편 전 512×512 기준이에요.</li>
+</ul>
+<h3 id="화면별-표시-정보">화면별 표시 정보</h3>
+<p>연출 개편 뒤 기준이에요. 설명 글과 제목을 빼고, 한 화면에서 같은 정보를 두 번 보여 주지 않아요. 화면 사진은 <a href="1_게임_플로우.pdf">게임 플로우</a>에 있어요.</p>
+<table>
+<thead>
+<tr>
+<th>화면</th>
+<th>표시하는 정보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 시작</td>
+<td>로고, 캐릭터, <code>게임 시작하기</code></td>
+</tr>
+<tr>
+<td>2. 대화</td>
+<td>캐릭터, 말하는 사람의 얼굴, 대사. 1단계 처음에는 사라지는 준비물</td>
+</tr>
+<tr>
+<td>3. 떠올리기</td>
+<td>말풍선 속 원본, 숫자, 떠올리는 캐릭터 (1단계는 도깨비)</td>
+</tr>
+<tr>
+<td>4. 쪽지 쓰기</td>
+<td>남은 간식, 쪽지 글, 향과 남은 초, 색, 도구, 굵기, <code>다 그렸어!</code>, 맨 위 돋보기 · 초콜릿 · 사탕 (C-19 · C-20)</td>
+</tr>
+<tr>
+<td>5. 건네기</td>
+<td>남은 간식, 그림과 글이 적힌 쪽지, 캐릭터, 대사</td>
+</tr>
+<tr>
+<td>6. 판정 대기</td>
+<td>남은 간식, 내 쪽지, 찾으러 다니는 도깨비</td>
+</tr>
+<tr>
+<td>7. 결과</td>
+<td>남은 간식, 도깨비, 가져온 물건, 대사, <code>다시</code> · <code>포기</code></td>
+</tr>
+<tr>
+<td>8. 채점표</td>
+<td>내 그림, 원본, 번호와 판정 기준, 동그라미 또는 빗금</td>
+</tr>
+<tr>
+<td>9. 이야기 종료</td>
+<td>소풍 장면, 물건, 물건 옆 남은 간식, 도깨비 대사</td>
+</tr>
+</tbody>
+</table>
+<h3 id="판정-모델-변경-기획-변경-아님">판정 모델 변경 (기획 변경 아님)</h3>
+<p>2026-11-04에 Gemini 사용량 제한(<code>429</code>)과 응답 지연 때문에 판정 모델을 바꿨어요. <strong>판정 기준은 그대로예요.</strong></p>
+<table>
+<thead>
+<tr>
+<th>모델</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>gemini-3.5-flash</code></td>
+<td>이전 모델. 사용량 제한(<code>429</code>)으로 막힘</td>
+</tr>
+<tr>
+<td><code>gemini-2.5-flash</code></td>
+<td>새 사용자에게 제공되지 않음(<code>404</code>)</td>
+</tr>
+<tr>
+<td><code>gemini-3.8-flash</code>, <code>gemini-3.7-flash</code></td>
+<td>45초 안에 응답 없음</td>
+</tr>
+<tr>
+<td><code>gemini-3.6-flash</code></td>
+<td>사용량 제한(<code>429</code>)</td>
+</tr>
+<tr>
+<td><strong><code>gemini-3-flash-preview</code></strong></td>
+<td><strong>현재 사용. 시험 판정 1번 정상, 무료 한도는 미확인</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>미리보기 모델:</strong> 예고 후 바뀌거나 사라질 수 있어요.</li>
+<li><strong>서버 동작:</strong> <code>429</code>는 다시 시도하지 않고 Google의 제한 내용을 보여 줘요. 45초 안에 답이 없으면 끊어요.</li>
+</ul>
+<h2 id="아트-구조-정리-2026-11-04">아트 구조 정리 (2026-11-04)</h2>
+<p>기획 내용은 그대로예요. 시연 영상(<code>Recordings/시연용영상.mp4</code>) 뒤에 바꿨어요. <strong>원칙: 우리가 해결할 수 있는 건 직접 하고, 아트팀에는 꼭 필요한 것만 요청해요.</strong></p>
+<ul>
+<li><strong>지운 것:</strong> 게임에 안 나오는 그림 7장, <code>Assets/TempArt</code>, <code>ArtSource/화면별</code>, <code>ArtSource/Inbox</code>.</li>
+<li><strong>합친 것:</strong></li>
+<li><code>Title_Boy</code>, <code>Title_Dokkaebi</code> → 받은 캐릭터 그림(<code>Char_Boy_Normal</code>, <code>Char_Dokkaebi_Normal</code>).</li>
+<li><code>Draw_SizePill</code> → 똑같은 그림인 <code>Common_ButtonCream</code>.</li>
+<li><code>Observe_Number1~3</code> → 게임 글자(Jua).</li>
+<li>HUD 세 칸(<code>HUD_Logo</code>, <code>HUD_StagePill</code>, <code>HUD_SnackPill</code>) → 같은 캡슐 <code>HUD_Capsule</code> + 로고 내용 <code>HUD_LogoMark</code> + 글자 + 있던 복주머니 <code>HUD_SnackBag</code>.</li>
+<li><strong>선명도:</strong> 시안을 절반 크기로 오려서 큰 화면에서 테두리가 흐렸어요. 시안 부품을 원본 크기로 다시 오렸고, 카드 · 고리는 같은 모양으로 다시 그렸어요 (<code>Tools/docs/art_pipeline/recut_full_res.py</code>).</li>
+<li><strong>고친 흠:</strong> 잘려 있던 <code>Observe_Sparkle</code>, 작은 「내 그림」 카드에서 흐려지던 위아래 테두리.</li>
+<li><strong>합치지 않은 것:</strong> 물감 4장, 글자가 들어간 버튼 3장(<code>Title_StartButton</code>, <code>Title_Tagline</code>, <code>Draw_SubmitButton</code>)은 합치면 색이나 글자 모양이 달라져서 그대로 뒀어요.</li>
+<li><strong>영상과 다른 점:</strong> HUD 캡슐 모양과 간식 칸, 전체 테두리 선명도, 3 · 2 · 1 숫자 모양, 숫자 옆 반짝이.</li>
+<li><strong>아트 요청 (당시):</strong> 향과 촛대 5장만 요청했어요. 연출 개편 뒤 요청 목록은 전달사항에 있어요 (<a href="../전달/4_아트팀_전달사항.pdf">전달사항</a>). 휴지통 · 닫기 아이콘은 지금 그림을 그대로 써요.</li>
+<li>
+<p><strong>웹 게임:</strong> 이 정리는 2026-11-05 배포에 포함됐어요.</p>
+</li>
+<li>
+<p><strong>빈손 도깨비 (2026-11-05):</strong> 이 정리 때 아트팀 그림 <code>Dokkaebi_EmptyHand</code>를 안 쓰는 그림으로 지웠어요. 연출 개편에서 다시 필요해져 <code>Char_Dokkaebi_NoBat</code>으로 되살렸고, 원본은 <code>ArtSource/원본/받은그림</code>에 있어요.</p>
+</li>
+</ul>
+<h2 id="기획서-원문을-유지한-것">기획서 원문을 유지한 것</h2>
+<p><code>Server/judge/appendix_b.json</code>의 부록 B 원문은 기획서 8장 재검증 자료라서 고치지 않았어요. 부록 B 프롬프트의 재검증 결과도 그대로 보관해요.</p>
+<h2 id="협의가-필요한-것">협의가 필요한 것</h2>
+<table>
+<thead>
+<tr>
+<th>대상</th>
+<th>내용</th>
+<th>제안</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>김밥 재료 배치 안내</td>
+<td>쪽지에 <code>재료 배치</code>만 나와 위아래를 헷갈리기 쉬워요.</td>
+<td>발표 뒤 <code>재료 배치 (위 둘, 아래 하나)</code>로 변경</td>
+</tr>
+<tr>
+<td>1·2단계 원본 색</td>
+<td>플레이어는 검정만 쓰는데 새 원본은 컬러예요.</td>
+<td>판정은 모양만 보므로 컬러 원본 사용</td>
+</tr>
+</tbody>
+</table></article></div></body></html>
