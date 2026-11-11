@@ -5,7 +5,7 @@ import io, os, sys, zipfile
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from art_tree_data import REQUEST
+from art_tree_data import OPAQUE, REQUEST
 
 sys.stdout.reconfigure(encoding="utf-8")
 SPRITES = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "Assets", "Sprites")
@@ -23,7 +23,7 @@ def check(name, data):
     want, got = now[0] / now[1], im.width / im.height
     if abs(got / want - 1) > RATIO_TOLERANCE:
         problems.append(f"비율이 달라요 : 받은 {im.width}x{im.height}, 요청 {now[0]}x{now[1]}")
-    if INFO[name][1] != "Background" and im.convert("RGBA").getchannel("A").getextrema()[0] == 255:
+    if INFO[name][1] != "Background" and name not in OPAQUE and im.convert("RGBA").getchannel("A").getextrema()[0] == 255:
         problems.append("투명한 부분이 없어요")
     return problems
 
