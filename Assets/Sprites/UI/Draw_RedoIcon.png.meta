@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 139100e4491ce054e867c00e0fff1f1e
+guid: 8917b7a4198e3014e9968ae1c851057f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4627658330784306123
-    second: IncenseHolder_0
+      213: -8550747685290332291
+    second: Draw_RedoIcon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: IncenseHolder_0
+      name: Draw_RedoIcon_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 0
-        width: 120
-        height: 172
+        x: 29
+        y: 60
+        width: 200
+        height: 135
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 53c69bb344147cfb0800000000000000
-      internalID: -4627658330784306123
+      spriteID: d7fa646b844a55980800000000000000
+      internalID: -8550747685290332291
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      IncenseHolder_0: -4627658330784306123
+      Draw_RedoIcon_0: -8550747685290332291
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

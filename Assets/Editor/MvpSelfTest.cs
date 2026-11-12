@@ -591,7 +591,7 @@ static class MvpSelfTest
                 float timeAtMix = 0f;
                 Add(3.0f, "5단계 색 섞기 시범", () =>
                 {
-                    Check(IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/MixerPanel") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
+                    Check(IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/Palette") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
                           "5단계 첫 그리기에는 팔레트가 열리고 도깨비가 같은 물감을 여러 번 넣어 보라고 한다");
                     timeAtMix = GetFloat("timeLeft");
                     Gm().Submit();
@@ -599,7 +599,7 @@ static class MvpSelfTest
                 }, () => IsOn("DrawPanel"));
                 Add(5.4f, "5단계 색 섞기 시범 결과", () =>
                 {
-                    var mixer = Find("DrawPanel/MixerPanel").GetComponent<ColorMixer>();
+                    var mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
                     Check(mixer.ResultColor == ColorMixer.Mix(2, 2, 1), "시범 : 빨강 2 · 노랑 2 · 파랑 1 = 갈색");
                     Check(Mathf.Abs(GetFloat("timeLeft") - timeAtMix) < 0.01f, "시범 동안 향이 타지 않는다");
                     Shot("s5_mix_demo");
@@ -609,9 +609,10 @@ static class MvpSelfTest
                         Gm().MixGuideTap();     // 글자 다 보이기
                         Check(Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixHow, "많이 넣은 색 쪽으로 바뀐다고 말한다");
                         Gm().MixGuideTap();
-                        Check(!IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/MixerPanel"), "대사를 넘기면 팔레트가 닫히고 그리기 시작");
-                        Check(Find("DrawPanel/MixerPanel").localScale == Vector3.one && IsOn("DrawPanel/ToolBar/ToolRow") && IsOn("DrawPanel/ToolBar/ColorRow"),
-                              "팔레트는 원래 크기로, 물감 줄 · 도구 줄은 다시 보인다");
+                        Check(!IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette"), "대사를 넘기면 팔레트가 닫히고 그리기 시작");
+                        Check(Find("DrawPanel/ToolBar").GetComponent<ColorMixer>().ResultColor == ToolBar.Palette[0],
+                              "시범으로 만든 색은 비우고 붓은 다시 검정");
+                        Check(Find("DrawPanel/Desk").GetComponent<PaperView>().SqueezeLevel == 0, "쪽지는 원래 자리로");
                     });
                 });
             }
@@ -626,10 +627,15 @@ static class MvpSelfTest
                 Check(candiesAtDraw == 3, $"{st.Title} 사탕 3개로 시작");
                 bool primaries = st.colorMode != ColorMode.BlackOnly;
                 bool mixing = st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree;
-                Check(IsOn("DrawPanel/ToolBar/ColorRow/Color_빨강") == primaries, $"빨강 버튼은 {(primaries ? "보임" : "숨김")}");
-                Check(IsOn("DrawPanel/ToolBar/ColorRow/MixOpen") == mixing, $"색 섞기 버튼은 {(mixing ? "보임" : "숨김")}");
-                Check(!Find("DrawPanel/SubmitButton").GetComponent<Button>().interactable, "빈 쪽지면 제출 비활성");
-                Check(Text("DrawPanel/Guide") == GameScript.NoteText(s), "쪽지 글이 적혀 있다");
+                Check(!IsOn("DrawPanel/ToolBar/Palette"), "팔레트는 닫힌 채로 시작");
+                Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
+                Check(IsOn("DrawPanel/ToolBar/Palette"), "붓을 누르면 팔레트가 열린다");
+                Check(IsOn("DrawPanel/ToolBar/Palette/Card/Color_빨강") == primaries, $"빨강 버튼은 {(primaries ? "보임" : "숨김")}");
+                Check(IsOn("DrawPanel/ToolBar/Palette/Card/PaintUndo") == mixing, $"물감 빼기는 {(mixing ? "보임" : "숨김")}");
+                Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
+                Check(!IsOn("DrawPanel/ToolBar/Palette"), "붓을 다시 누르면 닫힌다");
+                Check(!Find("DrawPanel/ToolBar/SubmitButton").GetComponent<Button>().interactable, "빈 쪽지면 제출 비활성");
+                Check(Text("DrawPanel/Desk/Paper/Guide") == GameScript.NoteText(s), "쪽지 글이 적혀 있다");
                 DrawStage(st);
             }, () => IsOn("DrawPanel"));
             if (s == 0)
@@ -668,13 +674,13 @@ static class MvpSelfTest
             }
             Add(0.8f, $"{st.Title} 그린 뒤", () =>
             {
-                Check(Board().HasDrawn && Find("DrawPanel/SubmitButton").GetComponent<Button>().interactable, "그리면 제출 활성");
-                Check(Find("DrawPanel/ToolBar/ToolRow/Undo/Button").GetComponent<Button>().interactable, "그리면 되돌리기 활성");
+                Check(Board().HasDrawn && Find("DrawPanel/ToolBar/SubmitButton").GetComponent<Button>().interactable, "그리면 제출 활성");
+                Check(Find("DrawPanel/ToolBar/Undo").GetComponent<Button>().interactable, "그리면 되돌리기 활성");
                 Check(CandiesLit() == GetInt("candies"), $"위 줄에 남은 사탕 {GetInt("candies")}개");
                 Check(IsOn("HUD/MagnifierBadge") == (Gm().MagnifiersReady > 0), $"돋보기 숫자는 쓸 수 있을 때만 ({Gm().MagnifiersReady})");
                 Check(((RectTransform)Find("HUD/CandyRow/Candy_1")).anchoredPosition.x - ((RectTransform)Find("HUD/CandyRow/Candy_0")).anchoredPosition.x > 50f, "간식이 제자리로 들어왔다");
                 if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
-                    Check(IsOn("DrawPanel/ToolBar/ColorRow/MixedSlot/Frame"), "섞은 색이 선택돼 있다");
+                    Check(BrushTip() == Find("DrawPanel/ToolBar").GetComponent<ColorMixer>().ResultColor, "붓 끝이 지금 색");
                 if (s == 0)
                 {
                     Board().Clear();
@@ -722,7 +728,7 @@ static class MvpSelfTest
             // 판정 대기
             Add(s == 2 ? 1.0f : 0.3f, $"{st.Title} 판정", () =>
             {
-                if (s == 2) Check(((RectTransform)Find("HUD/TimerGroup/Incense/IncenseFx_Tip")).anchoredPosition.y < 150f, "향이 다 타면 불꽃이 아래까지 내려온다");
+                if (s == 2) Check(Find("HUD/TimerGroup/Incense/IncenseFx_Tip").position.x < Find("HUD/TimerGroup/Incense").position.x - 100f, "향이 다 타면 불꽃이 왼쪽 끝까지 온다");
                 Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면");
                 Check(CandiesLit() == candiesAtDraw - 1, $"제출하면 사탕 -1 ({CandiesLit()})");
                 Check(Find("HUD/CandyRow/Candy_0").GetComponent<Image>().color.a < 0.9f, "사탕은 왼쪽부터 흐려진다");
@@ -959,39 +965,51 @@ static class MvpSelfTest
         }
         if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
         {
-            ColorMixer mixer = Find("DrawPanel/MixerPanel").GetComponent<ColorMixer>();
-            tb.OpenMixer();
-            Check(IsOn("DrawPanel/MixerPanel"), "색 섞기를 누르면 팔레트가 열린다");
+            ColorMixer mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
+            tb.OpenPanel();
+            Check(IsOn("DrawPanel/ToolBar/Palette"), "붓을 누르면 팔레트가 열린다");
             if (st.colorMode == ColorMode.MixTwo)
             {
-                mixer.AddPaint(1); mixer.AddPaint(2);
-                mixer.AddPaint(0); // 두 색 혼합 단계에서는 세 번째 물감이 안 들어가야 함
+                tb.PaintTap(1); tb.PaintTap(2);
+                tb.PaintTap(0); // 두 색 혼합 단계에서는 세 번째 물감이 안 들어가야 함
                 Check(mixer.ResultColor == ColorMixer.Mix(0, 1, 1), "두 색 혼합 : 세 번째 물감은 안 들어간다");
+                Check(mixer.CountOf(1) == 1 && mixer.CountOf(2) == 1 && Text("DrawPanel/ToolBar/Palette/Card/Color_노랑/Count/Text") == "1", "넣은 횟수가 물감 옆에 뜬다");
             }
             else
             {
-                mixer.AddPaint(0); mixer.AddPaint(1); mixer.AddPaint(2);
+                tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(2);
                 Check(mixer.ResultColor == ColorMixer.Mix(1, 1, 1), "자유 혼합 : 세 색을 한 번씩 넣으면 검은색에 가깝다");
-                Check(MixerPreview() != mixer.ResultColor, "물감을 넣어도 색이 한 번에 바뀌지 않는다");
-                Check(Find("DrawPanel/MixerPanel/PaintDrop") != null, "물감을 누르면 물방울이 뿌려진다");
-                mixer.AddPaint(0); mixer.AddPaint(1);
+                Check(BrushTip() != mixer.ResultColor, "물감을 넣어도 붓 끝 색이 한 번에 바뀌지 않는다");
+                Check(Find("DrawPanel/ToolBar/PaintDrop") != null, "물감을 누르면 물방울이 붓 끝으로 날아간다");
+                tb.PaintTap(0); tb.PaintTap(1);
                 Check(mixer.ResultColor == ColorMixer.Mix(2, 2, 1), "자유 혼합 : 2:2:1 로 넣으면 갈색");
                 mixer.SkipAnimation();
-                mixer.UndoPaint();
-                Check(mixer.ResultColor == ColorMixer.Mix(2, 1, 1), "되돌리기 : 마지막에 넣은 물감이 빠진다");
-                Check(mixer.DropCount > 0, "되돌리기 : 물방울이 물감으로 돌아간다");
-                Check(MixerPreview() != mixer.ResultColor, "되돌리기 : 색이 한 번에 바뀌지 않는다");
-                mixer.AddPaint(1);
+                tb.PaintUndo();
+                Check(mixer.ResultColor == ColorMixer.Mix(2, 1, 1), "물감 빼기 : 마지막에 넣은 물감이 빠진다");
+                Check(mixer.DropCount > 0, "물감 빼기 : 물방울이 물감으로 돌아간다");
+                Check(BrushTip() != mixer.ResultColor, "물감 빼기 : 색이 한 번에 바뀌지 않는다");
+                tb.PaintTap(1);
             }
             mixer.SkipAnimation();
-            Check(MixerPreview() == mixer.ResultColor, "움직임이 끝나면 만든 색이 보인다");
+            Check(BrushTip() == mixer.ResultColor, "움직임이 끝나면 붓 끝이 만든 색");
+            Check(Find($"DrawPanel/ToolBar/Palette/Card/Size_{tb.SelectedSize}/Dot").GetComponent<Image>().color == mixer.ResultColor, "고른 굵기 점도 만든 색");
             // 그리기가 막 시작돼서 간식이 아직 날아 들어오는 중일 수 있어요. 날아오는 사탕끼리 잠깐 겹친 걸
             // 배치 문제로 잡지 않게, 간식 움직임을 끝낸(제자리에 둔) 뒤 검사해요.
             foreach (SimpleAnim a in (SimpleAnim[])typeof(GameManager).GetField("snackAnims", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm()))
                 a.enabled = false;
             LayoutOnly($"s{st.stageNumber}_mixer");                     // 팔레트가 열린 화면도 배치 검사
-            mixer.Apply();
-            Check(!IsOn("DrawPanel/MixerPanel"), "섞어서 칠하면 팔레트가 닫힌다");
+            Color mixed = mixer.ResultColor;
+            Stroke(new Vector2(0.35f, 0.6f), new Vector2(0.65f, 0.6f));
+            Check(!IsOn("DrawPanel/ToolBar/Palette"), "그리기 시작하면 팔레트가 닫힌다");
+            tb.OpenPanel();
+            tb.PaintTap(2);
+            Check(mixer.ResultColor == ColorMixer.Mix(0, 0, 1) && mixer.CountOf(0) == 0, "섞은 색으로 그린 뒤 물감을 누르면 새로 섞기");
+            tb.PaintUndo();
+            Check(mixer.ResultColor == ToolBar.Palette[0] && mixer.PureIndex == 0, "물감을 다 빼면 검정");
+            tb.BlackTap();
+            mixer.SkipAnimation();
+            tb.ClosePanel();
+            Check(mixed != Color.black, "섞은 색이 검정과 다르다");
             var gmPause = Object.FindFirstObjectByType<GameManager>();
             gmPause.ToggleSettings();                                       // 소리 설정 창도 배치 검사
             Check(IsOn("SettingsPanel") && Time.timeScale == 0f, "그리는 중 톱니를 누르면 소리 설정 창이 열리고 향이 멈춘다");
@@ -1004,8 +1022,8 @@ static class MvpSelfTest
 
     // ───────────── 도우미 ─────────────
 
-    // 팔레트 미리보기 칸의 지금 색
-    static Color MixerPreview() => Find("DrawPanel/MixerPanel/PreviewEdge/Preview").GetComponent<UnityEngine.UI.Image>().color;
+    // 붓 끝의 지금 색
+    static Color BrushTip() => Find("DrawPanel/ToolBar/Brush/Tip").GetComponent<UnityEngine.UI.Image>().color;
 
     static GameManager Gm() => Object.FindFirstObjectByType<GameManager>();
 
@@ -1037,7 +1055,7 @@ static class MvpSelfTest
 
     internal static bool IsOn(string path) => Find(path).gameObject.activeInHierarchy;
     static string Text(string path) => Find(path).GetComponent<TMP_Text>().text;
-    static DrawingBoard Board() => Find("DrawPanel/Board").GetComponent<DrawingBoard>();
+    static DrawingBoard Board() => Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>();
 
     // 또렷하게 보이는 사탕 수 = 남은 수
     static int CandiesLit() => Lit("HUD/CandyRow");
@@ -1240,9 +1258,8 @@ static class MvpSelfTest
     {
         DrawingBoard board = Board();
         var rt = (RectTransform)board.transform;
-        var c = new Vector3[4];
-        rt.GetWorldCorners(c); // Overlay Canvas 는 월드 좌표 = 화면 좌표
-        Vector2 Pt(Vector2 p) => new Vector2(Mathf.Lerp(c[0].x, c[2].x, p.x), Mathf.Lerp(c[0].y, c[2].y, p.y));
+        Rect r = rt.rect;   // 쪽지가 돌아가거나 커져 있어도 맞게 (Overlay Canvas 는 월드 좌표 = 화면 좌표)
+        Vector2 Pt(Vector2 p) => rt.TransformPoint(new Vector3(Mathf.Lerp(r.xMin, r.xMax, p.x), Mathf.Lerp(r.yMin, r.yMax, p.y), 0f));
 
         var e = new PointerEventData(EventSystem.current) { position = Pt(uv[0]) };
         board.OnPointerDown(e);

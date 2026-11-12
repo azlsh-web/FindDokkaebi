@@ -15,7 +15,7 @@ using UnityEngine.UI;
 // 시간은 Time.deltaTime 으로 줄어서, 일시정지하면 같이 멈춰요.
 public class MagnifierPeek : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
-    [SerializeField] RectTransform area;    // 그림판 자리 : 원본이 놓이고, 렌즈 가운데가 이 안에 머물러요
+    [SerializeField] RectTransform area;    // 그림판 : 원본이 그 자리 · 각도 · 크기 그대로 놓이고, 렌즈 가운데가 이 안에 머물러요
     [SerializeField] RectTransform lens;    // 돋보기 그림 (기준점 = 렌즈 구멍 가운데)
     [SerializeField] RectTransform view;    // 렌즈 안에 보이는 종이와 원본 (그림판 자리에 고정)
     [SerializeField] Image original;
@@ -39,6 +39,7 @@ public class MagnifierPeek : MonoBehaviour, IPointerDownHandler, IDragHandler
     public void Begin(Sprite sprite, float seconds)
     {
         original.sprite = sprite;
+        view.sizeDelta = area.rect.size;    // 종이를 키우거나 돌려 놓았어도 그대로 겹쳐요 (KeepView)
         left = seconds;
         total = Mathf.Max(0.01f, seconds);
         gameObject.SetActive(true);
@@ -85,10 +86,14 @@ public class MagnifierPeek : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     Vector3 Center => area.TransformPoint(area.rect.center);
 
-    // 렌즈가 움직여도 원본은 그림판 자리에 그대로 있어요 (view 의 기준점은 가운데)
+    // 렌즈가 움직여도 원본은 그림판 자리에 그대로 있어요 (view 의 기준점은 가운데).
+    //   종이를 돌리거나 키웠으면 원본도 같은 각도 · 크기로 보여요
     void KeepView()
     {
         view.position = Center;
+        view.rotation = area.rotation;
+        float parentScale = view.parent.lossyScale.x;
+        if (parentScale > 0.0001f) view.localScale = Vector3.one * (area.lossyScale.x / parentScale);
     }
 
     public void OnPointerDown(PointerEventData e) => MoveTo(e);

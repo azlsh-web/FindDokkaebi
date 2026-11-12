@@ -6,13 +6,15 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 // ─────────────────────────────────────────────────────────────
-// ColorMixer : 혼색 팔레트 (4단계 김밥부터 등장)
+// ColorMixer : 붓 색 (팔레트 물감 → 붓 끝)
 // ─────────────────────────────────────────────────────────────
-// 실제 팔레트처럼 물감을 한 번씩 짜 넣으면서 섞인 색을 눈으로 보고 찾아요.
-//   색 섞기 버튼 → 팔레트가 열림 → 물감(빨강·노랑·파랑)을 누를 때마다 큰 동그라미로 뿌려지고 색이 천천히 바뀜
-//   → 되돌리기로 마지막에 넣은 물감을 뺄 수 있음 → [섞어서 칠하기] → 만든 색이 선택됨
-//   - 4단계(두 색 혼합) : 물감을 2가지까지
-//   - 5단계(자유 혼합)  : 물감을 3가지까지
+// 붓 끝 색이 곧 지금 그리는 색이에요. 팔레트에서 색을 고르면 물방울이 그 색에서 붓 끝으로 날아가
+// 첨벙 튀고, 붓 끝 색이 천천히 바뀌어요.
+//   - 검정 · (섞지 않는 단계의) 빨강 · 노랑 · 파랑 : 그 색 하나로 (SetPure)
+//   - 섞는 단계(4 · 5단계) : 빨강 · 노랑 · 파랑 물감을 누를 때마다 하나씩 넣어져 섞여요 (AddPaint).
+//     물감 옆 숫자 = 넣은 횟수, ↶ = 마지막에 넣은 물감 빼기 (물방울이 붓 끝에서 그 물감으로 돌아가요).
+//     섞은 색으로 한 번 그린 뒤(MarkUsed) 물감을 누르면 새로 섞기 시작해요.
+//   - 4단계(두 색 혼합) : 물감을 2가지까지, 5단계(자유 혼합) : 3가지까지
 //
 // 왜 RGB 평균을 안 쓰나요?
 //   물감은 빛과 달라서, 노랑+파랑을 평균 내면 칙칙한 회색이 나와요.
@@ -20,20 +22,22 @@ using Random = UnityEngine.Random;
 //   - 빨강 : 노랑 : 파랑 = 1:1:1 은 검은색에 가깝고, 2:2:1 이 갈색이에요.
 public class ColorMixer : MonoBehaviour
 {
-    [Header("물감 버튼 (순서 고정 : 빨강, 노랑, 파랑)")]
-    [SerializeField] Button[] materialButtons;
+    [Header("팔레트 버튼")]
+    [SerializeField] RectTransform blackButton;
+    [SerializeField] Button[] materialButtons;      // 빨강, 노랑, 파랑 (순서 고정)
+    [SerializeField] Button undoButton;             // 마지막에 넣은 물감 빼기 (섞는 단계만)
+    [SerializeField] TMPro.TMP_Text[] countTexts;   // 물감 옆 넣은 횟수
 
-    [Header("미리보기")]
-    [SerializeField] Image previewSwatch;           // 섞인 색 칸
-    [SerializeField] Button undoButton;             // 마지막에 넣은 물감 빼기
-    [SerializeField] Button applyButton;            // 섞어서 칠하기
+    [Header("붓")]
+    [SerializeField] Image previewSwatch;           // 붓 끝 (지금 색)
+    [SerializeField] RectTransform splashPoint;     // 물방울이 닿는 붓 끝 자리
+    [SerializeField] RectTransform splashTarget;    // 첨벙할 때 살짝 커졌다 돌아오는 붓
+    [SerializeField] Sprite dropSprite;             // 물방울 (동그라미)
 
-    /// <summary>색을 다 섞었을 때 알려줄 곳 (ToolBar 가 등록해요)</summary>
-    public Action<Color> OnMixed;
+    /// <summary>붓 색이 바뀌면 바로 알려 줘요 (그림판 펜 색). 화면의 붓 끝은 천천히 바뀌어요</summary>
+    public Action<Color> OnChanged;
 
-    static readonly Color EmptyColor = Color.white;
-
-    // 물감 색은 도구 줄의 색과 같아요
+    // 물감 색은 도구의 색과 같아요
     static readonly Color32 Red = ToolBar.Palette[1], Yellow = ToolBar.Palette[2], Blue = ToolBar.Palette[3];
     static readonly Color32 Orange = new Color32(245, 140, 30, 255);
     static readonly Color32 Green = new Color32(40, 160, 60, 255);
@@ -49,59 +53,85 @@ public class ColorMixer : MonoBehaviour
         (new Vector3(2, 2, 1), Brown), (new Vector3(1, 1, 1), NearBlack),
     };
 
-    const float FlightSeconds = 0.32f;      // 물감이 큰 동그라미까지 날아가는 시간
-    const float BlendSeconds = 0.9f;        // 섞인 색으로 천천히 바뀌는 시간
-    const float SplashSeconds = 0.35f;      // 닿은 자리에서 튄 물방울이 사라지는 시간
-    const float PopSeconds = 0.2f;          // 되돌아온 물감이 살짝 커졌다 돌아오는 시간
+    const float FlightSeconds = 0.36f;      // 물방울이 붓 끝까지 날아가는 시간
+    const float BlendSeconds = 0.6f;        // 붓 끝 색이 천천히 바뀌는 시간
+    const float SplashSeconds = 0.35f;      // 첨벙 튄 물방울이 사라지는 시간
+    const float PopSeconds = 0.22f;         // 붓 · 물감이 살짝 커졌다 돌아오는 시간
 
     readonly List<GameObject> drops = new List<GameObject>();   // 지금 화면에 있는 물방울
     Coroutine blending;
 
-    /// <summary>지금까지 넣은 물감으로 만든 색 (화면의 색은 이 색을 향해 천천히 바뀌어요)</summary>
+    readonly int[] counts = new int[3];                 // 물감별로 넣은 횟수
+    readonly List<int> history = new List<int>();       // 넣은 순서 (되돌리기용)
+    bool mixing;                                        // 섞는 단계인지
+    int maxKinds = 3;
+    int pureIndex;                                      // 섞지 않을 때 고른 색 (Palette 번호), 섞는 중이면 -1
+    bool used;                                          // 섞은 색으로 그렸는지 (그 뒤 물감을 누르면 새로 섞어요)
+    Color resultColor = Color.black;
+
+    /// <summary>지금 붓 색 (화면의 붓 끝은 이 색을 향해 천천히 바뀌어요)</summary>
     public Color ResultColor => resultColor;
+
+    /// <summary>섞지 않고 고른 색 번호 (0 검정 ~ 3 파랑). 섞은 색이면 -1</summary>
+    public int PureIndex => pureIndex;
 
     /// <summary>지금 화면에 있는 물방울 수 (자동 테스트용)</summary>
     public int DropCount => drops.Count;
 
-    readonly int[] counts = new int[3];                 // 물감별로 넣은 횟수
-    readonly List<int> history = new List<int>();       // 넣은 순서 (되돌리기용)
-    int maxKinds = 2;                                   // 최대 몇 가지 물감까지 넣을 수 있는지
-    Color resultColor;
+    /// <summary>물감별로 넣은 횟수 (자동 테스트용)</summary>
+    public int CountOf(int paint) => counts[paint];
 
-    /// <summary>팔레트 열기. maxKinds = 2(두 색 혼합) 또는 3(자유 혼합)</summary>
-    public void Open(int maxKinds)
+    /// <summary>단계 시작 : 검정 붓으로. mixing = 섞는 단계, maxKinds = 섞을 수 있는 물감 가짓수</summary>
+    public void Setup(bool mixing, int maxKinds)
     {
+        this.mixing = mixing;
         this.maxKinds = maxKinds;
-        for (int i = 0; i < counts.Length; i++) counts[i] = 0;
-        history.Clear();
-        gameObject.SetActive(true);
+        ClearPaints();
+        pureIndex = 0;
+        resultColor = Color.black;
+        SkipAnimation();
         Refresh();
-        previewSwatch.color = EmptyColor;
     }
 
-    /// <summary>[버튼] 닫기</summary>
-    public void Close()
+    /// <summary>섞은 색으로 그렸어요 : 다음에 물감을 누르면 새로 섞기 시작해요</summary>
+    public void MarkUsed()
     {
-        gameObject.SetActive(false);
+        if (history.Count > 0) used = true;
     }
 
-    /// <summary>[버튼] 물감 한 번 넣기. index : 0 빨강, 1 노랑, 2 파랑</summary>
+    /// <summary>[버튼] 검정 · 섞지 않는 색 : 그 색 하나로. index 는 Palette 번호 (0 검정, 1 빨강, 2 노랑, 3 파랑)</summary>
+    public void SetPure(int index)
+    {
+        ClearPaints();
+        pureIndex = index;
+        resultColor = ToolBar.Palette[index];
+        Refresh();
+        RectTransform from = index == 0 ? blackButton : materialButtons[index - 1].GetComponent<RectTransform>();
+        StartCoroutine(ThrowPaint(resultColor, from));
+    }
+
+    /// <summary>[버튼] 물감 한 번 넣기. index : 0 빨강, 1 노랑, 2 파랑. 섞지 않는 단계면 그 색 하나로</summary>
     public void AddPaint(int index)
     {
+        if (!mixing) { SetPure(index + 1); return; }
+        if (used || pureIndex >= 0) ClearPaints();      // 그렸거나 다른 색을 쓰던 중이면 새로 섞기
         if (IsLocked(index)) return;
+        pureIndex = -1;
         counts[index]++;
         history.Add(index);
         Refresh();
-        StartCoroutine(ThrowPaint(index));
+        StartCoroutine(ThrowPaint(ToolBar.Palette[index + 1], materialButtons[index].GetComponent<RectTransform>()));
     }
 
-    /// <summary>[버튼] 마지막에 넣은 물감 빼기</summary>
+    /// <summary>[버튼] 마지막에 넣은 물감 빼기 : 물방울이 붓 끝에서 그 물감으로 돌아가요</summary>
     public void UndoPaint()
     {
         if (history.Count == 0) return;
         int index = history[history.Count - 1];
         counts[index]--;
         history.RemoveAt(history.Count - 1);
+        used = false;
+        if (history.Count == 0) { pureIndex = 0; resultColor = Color.black; }     // 다 빼면 검정 붓으로
         Refresh();
         StartBlend();
         StartCoroutine(ReturnPaint(index));
@@ -115,78 +145,81 @@ public class ColorMixer : MonoBehaviour
         ClearDrops();
         foreach (Button material in materialButtons)
             if (material != null) material.transform.parent.localScale = Vector3.one;
+        if (splashTarget != null) splashTarget.localScale = Vector3.one;
         if (previewSwatch != null) previewSwatch.color = resultColor;
     }
 
-    // 팔레트가 닫히면 날아가던 물방울을 치우고 색도 끝난 상태로 둬요
-    void OnDisable()
-    {
-        SkipAnimation();
-    }
+    void OnDisable() => SkipAnimation();
 
-    /// <summary>[버튼] 섞어서 칠하기</summary>
-    public void Apply()
+    void ClearPaints()
     {
-        if (CountKinds() < 2) return;
-        OnMixed?.Invoke(resultColor);
-        Close();
+        for (int i = 0; i < counts.Length; i++) counts[i] = 0;
+        history.Clear();
+        used = false;
     }
 
     void Refresh()
     {
         for (int i = 0; i < materialButtons.Length; i++)
         {
-            bool locked = IsLocked(i);
+            bool locked = mixing && IsLocked(i);
             materialButtons[i].interactable = !locked;
-            materialButtons[i].transform.parent.GetComponent<CanvasGroup>().alpha = locked ? 0.3f : 1f;  // 못 누르는 물감은 흐리게
+            var group = materialButtons[i].transform.parent.GetComponent<CanvasGroup>();
+            if (group != null) group.alpha = locked ? 0.3f : 1f;      // 못 넣는 물감은 흐리게
         }
-
-        resultColor = history.Count > 0 ? (Color)Mix(counts[0], counts[1], counts[2]) : EmptyColor;
-        undoButton.interactable = history.Count > 0;
-        applyButton.interactable = CountKinds() >= 2;
+        if (history.Count > 0) resultColor = Mix(counts[0], counts[1], counts[2]);
+        if (undoButton != null) undoButton.interactable = history.Count > 0;
+        if (countTexts != null)
+            for (int i = 0; i < countTexts.Length && i < counts.Length; i++)
+            {
+                countTexts[i].text = counts[i].ToString();
+                countTexts[i].transform.parent.gameObject.SetActive(counts[i] > 0);    // 숫자 동그라미는 넣었을 때만
+            }
+        OnChanged?.Invoke(resultColor);
     }
 
     // ───────────── 움직임 ─────────────
 
-    // 누른 물감에서 물방울 여러 개가 큰 동그라미로 날아가고, 닿으면 튀면서 색이 바뀌기 시작해요
-    IEnumerator ThrowPaint(int index)
+    // 고른 색에서 물방울이 붓 끝으로 날아가고, 닿으면 첨벙 튀며 붓 끝 색이 바뀌어요
+    IEnumerator ThrowPaint(Color paint, RectTransform source)
     {
-        Color paint = ToolBar.Palette[index + 1];
-        Vector2 from = CenterOf(materialButtons[index].GetComponent<RectTransform>());
-        Vector2 to = CenterOf(previewSwatch.rectTransform);
-
-        for (int i = 0; i < 5; i++) StartCoroutine(FlyDrop(paint, from, to + Random.insideUnitCircle * 42f, i * 0.035f, i == 0 ? 34f : Random.Range(16f, 26f)));
-
+        Vector2 from = CenterOf(source);
+        Vector2 to = CenterOf(splashPoint);
+        for (int i = 0; i < 4; i++) StartCoroutine(FlyDrop(paint, from, to + Random.insideUnitCircle * 10f, i * 0.04f, i == 0 ? 30f : Random.Range(14f, 22f)));
         yield return new WaitForSecondsRealtime(FlightSeconds);
         StartBlend();
+        StartCoroutine(Pop(splashTarget));
         for (int i = 0; i < 7; i++) StartCoroutine(SplashDrop(paint, to, i * Mathf.PI * 2f / 7f + Random.Range(-0.2f, 0.2f)));
     }
 
-    // 되돌리기 : 큰 동그라미에서 물방울이 나와 원래 물감으로 돌아가고, 물감이 살짝 커졌다 돌아와요
+    // 되돌리기 : 붓 끝에서 물방울이 나와 원래 물감으로 돌아가고, 물감이 살짝 커졌다 돌아와요
     IEnumerator ReturnPaint(int index)
     {
         Color paint = ToolBar.Palette[index + 1];
         RectTransform material = materialButtons[index].GetComponent<RectTransform>();
-        Vector2 from = CenterOf(previewSwatch.rectTransform);
+        Vector2 from = CenterOf(splashPoint);
         Vector2 to = CenterOf(material);
-
-        for (int i = 0; i < 5; i++) StartCoroutine(FlyDrop(paint, from + Random.insideUnitCircle * 42f, to + Random.insideUnitCircle * 14f, i * 0.035f, i == 0 ? 34f : Random.Range(16f, 26f)));
-
+        for (int i = 0; i < 4; i++) StartCoroutine(FlyDrop(paint, from + Random.insideUnitCircle * 10f, to + Random.insideUnitCircle * 12f, i * 0.04f, i == 0 ? 30f : Random.Range(14f, 22f)));
         yield return new WaitForSecondsRealtime(FlightSeconds);
-        Transform holder = material.parent;
+        StartCoroutine(Pop(material.parent));
+    }
+
+    IEnumerator Pop(Transform target)
+    {
+        if (target == null) yield break;
         for (float t = 0f; t < PopSeconds; t += Time.unscaledDeltaTime)
         {
-            holder.localScale = Vector3.one * (1f + 0.15f * Mathf.Sin(t / PopSeconds * Mathf.PI));
+            target.localScale = Vector3.one * (1f + 0.15f * Mathf.Sin(t / PopSeconds * Mathf.PI));
             yield return null;
         }
-        holder.localScale = Vector3.one;
+        target.localScale = Vector3.one;
     }
 
     IEnumerator FlyDrop(Color paint, Vector2 from, Vector2 to, float delay, float size)
     {
         if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
         RectTransform drop = NewDrop(paint, size);
-        float arc = Random.Range(70f, 110f);
+        float arc = Random.Range(90f, 140f);
         for (float t = 0f; t < FlightSeconds; t += Time.unscaledDeltaTime)
         {
             float k = t / FlightSeconds;
@@ -201,11 +234,11 @@ public class ColorMixer : MonoBehaviour
         RectTransform drop = NewDrop(paint, Random.Range(10f, 18f));
         Image image = drop.GetComponent<Image>();
         Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
-        float reach = Random.Range(105f, 135f);
+        float reach = Random.Range(70f, 100f);
         for (float t = 0f; t < SplashSeconds; t += Time.unscaledDeltaTime)
         {
             float k = t / SplashSeconds;
-            drop.localPosition = center + direction * Mathf.Lerp(55f, reach, 1f - (1f - k) * (1f - k));
+            drop.localPosition = center + direction * Mathf.Lerp(20f, reach, 1f - (1f - k) * (1f - k));
             Color faded = paint;
             faded.a = 1f - k;
             image.color = faded;
@@ -214,7 +247,7 @@ public class ColorMixer : MonoBehaviour
         RemoveDrop(drop);
     }
 
-    // 지금 보이는 색에서 만들어진 색으로 천천히 바꾸기
+    // 붓 끝 색을 지금 색에서 새 색으로 천천히
     void StartBlend()
     {
         if (blending != null) StopCoroutine(blending);
@@ -239,7 +272,7 @@ public class ColorMixer : MonoBehaviour
         go.transform.SetParent(transform, false);
         drops.Add(go);
         Image image = go.GetComponent<Image>();
-        image.sprite = previewSwatch.sprite;
+        image.sprite = dropSprite;
         image.color = paint;
         image.raycastTarget = false;     // 물방울이 버튼 누르기를 막지 않게
         var rt = (RectTransform)go.transform;
@@ -260,7 +293,7 @@ public class ColorMixer : MonoBehaviour
         drops.Clear();
     }
 
-    // 버튼 · 동그라미의 가운데를 팔레트 카드 안의 위치로
+    // 버튼 · 붓 끝의 가운데를 이 오브젝트 안의 위치로
     Vector2 CenterOf(RectTransform rt) => transform.InverseTransformPoint(rt.TransformPoint(rt.rect.center));
 
     // 넣을 수 있는 물감 가짓수를 다 채우면, 아직 안 넣은 물감은 못 눌러요

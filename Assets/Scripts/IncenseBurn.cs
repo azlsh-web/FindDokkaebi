@@ -9,6 +9,8 @@ using UnityEngine.UI;
 //   - 타고 남은 재가 끝에 쌓이다가 뚝 떨어지고, 연기가 흔들리며 올라가요.
 //   - 10초 남으면 불꽃이 커지고 남은 초가 빨갛게 두근거려요.
 // GameManager 가 매 프레임 Show 로 남은 비율을 알려 줘요.
+// horizontal : 맨 위 가로 막대 (그리기 화면 개편 뒤). 오른쪽 끝이 타들어 가며 왼쪽으로 줄어들고, 불꽃 · 연기가 끝을 따라가요.
+//   재는 쌓지 않아요. (나중에 도깨비불 게이지 그림이 오면 이 자리를 바꿔요)
 public class IncenseBurn : MonoBehaviour
 {
     [SerializeField] Image stick;              // 타는 줄기 (아래 기준 Filled)
@@ -19,6 +21,7 @@ public class IncenseBurn : MonoBehaviour
     [SerializeField] Image fallingAsh;         // 떨어지는 재
     [SerializeField] Image[] smoke;            // 연기 조각들
     [SerializeField] TMP_Text secondsText;     // 남은 초
+    [SerializeField] bool horizontal;          // 가로 막대 (연기는 tip 의 자식)
 
     [Tooltip("다 타도 잔 위에 남는 줄기의 비율")]
     [SerializeField] float baseRatio = 0.02f;
@@ -51,13 +54,22 @@ public class IncenseBurn : MonoBehaviour
     {
         remaining = Mathf.Clamp01(remaining);
         stick.fillAmount = Mathf.Lerp(baseRatio, 1f, remaining);
-        float tipY = stick.rectTransform.rect.height * stick.fillAmount;
-        tip.anchoredPosition = new Vector2(0f, tipY);
-
         bool urgent = seconds <= urgentSeconds;
         ShowFlame(urgent);
-        ShowAsh(1f - remaining, tipY);
-        ShowSmoke(tipY, urgent);
+        if (horizontal)
+        {
+            tip.anchoredPosition = new Vector2(stick.rectTransform.rect.width * stick.fillAmount, 0f);
+            ash.gameObject.SetActive(false);
+            fallingAsh.enabled = false;
+            ShowSmoke(Vector2.zero, 26f, 95f, 0.5f, urgent);
+        }
+        else
+        {
+            float tipY = stick.rectTransform.rect.height * stick.fillAmount;
+            tip.anchoredPosition = new Vector2(0f, tipY);
+            ShowAsh(1f - remaining, tipY);
+            ShowSmoke(new Vector2(0f, tipY), 70f, SmokeRise, 1f, urgent);
+        }
 
         float beat = urgent ? 1f + 0.12f * Mathf.Abs(Mathf.Sin(Time.time * 5f)) : 1f;
         secondsText.color = urgent ? new Color(0.78f, 0.16f, 0.13f) : normalTextColor;
@@ -109,7 +121,7 @@ public class IncenseBurn : MonoBehaviour
     }
 
     // 연기 : 조각마다 시간을 어긋나게 올려 보내고, 위로 갈수록 커지며 옅어져요
-    void ShowSmoke(float tipY, bool urgent)
+    void ShowSmoke(Vector2 origin, float start, float rise, float size, bool urgent)
     {
         for (int i = 0; i < smoke.Length; i++)
         {
@@ -117,8 +129,8 @@ public class IncenseBurn : MonoBehaviour
             float p = Mathf.Repeat(Time.time / SmokeLife + offset, 1f);
             float sway = Mathf.Sin((p * 3.2f + i * 1.3f)) * Mathf.Lerp(3f, 26f, p);
             RectTransform rt = smoke[i].rectTransform;
-            rt.anchoredPosition = new Vector2(sway, tipY + 70f + SmokeRise * p);
-            rt.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.1f, p);
+            rt.anchoredPosition = origin + new Vector2(sway * size, start + rise * p);
+            rt.localScale = Vector3.one * Mathf.Lerp(0.4f, 2.1f, p) * size;
             float peak = urgent ? 0.8f : 0.6f;
             smoke[i].color = new Color(0.45f, 0.45f, 0.48f, peak * Mathf.Sin(Mathf.PI * Mathf.Sqrt(p)));
         }

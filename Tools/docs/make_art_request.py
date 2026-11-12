@@ -114,7 +114,7 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아
 
 <div class='keep'><h2>흰 판마다 어떻게 하나요</h2>
 <table><tr><th style='width:34%'>판</th><th>어떻게</th></tr>{plan_rows}</table>
-<p>다시 · 포기 아이콘, 대사 상자의 화살표, 채점표의 동그라미와 빗금, 도구 버튼, 클립보드 틀(<code>Draw_ClipboardFrame</code>)도 지금 그림을 그대로 써요.</p></div>
+<p>다시 · 포기 아이콘, 대사 상자의 화살표, 채점표의 동그라미와 빗금, 그리기 화면의 붓 · 화살표 · 맞춤 아이콘도 지금 그림을 그대로 써요.</p></div>
 
 <div class='keep'><h2>규칙</h2>
 <ul><li><b>파일 이름</b>을 표와 똑같이 해 주세요.</li>

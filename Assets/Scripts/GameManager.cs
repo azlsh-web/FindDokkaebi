@@ -153,6 +153,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mixGuide;           // 5단계 색 섞기 시범 : 팔레트 위쪽에 대사 상자
     [SerializeField] DialogueBox mixGuideBox;
     [SerializeField] ColorMixer mixer;
+    [SerializeField] PaperView paperView;           // 책상 위 쪽지 : 두 손가락으로 키우기 · 돌리기 · 옮기기
     [SerializeField] GameObject magnifierHighlight;         // 시범 : 돋보기 둘레를 도는 도깨비불
     [SerializeField] RectTransform[] magnifierFires;
 
@@ -218,10 +219,6 @@ public class GameManager : MonoBehaviour
     int mixDemoAdded;       // 시범에서 지금까지 넣은 물감 수
     Coroutine mixDemo;
     static readonly int[] MixDemoPaints = { 0, 0, 1, 1, 2 };   // 빨강 · 빨강 · 노랑 · 노랑 · 파랑 = 갈색
-    // 시범 동안 팔레트 크기와 위로 올리는 거리 : 그림판 아래 끝과 대사 상자 위 끝 사이에 딱 들어가요 (가리는 것 없이)
-    const float MixDemoScale = 0.72f;
-    const float MixDemoLift = 15f;
-    Vector2 mixerHome;
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;
@@ -513,6 +510,7 @@ public class GameManager : MonoBehaviour
         {
             timeLeft = drawSeconds;
             board.ResetBoard();
+            paperView.ResetView();      // 새 쪽지는 책상 위에 똑바로
         }
         // 쪽지 글은 주인공이 적어 둔 것처럼 한 글자씩 나타나요. 다시 그릴 때는 이미 적혀 있어요.
         drawTitle.text = GameScript.NoteText(stageIndex);
@@ -524,6 +522,7 @@ public class GameManager : MonoBehaviour
         ShowPanel(drawPanel);
         magnifierPeek.Stop();
         StopGift();
+        toolBar.ClosePanel();
 
         // 1단계 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요
         peekGuideStep = 0;
@@ -608,11 +607,8 @@ public class GameManager : MonoBehaviour
         mixDemoStep = 1;
         mixDemoAdded = 0;
         toolBar.OpenMixer();
-        var mixerRect = (RectTransform)mixer.transform;
-        mixerHome = mixerRect.anchoredPosition;
-        mixerRect.localScale = Vector3.one * MixDemoScale;
-        mixerRect.anchoredPosition = mixerHome + new Vector2(0f, MixDemoLift);
-        ShowToolRows(false);     // 줄인 팔레트 밑으로 물감 줄 · 도구 줄이 비쳐 보이지 않게
+        toolBar.Raise(true);         // 대사는 원래 자리(아래)에 뜨니까 아래 줄과 붓 띠를 대사 상자 위로 올리고,
+                                     // 쪽지는 줄여서 그 위에 둬요 (ToolBar 가 PaperView 에 알려요). 아무것도 가리지 않아요
         mixGuide.SetActive(true);
         mixGuideBox.Say(GameScript.MixShow, faceDokkaebi);
         mixDemo = StartCoroutine(MixDemoRoutine());
@@ -637,21 +633,14 @@ public class GameManager : MonoBehaviour
         mixDemo = null;
         if (mixDemoStep != 0)
         {
-            mixer.Close();
-            var mixerRect = (RectTransform)mixer.transform;
-            mixerRect.localScale = Vector3.one;         // 플레이어가 열 때는 원래 크기 · 자리
-            mixerRect.anchoredPosition = mixerHome;
-            ShowToolRows(true);
+            toolBar.ResetPaints();       // 시범으로 만든 갈색은 비워요 (플레이어가 처음부터 섞어요)
+            toolBar.ClosePanel();
+            toolBar.Raise(false);
         }
         mixDemoStep = 0;
         mixGuide.SetActive(false);
     }
 
-    // 물감 판 · 물감 줄 · 도구 줄 (ToolBar 아래의 것들) 숨기기 · 보이기
-    void ShowToolRows(bool show)
-    {
-        foreach (Transform row in toolBar.transform) row.gameObject.SetActive(show);
-    }
 
     /// <summary>[화면 터치] 색 섞기 시범 대사 넘기기. 물감을 넣는 중에 누르면 남은 물감을 바로 다 넣어요</summary>
     public void MixGuideTap()
@@ -724,6 +713,7 @@ public class GameManager : MonoBehaviour
     {
         if (state != State.Draw || peekGuideStep != 0 || mixDemoStep != 0) return;
         magnifierPeek.Stop();
+        toolBar.ClosePanel();
 
         state = State.Give;
         savedDrawTime = Mathf.Max(timeLeft, 10f);

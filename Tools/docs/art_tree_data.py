@@ -15,14 +15,14 @@ TREE = [
         ("MagnifierHighlight/Orbit/Fire_0~2 (1단계 시범 때 돋보기 둘레를 도는 도깨비불)", "UI/Magnifier_DokkaebiFire", TEMP + ", 향 불꽃을 푸른빛으로 바꿈 (make_candy_jar.py)"),
         ("CandyRow/Candy_0~2 (쪽지를 건넬 때 씀)", "UI/HUD_Candy", TEAM + ", 여백을 잘라 냄. 쓴 것은 왼쪽부터 흐리게"),
         ("SettingsButton (소리 설정, 시작 · 챕터 화면에도)", "UI/HUD_SettingsButton", "기획 단계에 받은 톱니 그림 (Title_Gear)"),
+        ("SettingsPanel/SettingsCard/CloseButton (소리 설정 닫기)", "UI/Mix_CloseIcon", CODE),
     ]),
-    ("향과 촛대 (그리는 동안)", "Frame/HUD/TimerGroup", [
-        ("IncenseHolder", "UI/Incense_Holder", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
-        ("Incense", "UI/Incense_Stick", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
+    ("향 (그리는 동안, 위쪽 한 줄에 눕힘)", "Frame/HUD/TimerGroup", [
+        ("Incense (오른쪽 끝부터 타들어 감)", "UI/Incense_Stick", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py). 새 촛대 게이지 그림을 받으면 바꿔요"),
         ("IncenseFx_Tip/Ember", "UI/Incense_Ember", TEAM),
         ("IncenseFx_Tip/Flame", "UI/Incense_Flame", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
         ("IncenseFx_Tip/Ash, FallingAsh", "UI/Incense_Ash", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),
-        ("IncenseFx_Smoke, Glow", "UI/Common_SoftPuff", CODE),
+        ("IncenseFx_Tip/Glow", "UI/Common_SoftPuff", CODE),
     ]),
     ("1. 시작", "Frame/TitlePanel", [
         ("TitleBoy", "Characters/Char_Boy_Normal", TEAM),
@@ -59,32 +59,20 @@ TREE = [
         ("CountText", "3 · 2 · 1 은 게임 글자 (Jua)", ""),
     ]),
     ("4. 그리기", "Frame/DrawPanel", [
-        ("BoardFrame", "UI/Draw_ClipboardFrame", G10 + "을 세로로 늘리고 종이 면을 뚫음"),
-        ("PaletteBoard", "UI/Draw_PaletteBoard", G10),
-        ("검정", "UI/Draw_PaintBlack", G10),
-        ("빨강", "UI/Draw_PaintRed", G10),
-        ("노랑", "UI/Draw_PaintYellow", G10),
-        ("파랑", "UI/Draw_PaintBlue", G10),
-        ("MixedSlot", "UI/Draw_PaintMixed", G10 + ", 섞은 색을 곱해 칠함"),
-        ("MixOpen", "UI/Draw_MixButton", G10),
-        ("Pencil", "UI/Draw_PencilButton", G10 + ", 아이콘 크기를 맞춤"),
-        ("Eraser", "UI/Draw_EraserButton", G10 + ", 아이콘 크기를 맞춤"),
-        ("Undo", "UI/Draw_UndoButton", G10 + ", 아이콘 크기를 맞춤"),
-        ("Clear", "UI/Draw_ClearButton", G10 + ", 휴지통 아이콘은 코드로 그림"),
-        ("SizePill", "UI/Common_ButtonCream", G10),
-        ("굵기 점 · 색 미리보기", "UI/Common_Circle", CODE),
-        ("고른 도구 표시", "UI/Common_SelectRing", CODE),
-        ("SubmitButton", "UI/Draw_SubmitButton", G10),
+        ("Desk/Paper (쪽지, 두 손가락으로 키우기 · 돌리기 · 옮기기)", "UI/Common_Card", CODE + ". 쪽지 그림(Draw_Paper)을 받으면 바꿔요"),
+        ("FitButton (맞춤, 쪽지를 움직였을 때만)", "UI/Draw_FitIcon", TEMP + " (make_candy_jar.py)"),
+        ("ToolBar (아래 띠)", "단색 + 진갈색 윗줄", CODE),
+        ("ToolBar/Brush/Body (붓)", "UI/Draw_Brush", TEMP + ", 붓 끝이 왼쪽 아래를 봐요 (make_candy_jar.py)"),
+        ("ToolBar/Brush/Tip (붓 끝, 지금 색으로 칠함)", "UI/Draw_BrushTip", TEMP + " (make_candy_jar.py)"),
+        ("ToolBar/Undo · PaintUndo (되돌리기 · 물감 빼기)", "UI/Draw_UndoIcon", TEMP + ", 굽은 화살표 (make_candy_jar.py)"),
+        ("ToolBar/Redo (다시 하기)", "UI/Draw_RedoIcon", TEMP + ", 굽은 화살표 (make_candy_jar.py)"),
+        ("ToolBar/SubmitButton (다 그렸어!)", "UI/Common_ButtonCoral", G10),
+        ("ToolBar/Palette/Card (팔레트 한 줄)", "UI/Common_ButtonCream", G10 + ", 색을 입힘"),
+        ("Palette 색 · 굵기 점 · 넣은 횟수 · 날아가는 물방울", "UI/Common_Circle", CODE),
+        ("Palette 고른 색 · 굵기 고리", "UI/Common_SelectRing", CODE),
         ("MagnifierPeek/Lens/Frame", "UI/Magnifier_Frame", TEAM + " 렌즈가 뚫린 돋보기, 둘레의 옅은 막을 지움"),
         ("MagnifierPeek/Lens/Hole (렌즈 모양, 안에 원본)", "UI/Common_Circle", CODE),
         ("MagnifierPeek/Lens/TimeRing (남은 시간, 시계 방향으로 줄어듦)", "UI/Magnifier_TimeRing", TEMP + ", 돋보기 테두리의 크림색 띠를 오림 (make_candy_jar.py)"),
-    ]),
-    ("5. 색 섞기", "Frame/DrawPanel/MixerPanel", [
-        ("MixerPanel", "UI/Common_Card", CODE),
-        ("CloseButton", "UI/Mix_CloseIcon", CODE),
-        ("Preview", "UI/Common_Circle", CODE),
-        ("UndoButton", "UI/Draw_UndoButton", G10 + ", 아이콘 크기를 맞춤"),
-        ("ApplyButton", "UI/Common_ButtonCoral", G10),
     ]),
     ("6. 판정 대기", "Frame/JudgePanel", [
         ("Dokkaebi", "Characters/Char_Dokkaebi_Think", TEAM),
@@ -130,8 +118,9 @@ REQUEST = [
      "대사가 나오는 상자. 모든 화면에서 같은 크기 · 같은 자리라 늘리지 않고 그대로 써요. "
      "게임이 위에 올리는 것: **왼쪽 550px**에 말하는 사람 얼굴, **오른쪽 아래 200px**쯤에 다음 화살표(▼), 그 사이에 글자 두세 줄. "
      "이 자리들은 장식 없이 비워 두고, 장식은 바깥 60px 안에 넣어 주세요. 상자 바깥은 투명하게 해 주세요."),
-    ("Draw_Paper", "UI", "쪽지", (1615, 1907), "그림판 종이. 줄여서 건네는 쪽지와 오프닝 쪽지로도 써요",
-     "아이가 그림을 그리는 종이 면. 그리기 화면에서는 클립보드 틀(`Draw_ClipboardFrame`) 뒤에 깔려서 가장자리 40px쯤은 틀에 가려요. "
+    ("Draw_Paper", "UI", "쪽지", (3230, 3814), "그림판 종이. 줄여서 건네는 쪽지와 오프닝 쪽지로도 써요",
+     "아이가 그림을 그리는 종이 면. 그리기 화면에서는 방 배경 위에 쪽지 한 장만 놓이고 **가장자리까지 다 보여요** (틀이 없어요). "
+     "아이가 두 손가락으로 쪽지를 3배까지 키워 보기 때문에 예전 크기(1615 x 1907)의 **2배**로 부탁해요. 비율은 그대로예요. "
      "다 그리면 이 종이가 그대로 작아져서 도깨비에게 건네는 쪽지가 되고, 오프닝에서도 작게 떠요. 그래서 가장자리까지 쪽지로 보이게 그려 주세요. "
      "투명 없이 꽉 채워 주세요. 결은 아주 옅게 해 주세요. 검정 · 노랑 같은 옅은 선도 잘 보여야 해요. 줄이나 모눈은 넣지 말아 주세요."),
     ("Paper_Score", "UI", "쪽지", (2023, 3247), "채점표의 바깥 판",

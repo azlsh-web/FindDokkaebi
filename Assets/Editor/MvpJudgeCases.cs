@@ -130,7 +130,7 @@ static class MvpJudgeCases
             Call(gm, "StartDraw", false);
 
             Texture2D tex = Draw(c.stage, c.drawn, c.pen);
-            Find("DrawPanel/Board").GetComponent<DrawingBoard>().LoadPixels(tex.GetPixels32());
+            Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>().LoadPixels(tex.GetPixels32());
             OpenAIJudge.Verdict v = LocalJudge.Judge(stage, tex);   // 게임과 같은 판정 함수 (리포트 기록용)
             c.judged = v.present;
             c.notes = v.notes;

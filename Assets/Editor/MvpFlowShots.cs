@@ -330,21 +330,21 @@ static class MvpFlowShots
             if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
             {
                 var toolBar = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
-                var mixer = MvpSelfTest.Find("DrawPanel/MixerPanel").GetComponent<ColorMixer>();
-                toolBar.OpenMixer();
+                var mixer = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
+                toolBar.OpenPanel();
                 if (st.colorMode == ColorMode.MixFree)
                 {
-                    mixer.AddPaint(0);
-                    yield return Snap("색 섞기 : 물감이 날아가는 중", 0.16f);
-                    yield return Snap("색 섞기 : 물감이 튀고 색이 바뀌는 중", 0.22f);
-                    mixer.UndoPaint();
+                    toolBar.PaintTap(0);
+                    yield return Snap("색 섞기 : 물감이 붓 끝으로 날아가는 중", 0.16f);
+                    yield return Snap("색 섞기 : 붓 끝에서 첨벙하고 색이 바뀌는 중", 0.22f);
+                    toolBar.PaintUndo();
                     mixer.SkipAnimation();
                 }
-                if (st.colorMode == ColorMode.MixTwo) { mixer.AddPaint(1); mixer.AddPaint(2); }
-                else { mixer.AddPaint(0); mixer.AddPaint(0); mixer.AddPaint(1); mixer.AddPaint(1); mixer.AddPaint(2); }
+                if (st.colorMode == ColorMode.MixTwo) { toolBar.PaintTap(1); toolBar.PaintTap(2); }
+                else { toolBar.PaintTap(0); toolBar.PaintTap(0); toolBar.PaintTap(1); toolBar.PaintTap(1); toolBar.PaintTap(2); }
                 mixer.SkipAnimation();
-                yield return Snap("색 섞기 팔레트");
-                mixer.Apply();
+                yield return Snap("색 섞기 팔레트 : 넣은 횟수와 섞인 붓 끝 색");
+                toolBar.ClosePanel();
             }
 
             // ① 전부 틀림 → 다시

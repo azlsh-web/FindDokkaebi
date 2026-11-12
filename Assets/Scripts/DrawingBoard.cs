@@ -22,6 +22,8 @@ using UnityEngine.UI;
 //     그래서 Input System 코드를 따로 쓰지 않아도 마우스와 터치 모두 동작해요.
 //     (씬에 EventSystem 오브젝트가 있어야 이벤트가 들어와요.)
 //   - 색·굵기·지우개 버튼은 ToolBar 가 이 스크립트의 함수를 불러서 바꿔요.
+//   - 한 번에 한 손가락만 그려요. 두 번째 손가락이 닿으면 PaperView 가 그리던 선을 취소하고(CancelStroke)
+//     손가락을 다 뗄 때까지 잠가요(Locked). 종이가 돌아가거나 커져 있어도 손가락 아래 픽셀에 그려져요.
 [RequireComponent(typeof(RawImage))]
 public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
@@ -42,8 +44,20 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     /// <summary>쪽지에 그린 게 있는지. 빈 쪽지면 제출·되돌리기·모두 지우기 버튼을 막아요.</summary>
     public bool HasDrawn { get; private set; }
 
+    /// <summary>선을 긋는 중인지 (도구 줄이 떠 있던 띠를 닫는 데 써요)</summary>
+    public bool Stroking => stroking;
+
+    /// <summary>두 손가락으로 종이를 움직이는 동안은 그리지 않아요 (PaperView 가 정해요)</summary>
+    public bool Locked { get; set; }
+
+    /// <summary>선을 긋기 시작한 순간 (ToolBar 가 팔레트를 닫고, 섞은 색을 "쓴 색"으로 표시해요)</summary>
+    public System.Action OnStrokeBegin;
+
     /// <summary>되돌릴 수 있는지</summary>
     public bool CanUndo => undoStack.Count > 0;
+
+    /// <summary>되돌린 것을 다시 할 수 있는지 (새로 그리면 사라져요)</summary>
+    public bool CanRedo => redoStack.Count > 0;
 
     /// <summary>지금까지 그린 그림. 판정·비교 화면에서 그대로 다시 써요.</summary>
     public Texture2D Texture { get; private set; }
@@ -53,10 +67,13 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     RectTransform rect;     // 화면 칸의 위치/크기 정보
     Color32[] pixels;       // 텍스처의 모든 픽셀 색 (가로 x 세로 개)
     readonly List<Color32[]> undoStack = new List<Color32[]>();
+    readonly List<Color32[]> redoStack = new List<Color32[]>();
     Color32 inkColor = new Color32(0, 0, 0, 255); // 지금 펜 색
     int penRadius = 5;      // 지금 펜 굵기(반지름)
     bool isEraser;          // true 면 지우개 모드
     Vector2 lastPixel;      // 직전 손가락 위치(픽셀 좌표). 그림판 밖일 수도 있어요. (선을 끊기지 않게 잇는 데 사용)
+    bool stroking;          // 선을 긋는 중인지
+    int strokePointer;      // 그 선을 긋는 손가락 번호 (다른 손가락은 무시)
 
     static readonly Color32 Paper = new Color32(253, 252, 245, 255); // 쪽지 색 (시안 클립보드 종이 색)
 
@@ -93,8 +110,11 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         Init();
         for (int i = 0; i < pixels.Length; i++) pixels[i] = Paper;
         undoStack.Clear();
+        redoStack.Clear();
         ApplyPixels();
         HasDrawn = false;
+        stroking = false;
+        Locked = false;
     }
 
     /// <summary>
@@ -123,13 +143,26 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         HasDrawn = false;
     }
 
-    /// <summary>[버튼] 되돌리기 : 마지막 선 하나 전으로</summary>
+    /// <summary>[버튼 ←] 되돌리기 : 마지막 선 하나 전으로</summary>
     public void Undo()
     {
         if (!CanUndo) return;
+        redoStack.Add((Color32[])pixels.Clone());
         int last = undoStack.Count - 1;
         pixels = undoStack[last];
         undoStack.RemoveAt(last);
+        ApplyPixels();
+        HasDrawn = ScanForInk();
+    }
+
+    /// <summary>[버튼 →] 다시 하기 : 되돌린 선을 다시</summary>
+    public void Redo()
+    {
+        if (!CanRedo) return;
+        undoStack.Add((Color32[])pixels.Clone());
+        int last = redoStack.Count - 1;
+        pixels = redoStack[last];
+        redoStack.RemoveAt(last);
         ApplyPixels();
         HasDrawn = ScanForInk();
     }
@@ -158,11 +191,15 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     // 누른 순간 : 되돌리기용 복사본 저장 → 점 하나 찍기
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (Locked || stroking) return;
         if (!TryGetPixel(eventData, out Vector2 p)) return;
+        stroking = true;
+        strokePointer = eventData.pointerId;
         SaveUndo();
         DrawDot(p);
         lastPixel = p;
         ApplyPixels();
+        OnStrokeBegin?.Invoke();
     }
 
     // 누른 채로 끄는 동안 : 직전 점에서 지금 점까지 선 잇기
@@ -170,6 +207,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     // (밖으로 나갔다가 다른 곳으로 들어와도, 나간 곳과 들어온 곳이 직선으로 이어지지 않아요)
     public void OnDrag(PointerEventData eventData)
     {
+        if (Locked || !stroking || eventData.pointerId != strokePointer) return;
         if (!TryGetPixel(eventData, out Vector2 p, allowOutside: true)) return;
         if (ClipToBoard(lastPixel, p, out Vector2 a, out Vector2 b))
         {
@@ -182,13 +220,25 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     // 손을 뗀 순간 : 지우개로 다 지웠을 수도 있으니 한 번 확인
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (!stroking || eventData.pointerId != strokePointer) return;
+        stroking = false;
         if (isEraser) HasDrawn = ScanForInk();
+    }
+
+    /// <summary>긋던 선을 없던 일로 (두 번째 손가락이 닿았을 때)</summary>
+    public void CancelStroke()
+    {
+        if (!stroking) return;
+        stroking = false;
+        Undo();
+        redoStack.Clear();      // 취소한 선은 다시 하기로 살리지 않아요
     }
 
     // ───────────── 내부 계산 ─────────────
 
     void SaveUndo()
     {
+        redoStack.Clear();      // 새로 그리면 되돌렸던 것은 다시 할 수 없어요
         undoStack.Add((Color32[])pixels.Clone());                 // 지금 그림을 통째로 복사
         if (undoStack.Count > maxUndo) undoStack.RemoveAt(0);     // 너무 많으면 가장 오래된 것 버림
     }

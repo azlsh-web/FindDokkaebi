@@ -140,10 +140,10 @@ class PlayDirector : MonoBehaviour
         yield return Wait(6.8f);
         yield return Click("DrawPanel/PeekGuide/TapButton");
         yield return Wait(0.5f);
-        yield return Tool("ToolRow/Size_1");
+        yield return Tool("Size_1");
         yield return Line(V(250, 60), V(253, 150), V(256, 245));                         // 손잡이
         yield return Ellipse(V(256, 335), 60, 90, 14f);                                  // 머리
-        yield return Click("DrawPanel/SubmitButton");
+        yield return Click("DrawPanel/ToolBar/SubmitButton");
         yield return PassGive();                                                         // 쪽지와 사탕 건네기 대사 넘기기
         yield return WaitResult(3.5f);
         yield return TapUntilChoice();
@@ -161,11 +161,11 @@ class PlayDirector : MonoBehaviour
 
         // 2단계 가방
         yield return IntroAndObserve(3f);
-        yield return Tool("ToolRow/Size_1");
+        yield return Tool("Size_1");
         yield return Line(V(100, 60), V(412, 64), V(408, 330), V(104, 326), V(100, 60));
         yield return Line(V(190, 328), V(200, 400), V(256, 440), V(312, 400), V(322, 328));
         yield return Line(V(172, 92), V(340, 94), V(338, 210), V(170, 206), V(172, 92));
-        yield return Tool("ToolRow/Size_0");
+        yield return Tool("Size_0");
         yield return Line(V(194, 122), V(318, 124));
         yield return Line(V(192, 150), V(316, 152));
         yield return Line(V(194, 180), V(318, 178));
@@ -173,29 +173,29 @@ class PlayDirector : MonoBehaviour
 
         // 3단계 돗자리 : 빨강·노랑·파랑
         yield return IntroAndObserve(3f);
-        yield return Tool("ToolRow/Size_1");
+        yield return Tool("Size_1");
         yield return Line(V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150));
         yield return Line(V(255, 150), V(262, 270), V(258, 388));
         yield return Line(V(68, 268), V(250, 262), V(442, 266));
-        yield return Tool("ToolRow/Size_2");
-        yield return Tool("ColorRow/Color_빨강");
+        yield return Tool("Size_2");
+        yield return Tool("Color_빨강");
         yield return Scribble(95, 285, 235, 372, 24);
-        yield return Tool("ColorRow/Color_노랑");
+        yield return Tool("Color_노랑");
         yield return Scribble(280, 285, 425, 372, 24);
-        yield return Tool("ColorRow/Color_파랑");
+        yield return Tool("Color_파랑");
         yield return Scribble(95, 162, 235, 250, 24);
         yield return Scribble(280, 162, 425, 250, 24);
         yield return SubmitAndCompare();
 
         // 4단계 김밥 : 노랑 + 파랑 = 초록
         yield return IntroAndObserve(3f);
-        yield return Tool("ToolRow/Size_2");
+        yield return Tool("Size_2");
         yield return Ellipse(V(256, 256), 200, 196, 6f);
-        yield return Tool("ColorRow/Color_빨강");
+        yield return Tool("Color_빨강");
         yield return Scribble(165, 282, 240, 340, 16);
-        yield return Tool("ColorRow/Color_노랑");
+        yield return Tool("Color_노랑");
         yield return Scribble(280, 282, 355, 340, 16);
-        yield return Mix("Material_노랑", "Material_파랑");
+        yield return Mix("Color_노랑", "Color_파랑");
         yield return Scribble(212, 172, 305, 228, 16);
         yield return SubmitAndCompare();
 
@@ -206,20 +206,20 @@ class PlayDirector : MonoBehaviour
         yield return Wait(3f);
         yield return Click("DrawPanel/MixGuide/TapButton");
         yield return Wait(0.5f);
-        yield return Tool("ToolRow/Size_1");
+        yield return Tool("Size_1");
         yield return Ellipse(V(256, 400), 55, 55, 0f);
-        yield return Mix("Material_노랑", "Material_파랑");
-        yield return Tool("ToolRow/Size_2");
+        yield return Mix("Color_노랑", "Color_파랑");
+        yield return Tool("Size_2");
         yield return Scribble(165, 228, 347, 334, 14);
         yield return Scribble(112, 252, 162, 320, 14);
         yield return Scribble(350, 252, 400, 320, 14);
-        yield return Tool("ColorRow/Color_검정");
-        yield return Tool("ToolRow/Size_1");
+        yield return Tool("Color_검정");
+        yield return Tool("Size_1");
         yield return Line(V(165, 258), V(347, 260));
         yield return Line(V(165, 285), V(347, 287));
         yield return Line(V(165, 312), V(347, 310));
-        yield return Mix("Material_빨강", "Material_빨강", "Material_노랑", "Material_노랑", "Material_파랑");
-        yield return Tool("ToolRow/Size_2");
+        yield return Mix("Color_빨강", "Color_빨강", "Color_노랑", "Color_노랑", "Color_파랑");
+        yield return Tool("Size_2");
         yield return Scribble(178, 72, 236, 214, 14);
         yield return Scribble(282, 72, 340, 214, 14);
         yield return SubmitAndCompare();
@@ -242,7 +242,7 @@ class PlayDirector : MonoBehaviour
     IEnumerator SubmitAndCompare()
     {
         yield return Wait(0.4f);
-        yield return Click("DrawPanel/SubmitButton");
+        yield return Click("DrawPanel/ToolBar/SubmitButton");
         yield return PassGive();
         yield return WaitResult(3f);
         while (On("ResultPanel"))
@@ -279,18 +279,19 @@ class PlayDirector : MonoBehaviour
         yield return Wait(hold);
     }
 
-    // 혼색 : 팔레트 열기 → 물감 넣기 → 섞어서 칠하기
-    IEnumerator Mix(params string[] materials)
+    // 혼색 : 팔레트를 열고 물감을 차례로 넣어요 (누를 때마다 붓 끝에서 섞여요)
+    IEnumerator Mix(params string[] paints)
     {
-        yield return Tool("ColorRow/MixOpen");
-        yield return Wait(0.4f);
-        foreach (string m in materials) { yield return Click("DrawPanel/MixerPanel/MaterialRow/" + m + "/Button"); yield return Wait(0.5f); }
-        yield return Wait(1.2f);
-        yield return Click("DrawPanel/MixerPanel/ApplyButton");
-        yield return Wait(0.3f);
+        foreach (string m in paints) { yield return Tool(m); yield return Wait(0.5f); }
+        yield return Wait(0.8f);
     }
 
-    IEnumerator Tool(string path) => Click("DrawPanel/ToolBar/" + path + "/Button");
+    // 팔레트 단추 : 닫혀 있으면 붓을 눌러 열고 눌러요. 색 단추는 테두리 안쪽, 굵기 단추는 바로 아래
+    IEnumerator Tool(string name)
+    {
+        if (!On("DrawPanel/ToolBar/Palette")) { yield return Click("DrawPanel/ToolBar/Brush/Button"); yield return Wait(0.3f); }
+        yield return Click("DrawPanel/ToolBar/Palette/Card/" + name + (name.StartsWith("Color_") ? "/Edge/Button" : "/Button"));
+    }
 
     // ───────────── 커서 · 클릭 · 그리기 ─────────────
 
@@ -345,17 +346,16 @@ class PlayDirector : MonoBehaviour
     // 512x512 손그림 좌표(아래가 0) → 화면 좌표. 정사각형을 그림판 세로 가운데에 놓아요.
     Vector2 ToScreen(Vector2 p)
     {
-        var rt = (RectTransform)Find("DrawPanel/Board");
-        var c = new Vector3[4];
-        rt.GetWorldCorners(c);
+        var rt = (RectTransform)Find("DrawPanel/Desk/Paper/Board");
+        Rect r = rt.rect;   // 쪽지가 돌아가 있어도 맞게
         float w = DrawingBoard.TextureWidth, h = DrawingBoard.TextureHeight;
-        return new Vector2(Mathf.Lerp(c[0].x, c[2].x, p.x / w), Mathf.Lerp(c[0].y, c[2].y, (p.y + (h - w) / 2f) / h));
+        return rt.TransformPoint(new Vector3(Mathf.Lerp(r.xMin, r.xMax, p.x / w), Mathf.Lerp(r.yMin, r.yMax, (p.y + (h - w) / 2f) / h), 0f));
     }
 
     // 점들을 따라 실제 드래그 (속도 : 초당 약 700 쪽지 픽셀)
     IEnumerator Line(params Vector2[] pts)
     {
-        DrawingBoard board = Find("DrawPanel/Board").GetComponent<DrawingBoard>();
+        DrawingBoard board = Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>();
         yield return MoveCursor(ToScreen(pts[0]), 0.3f);
         var e = new PointerEventData(EventSystem.current) { position = ToScreen(pts[0]) };
         board.OnPointerDown(e);

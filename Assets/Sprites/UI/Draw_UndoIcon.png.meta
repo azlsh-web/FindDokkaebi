@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: d0b8e4e2be28eb441a817193d5a63303
+guid: 9d78e8f5dce0b5d41892cfb5d4924a32
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5409350953585531902
-    second: BlobYellow_0
+      213: -699733301330774810
+    second: Draw_UndoIcon_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: BlobYellow_0
+      name: Draw_UndoIcon_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 186
-        height: 184
+        x: 27
+        y: 60
+        width: 200
+        height: 135
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2042d1ab7ff1ee4b0800000000000000
-      internalID: -5409350953585531902
+      spriteID: 6e4faa0154c0a46f0800000000000000
+      internalID: -699733301330774810
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      BlobYellow_0: -5409350953585531902
+      Draw_UndoIcon_0: -699733301330774810
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

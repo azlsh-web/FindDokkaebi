@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 4f9db9bec96840d44b78d23b1cd35efe
+guid: b555d5e06e21fb54595f5fa1f82b6cc5
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7070236138178531453
-    second: EraserButton_0
+      213: 7873086126217433299
+    second: Draw_FitIcon_0
+  - first:
+      213: 4980415470218476426
+    second: Draw_FitIcon_1
+  - first:
+      213: -6345411027461211951
+    second: Draw_FitIcon_2
+  - first:
+      213: -2463051357227633599
+    second: Draw_FitIcon_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +135,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: EraserButton_0
+      name: Draw_FitIcon_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 3
-        width: 330
-        height: 314
+        x: 12
+        y: 64
+        width: 52
+        height: 52
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +150,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 38f2db921b971ed90800000000000000
-      internalID: -7070236138178531453
+      spriteID: 3d01f3f4e12d24d60800000000000000
+      internalID: 7873086126217433299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Draw_FitIcon_1
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 12
+        width: 52
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8b7b389b7dfd1540800000000000000
+      internalID: 4980415470218476426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Draw_FitIcon_2
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 52
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d8f35a3a4290f7a0800000000000000
+      internalID: -6345411027461211951
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Draw_FitIcon_3
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 12
+        width: 52
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14437e427db71ddd0800000000000000
+      internalID: -2463051357227633599
       vertices: []
       indices: 
       edges: []
@@ -161,7 +236,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      EraserButton_0: -7070236138178531453
+      Draw_FitIcon_0: 7873086126217433299
+      Draw_FitIcon_1: 4980415470218476426
+      Draw_FitIcon_2: -6345411027461211951
+      Draw_FitIcon_3: -2463051357227633599
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
