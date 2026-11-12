@@ -38,6 +38,8 @@ public static class Sfx
         if (sfxSource != null) return;
         var go = new GameObject("Sound");
         Object.DontDestroyOnLoad(go);
+        // 소리를 듣는 귀 : 씬 카메라에 AudioListener 가 없으면 아무 소리도 안 들려요. 없으면 여기에 하나 달아요
+        if (Object.FindFirstObjectByType<AudioListener>() == null) go.AddComponent<AudioListener>();
         sfxSource = go.AddComponent<AudioSource>();
         sfxSource.playOnAwake = false;
         bgmSource = go.AddComponent<AudioSource>();

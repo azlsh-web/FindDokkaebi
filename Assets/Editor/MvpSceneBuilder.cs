@@ -92,7 +92,6 @@ public static class MvpSceneBuilder
         Sprite picnic = LoadSprite("Background/BG_Picnic.png");                     // 이야기 종료 (아트팀 그림)
         Sprite friend = LoadSprite("Stage5_Friend/Friend_Original.png");
         Sprite snack = T("HUD_Candy");                                    // 사탕 : 쪽지를 건넬 때 (아트팀 그림)
-        Sprite chocolate = T("HUD_Chocolate");                            // 초콜릿 : 돋보기를 쓸 때 (아트팀 그림)
         Sprite room = LoadSprite("Background/BG_Room.png");          // 시작 화면 그림에서 글자를 지운 방
         Sprite startBackground = LoadSprite("Background/BG_Start.png");  // 시작 화면의 빈 방 (물건은 위에 하나씩 올려요)
         Sprite iconClose = LoadSprite("UI/Mix_CloseIcon.png");
@@ -146,29 +145,46 @@ public static class MvpSceneBuilder
         var gm = gmGo.AddComponent<GameManager>();
         var judge = gmGo.AddComponent<OpenAIJudge>();
 
-        // ── HUD (게임 중에만 보임) : 위 줄에 돋보기 · 초콜릿 · 사탕 · 일시정지, 오른쪽 긴 향 ──
+        // ── HUD (게임 중에만 보임) : 위 줄에 돋보기 · 사탕 · 일시정지, 오른쪽 긴 향 ──
         //   좌표는 시안 그림(2248x3952) 픽셀 그대로 적고, PlaceM 이 화면(1080x1899) 크기로 바꿔요.
         var hud = NewEmpty("HUD", canvas);
         var pauseImg = TeamImage("PauseButton", hud, T("HUD_PauseButton"), 1880, 112, 2108, 344);
         pauseImg.raycastTarget = true;
         var pauseButton = pauseImg.gameObject.AddComponent<Button>();
 
-        // 위 줄 : 돋보기 | 초콜릿 2개 (돋보기에 붙여서) | 사탕 2개 | 일시정지. 단계마다 새로 받아요.
-        //   쓴 초콜릿은 오른쪽부터, 쓴 사탕은 왼쪽부터 흐려져요 (GameManager.UpdateSnacks)
+        // 위 줄 : 돋보기 (오른쪽 아래에 쓸 수 있는 횟수) | 사탕 3개 | 일시정지. 사탕은 단계마다 새로 받아요.
+        //   쓴 사탕은 왼쪽부터 흐려지고, 돋보기를 다 쓰면 숫자가 사라지고 흐려져요 (GameManager.UpdateSnacks)
         var magImg = TeamImage("MagnifierButton", hud, T("Magnifier_Icon"), 120, 104, 330, 352);
         magImg.preserveAspect = true;
         magImg.raycastTarget = true;
         var magnifierButton = magImg.gameObject.AddComponent<Button>();
         var magColors = magnifierButton.colors;
-        magColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.45f);    // 초콜릿이 없으면 흐리게
+        magColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.45f);    // 다 쓰면 흐리게
         magnifierButton.colors = magColors;
-        const int PerStage = 2;         // 단계마다 받는 사탕 · 초콜릿 수 (GameManager 와 같게)
-        const int SnackCount = 10;      // 이야기 종료에 모아 놓을 수 있는 최대 수 (5단계 x 2)
-        var chocolateIcons = new Image[PerStage];
+        // 쓸 수 있는 횟수 : 돋보기 오른쪽 아래의 코랄 동그라미 숫자 (떠올리기 숫자와 같은 모양)
+        var magBadge = TeamImage("MagnifierBadge", hud, circleSprite, 262, 262, 372, 372);
+        magBadge.color = OutlineColor;
+        var magBadgeFill = NewImage("Fill", magBadge.transform, new Color32(242, 119, 107, 255));
+        magBadgeFill.sprite = circleSprite;
+        magBadgeFill.raycastTarget = false;
+        Stretch(magBadgeFill.rectTransform, 5);
+        var magBadgeText = NewText("Count", magBadge.transform, "1", 40, Vector2.zero, Vector2.zero, bold: true);
+        Stretch(magBadgeText.rectTransform);
+        magBadgeText.color = Color.white;
+        // 무료 돋보기를 받으면 반짝 (켤 때마다 처음부터)
+        var magSparkles = NewEmpty("MagnifierSparkles", hud);
+        float[][] magSparkXY = { new float[] { 96, 120, 60, 0f }, new float[] { 320, 150, 44, 0.25f }, new float[] { 140, 330, 50, 0.5f } };
+        foreach (float[] sp in magSparkXY)
+        {
+            var spark = TeamImage("Spark", magSparkles, circleSprite, sp[0], sp[1], sp[0] + sp[2], sp[1] + sp[2]);
+            spark.color = new Color32(245, 201, 107, 255);
+            Anim(spark.gameObject, SimpleAnim.Kind.Spark, 1.0f, sp[3], 0f);
+        }
+        const int PerStage = 3;         // 단계마다 받는 사탕 수 (GameManager 와 같게)
+        const int SnackCount = 15;      // 이야기 종료에 모아 놓을 수 있는 최대 수 (5단계 x 3)
         var candyIcons = new Image[PerStage];
-        var snackAnims = new SimpleAnim[PerStage * 2];
-        // 단계 첫 그리기 때 들어오는 움직임 : 초콜릿은 돋보기 뒤에서 오른쪽으로 꺼내지듯이 (가까운 것부터),
-        //   사탕은 오른쪽 화면 밖에서 왼쪽으로 (오른쪽 것부터). fromX = 출발하는 시안 x (가운데)
+        var snackAnims = new SimpleAnim[PerStage];
+        // 단계 첫 그리기 때 들어오는 움직임 : 사탕은 오른쪽 화면 밖에서 왼쪽으로 (오른쪽 것부터). fromX = 출발하는 시안 x (가운데)
         void SnackRow(string row, string item, Sprite sprite, float x0, float step, float w, Image[] icons, int animFrom,
                       SimpleAnim.Kind kind, float fromX, bool rightFirst)
         {
@@ -184,9 +200,31 @@ public static class MvpSceneBuilder
                 snackAnims[animFrom + i].enabled = false;
             }
         }
-        SnackRow("ChocolateRow", "Chocolate", chocolate, 340, 200, 180, chocolateIcons, 0, SimpleAnim.Kind.SlideRight, 225, rightFirst: false);
-        SnackRow("CandyRow", "Candy", snack, 1420, 230, 200, candyIcons, PerStage, SimpleAnim.Kind.SlideLeft, 2360, rightFirst: true);
-        magImg.transform.SetAsLastSibling();    // 초콜릿은 돋보기 뒤에서,
+        SnackRow("CandyRow", "Candy", snack, 1190, 230, 200, candyIcons, 0, SimpleAnim.Kind.SlideLeft, 2360, rightFirst: true);
+        // 시범 강조 (1단계 첫 그리기) : 돋보기 뒤에서 빛이 커졌다 작아지고, 아래에서 화살표가 콕콕 가리켜요 (GameManager 가 움직여요)
+        var magHighlight = NewEmpty("MagnifierHighlight", hud);
+        // 푸른 도깨비불 세 개가 돋보기 둘레를 빙글빙글 돌아요 (GameManager 가 돌려요). 가운데 = 돋보기 가운데
+        var fireOrbit = new GameObject("Orbit", typeof(RectTransform));
+        fireOrbit.transform.SetParent(magHighlight, false);
+        PlaceM((RectTransform)fireOrbit.transform, 225, 228, 225, 228);
+        var magFires = new RectTransform[3];
+        for (int i = 0; i < magFires.Length; i++)
+        {
+            var glow = NewImage("Fire_" + i, fireOrbit.transform, new Color32(150, 220, 255, 150));    // 불 뒤의 푸른 빛
+            glow.sprite = T("Common_SoftPuff");
+            glow.raycastTarget = false;
+            Anchor(glow.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(120, 120));
+            var fire = NewImage("Flame", glow.transform, Color.white);
+            fire.sprite = T("Magnifier_DokkaebiFire");
+            fire.preserveAspect = true;
+            fire.raycastTarget = false;
+            Anchor(fire.rectTransform, 0.5f, 0.5f, new Vector2(0, 12), new Vector2(126, 168));
+            magFires[i] = glow.rectTransform;
+        }
+        magHighlight.SetAsLastSibling();
+        magImg.transform.SetAsLastSibling();
+        magBadge.transform.SetAsLastSibling();
+        magSparkles.SetAsLastSibling();
         pauseImg.transform.SetAsLastSibling();  // 사탕은 일시정지 버튼 뒤를 지나 나와요
 
         // 향 : 줄기가 위에서부터 타고, 불꽃 · 재 · 연기가 끝을 따라 움직여요 (IncenseBurn)
@@ -428,6 +466,15 @@ public static class MvpSceneBuilder
         submitColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.55f);   // 빈 쪽지면 흐리게
         submitButton.colors = submitColors;
 
+        // 돋보기 시범 (1단계 첫 그리기) : 그림판을 살짝 덮고 도깨비가 "돋보기를 눌러 봐" 라고 말해요.
+        //   HUD 가 이 덮개보다 위에 있어서 돋보기는 또렷하게 보이고 누를 수 있어요.
+        var peekGuide = NewEmpty("PeekGuide", draw);
+        var peekGuideDim = NewImage("Dim", peekGuide, new Color(40f / 255f, 24f / 255f, 10f / 255f, 0.3f));
+        peekGuideDim.raycastTarget = false;
+        Stretch(peekGuideDim.rectTransform);
+        var peekGuideBox = NewDialogueBox(peekGuide, faceDokkaebi);
+        var peekGuideTap = NewTap("TapButton", peekGuide);
+
         // 둘러보기 : 화면을 어둡게 덮고, 렌즈 안에만 그림판 자리에 놓인 원본이 보여요 (MagnifierPeek)
         var peekGo = NewImage("MagnifierPeek", draw, new Color(0f, 0f, 0f, 0.4f));    // 덮개가 누르기를 모두 받아서 그릴 수 없어요
         Stretch(peekGo.rectTransform);
@@ -436,7 +483,7 @@ public static class MvpSceneBuilder
         peekArea.SetParent(peekGo.transform, false);
         PlaceM(peekArea, 230, 643, 1845, 2550);                                 // 그림판과 같은 자리
         // 돋보기 그림(362x484)의 렌즈 구멍 : 가운데 (169, 174), 지름 약 230
-        const float lensHole = 280f, frameW = 362f, frameH = 484f, holeX = 169f, holeY = 174f, holeD = 230f;
+        const float lensHole = 400f, frameW = 362f, frameH = 484f, holeX = 169f, holeY = 174f, holeD = 230f;
         float lensScale = lensHole / holeD;
         var lens = new GameObject("Lens", typeof(RectTransform)).GetComponent<RectTransform>();
         lens.SetParent(peekGo.transform, false);
@@ -461,12 +508,25 @@ public static class MvpSceneBuilder
         lensFrame.raycastTarget = false;
         Stretch(lensFrame.rectTransform);
         var lensAnim = Anim(lens.gameObject, SimpleAnim.Kind.Pop, 0.3f, 0f, 0f);
+        // 남은 시간 : 테두리의 크림색 띠를 오린 고리를 테두리에 꼭 맞게 겹쳐 호박색으로 칠하고, 시계 방향으로 줄여요
+        //   (MagnifierPeek. 고리 그림은 make_candy_jar.py 가 Magnifier_Frame 에서 오려요 : 렌즈 가운데 기준 340 x 340)
+        var timeRing = NewImage("TimeRing", lens, Color.white);
+        timeRing.sprite = T("Magnifier_TimeRing");
+        timeRing.type = Image.Type.Filled;
+        timeRing.fillMethod = Image.FillMethod.Radial360;
+        timeRing.fillOrigin = (int)Image.Origin360.Top;
+        timeRing.fillClockwise = false;     // 12시에서 시작해 시계 방향으로 비어 가요
+        timeRing.raycastTarget = false;
+        timeRing.rectTransform.anchorMin = timeRing.rectTransform.anchorMax = lens.pivot;
+        timeRing.rectTransform.anchoredPosition = Vector2.zero;
+        timeRing.rectTransform.sizeDelta = Vector2.one * (340f * lensScale);     // 돋보기 그림과 같은 비율
         var pso = new SerializedObject(peek);
         Set(pso, "area", peekArea);
         Set(pso, "lens", lens);
         Set(pso, "view", peekView.rectTransform);
         Set(pso, "original", peekOriginal);
         Set(pso, "lensAnim", lensAnim);
+        Set(pso, "timeRing", timeRing);
         pso.ApplyModifiedPropertiesWithoutUndo();
 
         // 혼색 팔레트 (색 섞기를 누르면 물감 줄 + 도구 줄 자리를 딱 덮으며 열림)
@@ -589,6 +649,9 @@ public static class MvpSceneBuilder
         retryCost.raycastTarget = false;
         Anchor(retryCost.rectTransform, 1f, 1f, new Vector2(-21, -21), new Vector2(78, 84));
         var giveUpButton = ChoiceButton("GiveUpButton", 186, Color.white, T("Result_IconGiveUp"), "포기", TextColor);
+        // 무료 돋보기 : 도깨비 손에서 나타나 맨 위 돋보기 자리로 날아가요 (GameManager.GiftFly 가 움직여요)
+        var giftMagnifier = MImage("GiftMagnifier", result, T("Magnifier_Icon"), 0, 0, 60, 70);
+        Anchor(giftMagnifier.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(180, 210));
 
         // ── 7. 채점표 : 시험지처럼 번호 위에 동그라미 · 빗금 ──
         var compare = NewPanel("ComparePanel", canvas);
@@ -663,18 +726,14 @@ public static class MvpSceneBuilder
         var endBag = Item("BagSlot", 50, 418, 74, 66, 0.7f);
         var endGimbap = Item("GimbapSlot", 150, 468, 62, 62, 1.2f);
         var endBat = Item("BatSlot", 246, 416, 66, 90, 1.7f);
-        // 단계마다 남은 간식을 모두 더해 돗자리 오른쪽 아래에 사탕, 왼쪽 아래에 초콜릿으로 모아 놓아요 (두 줄로 5개씩)
+        // 단계마다 남은 사탕을 모두 더해 돗자리 오른쪽 아래에 모아 놓아요 (세 줄로 5개씩)
         var endingCandies = new GameObject[SnackCount];
-        var endingChocolates = new GameObject[SnackCount];
         for (int k = 0; k < SnackCount; k++)
         {
             float dx = (k % 5) * 17f, dy = (k / 5) * 15f;
             var c = MImage($"Candy_{k + 1}", ending, snack, 232 + dx + (k / 5) * 8f, 516 + dy, 22, 16);
             Anim(c.gameObject, SimpleAnim.Kind.Pop, 0.35f, 2.2f + k * 0.06f, 0f);
             endingCandies[k] = c.gameObject;
-            var h = MImage($"Chocolate_{k + 1}", ending, chocolate, 26 + dx + (k / 5) * 8f, 524 + dy, 17, 20);
-            Anim(h.gameObject, SimpleAnim.Kind.Pop, 0.35f, 2.6f + k * 0.06f, 0f);
-            endingChocolates[k] = h.gameObject;
         }
         Color32[] confettiColors = { new Color32(242, 119, 107, 255), new Color32(245, 201, 107, 255), new Color32(90, 167, 217, 255) };
         float[][] confetti = { new float[] { 40, 3.2f, 0f }, new float[] { 110, 2.6f, 0.5f }, new float[] { 190, 3.5f, 1f }, new float[] { 260, 2.9f, 0.2f }, new float[] { 325, 3.3f, 1.4f } };
@@ -706,6 +765,7 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(dialogueTapButton.onClick, gm.DialogueTap);
         UnityEventTools.AddPersistentListener(submitButton.onClick, gm.Submit);
         UnityEventTools.AddPersistentListener(magnifierButton.onClick, gm.MagnifierTap);
+        UnityEventTools.AddPersistentListener(peekGuideTap.onClick, gm.PeekGuideTap);
         UnityEventTools.AddPersistentListener(retryButton.onClick, gm.Retry);
         UnityEventTools.AddPersistentListener(giveUpButton.onClick, gm.ShowCompare);
         UnityEventTools.AddPersistentListener(resultTapButton.onClick, gm.ResultTap);
@@ -736,7 +796,14 @@ public static class MvpSceneBuilder
         Set(so, "toolBar", toolBar);
         Set(so, "judge", judge);
         Set(so, "hud", hud.gameObject);
-        SetArray(so, "chocolateIcons", chocolateIcons);
+        Set(so, "magnifierBadge", magBadge.gameObject);
+        Set(so, "magnifierBadgeText", magBadgeText);
+        Set(so, "magnifierSparkles", magSparkles.gameObject);
+        Set(so, "peekGuide", peekGuide.gameObject);
+        Set(so, "peekGuideBox", peekGuideBox);
+        Set(so, "magnifierHighlight", magHighlight.gameObject);
+        SetArray(so, "magnifierFires", magFires);
+        Set(so, "giftMagnifier", giftMagnifier.rectTransform);
         SetArray(so, "candyIcons", candyIcons);
         SetArray(so, "snackAnims", snackAnims);
         Set(so, "timerGroup", timerGroup.gameObject);
@@ -814,7 +881,6 @@ public static class MvpSceneBuilder
         Set(so, "endingBox", endingBoxComp);
         SetArray(so, "endingItems", new[] { endBat, endBag, endMat, endGimbap, endFriend });
         SetArray(so, "endingCandies", endingCandies);
-        SetArray(so, "endingChocolates", endingChocolates);
         Set(so, "observeImage", observeImage);
         Set(so, "drawTitle", drawTitle);
         Set(so, "submitButton", submitButton);
@@ -859,6 +925,10 @@ public static class MvpSceneBuilder
         openingGroup.gameObject.SetActive(false);
         mixerCard.gameObject.SetActive(false);
         peekGo.gameObject.SetActive(false);
+        peekGuide.gameObject.SetActive(false);
+        magHighlight.gameObject.SetActive(false);
+        giftMagnifier.gameObject.SetActive(false);
+        magSparkles.gameObject.SetActive(false);
         pause.gameObject.SetActive(false);
         hud.gameObject.SetActive(false);
 
@@ -912,7 +982,7 @@ public static class MvpSceneBuilder
             ("초록 시금치", "밥 안쪽에 초록색 계열로 칠한 재료 조각이 있어야 합니다. 파랑이나 노랑만 있으면 인정하지 않습니다."));
 
         CreateStage("Stage5_Friend", 5, "친구", ColorMode.MixFree,
-            "소풍 준비물을 다 찾았어요!\n그런데 같이 가기로 한 친구가 안 보여요.\n도깨비가 친구도 찾아 준대요.\n친구의 머리와 옷 색을 잘 보세요.",
+            "소풍 준비물을 다 찾았어요!\n그런데 이번엔 옆에 있던 친구를 잃어버렸어요.\n도깨비가 친구도 찾아 준대요.\n친구의 머리와 옷 색을 잘 보세요.",
             "두 가지 이상 색을 자유롭게 섞어요.\n많이 넣은 색에 따라 섞인 색이 달라져요.",
             "모양 · 무늬 · 삼원색 · 두 색 혼합",
             "정면에서 본 친구입니다. 양 갈래로 묶은 갈색 머리, 살구색(주황 계열) 반팔 상의, 앞주머니에 천 조각을 덧댄 파란 멜빵 반바지를 입고 노란 신발을 신었습니다. 갈색은 세 색 혼합, 주황은 두 색 혼합으로 만드는 색입니다.",

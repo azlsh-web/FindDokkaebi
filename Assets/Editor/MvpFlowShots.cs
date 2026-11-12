@@ -273,7 +273,27 @@ static class MvpFlowShots
 
             // 그리기
             yield return Until(() => IsOn("DrawPanel"));
-            if (s == 0) yield return Snap("간식이 들어오는 중 : 초콜릿은 돋보기 뒤에서, 사탕은 오른쪽에서", 0.2f);
+            if (s == 0)
+            {
+                // 1단계 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요 (공짜, 향이 타지 않아요)
+                yield return Snap("사탕 3개가 오른쪽에서 들어오고, 도깨비가 돋보기를 눌러 보라고 함", 0.2f);
+                FinishBoxes();
+                gm.PeekGuideTap();
+                yield return Snap("대사를 넘기면 : 대사가 사라지고 도깨비불이 돋보기 둘레를 돎", 0.6f);
+                gm.MagnifierTap();
+                yield return Wait(0.3f);
+                FinishBoxes();
+                yield return Snap("돋보기를 누르면 : 5초 동안, 렌즈를 끌어 보는 법을 알려 줌", 0.4f);
+                gm.PeekGuideTap();
+                yield return Snap("대사를 넘기면 : 렌즈로 둘러봄 (둘레 띠가 가득)", 0.3f);
+                yield return Snap("남은 시간만큼 띠가 줄어듦 (마지막 1초는 코랄색으로 바뀜)", 1.9f);
+                yield return Until(() => IsOn("DrawPanel/PeekGuide"));
+                yield return Wait(0.3f);
+                FinishBoxes();
+                yield return Snap("돋보기 시범 끝 : 한 번만 더 빌려준다고 알려 줌", 0.4f);
+                gm.PeekGuideTap();
+                gm.PeekGuideTap();
+            }
             yield return Snap("그리기 시작 : 빈 쪽지", 1.2f);
 
             if (s == 0)
@@ -285,11 +305,12 @@ static class MvpFlowShots
                 yield return Snap("향이 10초 아래로 남았을 때", 0.8f);
                 MvpSelfTest.SetPrivate(gm, "timeLeft", 60f);
 
-                // 돋보기 : 맨 위 왼쪽 돋보기를 누르면 초콜릿 1개로 렌즈 안의 원본을 3초 둘러봐요
+                // 돋보기 : 게임 전체에서 1번. 렌즈를 끌어서 원본의 다른 곳을 봐요
                 gm.MagnifierTap();
                 MvpSelfTest.Find("DrawPanel/MagnifierPeek/Lens").position += new Vector3(-120f, 160f, 0f);
-                yield return Snap("돋보기 : 초콜릿 1개로 렌즈 안의 원본을 3초 둘러봄", 0.5f);
+                yield return Snap("돋보기 : 렌즈를 끌어 원본을 둘러봄 (게임 전체 1번을 씀)", 0.5f);
                 MvpSelfTest.Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>().Stop();
+                yield return Snap("돋보기를 다 쓰면 숫자가 사라지고 흐려짐", 0.3f);
             }
 
             if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
@@ -343,6 +364,20 @@ static class MvpFlowShots
                 MvpSelfTest.LoadSketch(PartialSketch(s));
                 yield return SubmitAndWait(st, st.features.Length - 1, null);
                 yield return ResultLines("일부 틀림");
+                if (IsOn("ResultPanel/GiftMagnifier"))
+                {
+                    // 이 단계에서 두 번째로 틀렸어요 : 무료 돋보기 (2단계만 사진을 찍어요)
+                    if (s == 1)
+                    {
+                        yield return Wait(0.5f);
+                        FinishBoxes();
+                        yield return Snap("두 번째로 틀리면 : 도깨비가 돋보기를 빌려줌", 0.1f);
+                        yield return Snap("무료 돋보기가 맨 위 돋보기로 날아가는 중", 0.6f);
+                        yield return Snap("도착하면 숫자가 늘고 반짝임", 0.7f);
+                    }
+                    FinishBoxes();
+                    gm.ResultTap();
+                }
                 yield return Snap("다시 · 포기 버튼 (사탕이 남음)", 0.5f);
                 gm.ShowCompare();
                 yield return Snap("포기 : 채점표 (동그라미와 빗금)", 2.8f);
@@ -401,13 +436,12 @@ static class MvpFlowShots
             var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
             var items = (Sprite[])typeof(GameManager).GetField("itemsFound", flags).GetValue(gm);
             var candiesLeft = (int[])typeof(GameManager).GetField("candiesLeft", flags).GetValue(gm);
-            var chocolatesLeft = (int[])typeof(GameManager).GetField("chocolatesLeft", flags).GetValue(gm);
 
-            // 전부 찾았을 때 : 단계마다 남은 간식이 돗자리에 모여요
-            int[] candy = { 1, 0, 1, 1, 0 }, choc = { 2, 1, 2, 0, 1 };
-            for (int i = 0; i < stages.Length; i++) { items[i] = stages[i].originalSprite; candiesLeft[i] = candy[i]; chocolatesLeft[i] = choc[i]; }
+            // 전부 찾았을 때 : 단계마다 남은 사탕이 돗자리에 모여요
+            int[] candy = { 2, 0, 1, 2, 1 };
+            for (int i = 0; i < stages.Length; i++) { items[i] = stages[i].originalSprite; candiesLeft[i] = candy[i]; }
             gm.NextStage();
-            yield return Snap("전부 찾았을 때 : 소풍 장면, 돗자리에 남은 사탕 · 초콜릿", 3.5f);
+            yield return Snap("전부 찾았을 때 : 소풍 장면, 돗자리에 남은 사탕", 3.5f);
             gm.EndingTap();
             yield return Wait(0.3f);
             FinishBoxes();
@@ -420,8 +454,7 @@ static class MvpFlowShots
             MvpSelfTest.SetPrivate(gm, "batLost", true);
             for (int i = 0; i < stages.Length; i++)
             {
-                candiesLeft[i] = 0;
-                chocolatesLeft[i] = i == 2 ? 1 : 0;
+                candiesLeft[i] = i == 2 ? 1 : 0;
                 Sprite[] wrong = stages[i].wrongSprites;
                 items[i] = i == 2 ? stages[2].originalSprite : wrong[wrong.Length - 1];
             }

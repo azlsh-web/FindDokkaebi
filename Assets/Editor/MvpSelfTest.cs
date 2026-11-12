@@ -37,7 +37,8 @@ using Object = UnityEngine.Object;
 // 시나리오
 //   시작 → 1~5단계 (각 단계 : 대화 → 떠올리기 → 쪽지 쓰기 → 건네기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
 //   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
-//   + 2단계 : 사탕 2개를 다 써서 포기
+//   + 1단계 : 도깨비가 돋보기 쓰는 법을 보여 줌 (공짜, 향이 안 탐) → 게임 전체 1번을 씀
+//   + 2단계 : 두 번째로 틀리면 무료 돋보기를 받아서 씀 → 사탕 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
 //   + 4·5단계 : 혼색 팔레트 (노랑 1:파랑 1=초록, 빨강 2:노랑 2:파랑 1=갈색, 되돌리기)
 //   → 이야기 종료 화면 기록 확인
@@ -226,18 +227,16 @@ static class MvpSelfTest
         {
             wait = 0.3f, name = "ending 입구", group = group, run = () =>
             {
-                // 전체 실행이 끝났을 때와 비슷한 기록 : 2단계만 엉뚱한 물건, 나머지는 찾음. 남은 사탕 1 · 0 · 1 · 1 · 1, 초콜릿 1 · 2 · 2 · 2 · 2
+                // 전체 실행이 끝났을 때와 같은 기록 : 2단계만 엉뚱한 물건, 나머지는 찾음. 남은 사탕 2 · 0 · 2 · 2 · 2
                 StartAt(1);
                 StageData[] stages = Stages();
                 var hidden = BindingFlags.NonPublic | BindingFlags.Instance;
                 var items = (Sprite[])typeof(GameManager).GetField("itemsFound", hidden).GetValue(Gm());
                 var candiesLeft = (int[])typeof(GameManager).GetField("candiesLeft", hidden).GetValue(Gm());
-                var chocolatesLeft = (int[])typeof(GameManager).GetField("chocolatesLeft", hidden).GetValue(Gm());
                 for (int i = 0; i < stages.Length; i++)
                 {
                     items[i] = i == 1 ? stages[i].wrongSprites[stages[i].wrongSprites.Length - 1] : stages[i].originalSprite;
-                    candiesLeft[i] = i == 1 ? 0 : 1;
-                    chocolatesLeft[i] = i == 0 ? 1 : 2;
+                    candiesLeft[i] = i == 1 ? 0 : 2;
                 }
                 SetPrivate(Gm(), "stageIndex", stages.Length - 1);
                 Gm().NextStage();
@@ -395,6 +394,28 @@ static class MvpSelfTest
 
         // 1) 시작 화면
         group = "title";
+        // 모든 대사를 실제 대사 상자 크기로 줄을 나눠 봐요 : 상자를 넘치지 않고, 마지막 줄에 짧은 조각만 남지 않아야 해요
+        Add(0.2f, "대사 줄바꿈", () =>
+        {
+            var line = Find("DialoguePanel/DialogueBox/Line").GetComponent<TMP_Text>();
+            Find("DialoguePanel").gameObject.SetActive(true);      // 꺼진 화면에서는 줄을 나누지 않아서 잠깐 켜요
+            var shortTail = new List<string>();
+            var overflow = new List<string>();
+            int count = 0;
+            foreach (string l in GameScript.AllLines())
+            {
+                count++;
+                line.text = DialogueBox.KeepTailTogether(line, l);
+                line.ForceMeshUpdate(true);
+                TMP_TextInfo info = line.textInfo;
+                if (info.lineCount > 1 && info.lineInfo[info.lineCount - 1].visibleCharacterCount < DialogueBox.MinLastLine) shortTail.Add(l);
+                if (line.isTextOverflowing || line.preferredHeight > line.rectTransform.rect.height + 1f) overflow.Add(l);
+            }
+            Check(shortTail.Count == 0, $"대사 {count}줄 : 마지막 줄에 짧은 조각만 남지 않는다" + (shortTail.Count > 0 ? " / " + string.Join(" | ", shortTail) : ""));
+            Check(overflow.Count == 0, $"대사 {count}줄 : 대사 상자를 넘치지 않는다" + (overflow.Count > 0 ? " / " + string.Join(" | ", overflow) : ""));
+            Check(count > 50 && line.textInfo.lineCount >= 1, $"대사 {count}줄을 상자 크기로 나눠 봤다");
+            Find("DialoguePanel").gameObject.SetActive(false);
+        });
         Add(0.2f, "시작 화면", () =>
         {
             SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
@@ -454,13 +475,86 @@ static class MvpSelfTest
                 if (s == 0) Shot($"s{s + 1}_observe");
             });
 
+            if (s == 0)
+            {
+                // 1단계 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요. 시범은 공짜이고 그동안 향이 타지 않아요
+                float timeAtGuide = 0f;
+                Add(3.0f, "1단계 돋보기 시범", () =>
+                {
+                    Check(IsOn("DrawPanel/PeekGuide") && Text("DrawPanel/PeekGuide/DialogueBox/Line") == GameScript.MagnifierShow, "그리기를 시작하면 도깨비가 돋보기를 눌러 보라고 한다");
+                    Check(IsOn("HUD/MagnifierBadge") && Text("HUD/MagnifierBadge/Count") == "1", "돋보기 오른쪽 아래에 쓸 수 있는 횟수 1");
+                    Check(Find("HUD").Find("ChocolateRow") == null, "맨 위 줄에 초콜릿이 없다");
+                    Check(Find("HUD/CandyRow").childCount == 3 && CandiesLit() == 3, $"맨 위 줄에 사탕 3개 ({CandiesLit()})");
+                    timeAtGuide = GetFloat("timeLeft");
+                    // 사탕이 아직 날아 들어오는 중이면 겹쳐 보여서, 제자리에 둔 뒤 찍어요
+                    foreach (SimpleAnim a in (SimpleAnim[])typeof(GameManager).GetField("snackAnims", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm()))
+                        a.enabled = false;
+                    Shot("s1_peek_guide");
+                    Then(() =>
+                    {
+                        Check(Mathf.Abs(GetFloat("timeLeft") - timeAtGuide) < 0.01f, "시범 대사 중에는 향이 타지 않는다");
+                        Gm().PeekGuideTap();     // 글자 다 보이기
+                        Gm().PeekGuideTap();     // 넘기기
+                        Check(IsOn("DrawPanel/PeekGuide") && !IsOn("DrawPanel/PeekGuide/DialogueBox") && !IsOn("DrawPanel/MagnifierPeek"),
+                              "대사를 넘기면 대사는 사라지고 아직 둘러보지 않는다");
+                        Check(IsOn("HUD/MagnifierHighlight"), "맨 위 돋보기 둘레를 도깨비불이 돈다");
+                        Gm().PeekGuideTap();
+                        Check(!IsOn("DrawPanel/MagnifierPeek") && !IsOn("DrawPanel/PeekGuide/DialogueBox"), "화면을 눌러도 넘어가지 않는다 (돋보기를 직접 눌러야 해요)");
+                    });
+                }, () => IsOn("DrawPanel"));
+                Add(0.8f, "1단계 돋보기 시범 누르기", () =>
+                {
+                    var fire = (RectTransform)Find("HUD/MagnifierHighlight/Orbit/Fire_0");
+                    Invoke(Gm(), "SpinFires");
+                    Check(IsOn("HUD/MagnifierHighlight/Orbit/Fire_2/Flame") && fire.anchoredPosition.magnitude > 60f, "도깨비불 셋이 돋보기 둘레에 있다");
+                    Shot("s1_peek_highlight");
+                    Then(() =>
+                    {
+                        Gm().MagnifierTap();
+                        Check(!IsOn("HUD/MagnifierHighlight"), "돋보기를 누르면 강조가 사라진다");
+                        Check(!IsOn("DrawPanel/MagnifierPeek") && Text("DrawPanel/PeekGuide/DialogueBox/Line") == GameScript.MagnifierHow,
+                              "돋보기를 누르면 바로 열지 않고 몇 초 동안 어떻게 보는지 말한다");
+                        Shot("s1_peek_how");
+                        Then(() =>
+                        {
+                            Gm().PeekGuideTap();     // 글자 다 보이기
+                            Gm().PeekGuideTap();     // 넘기기
+                            Check(IsOn("DrawPanel/MagnifierPeek") && !IsOn("DrawPanel/PeekGuide"), "대사를 넘기면 둘러본다");
+                            Check(Gm().MagnifiersReady == 1, "시범은 공짜 (게임 전체 1번이 그대로)");
+                            Check(Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>().RingFill > 0.9f, "처음에는 렌즈 둘레 띠가 가득");
+                        });
+                    });
+                });
+                Add(1.5f, "1단계 돋보기 시범 남은 시간", () =>
+                {
+                    var peek = Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>();
+                    Check(peek.Active && peek.RingFill > 0.01f && peek.RingFill < 0.85f, $"시간이 지나면 띠가 줄어든다 ({peek.RingFill:0.00})");
+                    Check(Mathf.Abs(peek.RingFill - peek.Left / 5f) < 0.05f, "띠는 남은 시간만큼 남아 있다");
+                    Shot("s1_peek_count");
+                });
+                Add(2.0f, "1단계 돋보기 시범 끝", () =>
+                {
+                    Check(!IsOn("DrawPanel/MagnifierPeek"), "5초 뒤 저절로 닫힌다");
+                    Check(IsOn("DrawPanel/PeekGuide") && Text("DrawPanel/PeekGuide/DialogueBox/Line") == GameScript.MagnifierRule, "닫히면 도깨비가 한 번만 더 빌려준다고 말한다");
+                    Check(Mathf.Abs(GetFloat("timeLeft") - timeAtGuide) < 0.01f, "시범으로 둘러보는 동안에도 향이 타지 않는다");
+                    Shot("s1_peek_rule");
+                    Then(() =>
+                    {
+                        Gm().PeekGuideTap();     // 글자 다 보이기
+                        Gm().PeekGuideTap();     // 닫기
+                        Check(!IsOn("DrawPanel/PeekGuide"), "대사를 누르면 그리기로 돌아간다");
+                    });
+                }, () => !IsOn("DrawPanel/MagnifierPeek"));
+            }
+
             // 그리기 + 도구
             int candiesAtDraw = 0;      // 이번 단계 그리기를 시작할 때 남은 사탕
-            Add(3.0f, $"{st.Title} 그리기", () =>
+            Add(s == 0 ? 0.3f : 3.0f, $"{st.Title} 그리기", () =>
             {
                 Check(IsOn("DrawPanel") && !IsOn("ObservePanel"), "3초 뒤 그리기 화면");
+                Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 1단계 첫 그리기에서만");
                 candiesAtDraw = GetInt("candies");
-                Check(candiesAtDraw == 2 && GetInt("chocolates") == 2, $"{st.Title} 사탕 2 · 초콜릿 2개로 시작");
+                Check(candiesAtDraw == 3, $"{st.Title} 사탕 3개로 시작");
                 bool primaries = st.colorMode != ColorMode.BlackOnly;
                 bool mixing = st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree;
                 Check(IsOn("DrawPanel/ToolBar/ColorRow/Color_빨강") == primaries, $"빨강 버튼은 {(primaries ? "보임" : "숨김")}");
@@ -471,50 +565,44 @@ static class MvpSelfTest
             }, () => IsOn("DrawPanel"));
             if (s == 0)
             {
-                // 돋보기 : 맨 위 왼쪽 돋보기를 누르면 초콜릿 1개로 렌즈 안의 원본을 3초 둘러봐요
+                // 돋보기 : 게임 전체 1번을 여기서 써요
                 float drawTimeAtPeek = 0f;
                 Add(0.8f, "1단계 돋보기", () =>
                 {
                     Check(IsOn("HUD/MagnifierButton") && !IsOn("DrawPanel/MagnifierPeek"), "맨 위 왼쪽에 돋보기");
-                    Check(CandiesLit() == 2 && ChocolatesLit() == 2, $"위 줄에 사탕 2 · 초콜릿 2개 ({CandiesLit()} · {ChocolatesLit()})");
-                    drawTimeAtPeek = (float)Gm().GetType().GetField("timeLeft", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
+                    drawTimeAtPeek = GetFloat("timeLeft");
                     Gm().MagnifierTap();
-                    Check(IsOn("DrawPanel/MagnifierPeek") && GetInt("chocolates") == 1 && ChocolatesLit() == 1, "누르면 바로 초콜릿 1개를 쓰고 둘러본다");
+                    Check(IsOn("DrawPanel/MagnifierPeek") && GetInt("magnifiers") == 0, "누르면 바로 게임 전체 1번을 쓰고 둘러본다");
+                    Check(!IsOn("HUD/MagnifierBadge") && !Find("HUD/MagnifierButton").GetComponent<Button>().interactable, "다 쓰면 숫자가 사라지고 돋보기가 흐려진다");
                     Check(CandiesLit() == candiesAtDraw, "돋보기는 사탕을 쓰지 않는다");
-                    Check(Find("HUD/ChocolateRow/Chocolate_1").GetComponent<Image>().color.a < 0.9f && Find("HUD/ChocolateRow/Chocolate_0").GetComponent<Image>().color.a > 0.9f, "초콜릿은 오른쪽부터 흐려진다");
-                    Check(((RectTransform)Find("HUD/ChocolateRow/Chocolate_0")).anchoredPosition.x - ((RectTransform)Find("HUD/MagnifierButton")).anchoredPosition.x < 150f, "초콜릿은 돋보기 바로 오른쪽에 붙어 있다");
                     Check(Find("DrawPanel/MagnifierPeek/Lens/Hole/View/Original").GetComponent<Image>().sprite == st.originalSprite, "렌즈 안에는 원본");
                 }, () => IsOn("DrawPanel"));
                 Add(0.3f, "1단계 돋보기 렌즈", () =>
                 {
                     var peek = Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>();
-                    Check(peek.Active && peek.Left > 0f, "3초가 지나기 전에는 둘러보는 중");
+                    Check(peek.Active && peek.Left > 0f, "5초가 지나기 전에는 둘러보는 중");
                     Vector3 view = Find("DrawPanel/MagnifierPeek/Lens/Hole/View").position;
                     Find("DrawPanel/MagnifierPeek/Lens").position += new Vector3(80f, -60f, 0f);
                     Invoke(peek, "KeepView");
                     Check((Find("DrawPanel/MagnifierPeek/Lens/Hole/View").position - view).sqrMagnitude < 0.01f, "렌즈를 움직여도 원본은 그림판 자리에 그대로");
                     Shot("s1_magnifier");
                 });
-                Add(3.0f, "1단계 돋보기 끝", () =>
+                Add(5.0f, "1단계 돋보기 끝", () =>
                 {
-                    float now = (float)Gm().GetType().GetField("timeLeft", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
-                    Check(!IsOn("DrawPanel/MagnifierPeek"), "3초 뒤 저절로 닫힌다");
-                    Check(drawTimeAtPeek - now > 2.5f, $"둘러보는 동안에도 향이 탄다 ({drawTimeAtPeek - now:0.0}초)");
+                    float now = GetFloat("timeLeft");
+                    Check(!IsOn("DrawPanel/MagnifierPeek"), "5초 뒤 저절로 닫힌다");
+                    Check(drawTimeAtPeek - now > 4.5f, $"둘러보는 동안에도 향이 탄다 ({drawTimeAtPeek - now:0.0}초)");
                     Check(IsOn("DrawPanel") && Board().HasDrawn, "그리던 그림 그대로 그리기로 돌아온다");
-                    // 초콜릿이 없으면 돋보기를 쓸 수 없어요
-                    SetPrivate(Gm(), "chocolates", 0);
-                    Invoke(Gm(), "UpdateSnacks");
                     Gm().MagnifierTap();
-                    Check(!IsOn("DrawPanel/MagnifierPeek") && !Find("HUD/MagnifierButton").GetComponent<Button>().interactable, "초콜릿이 없으면 돋보기가 흐려지고 쓸 수 없다");
-                    SetPrivate(Gm(), "chocolates", 1);   // 뒤 확인을 위해 되돌려요
-                    Invoke(Gm(), "UpdateSnacks");
+                    Check(!IsOn("DrawPanel/MagnifierPeek"), "다 쓰면 더 누를 수 없다");
                 });
             }
             Add(0.8f, $"{st.Title} 그린 뒤", () =>
             {
                 Check(Board().HasDrawn && Find("DrawPanel/SubmitButton").GetComponent<Button>().interactable, "그리면 제출 활성");
                 Check(Find("DrawPanel/ToolBar/ToolRow/Undo/Button").GetComponent<Button>().interactable, "그리면 되돌리기 활성");
-                Check(CandiesLit() == GetInt("candies") && ChocolatesLit() == GetInt("chocolates"), $"위 줄에 남은 사탕 {GetInt("candies")} · 초콜릿 {GetInt("chocolates")}개");
+                Check(CandiesLit() == GetInt("candies"), $"위 줄에 남은 사탕 {GetInt("candies")}개");
+                Check(IsOn("HUD/MagnifierBadge") == (Gm().MagnifiersReady > 0), $"돋보기 숫자는 쓸 수 있을 때만 ({Gm().MagnifiersReady})");
                 Check(((RectTransform)Find("HUD/CandyRow/Candy_1")).anchoredPosition.x - ((RectTransform)Find("HUD/CandyRow/Candy_0")).anchoredPosition.x > 50f, "간식이 제자리로 들어왔다");
                 if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
                     Check(IsOn("DrawPanel/ToolBar/ColorRow/MixedSlot/Frame"), "섞은 색이 선택돼 있다");
@@ -591,20 +679,50 @@ static class MvpSelfTest
 
             if (s == 1)
             {
-                // 2단계 : 하나도 못 맞혀서 사탕 2개를 다 씀
-                for (int k = 1; k <= 1; k++)
+                // 2단계 : 하나도 못 맞혀서 사탕 3개를 다 씀. 두 번째로 틀리면 무료 돋보기를 받아요
+                Add(0.3f, "2단계 1번째 실패", () =>
                 {
-                    int kk = k;
-                    Add(0.3f, $"2단계 {kk}번째 실패", () =>
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "1번째 : 하나도 못 맞히면 완전히 다른 물건");
+                    TapResult();
+                    Gm().ResultTap();
+                    Gm().ResultTap();
+                    Check(IsOn("ResultPanel/ChoiceRow") && !IsOn("ResultPanel/GiftMagnifier"), "처음 틀렸을 때는 무료 돋보기가 없다");
+                    Gm().Retry();
+                    Gm().Submit();
+                }, () => ResultShown() && CandiesLit() == 2);
+                int readyBeforeGift = 0;
+                Add(0.3f, "2단계 2번째 실패 : 무료 돋보기", () =>
+                {
+                    readyBeforeGift = Gm().MagnifiersReady;
+                    TapResult();
+                    Gm().ResultTap();
+                    Gm().ResultTap();
+                    Check(Text("ResultPanel/DialogueBox/Line") == GameScript.MagnifierGift, "두 번째로 틀리면 도깨비가 돋보기를 빌려준다");
+                    Check(IsOn("ResultPanel/GiftMagnifier") && !IsOn("ResultPanel/ChoiceRow"), "돋보기가 도깨비에게서 나타난다");
+                    Check(Gm().MagnifiersReady == readyBeforeGift + 1, "무료 기회 +1");
+                    Shot("s2_gift");
+                }, () => ResultShown() && CandiesLit() == 1);
+                Add(1.0f, "2단계 무료 돋보기 도착", () =>
+                {
+                    Check(IsOn("HUD/MagnifierBadge") && Text("HUD/MagnifierBadge/Count") == (readyBeforeGift + 1).ToString(), $"맨 위 돋보기에 도착하면 숫자가 {readyBeforeGift + 1}");
+                    Check(IsOn("HUD/MagnifierSparkles"), "도착하면 반짝인다");
+                    Shot("s2_gift_landed");
+                    Then(() =>
                     {
-                        Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], $"{kk}번째 : 하나도 못 맞히면 완전히 다른 물건");
+                        for (int k = 0; k < 3 && !IsOn("ResultPanel/ChoiceRow"); k++) Gm().ResultTap();
+                        Check(IsOn("ResultPanel/ChoiceRow"), "그 뒤에 다시 · 포기 버튼");
                         Gm().Retry();
+                        int global = GetInt("magnifiers");
+                        Gm().MagnifierTap();
+                        Check(IsOn("DrawPanel/MagnifierPeek") && GetInt("magnifiers") == global && Gm().MagnifiersReady == global, "무료 기회부터 쓴다");
+                        Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>().Stop();
                         Gm().Submit();
-                    }, () => ResultShown() && CandiesLit() == 2 - kk);
-                }
+                    });
+                }, () => !IsOn("ResultPanel/GiftMagnifier"));
                 Add(0.3f, "2단계 사탕 0개", () =>
                 {
                     Check(CandiesLit() == 0, "사탕 0개");
+                    Check(!IsOn("ResultPanel/GiftMagnifier"), "무료 기회는 단계마다 한 번");
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "0개 맞히면 완전히 다른 물건");
                     TapResult();
                     Check(!IsOn("ResultPanel/ChoiceRow"), "사탕이 없으면 다시 · 포기 버튼이 없다");
@@ -683,6 +801,7 @@ static class MvpSelfTest
                 Check(marks == st.features.Length, "번호마다 동그라미 또는 빗금");
                 if (s == 1) Check(!IsOn("ComparePanel/Paper/Row_1/Circle") && IsOn("ComparePanel/Paper/Row_1/Slash"), "틀리면 빨간 빗금");
                 else Check(IsOn("ComparePanel/Paper/Row_1/Circle"), "맞으면 초록 동그라미");
+                Check(!(bool)typeof(GameManager).GetField("freePeek", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm()), "단계가 끝나면 무료 기회는 사라진다");
                 if (s <= 1 || last) Shot($"s{s + 1}_compare");
                 if (s <= 1 || last) Then(() => Gm().NextStage());
                 else Gm().NextStage();
@@ -699,9 +818,9 @@ static class MvpSelfTest
             Check(Find("EndingPanel/MatSlot").GetComponent<Image>().sprite == stages[2].originalSprite, "찾은 물건은 진짜가 놓인다");
             Check(Find("EndingPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal" && !IsOn("EndingPanel/BatSlot"),
                   "방망이를 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비어 있다");
-            int candiesLeft = SumInts("candiesLeft"), chocolatesLeft = SumInts("chocolatesLeft");
-            Check(ShownCount("EndingPanel/Candy_") == candiesLeft && ShownCount("EndingPanel/Chocolate_") == chocolatesLeft,
-                  $"단계마다 남은 사탕 {candiesLeft} · 초콜릿 {chocolatesLeft}개가 돗자리에 모여 있다");
+            int candiesLeft = SumInts("candiesLeft");
+            Check(ShownCount("EndingPanel/Candy_") == candiesLeft, $"단계마다 남은 사탕 {candiesLeft}개가 돗자리에 모여 있다");
+            Check(Find("EndingPanel").Find("Chocolate_1") == null, "초콜릿은 없다");
             Shot("ending");
             Then(() =>
             {
@@ -844,9 +963,8 @@ static class MvpSelfTest
     static string Text(string path) => Find(path).GetComponent<TMP_Text>().text;
     static DrawingBoard Board() => Find("DrawPanel/Board").GetComponent<DrawingBoard>();
 
-    // 또렷하게 보이는 사탕 · 초콜릿 수 = 남은 수
+    // 또렷하게 보이는 사탕 수 = 남은 수
     static int CandiesLit() => Lit("HUD/CandyRow");
-    static int ChocolatesLit() => Lit("HUD/ChocolateRow");
     static int Lit(string row)
     {
         int lit = 0;
@@ -864,6 +982,9 @@ static class MvpSelfTest
 
     static int GetInt(string field) =>
         (int)typeof(GameManager).GetField(field, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
+
+    static float GetFloat(string field) =>
+        (float)typeof(GameManager).GetField(field, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
 
     // 이름이 prefix1, prefix2 … 인 것 중 켜져 있는 수 (이야기 종료의 남은 간식)
     static int ShownCount(string prefix)

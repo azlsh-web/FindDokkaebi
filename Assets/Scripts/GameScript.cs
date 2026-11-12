@@ -66,9 +66,9 @@ public static class GameScript
         },
         new[]
         {
-            new Line(Face.BoySurprised, "아차! 친구랑 만나기로 한 것도 깜빡했어!"),
-            new Line(Face.Dokkaebi, "큰일이야, 네 친구가 길을 잃었나 봐!"),
-            new Line(Face.BoySurprised, "같이 가야 하는데! 꼭 찾아 줘."),
+            new Line(Face.BoySurprised, "어? 방금까지 옆에 있던 친구가 없어졌어!"),
+            new Line(Face.Dokkaebi, "물건도 모자라서 이번엔 친구까지 잃어버린 거야? 정말 못 말린다."),
+            new Line(Face.BoySurprised, "같이 소풍 가기로 했단 말이야! 꼭 찾아 줘."),
             new Line(Face.Dokkaebi, "어떻게 생긴 친구야?"),
             new Line(Face.BoySurprised, "양 갈래로 묶은 갈색 머리야."),
             new Line(Face.BoySurprised, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
@@ -109,7 +109,7 @@ public static class GameScript
         new[] { "가방 여기 있다! 어때, 나 잘 찾지?", "쪽지 보고 한 번에 찾았어!" },
         new[] { "돗자리 찾았다! 앉으면 딱이겠어.", "쪽지가 또렷해서 금방 찾았어!" },
         new[] { "김밥 찾았다! 한 줄만 나 주면 안 돼?", "쪽지 보니까 배고프더라. 바로 찾았지!" },
-        new[] { "네 친구 찾았다! 저쪽에서 울고 있더라고.", "데려왔어! 너를 많이 기다렸대." },
+        new[] { "네 친구 찾았다! 저쪽에서 울고 있더라고.", "데려왔어! 너를 한참 찾고 있었대." },
     };
 
     // 방망이는 기준이 하나라 일부 틀림이 없어요
@@ -136,14 +136,37 @@ public static class GameScript
     const string BoyBatWrong = "미안해… 간식 하나 더 줄 테니까 다시 그려 볼까?";
     const string BoySuccess = "맞아! 바로 이거야! 이번엔 안 잃어버려야지.";
     const string BoyWrong = "어… 이게 아닌데. 간식 하나 더 줄 테니까 다시 그려 볼까?";
-    const string BoyFriendSuccess = "다행이다! 많이 무서웠지? 이제 같이 소풍 가자!";
+    const string BoyFriendSuccess = "다행이다! 내가 놓쳐서 미안해. 이제 같이 소풍 가자!";
     const string BoyFriendWrong = "어… 내 친구가 아니야. 간식 하나 더 줄 테니까 다시 그려 볼까?";
+
+    // 돋보기 : 1단계 첫 그리기 때 도깨비가 쓰는 법을 보여 줘요 (시범은 공짜)
+    public const string MagnifierShow = "잘 기억 안 나지? 위에 있는 돋보기를 눌러 봐!";
+    public const string MagnifierHow = "돋보기로 5초 동안 다시 볼 수 있어. 손가락으로 렌즈를 끌면 다른 곳도 보여!";
+    public const string MagnifierRule = "이번은 공짜! 돋보기는 소풍 끝날 때까지 딱 한 번만 더 빌려줄게. 아껴 써!";
+    // 한 단계에서 두 번째로 틀렸을 때 (단계마다 한 번, 그 단계에서만)
+    public const string MagnifierGift = "자꾸 틀리니까 딱하다. 돋보기 한 번 빌려줄게! 이번 물건 찾을 때만 쓸 수 있어.";
 
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
     public const string EndingAsk = "소풍 즐거웠지? 처음으로 돌아갈까?";
 
     static string Pick(string[] list) => list[Random.Range(0, list.Length)];
+
+    /// <summary>대사 상자에 나오는 모든 대사 (자동 테스트가 줄바꿈 · 넘침을 검사해요)</summary>
+    public static System.Collections.Generic.IEnumerable<string> AllLines()
+    {
+        foreach (Line[] stage in Intro) foreach (Line l in stage) yield return l.text;
+        yield return BatFound.text;
+        yield return BatLost.text;
+        yield return GiveBoy;
+        yield return GiveEat;
+        foreach (string l in GiveRead) yield return l;
+        foreach (string[][] table in new[] { DokkaebiSuccess, DokkaebiPartial, DokkaebiAllWrong })
+            foreach (string[] stage in table) foreach (string l in stage) yield return l;
+        foreach (string l in new[] { BoyBatSuccess, BoyBatWrong, BoySuccess, BoyWrong, BoyFriendSuccess, BoyFriendWrong,
+                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, BoyOutOfSnacks, JudgeError, EndingAsk })
+            yield return l;
+    }
 
     /// <summary>시작 대화. 2단계는 방망이를 찾았는지에 따라 맨 앞 대사가 달라져요.</summary>
     public static Line[] IntroLines(int stageIndex, bool batLost)

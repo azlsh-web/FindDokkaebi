@@ -11,8 +11,9 @@ TREE = [
     ]),
     ("HUD (그리기부터 채점표까지)", "Frame/HUD", [
         ("MagnifierButton (돋보기)", "UI/Magnifier_Icon", TEAM + " 렌즈가 막힌 돋보기, 여백을 잘라 냄"),
-        ("ChocolateRow/Chocolate_0~1 (돋보기에 씀)", "UI/HUD_Chocolate", TEAM + ", 여백을 잘라 냄. 돋보기에 붙이고, 쓴 것은 오른쪽부터 흐리게"),
-        ("CandyRow/Candy_0~1 (쪽지를 건넬 때 씀)", "UI/HUD_Candy", TEAM + ", 여백을 잘라 냄. 쓴 것은 왼쪽부터 흐리게"),
+        ("MagnifierBadge (쓸 수 있는 돋보기 수)", "UI/Common_Circle", "코드로 그린 동그라미, 숫자는 글꼴"),
+        ("MagnifierHighlight/Orbit/Fire_0~2 (1단계 시범 때 돋보기 둘레를 도는 도깨비불)", "UI/Magnifier_DokkaebiFire", TEMP + ", 향 불꽃을 푸른빛으로 바꿈 (make_candy_jar.py)"),
+        ("CandyRow/Candy_0~2 (쪽지를 건넬 때 씀)", "UI/HUD_Candy", TEAM + ", 여백을 잘라 냄. 쓴 것은 왼쪽부터 흐리게"),
         ("PauseButton", "UI/HUD_PauseButton", G9),
     ]),
     ("향과 촛대 (그리는 동안)", "Frame/HUD/TimerGroup", [
@@ -72,6 +73,7 @@ TREE = [
         ("SubmitButton", "UI/Draw_SubmitButton", G10),
         ("MagnifierPeek/Lens/Frame", "UI/Magnifier_Frame", TEAM + " 렌즈가 뚫린 돋보기, 둘레의 옅은 막을 지움"),
         ("MagnifierPeek/Lens/Hole (렌즈 모양, 안에 원본)", "UI/Common_Circle", CODE),
+        ("MagnifierPeek/Lens/TimeRing (남은 시간, 시계 방향으로 줄어듦)", "UI/Magnifier_TimeRing", TEMP + ", 돋보기 테두리의 크림색 띠를 오림 (make_candy_jar.py)"),
     ]),
     ("5. 색 섞기", "Frame/DrawPanel/MixerPanel", [
         ("MixerPanel", "UI/Common_Card", CODE),
@@ -98,8 +100,7 @@ TREE = [
     ]),
     ("9. 이야기 종료", "Frame/EndingPanel", [
         ("Boy", "Characters/Char_Boy_Happy", TEAM),
-        ("Candy_1~10 (단계마다 남은 사탕을 더해 돗자리에)", "UI/HUD_Candy", TEAM),
-        ("Chocolate_1~10 (단계마다 남은 초콜릿을 더해 돗자리에)", "UI/HUD_Chocolate", TEAM),
+        ("Candy_1~15 (단계마다 남은 사탕을 더해 돗자리에)", "UI/HUD_Candy", TEAM),
         ("FriendSlot", "물건별 원본 (아래 단계 폴더)", ""),
         ("Dokkaebi", "Characters/Char_Dokkaebi_Normal", TEAM),
         ("Dokkaebi (방망이를 못 찾았을 때)", "Characters/Char_Dokkaebi_NoBat", TEAM),

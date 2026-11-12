@@ -106,6 +106,14 @@ class PlayDirector : MonoBehaviour
             Texture2D tex = ScreenCapture.CaptureScreenshotAsTexture();
             if (tex == null) continue;
             frame++;
+            // 시나리오가 어딘가에서 멈추면 사진이 끝없이 쌓여요 (한 장 약 0.2MB). 15분(약 4GB)을 넘으면 멈춰요.
+            if (frame > Fps * 60 * 15)
+            {
+                Debug.LogError("[녹화] 15분이 넘도록 끝나지 않아 멈춰요. 시나리오가 기다리는 화면을 확인해 주세요.");
+                Time.captureFramerate = 0;
+                EditorApplication.ExitPlaymode();
+                yield break;
+            }
             File.WriteAllBytes(Path.Combine(MvpPlayRecorder.OutDir, $"frame_{frame:00000}.jpg"), tex.EncodeToJPG(88));
             Destroy(tex);
         }
@@ -120,10 +128,21 @@ class PlayDirector : MonoBehaviour
 
         // 1단계 방망이 : 처음엔 돌기를 빠뜨림 → 엉뚱한 방망이 → 다시 그리기
         yield return IntroAndObserve(3.5f);
+        // 첫 그리기 : 도깨비가 돋보기를 눌러 보라고 해요 (시범은 공짜, 5초 둘러본 뒤 한 번만 더 빌려준다는 대사)
+        yield return Wait(2.2f);
+        yield return Click("DrawPanel/PeekGuide/TapButton");                           // 대사가 사라지고 도깨비불이 돋보기 둘레를 돌아요
+        yield return Wait(1.2f);
+        yield return Click("HUD/MagnifierButton");                                     // 보는 법을 알려 줘요
+        yield return Wait(2.8f);
+        yield return Click("DrawPanel/PeekGuide/TapButton");                           // 넘기면 5초 둘러보기
+        yield return Wait(6.8f);
+        yield return Click("DrawPanel/PeekGuide/TapButton");
+        yield return Wait(0.5f);
         yield return Tool("ToolRow/Size_1");
         yield return Line(V(250, 60), V(253, 150), V(256, 245));                         // 손잡이
         yield return Ellipse(V(256, 335), 60, 90, 14f);                                  // 머리
         yield return Click("DrawPanel/SubmitButton");
+        yield return PassGive();                                                         // 쪽지와 사탕 건네기 대사 넘기기
         yield return WaitResult(3.5f);
         yield return TapUntilChoice();
         yield return Click("ResultPanel/ChoiceRow/RetryButton");

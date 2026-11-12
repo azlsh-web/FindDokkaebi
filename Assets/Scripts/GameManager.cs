@@ -26,9 +26,14 @@ using UnityEngine.UI;
 //   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요. 한 번에 패널 하나만 켜요.
 //   - 위쪽 HUD(간식, 일시정지, 향)는 그리기부터 채점표까지만 보여요.
 //
-// 간식 규칙 : 단계마다 사탕 2개 · 초콜릿 2개를 새로 받아요.
-//   사탕 : 쪽지를 건넬 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
-//   초콜릿 : 돋보기 1번에 1개. 그리는 중에 맨 위 돋보기를 누르면 렌즈 안으로 원본을 3초 둘러봐요. 향은 계속 타요.
+// 간식 규칙 : 단계마다 사탕 3개를 새로 받아요. 쪽지를 건넬 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
+// 돋보기 : 그리는 중에 맨 위 돋보기를 누르면 렌즈 안으로 원본을 5초 둘러봐요. 향은 계속 타요.
+//   - 게임 전체에서 1번 (magnifierPerGame).
+//   - 1단계 첫 그리기 때 도깨비가 쓰는 법을 보여 줘요. 이 시범은 공짜이고, 시범 동안은 향이 타지 않아요.
+//     눌러 보라는 대사 → (대사를 넘기면 대사가 사라지고 도깨비불 셋이 돋보기 둘레를 돎) → (플레이어가 돋보기를 누름)
+//     → 보는 법 대사 → (대사를 넘김) → 5초 둘러보기 → 한 번만 더 빌려준다는 대사
+//   - 한 단계에서 2번째로 틀리면 그 단계에서만 쓰는 무료 기회를 1번 줘요 (도깨비가 돋보기를 건네줘요). 단계가 끝나면 사라져요.
+//   - 무료 기회가 있으면 그것부터 써요. 돋보기 오른쪽 아래 숫자가 지금 쓸 수 있는 횟수예요.
 //
 // 판정 : 항상 자동이에요. 도깨비의 찾는 동작은 한 바퀴씩 반복하고, 응답이 오면 그 바퀴를 마치고 넘어가요.
 //   AI 오류가 나면 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
@@ -37,7 +42,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     enum State { Title, Dialogue, Observe, Draw, Give, Judge, Result, Compare, Ending }
-    enum ResultPhase { Dokkaebi, Boy, Choose, Error }
+    enum ResultPhase { Dokkaebi, Boy, Gift, Choose, Error }
 
     // ───────────── Inspector 에서 연결하는 것들 ─────────────
 
@@ -45,11 +50,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] StageData[] stages;
 
     [Header("규칙 (기획서 수치)")]
-    [SerializeField] int candiesPerStage = 2;       // 쪽지를 건넬 때 쓰는 사탕 (단계마다)
-    [SerializeField] int chocolatesPerStage = 2;    // 돋보기에 쓰는 초콜릿 (단계마다)
+    [SerializeField] int candiesPerStage = 3;       // 쪽지를 건넬 때 쓰는 사탕 (단계마다)
+    [SerializeField] int magnifierPerGame = 1;      // 돋보기 (게임 전체에서. 시범과 무료 기회는 따로)
     [SerializeField] float observeSeconds = 3f;
     [SerializeField] float drawSeconds = 60f;
-    [SerializeField] float peekSeconds = 3f;        // 돋보기로 둘러보는 시간
+    [SerializeField] float peekSeconds = 5f;        // 돋보기로 둘러보는 시간
 
     [Header("다른 스크립트")]
     [SerializeField] DrawingBoard board;
@@ -58,9 +63,11 @@ public class GameManager : MonoBehaviour
 
     [Header("HUD")]
     [SerializeField] GameObject hud;
-    [SerializeField] Button magnifierButton;        // 맨 위 왼쪽 돋보기 (초콜릿 1개로 둘러보기)
-    [SerializeField] Image[] chocolateIcons;        // 돋보기 바로 오른쪽 초콜릿 (쓴 것은 오른쪽부터 흐리게)
-    [SerializeField] Image[] candyIcons;            // 그 오른쪽 사탕 (쓴 것은 왼쪽부터 흐리게)
+    [SerializeField] Button magnifierButton;        // 맨 위 왼쪽 돋보기
+    [SerializeField] GameObject magnifierBadge;     // 돋보기 오른쪽 아래 동그라미 : 쓸 수 있는 횟수
+    [SerializeField] TMP_Text magnifierBadgeText;
+    [SerializeField] GameObject magnifierSparkles;  // 무료 기회를 받으면 돋보기가 반짝여요
+    [SerializeField] Image[] candyIcons;            // 오른쪽 사탕 (쓴 것은 왼쪽부터 흐리게)
     [SerializeField] SimpleAnim[] snackAnims;       // 단계 첫 그리기 때 들어오는 움직임
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
     [SerializeField] TMP_Text timerText;            // 남은 초 숫자 "58"
@@ -132,6 +139,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] TMP_Text drawTitle;
     [SerializeField] Button submitButton;
     [SerializeField] MagnifierPeek magnifierPeek;   // 렌즈로 원본 둘러보기
+    [SerializeField] GameObject peekGuide;          // 1단계 돋보기 시범 : 그림판을 덮고 도깨비가 말해요
+    [SerializeField] DialogueBox peekGuideBox;
+    [SerializeField] GameObject magnifierHighlight;         // 시범 : 돋보기 둘레를 도는 도깨비불
+    [SerializeField] RectTransform[] magnifierFires;
 
     [Header("판정 대기 화면")]
     [SerializeField] RawImage judgeDrawing;         // 화면 한 곳에 떠 있는 내 쪽지
@@ -148,6 +159,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image resultDokkaebi;
     [SerializeField] SimpleAnim resultDokkaebiAnim;
     [SerializeField] GameObject choiceRow;          // 다시 · 포기
+    [SerializeField] RectTransform giftMagnifier;   // 무료 기회 : 도깨비가 건네서 맨 위 돋보기로 날아가요
 
     [Header("채점표")]
     [SerializeField] RawImage compareMyDrawing;
@@ -162,7 +174,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image endingDokkaebi;
     [SerializeField] Image[] endingItems;
     [SerializeField] GameObject[] endingCandies;    // 돗자리에 모아 놓은 남은 사탕 (단계마다 남은 것을 모두 더해요)
-    [SerializeField] GameObject[] endingChocolates; // 돗자리에 모아 놓은 남은 초콜릿
 
     static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);
 
@@ -181,9 +192,15 @@ public class GameManager : MonoBehaviour
     ResultPhase resultPhase;
     int stageIndex;
     int candies;            // 이번 단계에 남은 사탕
-    int chocolates;         // 이번 단계에 남은 초콜릿
     int[] candiesLeft;      // 단계별로 끝날 때 남은 사탕 (이야기 종료에서 모아 놓아요)
-    int[] chocolatesLeft;
+    int magnifiers;         // 게임 전체에서 남은 돋보기
+    bool freePeek;          // 이번 단계의 무료 돋보기 (단계가 끝나면 사라져요)
+    bool freeGiven;         // 이번 단계에 무료 기회를 이미 줬는지
+    int stageWrongs;        // 이번 단계에서 틀린 횟수
+    bool peekShown;         // 1단계 돋보기 시범을 했는지
+    int peekGuideStep;      // 시범 : 0 없음, 1 눌러 보라고 말함, 2 돋보기 강조 (대사 없음), 3 보는 법을 말함, 4 둘러보는 중, 5 규칙을 말함
+
+    Coroutine giftRoutine;
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;
@@ -232,6 +249,16 @@ public class GameManager : MonoBehaviour
         }
         else if (state == State.Draw)
         {
+            if (peekGuideStep != 0)
+            {
+                // 돋보기 시범 중에는 향이 타지 않아요. 눌러 볼 차례면 돋보기가 콩콩 뛰어요
+                bool waiting = peekGuideStep == 1 || peekGuideStep == 2;
+                float wave = Mathf.Abs(Mathf.Sin(Time.time * 4f));
+                magnifierButton.transform.localScale = Vector3.one * (waiting ? 1f + 0.1f * wave : 1f);
+                if (peekGuideStep == 2) SpinFires();
+                if (peekGuideStep == 4 && !magnifierPeek.Active) SayPeekRule();
+                return;
+            }
             timeLeft -= Time.deltaTime;
             timerText.text = Mathf.CeilToInt(Mathf.Max(0f, timeLeft)).ToString();
             incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
@@ -261,7 +288,8 @@ public class GameManager : MonoBehaviour
         itemsFound = new Sprite[stages.Length];
         batLost = false;
         candiesLeft = new int[stages.Length];
-        chocolatesLeft = new int[stages.Length];
+        magnifiers = magnifierPerGame;
+        peekShown = false;
         backgroundImage.sprite = gameBackground;
         int first = 0;
 #if UNITY_EDITOR
@@ -272,9 +300,9 @@ public class GameManager : MonoBehaviour
             cleared[i] = true;
             attempts[i] = 1;
             candiesLeft[i] = candiesPerStage - 1;
-            chocolatesLeft[i] = chocolatesPerStage;
             itemsFound[i] = stages[i].originalSprite;
         }
+        if (first > 0) peekShown = true;     // 시범은 1단계에서만 해요
 #endif
         StartStage(first);
     }
@@ -286,7 +314,9 @@ public class GameManager : MonoBehaviour
         state = State.Dialogue;
         stageIndex = index;
         candies = candiesPerStage;
-        chocolates = chocolatesPerStage;
+        freePeek = false;
+        freeGiven = false;
+        stageWrongs = 0;
         snackIntroPending = true;
         lastPresent = null;
         toolBar.Setup(Stage.colorMode);
@@ -443,15 +473,85 @@ public class GameManager : MonoBehaviour
         Sfx.Bgm(Sfx.BgmDraw);
         ShowPanel(drawPanel);
         magnifierPeek.Stop();
+        StopGift();
+
+        // 1단계 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요
+        peekGuideStep = 0;
+        peekGuide.SetActive(false);
+        ShowMagnifierHighlight(false);
+        magnifierButton.transform.localScale = Vector3.one;
+        if (stageIndex == 0 && !peekShown && !keepDrawing)
+        {
+            peekShown = true;
+            peekGuideStep = 1;
+            peekGuide.SetActive(true);
+            peekGuideBox.Say(GameScript.MagnifierShow, faceDokkaebi);
+        }
+
         UpdateSnacks();
         if (!keepDrawing) noteRoutine = StartCoroutine(WriteNote());
 
         if (snackIntroPending)
         {
             snackIntroPending = false;
-            foreach (SimpleAnim a in snackAnims) a.Play();     // 초콜릿은 돋보기 뒤에서 오른쪽으로, 사탕은 오른쪽 끝에서 왼쪽으로
+            foreach (SimpleAnim a in snackAnims) a.Play();     // 사탕은 오른쪽 끝에서 왼쪽으로
             Sfx.Play(Sfx.SnackIn);
         }
+    }
+
+    /// <summary>[화면 터치] 돋보기 시범 중 대사 넘기기. 눌러 보라는 대사는 돋보기를 직접 눌러야 넘어가요</summary>
+    public void PeekGuideTap()
+    {
+        if (state != State.Draw || peekGuideStep == 0) return;
+        if (peekGuideBox.FinishTyping()) return;
+        if (peekGuideStep == 1)
+        {
+            // 눌러 보라는 대사를 넘기면 대사는 사라지고 맨 위 돋보기가 빛나요. 이제 돋보기를 직접 눌러야 해요
+            Sfx.Play(Sfx.Tap);
+            peekGuideStep = 2;
+            peekGuideBox.gameObject.SetActive(false);
+            ShowMagnifierHighlight(true);
+        }
+        else if (peekGuideStep == 3)
+        {
+            // 보는 법을 들었으면 둘러보기 시작 (시범이라 공짜)
+            peekGuideStep = 4;
+            peekGuide.SetActive(false);
+            Sfx.Play(Sfx.Magnifier);
+            magnifierPeek.Begin(Stage.originalSprite, peekSeconds);
+        }
+        else if (peekGuideStep == 5)
+        {
+            Sfx.Play(Sfx.Tap);
+            peekGuideStep = 0;
+            peekGuide.SetActive(false);
+        }
+    }
+
+    // 시범으로 둘러본 뒤 : 돋보기는 게임 전체에서 한 번뿐이라고 알려 줘요
+    void SayPeekRule()
+    {
+        peekGuideStep = 5;
+        peekGuide.SetActive(true);
+        peekGuideBox.Say(GameScript.MagnifierRule, faceDokkaebi);
+    }
+
+    // 도깨비불 셋이 돋보기 둘레를 시계 방향으로 돌아요. 살짝 납작한 원을 돌고, 불꽃은 늘 위를 보며 일렁여요
+    void SpinFires()
+    {
+        for (int i = 0; i < magnifierFires.Length; i++)
+        {
+            float a = -Time.time * 2.2f + i * Mathf.PI * 2f / magnifierFires.Length;
+            magnifierFires[i].anchoredPosition = new Vector2(Mathf.Cos(a) * 95f, Mathf.Sin(a) * 85f);
+            float flicker = 1f + 0.08f * Mathf.Sin(Time.time * 9f + i * 2f);
+            magnifierFires[i].localScale = new Vector3(1f / flicker, flicker, 1f);
+        }
+    }
+
+    void ShowMagnifierHighlight(bool on)
+    {
+        if (on) SpinFires();
+        magnifierHighlight.SetActive(on);
     }
 
     IEnumerator WriteNote()
@@ -465,12 +565,26 @@ public class GameManager : MonoBehaviour
         drawTitle.maxVisibleCharacters = int.MaxValue;
     }
 
-    /// <summary>[버튼] 맨 위 돋보기 : 그리는 중에 초콜릿 1개로 렌즈 안의 원본을 잠깐 둘러봐요 (향은 계속 타요)</summary>
+    /// <summary>[버튼] 맨 위 돋보기 : 그리는 중에 렌즈 안의 원본을 5초 둘러봐요 (향은 계속 타요)
+    /// 시범이면 공짜, 아니면 이번 단계 무료 기회 → 게임 전체 1번 순서로 써요.</summary>
     public void MagnifierTap()
     {
-        if (state != State.Draw || magnifierPeek.Active || chocolates <= 0) return;
+        if (state != State.Draw || magnifierPeek.Active) return;
+        if (peekGuideStep == 1 || peekGuideStep == 2)
+        {
+            // 시범 : 눌렀으면 바로 열지 않고, 몇 초 동안 어떻게 보는지 먼저 알려 줘요
+            Sfx.Play(Sfx.Tap);
+            peekGuideStep = 3;
+            magnifierButton.transform.localScale = Vector3.one;
+            ShowMagnifierHighlight(false);
+            peekGuideBox.Say(GameScript.MagnifierHow, faceDokkaebi);
+            return;
+        }
+        if (peekGuideStep != 0) return;
+        if (freePeek) freePeek = false;
+        else if (magnifiers > 0) magnifiers--;
+        else return;
         Sfx.Play(Sfx.Magnifier);
-        chocolates--;
         UpdateSnacks();
         magnifierPeek.Begin(Stage.originalSprite, peekSeconds);
     }
@@ -478,7 +592,7 @@ public class GameManager : MonoBehaviour
     /// <summary>[버튼] 다 그렸어 (또는 시간 초과로 자동 제출) : 쪽지와 간식을 건네러 가요</summary>
     public void Submit()
     {
-        if (state != State.Draw) return;
+        if (state != State.Draw || peekGuideStep != 0) return;
         magnifierPeek.Stop();
 
         state = State.Give;
@@ -647,6 +761,7 @@ public class GameManager : MonoBehaviour
         bool success = count == present.Length;
         cleared[stageIndex] = success;
         outcome = success ? 0 : count > 0 ? 1 : 2;
+        if (!success) stageWrongs++;
 
         // 판정 기준이 n개면 경우의 수는 2ⁿ 가지예요 (Docs/기록/6_엉뚱한_물건_제작.md)
         //   전부 맞음 → 진짜 물건 A / 일부만 맞음 → 그 조합대로 틀린 A' / 전부 틀림 → 완전히 다른 물건 B
@@ -698,6 +813,17 @@ public class GameManager : MonoBehaviour
             string line = wrong && candies <= 0 ? GameScript.BoyOutOfSnacks : GameScript.BoyResult(stageIndex, outcome);
             resultBox.Say(line, wrong ? faceBoySad : faceBoyHappy);     // 엉뚱한 물건 · 간식 없음 : 우는 얼굴
         }
+        else if (resultPhase == ResultPhase.Boy && outcome != 0 && candies > 0 && stageWrongs == 2 && !freeGiven)
+        {
+            // 이 단계에서 두 번째로 틀렸어요 : 도깨비가 돋보기를 건네주고, 맨 위 돋보기로 날아가 반짝여요
+            resultPhase = ResultPhase.Gift;
+            freeGiven = true;
+            freePeek = true;
+            resultDokkaebiAnim.Play(SimpleAnim.Kind.Gentle);
+            resultBox.Say(GameScript.MagnifierGift, faceDokkaebi);
+            StopGift();
+            giftRoutine = StartCoroutine(GiftFly());
+        }
         else if (outcome != 0 && candies > 0)
         {
             // 대사 상자 자리에 다시 · 포기 버튼이 나란히 나와요
@@ -738,7 +864,9 @@ public class GameManager : MonoBehaviour
         }
 
         candiesLeft[stageIndex] = candies;
-        chocolatesLeft[stageIndex] = chocolates;
+        freePeek = false;           // 무료 기회는 그 단계에서만
+        StopGift();
+        UpdateSnacks();
         if (stageIndex == 0) batLost = !cleared[0];
         Sfx.Play(Sfx.Mark);
         ShowPanel(comparePanel);
@@ -763,18 +891,16 @@ public class GameManager : MonoBehaviour
         endingAsking = false;
         endingBox.gameObject.SetActive(false);
         endingDokkaebi.sprite = batLost ? dokkaebiNoBat : dokkaebiNormal;
-        int candyTotal = 0, chocolateTotal = 0;
+        int candyTotal = 0;
         for (int i = 0; i < endingItems.Length; i++)
         {
             endingItems[i].sprite = itemsFound[i] != null ? itemsFound[i] : stages[i].originalSprite;
             candyTotal += candiesLeft[i];
-            chocolateTotal += chocolatesLeft[i];
         }
         // 방망이는 화면에 하나만 : 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비워요.
         //   못 찾았으면 도깨비는 빈손이고 그 자리에 받은 엉뚱한 물건이 놓여요.
         endingItems[0].gameObject.SetActive(batLost);
         for (int k = 0; k < endingCandies.Length; k++) endingCandies[k].SetActive(k < candyTotal);
-        for (int k = 0; k < endingChocolates.Length; k++) endingChocolates[k].SetActive(k < chocolateTotal);
         Sfx.Bgm(Sfx.BgmPicnic);
         Sfx.Play(Sfx.Cheer);
         ShowPanel(endingPanel);
@@ -838,23 +964,72 @@ public class GameManager : MonoBehaviour
         dialogueDim.SetActive(panel == dialoguePanel || panel == observePanel);
     }
 
-    // 남은 간식은 또렷하게, 쓴 간식은 흐리게. 사탕은 왼쪽부터, 초콜릿은 (돋보기에서 먼 쪽인) 오른쪽부터 흐려져요.
-    // 초콜릿이 없으면 돋보기도 흐리게
+    /// <summary>지금 쓸 수 있는 돋보기 수 (이번 단계 무료 기회 + 게임 전체에서 남은 것)</summary>
+    public int MagnifiersReady => (freePeek ? 1 : 0) + magnifiers;
+
+    // 남은 사탕은 또렷하게, 쓴 사탕은 왼쪽부터 흐리게. 돋보기는 쓸 수 있는 횟수를 오른쪽 아래 숫자로,
+    // 다 쓰면 숫자 없이 흐리게 (시범 중에는 공짜라 또렷하게)
     void UpdateSnacks()
     {
-        Fade(candyIcons, candies, fromRight: false);
-        Fade(chocolateIcons, chocolates, fromRight: true);
-        magnifierButton.interactable = chocolates > 0;
+        int used = candyIcons.Length - candies;
+        for (int i = 0; i < candyIcons.Length; i++)
+            candyIcons[i].color = i < used ? UsedSnackColor : Color.white;
+        int ready = giftRoutine != null ? magnifiers : MagnifiersReady;     // 무료 돋보기가 날아가는 중이면 도착 전 숫자
+        magnifierButton.interactable = ready > 0 || peekGuideStep == 1 || peekGuideStep == 2;
+        magnifierBadge.SetActive(ready > 0);
+        magnifierBadgeText.text = ready.ToString();
     }
 
-    static void Fade(Image[] icons, int left, bool fromRight)
+    // 무료 기회 : 도깨비 손에서 돋보기가 커지며 나타났다가, 맨 위 돋보기 자리로 날아가 반짝여요
+    IEnumerator GiftFly()
     {
-        int used = icons.Length - left;
-        for (int i = 0; i < icons.Length; i++)
+        var target = (RectTransform)magnifierButton.transform;
+        Vector3 from = resultDokkaebi.rectTransform.TransformPoint(resultDokkaebi.rectTransform.rect.center);
+        Vector3 to = target.TransformPoint(target.rect.center);
+        giftMagnifier.gameObject.SetActive(true);
+        giftMagnifier.position = from;
+        giftMagnifier.localScale = Vector3.zero;
+        Sfx.Play(Sfx.Give);
+        const float popTime = 0.35f, holdTime = 0.35f, flyTime = 0.7f;
+        for (float t = 0f; t < popTime + holdTime + flyTime; t += Time.deltaTime)
         {
-            bool spent = fromRight ? i >= left : i < used;
-            icons[i].color = spent ? UsedSnackColor : Color.white;
+            if (t < popTime)
+            {
+                float p = t / popTime;
+                giftMagnifier.localScale = Vector3.one * (p < 0.7f ? Mathf.Lerp(0f, 1.15f, p / 0.7f) : Mathf.Lerp(1.15f, 1f, (p - 0.7f) / 0.3f));
+            }
+            else if (t >= popTime + holdTime)
+            {
+                float p = (t - popTime - holdTime) / flyTime;
+                float e = p * p * (3f - 2f * p);
+                Vector3 pos = Vector3.Lerp(from, to, e);
+                pos.y += Mathf.Sin(p * Mathf.PI) * Mathf.Abs(to.x - from.x) * 0.25f;   // 살짝 포물선
+                giftMagnifier.position = pos;
+                giftMagnifier.localScale = Vector3.one * Mathf.Lerp(1f, 0.55f, e);
+            }
+            yield return null;
         }
+        giftRoutine = null;
+        LandGift();
+    }
+
+    void LandGift()
+    {
+        giftMagnifier.gameObject.SetActive(false);
+        giftMagnifier.localScale = Vector3.one;
+        UpdateSnacks();
+        magnifierSparkles.SetActive(false);
+        magnifierSparkles.SetActive(true);
+        Sfx.Play(Sfx.SnackIn);
+    }
+
+    // 날아가는 중에 화면이 바뀌면 바로 도착한 것으로 해요
+    void StopGift()
+    {
+        if (giftRoutine == null) return;
+        StopCoroutine(giftRoutine);
+        giftRoutine = null;
+        LandGift();
     }
 
     /// <summary>
