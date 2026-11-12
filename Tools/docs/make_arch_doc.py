@@ -75,10 +75,11 @@ arch = [
     "<tr><td><code>MagnifierPeek</code></td><td>돋보기 : 화면을 어둡게 덮고 렌즈 안에만 그림판 자리에 고정된 원본이 보여요. 렌즈는 손가락을 따라가고 5초 뒤 닫혀요. 남은 시간은 테두리 띠가 줄어들며 보여 줘요 (덮개가 누르기를 받아서 그동안 그릴 수 없음)</td><td>돋보기 연출</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>코드로 만든 움직임 전부 : 등장 · 걷기 · 두리번 · 간식 · 물건 착지 · 채점 표시 · 꽃가루 (Kind 하나씩)</td><td>연출</td></tr></table>",
     "<h3>화면 흐름 (GameManager.State)</h3><pre>"
-    "Title ─StartGame→ Dialogue(1단계는 오프닝부터) ─StartObserve→ Observe(3초 떠올리기) ─자동→ Draw(60초 쪽지 쓰기) ─Submit→ Give(건네기)\n"
+    "Title ─OpenChapters→ Chapter(소풍만 열림) ─ChapterTap(0) = StartGame→ Dialogue(1단계는 오프닝부터) ─StartObserve→ Observe(3초 떠올리기) ─자동→ Draw(60초 쪽지 쓰기) ─Submit→ Give(건네기)\n"
     "Give ─터치(사탕-1, 대사 3줄)→ Judge ─결과, 찾는 동작 한 바퀴를 마친 뒤→ Result(도깨비 → 주인공)\n"
     "Result ─틀림 + 사탕 남음→ 다시(Retry : 이전 그림에 이어, 60초) 또는 포기(ShowCompare)\n"
-    "Result ─성공 또는 사탕 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번→ Title\n"
+    "Result ─성공 또는 사탕 없음→ Compare ─NextStage→ Dialogue(다음 단계) … → Ending ─터치 두 번(도깨비 인사)→ Chapter\n"
+    "Give · Result 의 돋보기 : 1단계 첫 그리기 시범(peekGuideStep 1~5), 두 번째로 틀리면 무료 기회(ResultPhase.Gift)\n"
     "1단계를 못 찾으면 batLost : 이야기 종료까지 도깨비 그림이 빈손(dokkaebiNoBat)\n"
     "Judge ─AI 실패→ (사탕+1) Result(오류 대사) ─터치→ Draw(그리던 그림)\n"
     "그리기 화면 ─TogglePause→ 일시정지 (Time.timeScale 0)</pre>",
