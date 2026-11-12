@@ -41,7 +41,8 @@ using Object = UnityEngine.Object;
 //   + 2단계 : 두 번째로 틀리면 무료 돋보기를 받아서 씀 → 사탕 3개를 다 써서 포기
 //   + 3단계 : 향이 다 타면 자동 제출
 //   + 4·5단계 : 혼색 팔레트 (노랑 1:파랑 1=초록, 빨강 2:노랑 2:파랑 1=갈색, 되돌리기)
-//   → 이야기 종료 화면 기록 확인
+//   + 시작 화면 → 챕터 선택 (소풍만 열림, 나머지 4개는 자물쇠)
+//   → 이야기 종료 화면 기록 확인 (사탕 통) → 도깨비 인사 → 챕터 선택
 //   + 방망이를 못 찾았을 때 : 이야기 종료까지 도깨비가 빈손이고 소풍 장면에 대파가 놓이는지
 //
 // 결과
@@ -425,8 +426,28 @@ static class MvpSelfTest
             Check(Text("TitlePanel/StartButton/Label") == "게임 시작하기", "시작 버튼은 게임 시작하기");
             Check(Find("TitlePanel").Find("TitleTagline") == null && Find("TitlePanel").Find("TitleGear") == null, "문구와 설정 버튼이 없다");
             Check(Find("JudgePanel/DokkaebiEnter/Roam/Step/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
+            Check(Find("TitlePanel/StartButton").GetComponent<Button>().onClick.GetPersistentMethodName(0) == "OpenChapters", "게임 시작하기는 챕터 선택으로 간다");
             Shot("title");
-            Then(() => Gm().StartGame());
+            Then(() =>
+            {
+                Gm().OpenChapters();
+                Check(IsOn("ChapterPanel") && !IsOn("TitlePanel") && !IsOn("HUD"), "게임 시작하기를 누르면 챕터 선택");
+                int locked = 0;
+                for (int k = 2; k <= 5; k++)
+                    if (IsOn($"ChapterPanel/Chapter_{k}/Lock") && Text($"ChapterPanel/Chapter_{k}/Label") == "준비 중") locked++;
+                Check(Text("ChapterPanel/Chapter_1/Label") == "소풍" && locked == 4, $"챕터 5개 : 소풍 + 자물쇠와 준비 중 {locked}개");
+                Gm().ChapterTap(2);
+                Check(IsOn("ChapterPanel") && !IsOn("DialoguePanel"), "준비 중인 챕터를 누르면 들어가지 않는다");
+            });
+        });
+        Add(1.0f, "챕터 선택", () =>
+        {
+            Shot("chapters");       // 화면이 다 나타난 뒤에 찍어요
+            Then(() =>
+            {
+                Gm().ChapterTap(0);
+                Check(IsOn("DialoguePanel") && !IsOn("ChapterPanel"), "소풍을 누르면 게임이 시작된다");
+            });
         });
 
         StageData[] stages = Stages();
@@ -819,13 +840,15 @@ static class MvpSelfTest
             Check(Find("EndingPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal" && !IsOn("EndingPanel/BatSlot"),
                   "방망이를 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비어 있다");
             int candiesLeft = SumInts("candiesLeft");
-            Check(ShownCount("EndingPanel/Candy_") == candiesLeft, $"단계마다 남은 사탕 {candiesLeft}개가 돗자리에 모여 있다");
+            Check(ShownCount("EndingPanel/CandyJar/Candy_") == candiesLeft, $"단계마다 남은 사탕 {candiesLeft}개가 사탕 통에 모여 있다");
             Check(Find("EndingPanel").Find("Chocolate_1") == null, "초콜릿은 없다");
             Shot("ending");
             Then(() =>
             {
                 Gm().EndingTap();
-                Check(IsOn("EndingPanel/DialogueBox"), "화면을 누르면 도깨비가 물어본다");
+                Check(IsOn("EndingPanel/DialogueBox") && Text("EndingPanel/DialogueBox/Line") == GameScript.EndingBye, "화면을 누르면 도깨비가 다음에 또 온다고 인사한다");
+                RectTransform box = (RectTransform)Find("EndingPanel/DialogueBox"), mat = (RectTransform)Find("EndingPanel/MatSlot");
+                Check(box.position.y > mat.position.y + 200f, "인사 대사 상자는 위쪽 하늘에 떠서 돗자리를 가리지 않는다");
                 Shot("ending_ask");
                 Then(() =>
                 {
@@ -834,9 +857,9 @@ static class MvpSelfTest
                 });
             });
         });
-        Add(0.3f, "처음으로", () =>
+        Add(0.3f, "챕터 선택으로", () =>
         {
-            Check(IsOn("TitlePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "처음으로 돌아왔다 (배경도 StartBG)");
+            Check(IsOn("ChapterPanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "인사 뒤에는 챕터 선택으로 간다 (배경도 StartBG)");
         });
 
         // 1단계를 못 찾으면 이야기가 끝날 때까지 도깨비가 빈손이고, 소풍 장면에 대파가 놓여요
@@ -860,7 +883,7 @@ static class MvpSelfTest
             Check(IsOn("EndingPanel") && Shown("EndingPanel/Dokkaebi").name == NoBat, "이야기 종료에서도 빈손");
             Check(Shown("EndingPanel/BatSlot") == stages[0].wrongSprites[1], "소풍 장면에는 대파가 놓인다");
             for (int k = 0; k < 3; k++) Gm().EndingTap();
-            Check(IsOn("TitlePanel"), "빈손으로 끝나도 처음으로 돌아간다");
+            Check(IsOn("ChapterPanel"), "빈손으로 끝나도 챕터 선택으로 간다");
         });
 
         return list;
@@ -990,7 +1013,7 @@ static class MvpSelfTest
     static int ShownCount(string prefix)
     {
         int n = 0;
-        for (int k = 1; k <= 10; k++) if (IsOn(prefix + k)) n++;
+        for (int k = 1; k <= 15; k++) if (IsOn(prefix + k)) n++;
         return n;
     }
     static int Count(string text, string word) => text.Split(new[] { word }, StringSplitOptions.None).Length - 1;

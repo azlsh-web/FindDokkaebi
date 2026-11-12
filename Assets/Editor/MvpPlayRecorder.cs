@@ -125,6 +125,8 @@ class PlayDirector : MonoBehaviour
     {
         yield return Wait(2.5f);                                          // 시작 화면
         yield return Click("TitlePanel/StartButton");
+        yield return Wait(1.2f);                                          // 챕터 선택
+        yield return Click("ChapterPanel/Chapter_1");
 
         // 1단계 방망이 : 처음엔 돌기를 빠뜨림 → 엉뚱한 방망이 → 다시 그리기
         yield return IntroAndObserve(3.5f);

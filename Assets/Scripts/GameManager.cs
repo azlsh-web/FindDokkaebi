@@ -10,6 +10,8 @@ using UnityEngine.UI;
 //
 //   [시작 화면]
 //       ↓ 게임 시작하기
+//   [챕터 선택] 소풍만 열려 있고, 나머지 4개는 자물쇠 (준비 중)
+//       ↓ 소풍
 //   [오프닝 (1단계)] → [대화] → [떠올리기 3초] → [쪽지 쓰기 60초] → [건네기: 사탕 -1] → [판정 대기] → [결과]
 //                                                   ↑                                               │
 //                                                   └────────── 다시 (이전 그림에 이어 그리기) ──────┤ (실패 + 간식 남음)
@@ -17,6 +19,7 @@ using UnityEngine.UI;
 //                                                                                                [채점표]
 //                                                                                                   ↓ 다음 단계 (5단계 뒤엔)
 //                                                                                              [이야기 종료]
+//                                                                                                   ↓ 도깨비 인사 → [챕터 선택]
 //
 // 쪽지는 주인공이 도깨비에게 써 주는 것이에요. 판정 기준은 시작 대화의 생김새 대사로 알려 줘요.
 // 오프닝은 준비물이 사라지는 그림과 함께 보여 줘요. 모든 대사는 터치해야 넘어가요. 떠올리기는 2단계부터 주인공, 1단계는 도깨비가 해요.
@@ -41,7 +44,7 @@ using UnityEngine.UI;
 // 대사는 GameScript, 소리는 Sfx 에 있어요.
 public class GameManager : MonoBehaviour
 {
-    enum State { Title, Dialogue, Observe, Draw, Give, Judge, Result, Compare, Ending }
+    enum State { Title, Chapter, Dialogue, Observe, Draw, Give, Judge, Result, Compare, Ending }
     enum ResultPhase { Dokkaebi, Boy, Gift, Choose, Error }
 
     // ───────────── Inspector 에서 연결하는 것들 ─────────────
@@ -85,6 +88,8 @@ public class GameManager : MonoBehaviour
 
     [Header("패널(화면)")]
     [SerializeField] GameObject titlePanel;
+    [SerializeField] GameObject chapterPanel;       // 챕터 선택 : 소풍 + 준비 중인 챕터 4개
+    [SerializeField] SimpleAnim[] chapterLockedAnims;   // 준비 중인 챕터를 누르면 자물쇠 카드가 흔들려요
     [SerializeField] GameObject dialoguePanel;
     [SerializeField] GameObject dialogueDim;        // 대사 중 어두운 막 (화면 전체를 덮으려고 패널 밖에 있어요)
     [SerializeField] GameObject observePanel;
@@ -173,7 +178,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] DialogueBox endingBox;
     [SerializeField] Image endingDokkaebi;
     [SerializeField] Image[] endingItems;
-    [SerializeField] GameObject[] endingCandies;    // 돗자리에 모아 놓은 남은 사탕 (단계마다 남은 것을 모두 더해요)
+    [SerializeField] GameObject[] endingCandies;    // 사탕 통에 모은 남은 사탕 (단계마다 남은 것을 모두 더해요)
 
     static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);
 
@@ -279,7 +284,34 @@ public class GameManager : MonoBehaviour
         ShowPanel(titlePanel);
     }
 
-    /// <summary>[버튼] 게임 시작하기</summary>
+    /// <summary>[버튼] 게임 시작하기 → 챕터 선택</summary>
+    public void OpenChapters()
+    {
+        Sfx.Play(Sfx.Tap);
+        ShowChapters();
+    }
+
+    void ShowChapters()
+    {
+        state = State.Chapter;
+        SetPaused(false);
+        hud.SetActive(false);
+        backgroundImage.sprite = startBackground;
+        Sfx.Bgm(Sfx.BgmRoom);
+        ShowPanel(chapterPanel);
+    }
+
+    /// <summary>[버튼] 챕터 카드. 0 = 소풍(시작), 그 밖은 준비 중이라 자물쇠 카드가 흔들리기만 해요</summary>
+    public void ChapterTap(int index)
+    {
+        if (state != State.Chapter) return;
+        if (index == 0) { StartGame(); return; }
+        Sfx.Play(Sfx.Tap);
+        int k = index - 1;
+        if (k >= 0 && k < chapterLockedAnims.Length) chapterLockedAnims[k].Play(SimpleAnim.Kind.Shake);
+    }
+
+    /// <summary>소풍 챕터 시작</summary>
     public void StartGame()
     {
         Sfx.Play(Sfx.Tap);
@@ -882,7 +914,7 @@ public class GameManager : MonoBehaviour
 
     // ───────────── 이야기 종료 ─────────────
 
-    /// <summary>소풍 장면 : 물건이 날아와 놓이고, 단계마다 남은 간식이 돗자리에 모여요.</summary>
+    /// <summary>소풍 장면 : 물건이 날아와 놓이고, 단계마다 남은 사탕이 사탕 통에 모여요.</summary>
     void ShowEnding()
     {
         state = State.Ending;
@@ -906,24 +938,19 @@ public class GameManager : MonoBehaviour
         ShowPanel(endingPanel);
     }
 
-    /// <summary>[화면 터치] 도깨비가 처음으로 돌아갈지 묻고, 대사를 누르면 돌아가요</summary>
+    /// <summary>[화면 터치] 도깨비가 다음에 또 온다고 인사하고, 대사를 누르면 챕터 선택으로 가요</summary>
     public void EndingTap()
     {
         if (state != State.Ending) return;
         if (!endingAsking)
         {
             endingAsking = true;
-            endingBox.Say(GameScript.EndingAsk, faceDokkaebi);
+            endingBox.Say(GameScript.EndingBye, faceDokkaebi);
             return;
         }
         if (endingBox.FinishTyping()) return;
-        BackToTitle();
-    }
-
-    public void BackToTitle()
-    {
         Sfx.Play(Sfx.Tap);
-        ShowTitle();
+        ShowChapters();
     }
 
     /// <summary>[버튼] 오른쪽 위 일시정지 ↔ 계속하기. 멈춘 동안은 시간(향·관찰)이 흐르지 않아요.</summary>
@@ -959,7 +986,7 @@ public class GameManager : MonoBehaviour
     // 패널 하나만 켜고 나머지는 끄기
     void ShowPanel(GameObject panel)
     {
-        GameObject[] all = { titlePanel, dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel };
+        GameObject[] all = { titlePanel, chapterPanel, dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel };
         foreach (GameObject p in all) p.SetActive(p == panel);
         dialogueDim.SetActive(panel == dialoguePanel || panel == observePanel);
     }

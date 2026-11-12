@@ -27,7 +27,8 @@ static class MvpLayoutCheck
         new[] { "DrawPanel/MagnifierPeek/Lens/Hole", "DrawPanel/MagnifierPeek/Lens/Frame" },
         new[] { "JudgePanel/MyDrawingBack", "JudgePanel/DokkaebiEnter" },   // 간식이 내 그림 앞을 지나 빠져나가요
         new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
-        new[] { "EndingPanel/Candy_", "EndingPanel/Candy_" },   // 남은 간식은 돗자리에 수북이 모아 놓아요
+        new[] { "EndingPanel/CandyJar", "EndingPanel/" },   // 사탕 통은 돗자리 모서리에 걸쳐 놓이고, 사탕은 통 안에 쌓여요
+        new[] { "ChapterPanel/Chapter_1/Picture", "ChapterPanel/Chapter_1/Picture" },   // 소풍 카드 그림 : 배경 위에 캐릭터와 돗자리
         new[] { "HUD/MagnifierBadge", "HUD/MagnifierButton" },
         new[] { "HUD/MagnifierHighlight", "HUD/" },   // 시범 때 돋보기 둘레를 도는 도깨비불
         new[] { "HUD/MagnifierHighlight", "DrawPanel/" },   // 쓸 수 있는 횟수는 돋보기 오른쪽 아래에 겹쳐 붙여요

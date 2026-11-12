@@ -148,7 +148,8 @@ public static class GameScript
 
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
-    public const string EndingAsk = "소풍 즐거웠지? 처음으로 돌아갈까?";
+    // 이야기 종료 : 도깨비 인사. 대사를 누르면 챕터 선택으로 가요
+    public const string EndingBye = "오늘 소풍 즐거웠지? 다음에 또 뭐 잃어버리면 불러. 또 올게!";
 
     static string Pick(string[] list) => list[Random.Range(0, list.Length)];
 
@@ -164,7 +165,7 @@ public static class GameScript
         foreach (string[][] table in new[] { DokkaebiSuccess, DokkaebiPartial, DokkaebiAllWrong })
             foreach (string[] stage in table) foreach (string l in stage) yield return l;
         foreach (string l in new[] { BoyBatSuccess, BoyBatWrong, BoySuccess, BoyWrong, BoyFriendSuccess, BoyFriendWrong,
-                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, BoyOutOfSnacks, JudgeError, EndingAsk })
+                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, BoyOutOfSnacks, JudgeError, EndingBye })
             yield return l;
     }
 

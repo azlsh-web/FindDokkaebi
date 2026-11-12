@@ -30,6 +30,10 @@ TREE = [
         ("TitleLogo", "UI/Title_Logo", G11 + ", 문구를 지움"),
         ("StartButton", "UI/Common_ButtonCoral", G10),
     ]),
+    ("1-2. 챕터 선택", "Frame/ChapterPanel", [
+        ("Chapter_1/Picture (소풍 카드 그림, 아트팀 그림 Chapter_Picnic 요청 중)", "Background/BG_Picnic", "소풍 배경 일부에 캐릭터 · 돗자리를 얹은 임시 그림"),
+        ("Chapter_2~5/Lock (준비 중)", "UI/Chapter_Lock", TEMP + " (make_candy_jar.py)"),
+    ]),
     ("2. 대화 + 오프닝 + 건네기", "Frame/DialoguePanel", [
         ("Boy", "Characters/Char_Boy_Normal", TEAM),
         ("Dokkaebi (1단계)", "Characters/Char_Dokkaebi_NoBat", TEAM),
@@ -100,7 +104,9 @@ TREE = [
     ]),
     ("9. 이야기 종료", "Frame/EndingPanel", [
         ("Boy", "Characters/Char_Boy_Happy", TEAM),
-        ("Candy_1~15 (단계마다 남은 사탕을 더해 돗자리에)", "UI/HUD_Candy", TEAM),
+        ("CandyJar/Back · Front (사탕 통, 사탕을 사이에 끼워요)", "UI/Ending_CandyJarBack", TEMP + " (make_candy_jar.py). 앞쪽 그림은 Ending_CandyJarFront"),
+        ("CandyJar/Front", "UI/Ending_CandyJarFront", TEMP + " (make_candy_jar.py)"),
+        ("CandyJar/Candy_1~15 (단계마다 남은 사탕을 더해 통에)", "UI/HUD_Candy", TEAM),
         ("FriendSlot", "물건별 원본 (아래 단계 폴더)", ""),
         ("Dokkaebi", "Characters/Char_Dokkaebi_Normal", TEAM),
         ("Dokkaebi (방망이를 못 찾았을 때)", "Characters/Char_Dokkaebi_NoBat", TEAM),
@@ -132,12 +138,17 @@ REQUEST = [
      "채점표 한 장. 크기가 고정이라 늘리지 않고 그대로 써요. "
      "게임이 위에 올리는 것: **위쪽 약 1000px**에 왼쪽은 아이가 그린 선, 오른쪽은 원본이 든 흰 칸, 그 아래에 번호와 동그라미 · 빗금이 달린 목록(최대 5줄). "
      "가운데는 장식 없이 비워 두고, 결은 옅게 그려 주세요. 종이 바깥은 투명하게 해 주세요."),
+    ("Chapter_Picnic", "UI", "챕터", (1760, 1286), "챕터 선택 화면의 소풍 카드 그림",
+     "게임 시작하기를 누르면 나오는 챕터 선택 화면에서 가장 큰 카드의 그림이에요. 카드 아래에 게임이 `소풍` 글자를 올려요. "
+     "주인공 · 도깨비 · 돗자리가 있는 소풍 장면이면 돼요 (지금은 소풍 배경에 캐릭터를 얹어 임시로 꾸몄어요). "
+     "투명 없이 꽉 채워 주세요. 네 모서리는 카드 테두리에 살짝 가려요."),
 ]
 
 # 투명한 부분 없이 꽉 채우는 그림 (apply_art_zip.py 가 투명 검사를 건너뛰어요). Background 폴더는 모두 꽉 채워요.
-OPAQUE = {"Draw_Paper"}
+OPAQUE = {"Draw_Paper", "Chapter_Picnic"}
 
 ZIP_FOLDER = "FindDokkaebi_Art"
 GROUPS = [
-    ("쪽지", "요청 그림", "흰 카드 판이 손그림 배경 위에서 따로 떠 보여서, 자주 보이는 판 세 가지를 쪽지 질감으로 바꿔요."),
+    ("쪽지", "쪽지 질감", "흰 카드 판이 손그림 배경 위에서 따로 떠 보여서, 자주 보이는 판 세 가지를 쪽지 질감으로 바꿔요."),
+    ("챕터", "챕터 선택 그림", "11월 12일에 챕터 선택 화면이 새로 생겼어요. 지금은 소풍 챕터만 있고 나머지 4개는 자물쇠와 `준비 중`으로 보여요."),
 ]

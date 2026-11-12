@@ -1,5 +1,6 @@
 # 코드로 그리는 임시 그림 (아트팀 그림이 오면 같은 이름으로 바꿔 넣으면 돼요)
 #   - 이야기 종료의 사탕 통
+#   - 챕터 선택의 자물쇠 (Chapter_Lock : 아직 준비 중인 챕터)
 #   - 도깨비불 (Magnifier_DokkaebiFire : 향 불꽃 그림을 푸른빛으로 바꾼 것. 1단계 시범 때 돋보기 둘레를 돌아요)
 #   - 돋보기 렌즈 둘레의 남은 시간 띠 (Magnifier_TimeRing : 돋보기 테두리의 크림색 띠를 오린 흰 고리. 게임에서 색을 입히고 시계처럼 줄여요)
 #   python Tools/docs/art_pipeline/make_candy_jar.py
@@ -76,6 +77,24 @@ def time_ring():
     return im
 
 
+def chapter_lock():
+    w, h = 200, 240
+    im = Image.new("RGBA", (w * S, h * S), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    # 고리 : 진갈색 굵은 선 위에 놋쇠색 선
+    d.arc((44 * S, 14 * S, 156 * S, 140 * S), 180, 360, fill=OUTLINE, width=34 * S)
+    d.arc((52 * S, 22 * S, 148 * S, 132 * S), 180, 360, fill=(214, 168, 92, 255), width=18 * S)
+    d.rectangle((44 * S, 76 * S, 78 * S, 112 * S), fill=OUTLINE)
+    d.rectangle((122 * S, 76 * S, 156 * S, 112 * S), fill=OUTLINE)
+    d.rectangle((52 * S, 76 * S, 70 * S, 112 * S), fill=(214, 168, 92, 255))
+    d.rectangle((130 * S, 76 * S, 148 * S, 112 * S), fill=(214, 168, 92, 255))
+    # 몸통 : 둥근 네모 + 열쇠 구멍
+    d.rounded_rectangle((14 * S, 100 * S, 186 * S, 230 * S), radius=28 * S, fill=LID, outline=OUTLINE, width=LINE)
+    d.ellipse((84 * S, 132 * S, 116 * S, 164 * S), fill=OUTLINE)
+    d.polygon([(92 * S, 152 * S), (108 * S, 152 * S), (114 * S, 198 * S), (86 * S, 198 * S)], fill=OUTLINE)
+    return im.resize((w, h), Image.LANCZOS)
+
+
 def dokkaebi_fire():
     import colorsys
     flame = Image.open(os.path.join(ROOT, "Assets", "Sprites", "UI", "Incense_Flame.png")).convert("RGBA")
@@ -101,4 +120,5 @@ if __name__ == "__main__":
     front().save(os.path.join(OUT, "Ending_CandyJarFront.png"))
     time_ring().save(os.path.join(OUT, "Magnifier_TimeRing.png"))
     dokkaebi_fire().save(os.path.join(OUT, "Magnifier_DokkaebiFire.png"))
+    chapter_lock().save(os.path.join(OUT, "Chapter_Lock.png"))
     print("saved", OUT)

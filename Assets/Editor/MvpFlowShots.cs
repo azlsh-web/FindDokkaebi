@@ -244,7 +244,9 @@ static class MvpFlowShots
 
             section = "시작";
             yield return Snap("시작 화면");
-            gm.StartGame();
+            gm.OpenChapters();
+            yield return Snap("게임 시작하기 → 챕터 선택 : 소풍만 열려 있고 나머지는 준비 중", 0.6f);
+            gm.ChapterTap(0);
 
             for (int s = 0; s < stages.Length; s++) yield return PlayStage(s);
 
@@ -441,13 +443,14 @@ static class MvpFlowShots
             int[] candy = { 2, 0, 1, 2, 1 };
             for (int i = 0; i < stages.Length; i++) { items[i] = stages[i].originalSprite; candiesLeft[i] = candy[i]; }
             gm.NextStage();
-            yield return Snap("전부 찾았을 때 : 소풍 장면, 돗자리에 남은 사탕", 3.5f);
+            yield return Snap("전부 찾았을 때 : 소풍 장면, 남은 사탕은 사탕 통에", 3.8f);
             gm.EndingTap();
             yield return Wait(0.3f);
             FinishBoxes();
-            yield return Snap("화면을 누르면 도깨비가 물어봄", 0.4f);
+            yield return Snap("화면을 누르면 도깨비가 다음에 또 온다고 인사함", 0.4f);
             FinishBoxes();
             gm.EndingTap();
+            yield return Snap("인사를 넘기면 챕터 선택으로", 0.6f);
 
             // 포기한 단계가 있을 때 : 받은 엉뚱한 물건이 그대로 놓여요
             yield return Wait(0.5f);

@@ -115,7 +115,11 @@ def read_lines(path=SOURCE):
 
     for num, stage, scene, who, const in (("주인공-간식없음", "모든 단계", "사탕을 다 쓰고 틀렸을 때", FACE["BoySad"], "BoyOutOfSnacks"),
                                           ("도깨비-오류", "모든 단계", "판정 서버 오류", "도깨비", "JudgeError"),
-                                          ("도깨비-마무리", "이야기 종료", "화면을 누른 뒤", "도깨비", "EndingAsk")):
+                                          ("도깨비-돋보기-1", "1단계 방망이", "첫 그리기 : 돋보기 시범 (넘기면 돋보기가 도깨비불로 강조돼요)", "도깨비", "MagnifierShow"),
+                                          ("도깨비-돋보기-2", "1단계 방망이", "돋보기를 누른 뒤 (넘기면 둘러봐요)", "도깨비", "MagnifierHow"),
+                                          ("도깨비-돋보기-3", "1단계 방망이", "시범으로 둘러본 뒤", "도깨비", "MagnifierRule"),
+                                          ("도깨비-무료돋보기", "모든 단계", "한 단계에서 두 번째로 틀렸을 때 (사탕이 남았으면)", "도깨비", "MagnifierGift"),
+                                          ("도깨비-마무리", "이야기 종료", "화면을 누른 뒤 (넘기면 챕터 선택)", "도깨비", "EndingBye")):
         m = re.search(r"const string " + const + r' = "((?:[^"\\]|\\.)*)"', src)
         assert m, const
         add(num, stage, scene, who, m.group(1), m.start(1), m.end(1))

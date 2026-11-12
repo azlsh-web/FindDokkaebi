@@ -271,6 +271,64 @@ public static class MvpSceneBuilder
         startGameButton.GetComponentInChildren<TMP_Text>().fontSize = 96;
         startGameButton.GetComponentInChildren<TMP_Text>().color = Color.white;
 
+        // ── 1-2. 챕터 선택 : 큰 소풍 카드 하나 + 준비 중인 카드 4개 (자물쇠). 화면 제목 없이 카드만 ──
+        //   그림은 아트팀에 요청할 예정이라, 지금은 있는 그림(소풍 배경 · 캐릭터 · 돗자리)으로 임시로 꾸며요
+        var chapter = NewPanel("ChapterPanel", canvas);
+        var chapterButtons = new Button[5];
+        var chapterLockedAnims = new SimpleAnim[4];
+        var picnicCard = NewCard("Chapter_1", chapter, Vector2.zero, Vector2.zero);
+        M((RectTransform)picnicCard, 30, 70, 300, 268);
+        Anim(picnicCard.gameObject, SimpleAnim.Kind.CardIn, 0.45f, 0f, 0f);
+        var picnicView = new GameObject("Picture", typeof(RectTransform), typeof(RawImage), typeof(Mask)).GetComponent<RawImage>();
+        picnicView.transform.SetParent(picnicCard, false);
+        PIn(picnicView.rectTransform, 9, 9, 282, 206);
+        picnicView.raycastTarget = false;
+        var chapterArt = AssetDatabase.LoadAssetAtPath<Sprite>(SpriteFolder + "/UI/Chapter_Picnic.png");     // 아트팀 그림이 오면 그대로 써요
+        if (chapterArt != null) picnicView.texture = chapterArt.texture;
+        else
+        {
+            picnicView.texture = picnic.texture;
+            picnicView.uvRect = new Rect(0f, 0.28f, 1f, 0.5f * (206f / 282f) * (2248f / 3952f) * 2f);     // 언덕 · 나무 · 울타리 부분
+        }
+        Image PicnicThing(string name, Sprite sprite, float x, float y, float w, float h)
+        {
+            var img = NewImage(name, picnicView.transform, Color.white);
+            img.sprite = sprite;
+            img.preserveAspect = true;
+            img.raycastTarget = false;
+            PIn(img.rectTransform, x, y, w, h);
+            return img;
+        }
+        if (chapterArt == null)
+        {
+            PicnicThing("Mat", stages[2].originalSprite, 70, 128, 150, 80);
+            PicnicThing("Boy", boyHappy, 22, 60, 80, 130);
+            PicnicThing("Dokkaebi", dokkaebi, 192, 92, 84, 84);
+        }
+        var picnicLabel = NewText("Label", picnicCard, "소풍", 96, Vector2.zero, Vector2.zero, bold: true);
+        PIn(picnicLabel.rectTransform, 0, 214, 300, 50);
+        chapterButtons[0] = picnicCard.gameObject.AddComponent<Button>();
+        for (int i = 0; i < 4; i++)
+        {
+            var card = NewCard($"Chapter_{i + 2}", chapter, Vector2.zero, Vector2.zero);
+            M((RectTransform)card, 30 + (i % 2) * 156, 352 + (i / 2) * 136, 144, 124);
+            card.GetComponent<Image>().color = new Color(0.86f, 0.84f, 0.8f);       // 아직 못 들어가는 칸은 살짝 어둡게
+            Anim(card.gameObject, SimpleAnim.Kind.CardIn, 0.45f, 0.1f + i * 0.06f, 0f);
+            var lockImg = NewImage("Lock", card, Color.white);
+            lockImg.sprite = T("Chapter_Lock");
+            lockImg.preserveAspect = true;
+            lockImg.raycastTarget = false;
+            PIn(lockImg.rectTransform, 47, 16, 50, 60);
+            var soon = NewText("Label", card, "준비 중", 60, Vector2.zero, Vector2.zero);
+            PIn(soon.rectTransform, 0, 82, 144, 30);
+            soon.color = SubTextColor;
+            chapterButtons[i + 1] = card.gameObject.AddComponent<Button>();
+            chapterLockedAnims[i] = lockImg.gameObject.AddComponent<SimpleAnim>();
+            chapterLockedAnims[i].kind = SimpleAnim.Kind.None;
+            chapterLockedAnims[i].popTime = 0.4f;
+            chapterLockedAnims[i].distance = 14f;
+        }
+
         // ── 2. 대화 화면 : 캐릭터 + 대사 상자. 오프닝 그림과 건네기 쪽지도 여기에 있어요 ──
         var dialogue = NewPanel("DialoguePanel", canvas);
         // 오프닝 : 물건 그림은 GameManager 가 단계 데이터에서 넣어요
@@ -704,7 +762,7 @@ public static class MvpSceneBuilder
         Anchor(scoreArrow.rectTransform, 1f, 0f, new Vector2(-42, 36), new Vector2(54, 54));
         var compareTapButton = NewTap("TapButton", compare);
 
-        // ── 8. 이야기 종료 : 소풍 장면. 캐릭터는 땅에 서 있고, 물건 옆에 남은 간식 ──
+        // ── 8. 이야기 종료 : 소풍 장면. 캐릭터는 땅에 서 있고, 돗자리 옆 사탕 통에 남은 사탕 ──
         var ending = NewPanel("EndingPanel", canvas);
         Image Standing(string name, Sprite sprite, float x, float y, float w, float h, float delay)
         {
@@ -726,15 +784,32 @@ public static class MvpSceneBuilder
         var endBag = Item("BagSlot", 50, 418, 74, 66, 0.7f);
         var endGimbap = Item("GimbapSlot", 150, 468, 62, 62, 1.2f);
         var endBat = Item("BatSlot", 246, 416, 66, 90, 1.7f);
-        // 단계마다 남은 사탕을 모두 더해 돗자리 오른쪽 아래에 모아 놓아요 (세 줄로 5개씩)
+        // 사탕 통 : 돗자리 오른쪽 아래. 단계마다 남은 사탕을 모두 더해 통 아래부터 쌓여요 (한 줄에 3개, 5줄)
+        //   통 그림은 임시 (make_candy_jar.py). 유리 뒤쪽 → 사탕 → 테두리 · 뚜껑 순서로 겹쳐요
+        var jarGo = new GameObject("CandyJar", typeof(RectTransform));
+        jarGo.transform.SetParent(ending, false);
+        M((RectTransform)jarGo.transform, 288, 500, 62, 80);
+        Anim(jarGo, SimpleAnim.Kind.Pop, 0.45f, 1.9f, 0f);
+        var jarBack = NewImage("Back", jarGo.transform, Color.white);
+        jarBack.sprite = T("Ending_CandyJarBack");
+        jarBack.raycastTarget = false;
+        Stretch(jarBack.rectTransform);
         var endingCandies = new GameObject[SnackCount];
         for (int k = 0; k < SnackCount; k++)
         {
-            float dx = (k % 5) * 17f, dy = (k / 5) * 15f;
-            var c = MImage($"Candy_{k + 1}", ending, snack, 232 + dx + (k / 5) * 8f, 516 + dy, 22, 16);
-            Anim(c.gameObject, SimpleAnim.Kind.Pop, 0.35f, 2.2f + k * 0.06f, 0f);
+            int row = k / 3, col = k % 3;
+            var c = NewImage($"Candy_{k + 1}", jarGo.transform, Color.white);
+            c.sprite = snack;
+            c.preserveAspect = true;
+            c.raycastTarget = false;
+            PIn(c.rectTransform, 6 + col * 16 + (row % 2) * 2, 61 - row * 9, 17, 12);
+            Anim(c.gameObject, SimpleAnim.Kind.Pop, 0.3f, 2.4f + k * 0.08f, 0f);
             endingCandies[k] = c.gameObject;
         }
+        var jarFront = NewImage("Front", jarGo.transform, Color.white);
+        jarFront.sprite = T("Ending_CandyJarFront");
+        jarFront.raycastTarget = false;
+        Stretch(jarFront.rectTransform);
         Color32[] confettiColors = { new Color32(242, 119, 107, 255), new Color32(245, 201, 107, 255), new Color32(90, 167, 217, 255) };
         float[][] confetti = { new float[] { 40, 3.2f, 0f }, new float[] { 110, 2.6f, 0.5f }, new float[] { 190, 3.5f, 1f }, new float[] { 260, 2.9f, 0.2f }, new float[] { 325, 3.3f, 1.4f } };
         for (int i = 0; i < confetti.Length; i++)
@@ -745,6 +820,7 @@ public static class MvpSceneBuilder
             Anim(c.gameObject, SimpleAnim.Kind.Fall, confetti[i][1], confetti[i][2], 0f);
         }
         var endingBoxComp = NewDialogueBox(ending, faceSurprised);
+        M((RectTransform)endingBoxComp.transform, 12, 24, 336, 104);     // 하늘 쪽 위에 : 돗자리 · 김밥 · 사탕 통을 가리지 않게
         var endingTapButton = NewTap("TapButton", ending);
 
         // ── 일시정지 화면 (HUD 오른쪽 위 버튼) : 어둡게 덮고 "계속하기" ──
@@ -761,7 +837,8 @@ public static class MvpSceneBuilder
         pause.SetAsLastSibling();
 
         // ── 버튼 OnClick 연결 (Inspector 의 On Click() 목록에 보여요) ──
-        UnityEventTools.AddPersistentListener(startGameButton.onClick, gm.StartGame);
+        UnityEventTools.AddPersistentListener(startGameButton.onClick, gm.OpenChapters);
+        for (int i = 0; i < chapterButtons.Length; i++) UnityEventTools.AddIntPersistentListener(chapterButtons[i].onClick, gm.ChapterTap, i);
         UnityEventTools.AddPersistentListener(dialogueTapButton.onClick, gm.DialogueTap);
         UnityEventTools.AddPersistentListener(submitButton.onClick, gm.Submit);
         UnityEventTools.AddPersistentListener(magnifierButton.onClick, gm.MagnifierTap);
@@ -825,6 +902,8 @@ public static class MvpSceneBuilder
         Set(so, "startBackground", startBackground);
         Set(so, "gameBackground", room);
         Set(so, "titlePanel", title.gameObject);
+        Set(so, "chapterPanel", chapter.gameObject);
+        SetArray(so, "chapterLockedAnims", chapterLockedAnims);
         Set(so, "observePanel", observe.gameObject);
         Set(so, "drawPanel", draw.gameObject);
         Set(so, "judgePanel", judgeP.gameObject);
@@ -919,7 +998,7 @@ public static class MvpSceneBuilder
         mso.ApplyModifiedPropertiesWithoutUndo();
 
         // 처음에는 시작 화면만 보이게 (게임 시작 시 GameManager 도 같은 처리를 해요)
-        foreach (Transform p in new[] { dialogue, dialogueDim, observe, draw, judgeP, result, compare, ending }) p.gameObject.SetActive(false);
+        foreach (Transform p in new[] { chapter, dialogue, dialogueDim, observe, draw, judgeP, result, compare, ending }) p.gameObject.SetActive(false);
         giveNote.gameObject.SetActive(false);
         giveSnack.gameObject.SetActive(false);
         openingGroup.gameObject.SetActive(false);
