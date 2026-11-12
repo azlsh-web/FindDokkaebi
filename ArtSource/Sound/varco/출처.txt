@@ -22,3 +22,17 @@ sfx_snack_in   Three quick playful swishes as small candies and chocolates slide
 sfx_mark       Pencil quickly scratching two short marks on paper, swish swish
 sfx_cheer      Small group of happy children cheering yay with a little clapping, short outdoor picnic celebration
 sfx_land       Small object gently dropping onto a picnic mat on grass, soft light thud
+
+배경음 (C-28) : 만든 날 2026-11-12, 음악 한 번 생성에 200포인트, 후보 2개
+raw/varco_bgm_<이름>_<번호>.mp3 : 받은 원본 (44.1kHz 스테레오 mp3)
+Tools/sound/varco_bgm.py 로 앞 무음과 끝 여운을 다듬어 Assets/Resources/Sound/<이름>.ogg 로 넣어요. 고른 번호는 varco_bgm.py 의 PICK 에 있어요.
+
+이름            입력한 문장
+bgm_room       Gentle, cute background music for a children's game (ages 6-9). Soft music box, glockenspiel, ukulele and light pizzicato. Warm cozy morning feeling. Quiet, sparse, simple melody, low dynamics so dialogue stays clear. Slow tempo, seamless loop, no vocals, no drums.
+               (VARCO 결과 이름 Morning whispers_1, 97.7초)
+bgm_draw       Calm, quiet background music for kids drawing. Soft marimba and pizzicato with a light ticking clock-like pulse. Focused and gentle, barely any melody, very low dynamics, never distracting. Medium tempo, seamless loop, no vocals, no drums.
+               (VARCO 결과 이름 Whispers of creativity_1, 106.8초)
+bgm_judge      Cute, mischievous tiptoe music for a playful little goblin wondering and peeking around. Light bassoon and clarinet staccato, pizzicato and glockenspiel. Curious, neutral mood that fits both right and wrong answers. Quiet and sparse, medium tempo, seamless loop, no vocals.
+               (VARCO 결과 이름 Goblin's playful tiptoe_2, 188.1초, 2026-11-13)
+bgm_picnic     Happy, cheerful picnic music for a children's game ending. Ukulele, glockenspiel, whistling-like flute and bouncy pizzicato. Joyful and sunny but soft, not loud, gentle dynamics. Slightly upbeat tempo, seamless loop, no vocals.
+               (VARCO 결과 이름 Sunny picnic celebration_1, 91.2초, 2026-11-13)

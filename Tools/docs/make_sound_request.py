@@ -15,11 +15,19 @@ os.makedirs(OUT, exist_ok=True)
 
 # (파일, 우선, 나오는 곳, 느낌, 권장 길이)
 BGM = [
-    ("bgm_room", "먼저", "시작, 단계 시작 대화, 쪽지, 관찰", "따뜻하고 아기자기한 아침", "30~60초 반복"),
-    ("bgm_draw", "먼저", "그리기", "가볍게 긴장되지만 집중을 방해하지 않는 곡", "30~60초 반복"),
-    ("bgm_judge", "먼저", "판정 대기, 결과, 채점표", "도깨비가 두리번거리는 장난스러운 곡. 맞았을 때와 틀렸을 때 모두 어울려야 해요.", "20~40초 반복"),
-    ("bgm_picnic", "먼저", "이야기 종료", "신나는 소풍 곡", "30~60초 반복"),
+    ("bgm_room", "먼저", "시작, 단계 시작 대화, 쪽지, 관찰", "포근한 아침, 아기자기. 느리게", "30~60초 반복"),
+    ("bgm_draw", "먼저", "그리기", "조용히 집중. 아주 살짝 똑딱똑딱, 멜로디는 거의 없게. 보통 빠르기", "30~60초 반복"),
+    ("bgm_judge", "먼저", "판정 대기, 결과, 채점표", "도깨비가 갸웃갸웃 살금살금 두리번거리는 곡(바순 · 클라리넷 스타카토). 맞았을 때와 틀렸을 때 모두 어울려야 해요. 보통 빠르기", "20~40초 반복"),
+    ("bgm_picnic", "먼저", "이야기 종료", "소풍이라 신나지만 시끄럽지 않게. 조금 빠르게", "30~60초 반복"),
 ]
+# VARCO Sound 입력 문장 (C-28)
+BGM_PROMPT = {
+    "bgm_room": "Gentle, cute background music for a children's game (ages 6-9). Soft music box, glockenspiel, ukulele and light pizzicato. Warm cozy morning feeling. Quiet, sparse, simple melody, low dynamics so dialogue stays clear. Slow tempo, seamless loop, no vocals, no drums.",
+    "bgm_draw": "Calm, quiet background music for kids drawing. Soft marimba and pizzicato with a light ticking clock-like pulse. Focused and gentle, barely any melody, very low dynamics, never distracting. Medium tempo, seamless loop, no vocals, no drums.",
+    "bgm_judge": "Cute, mischievous tiptoe music for a playful little goblin wondering and peeking around. Light bassoon and clarinet staccato, pizzicato and glockenspiel. Curious, neutral mood that fits both right and wrong answers. Quiet and sparse, medium tempo, seamless loop, no vocals.",
+    "bgm_picnic": "Happy, cheerful picnic music for a children's game ending. Ukulele, glockenspiel, whistling-like flute and bouncy pizzicato. Joyful and sunny but soft, not loud, gentle dynamics. Slightly upbeat tempo, seamless loop, no vocals.",
+}
+assert set(BGM_PROMPT) == {r[0] for r in BGM}
 SFX = [
     ("sfx_tap", "먼저", "대사 넘기기, 게임 시작하기, 다시, 채점표 넘기기, 처음으로", "짧고 가벼운 톡", "0.1초"),
     ("sfx_count", "먼저", "관찰 숫자 3, 2, 1 (1초에 한 번)", "짧은 똑딱", "0.2초"),
@@ -100,7 +108,7 @@ figcaption b { color: #2b2622; font-size: 10.5px; }
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사운드팀 전달사항</title><style>{CSS}</style></head><body>
 <h1>찾아라! 도깨비 사운드팀 전달사항</h1><p class='sub'>{date.today()} 기준 · 출품 마감 2026-11-15(일)</p>
-<div class='note'><b>요청:</b> {len(in_doc)}개 (배경음 {len(BGM)}, 효과음 {len(SFX)})<br><b>기한:</b> 11월 14일(토)<br><b>우선:</b> {len(first)}개 (표의 먼저 항목)<br><b>빠진 파일:</b> 소리 없이 진행<br><b>지금:</b> 효과음 {len(SFX)}개는 2026-11-11에 VARCO Sound로 만들어 넣었어요. 남은 것은 배경음 {len(BGM)}곡이에요.</div>
+<div class='note'><b>요청:</b> {len(in_doc)}개 (배경음 {len(BGM)}, 효과음 {len(SFX)})<br><b>기한:</b> 11월 14일(토)<br><b>우선:</b> {len(first)}개 (표의 먼저 항목)<br><b>빠진 파일:</b> 소리 없이 진행<br><b>지금:</b> 효과음 {len(SFX)}개는 2026-11-11에 VARCO Sound로 만들어 넣었어요. 배경음 {len(BGM)}곡도 2026-11-12~13에 VARCO Sound로 만들어 넣었어요. 더 요청할 소리는 없어요.</div>
 <h2>게임 분위기</h2>
 <p>주인공과 도깨비가 사라진 소풍 준비물을 찾는 아기자기하고 장난스러운 게임이에요. 플레이어가 기억해서 그린 쪽지대로 도깨비가 물건을 찾아오고, 그림이 틀리면 엉뚱한 물건을 가져와 놀려요. 전시장에서 플레이하므로 오래 들어도 피곤하지 않아야 해요.</p>
 <div class='shots'>
@@ -113,7 +121,10 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사
 <h2>화면별 소리</h2>
 <pre>{flow}</pre>
 <h2>배경음 {len(BGM)}곡</h2>
+<div class='note'><b>공통 방향:</b> 초등 저학년용 게임이라 귀엽고 잔잔하게, 대사와 효과음을 가리지 않게 깔기만 해요. 4곡 모두 같은 악기(뮤직박스 · 실로폰, 피치카토, 우쿨렐레, 마림바)로 맞춰 한 게임처럼 들리게 하고, 북 같은 센 타악기는 빼요. 도깨비의 장난스러움은 전통 악기 대신 바순 · 클라리넷의 통통 튀는 소리로 내요. 곡마다 빠르기와 기분만 달라요.</div>
 {table(BGM)}
+<h3>VARCO Sound 입력 문장</h3>
+<ul>{''.join(f"<li><code>{n}</code> : {t}</li>" for n, t in BGM_PROMPT.items())}</ul>
 <p>끝과 시작이 자연스럽게 이어지게 만들어 주세요. 곡이 바뀔 때 페이드 없이 바로 넘어가요. 같은 곡이 이어지면 처음으로 돌아가지 않아요.</p>
 <h2>효과음 : 먼저 필요한 {len([r for r in SFX if r[1] == '먼저'])}개</h2>
 {table([r for r in SFX if r[1] == '먼저'])}
