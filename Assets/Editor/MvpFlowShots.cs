@@ -296,6 +296,18 @@ static class MvpFlowShots
                 gm.PeekGuideTap();
                 gm.PeekGuideTap();
             }
+            if (s == 4)
+            {
+                // 5단계 첫 그리기 : 팔레트에서 색 섞기 시범
+                yield return Snap("색 섞기 시범 : 도깨비가 말하는 동안 팔레트에 물감을 넣음", 1.4f);
+                yield return Snap("같은 물감을 두 번씩 넣어 갈색이 됨 (빨강 2 · 노랑 2 · 파랑 1)", 4.4f);
+                FinishBoxes();
+                gm.MixGuideTap();
+                yield return Wait(0.3f);
+                FinishBoxes();
+                yield return Snap("많이 넣은 색 쪽으로 바뀐다고 알려 줌", 0.4f);
+                gm.MixGuideTap();
+            }
             yield return Snap("그리기 시작 : 빈 쪽지", 1.2f);
 
             if (s == 0)

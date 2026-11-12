@@ -630,6 +630,12 @@ public static class MvpSceneBuilder
         Place((RectTransform)mixUndo.transform.parent, new Vector2(-300, 262), new Vector2(100, 95));
         var mixApply = NewButton("ApplyButton", mx, "섞어서 칠하기", new Vector2(40, 272), new Vector2(480, 76));
 
+        // 색 섞기 시범 (5단계 첫 그리기) : 대사 상자는 다른 대사와 같은 자리(아래). 시범 동안만 팔레트를 줄여 그림판과 대사 상자 사이에 넣어서
+        //   아무것도 가리지 않아요 (GameManager.StartMixDemo). 화면 전체를 덮는 터치로 시범 중에 팔레트를 못 누르게 해요
+        var mixGuide = NewEmpty("MixGuide", draw);
+        var mixGuideBox = NewDialogueBox(mixGuide, faceDokkaebi);
+        var mixGuideTap = NewTap("TapButton", mixGuide);
+
         // ── 5. 판정 대기 : 내 그림은 떠 있고, 도깨비는 가운데서 좁게 오가요 ──
         var judgeP = NewPanel("JudgePanel", canvas);
         var judgeDrawingBack = MImage("MyDrawingBack", judgeP, cardSprite, 105, 90, 150, 177);
@@ -886,6 +892,7 @@ public static class MvpSceneBuilder
 
         // HUD 가 패널보다 위에 그려지도록 맨 뒤로 보내기 (Hierarchy 아래쪽일수록 앞에 그려짐). 일시정지 화면은 그보다 위
         peekGo.transform.SetAsLastSibling();    // 둘러보는 동안은 색 섞기 판까지 덮어요
+        mixGuide.SetAsLastSibling();            // 색 섞기 시범의 대사와 터치는 팔레트보다 위
         hud.SetAsLastSibling();
         pause.SetAsLastSibling();
 
@@ -896,6 +903,7 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(submitButton.onClick, gm.Submit);
         UnityEventTools.AddPersistentListener(magnifierButton.onClick, gm.MagnifierTap);
         UnityEventTools.AddPersistentListener(peekGuideTap.onClick, gm.PeekGuideTap);
+        UnityEventTools.AddPersistentListener(mixGuideTap.onClick, gm.MixGuideTap);
         UnityEventTools.AddPersistentListener(retryButton.onClick, gm.Retry);
         UnityEventTools.AddPersistentListener(giveUpButton.onClick, gm.ShowCompare);
         UnityEventTools.AddPersistentListener(resultTapButton.onClick, gm.ResultTap);
@@ -935,6 +943,9 @@ public static class MvpSceneBuilder
         Set(so, "magnifierSparkles", magSparkles.gameObject);
         Set(so, "peekGuide", peekGuide.gameObject);
         Set(so, "peekGuideBox", peekGuideBox);
+        Set(so, "mixGuide", mixGuide.gameObject);
+        Set(so, "mixGuideBox", mixGuideBox);
+        Set(so, "mixer", mixer);
         Set(so, "magnifierHighlight", magHighlight.gameObject);
         SetArray(so, "magnifierFires", magFires);
         Set(so, "giftMagnifier", giftMagnifier.rectTransform);
@@ -1064,6 +1075,7 @@ public static class MvpSceneBuilder
         mixerCard.gameObject.SetActive(false);
         peekGo.gameObject.SetActive(false);
         peekGuide.gameObject.SetActive(false);
+        mixGuide.gameObject.SetActive(false);
         magHighlight.gameObject.SetActive(false);
         giftMagnifier.gameObject.SetActive(false);
         magSparkles.gameObject.SetActive(false);

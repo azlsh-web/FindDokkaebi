@@ -585,10 +585,40 @@ static class MvpSelfTest
                     });
                 }, () => !IsOn("DrawPanel/MagnifierPeek") && IsOn("DrawPanel/PeekGuide"));   // 렌즈가 닫힌 다음 프레임에 대사가 떠요
             }
+            if (s == 4)
+            {
+                // 5단계 첫 그리기 : 도깨비가 말하는 동안 팔레트에 빨강 2 · 노랑 2 · 파랑 1 을 넣어 갈색을 보여 줘요
+                float timeAtMix = 0f;
+                Add(3.0f, "5단계 색 섞기 시범", () =>
+                {
+                    Check(IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/MixerPanel") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
+                          "5단계 첫 그리기에는 팔레트가 열리고 도깨비가 같은 물감을 여러 번 넣어 보라고 한다");
+                    timeAtMix = GetFloat("timeLeft");
+                    Gm().Submit();
+                    Check(IsOn("DrawPanel"), "시범 중에는 제출되지 않는다");
+                }, () => IsOn("DrawPanel"));
+                Add(5.4f, "5단계 색 섞기 시범 결과", () =>
+                {
+                    var mixer = Find("DrawPanel/MixerPanel").GetComponent<ColorMixer>();
+                    Check(mixer.ResultColor == ColorMixer.Mix(2, 2, 1), "시범 : 빨강 2 · 노랑 2 · 파랑 1 = 갈색");
+                    Check(Mathf.Abs(GetFloat("timeLeft") - timeAtMix) < 0.01f, "시범 동안 향이 타지 않는다");
+                    Shot("s5_mix_demo");
+                    Then(() =>
+                    {
+                        Gm().MixGuideTap();     // 다음 대사
+                        Gm().MixGuideTap();     // 글자 다 보이기
+                        Check(Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixHow, "많이 넣은 색 쪽으로 바뀐다고 말한다");
+                        Gm().MixGuideTap();
+                        Check(!IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/MixerPanel"), "대사를 넘기면 팔레트가 닫히고 그리기 시작");
+                        Check(Find("DrawPanel/MixerPanel").localScale == Vector3.one && IsOn("DrawPanel/ToolBar/ToolRow") && IsOn("DrawPanel/ToolBar/ColorRow"),
+                              "팔레트는 원래 크기로, 물감 줄 · 도구 줄은 다시 보인다");
+                    });
+                });
+            }
 
             // 그리기 + 도구
             int candiesAtDraw = 0;      // 이번 단계 그리기를 시작할 때 남은 사탕
-            Add(s == 0 ? 0.3f : 3.0f, $"{st.Title} 그리기", () =>
+            Add(s == 0 || s == 4 ? 0.3f : 3.0f, $"{st.Title} 그리기", () =>
             {
                 Check(IsOn("DrawPanel") && !IsOn("ObservePanel"), "3초 뒤 그리기 화면");
                 Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 1단계 첫 그리기에서만");

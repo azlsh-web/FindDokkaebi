@@ -37,6 +37,8 @@ using UnityEngine.UI;
 //     → 보는 법 대사 → (대사를 넘김) → 5초 둘러보기 → 한 번만 더 빌려준다는 대사
 //   - 한 단계에서 2번째로 틀리면 그 단계에서만 쓰는 무료 기회를 1번 줘요 (도깨비가 돋보기를 건네줘요). 단계가 끝나면 사라져요.
 //   - 무료 기회가 있으면 그것부터 써요. 돋보기 오른쪽 아래 숫자가 지금 쓸 수 있는 횟수예요.
+// 색 섞기 시범 : 5단계 첫 그리기 때 도깨비가 말하는 동안 실제 팔레트에 빨강 2 · 노랑 2 · 파랑 1 을 넣어 갈색을 만들어 보여 줘요.
+//   같은 물감을 여러 번 넣을 수 있다는 걸 보여 주려는 거예요. 시범 동안은 향이 타지 않아요.
 //
 // 판정 : 항상 자동이에요. 도깨비의 찾는 동작은 한 바퀴씩 반복하고, 응답이 오면 그 바퀴를 마치고 넘어가요.
 //   AI 오류가 나면 간식을 돌려주고, 그리던 그림 그대로 다시 제출하게 해요.
@@ -148,6 +150,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] MagnifierPeek magnifierPeek;   // 렌즈로 원본 둘러보기
     [SerializeField] GameObject peekGuide;          // 1단계 돋보기 시범 : 그림판을 덮고 도깨비가 말해요
     [SerializeField] DialogueBox peekGuideBox;
+    [SerializeField] GameObject mixGuide;           // 5단계 색 섞기 시범 : 팔레트 위쪽에 대사 상자
+    [SerializeField] DialogueBox mixGuideBox;
+    [SerializeField] ColorMixer mixer;
     [SerializeField] GameObject magnifierHighlight;         // 시범 : 돋보기 둘레를 도는 도깨비불
     [SerializeField] RectTransform[] magnifierFires;
 
@@ -208,6 +213,15 @@ public class GameManager : MonoBehaviour
     int peekGuideStep;      // 시범 : 0 없음, 1 눌러 보라고 말함, 2 돋보기 강조 (대사 없음), 3 보는 법을 말함, 4 둘러보는 중, 5 규칙을 말함
 
     Coroutine giftRoutine;
+    bool mixShown;          // 5단계 색 섞기 시범을 했는지
+    int mixDemoStep;        // 색 섞기 시범 : 0 없음, 1 물감을 넣어 보이는 중, 2 결과를 말함
+    int mixDemoAdded;       // 시범에서 지금까지 넣은 물감 수
+    Coroutine mixDemo;
+    static readonly int[] MixDemoPaints = { 0, 0, 1, 1, 2 };   // 빨강 · 빨강 · 노랑 · 노랑 · 파랑 = 갈색
+    // 시범 동안 팔레트 크기와 위로 올리는 거리 : 그림판 아래 끝과 대사 상자 위 끝 사이에 딱 들어가요 (가리는 것 없이)
+    const float MixDemoScale = 0.72f;
+    const float MixDemoLift = 15f;
+    Vector2 mixerHome;
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;
@@ -266,6 +280,7 @@ public class GameManager : MonoBehaviour
                 if (peekGuideStep == 4 && !magnifierPeek.Active) SayPeekRule();
                 return;
             }
+            if (mixDemoStep != 0) return;       // 색 섞기 시범 중에도 향이 타지 않아요
             timeLeft -= Time.deltaTime;
             timerText.text = Mathf.CeilToInt(Mathf.Max(0f, timeLeft)).ToString();
             incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
@@ -324,6 +339,7 @@ public class GameManager : MonoBehaviour
         candiesLeft = new int[stages.Length];
         magnifiers = magnifierPerGame;
         peekShown = false;
+        mixShown = false;
         backgroundImage.sprite = gameBackground;
         int first = 0;
 #if UNITY_EDITOR
@@ -522,6 +538,10 @@ public class GameManager : MonoBehaviour
             peekGuideBox.Say(GameScript.MagnifierShow, faceDokkaebi);
         }
 
+        // 5단계 첫 그리기 : 색 섞기 시범
+        StopMixDemo();
+        if (stageIndex == 4 && !mixShown && !keepDrawing) StartMixDemo();
+
         UpdateSnacks();
         if (!keepDrawing) noteRoutine = StartCoroutine(WriteNote());
 
@@ -582,6 +602,82 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void StartMixDemo()
+    {
+        mixShown = true;
+        mixDemoStep = 1;
+        mixDemoAdded = 0;
+        toolBar.OpenMixer();
+        var mixerRect = (RectTransform)mixer.transform;
+        mixerHome = mixerRect.anchoredPosition;
+        mixerRect.localScale = Vector3.one * MixDemoScale;
+        mixerRect.anchoredPosition = mixerHome + new Vector2(0f, MixDemoLift);
+        ShowToolRows(false);     // 줄인 팔레트 밑으로 물감 줄 · 도구 줄이 비쳐 보이지 않게
+        mixGuide.SetActive(true);
+        mixGuideBox.Say(GameScript.MixShow, faceDokkaebi);
+        mixDemo = StartCoroutine(MixDemoRoutine());
+    }
+
+    // 팔레트가 열리고 잠깐 뒤부터 물감을 하나씩 넣어요 (일시정지하면 같이 멈춰요)
+    IEnumerator MixDemoRoutine()
+    {
+        yield return new WaitForSeconds(0.9f);
+        while (mixDemoAdded < MixDemoPaints.Length)
+        {
+            mixer.AddPaint(MixDemoPaints[mixDemoAdded++]);
+            yield return new WaitForSeconds(0.85f);
+        }
+        yield return new WaitForSeconds(0.6f);         // 마지막 색이 다 바뀔 때까지
+        mixDemo = null;
+    }
+
+    void StopMixDemo()
+    {
+        if (mixDemo != null) StopCoroutine(mixDemo);
+        mixDemo = null;
+        if (mixDemoStep != 0)
+        {
+            mixer.Close();
+            var mixerRect = (RectTransform)mixer.transform;
+            mixerRect.localScale = Vector3.one;         // 플레이어가 열 때는 원래 크기 · 자리
+            mixerRect.anchoredPosition = mixerHome;
+            ShowToolRows(true);
+        }
+        mixDemoStep = 0;
+        mixGuide.SetActive(false);
+    }
+
+    // 물감 판 · 물감 줄 · 도구 줄 (ToolBar 아래의 것들) 숨기기 · 보이기
+    void ShowToolRows(bool show)
+    {
+        foreach (Transform row in toolBar.transform) row.gameObject.SetActive(show);
+    }
+
+    /// <summary>[화면 터치] 색 섞기 시범 대사 넘기기. 물감을 넣는 중에 누르면 남은 물감을 바로 다 넣어요</summary>
+    public void MixGuideTap()
+    {
+        if (state != State.Draw || mixDemoStep == 0) return;
+        if (mixGuideBox.FinishTyping()) return;
+        Sfx.Play(Sfx.Tap);
+        if (mixDemoStep == 1)
+        {
+            if (mixDemo != null)
+            {
+                StopCoroutine(mixDemo);
+                mixDemo = null;
+                while (mixDemoAdded < MixDemoPaints.Length) mixer.AddPaint(MixDemoPaints[mixDemoAdded++]);
+                mixer.SkipAnimation();
+            }
+            mixDemoStep = 2;
+            mixGuideBox.Say(GameScript.MixHow, faceDokkaebi);
+        }
+        else
+        {
+            // 다 보여 줬으면 팔레트를 닫고 그리기 시작 (만든 갈색은 플레이어 것이 아니라 버려요)
+            StopMixDemo();
+        }
+    }
+
     void ShowMagnifierHighlight(bool on)
     {
         if (on) SpinFires();
@@ -614,7 +710,7 @@ public class GameManager : MonoBehaviour
             peekGuideBox.Say(GameScript.MagnifierHow, faceDokkaebi);
             return;
         }
-        if (peekGuideStep != 0) return;
+        if (peekGuideStep != 0 || mixDemoStep != 0) return;
         if (freePeek) freePeek = false;
         else if (magnifiers > 0) magnifiers--;
         else return;
@@ -626,7 +722,7 @@ public class GameManager : MonoBehaviour
     /// <summary>[버튼] 다 그렸어 (또는 시간 초과로 자동 제출) : 쪽지와 간식을 건네러 가요</summary>
     public void Submit()
     {
-        if (state != State.Draw || peekGuideStep != 0) return;
+        if (state != State.Draw || peekGuideStep != 0 || mixDemoStep != 0) return;
         magnifierPeek.Stop();
 
         state = State.Give;

@@ -146,6 +146,10 @@ public static class GameScript
     // 한 단계에서 두 번째로 틀렸을 때 (단계마다 한 번, 그 단계에서만)
     public const string MagnifierGift = "자꾸 틀리니까 딱하다. 돋보기 한 번 빌려줄게! 이번 물건 찾을 때만 쓸 수 있어.";
 
+    // 5단계 첫 그리기 : 색 섞기 시범. 도깨비가 말하는 동안 팔레트에 빨강 2 · 노랑 2 · 파랑 1 을 넣어 보여 줘요
+    public const string MixShow = "이번엔 세 가지 색을 섞어 봐. 같은 물감을 여러 번 넣을 수도 있어!";
+    public const string MixHow = "빨강 둘, 노랑 둘, 파랑 하나를 넣으니까 갈색이 됐지? 많이 넣은 색 쪽으로 바뀌어.";
+
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
     // 이야기 종료 : 도깨비 인사. 대사를 누르면 챕터 선택으로 가요
@@ -165,7 +169,7 @@ public static class GameScript
         foreach (string[][] table in new[] { DokkaebiSuccess, DokkaebiPartial, DokkaebiAllWrong })
             foreach (string[] stage in table) foreach (string l in stage) yield return l;
         foreach (string l in new[] { BoyBatSuccess, BoyBatWrong, BoySuccess, BoyWrong, BoyFriendSuccess, BoyFriendWrong,
-                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, BoyOutOfSnacks, JudgeError, EndingBye })
+                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, MixShow, MixHow, BoyOutOfSnacks, JudgeError, EndingBye })
             yield return l;
     }
 

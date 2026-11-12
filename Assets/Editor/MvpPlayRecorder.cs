@@ -201,6 +201,11 @@ class PlayDirector : MonoBehaviour
 
         // 5단계 친구 : 초록 상의(두 색) + 갈색 하의(세 색)
         yield return IntroAndObserve(3f);
+        yield return Wait(6f);                                            // 도깨비가 팔레트에서 갈색을 만들어 보여 줘요
+        yield return Click("DrawPanel/MixGuide/TapButton");
+        yield return Wait(3f);
+        yield return Click("DrawPanel/MixGuide/TapButton");
+        yield return Wait(0.5f);
         yield return Tool("ToolRow/Size_1");
         yield return Ellipse(V(256, 400), 55, 55, 0f);
         yield return Mix("Material_노랑", "Material_파랑");
