@@ -298,14 +298,23 @@ static class MvpFlowShots
             }
             if (s == 4)
             {
-                // 5단계 첫 그리기 : 팔레트에서 색 섞기 시범
-                yield return Snap("색 섞기 시범 : 도깨비가 말하는 동안 팔레트에 물감을 넣음", 1.4f);
-                yield return Snap("같은 물감을 두 번씩 넣어 갈색이 됨 (빨강 2 · 노랑 2 · 파랑 1)", 4.4f);
+                // 5단계 첫 그리기 : 대사가 알려 주고 사라지면 직접 눌러 봐요
+                var guideBar = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
+                yield return Snap("5단계 첫 그리기 : 도깨비가 붓을 눌러 보라고 함", 1.4f);
                 FinishBoxes();
                 gm.MixGuideTap();
+                yield return Snap("대사를 넘기면 : 대사가 사라지고 도깨비불이 붓 둘레를 돎", 0.6f);
+                guideBar.BrushTap();
                 yield return Wait(0.3f);
                 FinishBoxes();
-                yield return Snap("많이 넣은 색 쪽으로 바뀐다고 알려 줌", 0.4f);
+                yield return Snap("붓을 누르면 : 물감을 넣어 보라고 함", 0.2f);
+                gm.MixGuideTap();       // 대사가 사라지고 팔레트가 열려요
+                guideBar.PaintTap(0);
+                yield return Snap("대사를 넘기면 : 팔레트가 열리고 직접 물감을 넣음 (물방울이 붓 끝으로)", 0.16f);
+                guideBar.PaintTap(0); guideBar.PaintTap(1); guideBar.PaintTap(1); guideBar.PaintTap(2);
+                yield return Wait(2.2f);
+                FinishBoxes();
+                yield return Snap("빨강 2 · 노랑 2 · 파랑 1 = 갈색 : 많이 넣은 색 쪽으로 바뀐다고 알려 줌", 0.2f);
                 gm.MixGuideTap();
             }
             yield return Snap("그리기 시작 : 빈 쪽지", 1.2f);

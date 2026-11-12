@@ -156,6 +156,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] PaperView paperView;           // 책상 위 쪽지 : 두 손가락으로 키우기 · 돌리기 · 옮기기
     [SerializeField] GameObject magnifierHighlight;         // 시범 : 돋보기 둘레를 도는 도깨비불
     [SerializeField] RectTransform[] magnifierFires;
+    [SerializeField] GameObject brushHighlight;     // 5단계 색 섞기 시범 : 붓 둘레를 도는 도깨비불
+    [SerializeField] RectTransform[] brushFires;
+    [SerializeField] RectTransform brushHolder;     // 붓 (눌러 볼 차례면 콩콩 뛰어요)
 
     [Header("판정 대기 화면")]
     [SerializeField] RawImage judgeDrawing;         // 화면 한 곳에 떠 있는 내 쪽지
@@ -215,10 +218,10 @@ public class GameManager : MonoBehaviour
 
     Coroutine giftRoutine;
     bool mixShown;          // 5단계 색 섞기 시범을 했는지
-    int mixDemoStep;        // 색 섞기 시범 : 0 없음, 1 물감을 넣어 보이는 중, 2 결과를 말함
-    int mixDemoAdded;       // 시범에서 지금까지 넣은 물감 수
-    Coroutine mixDemo;
-    static readonly int[] MixDemoPaints = { 0, 0, 1, 1, 2 };   // 빨강 · 빨강 · 노랑 · 노랑 · 파랑 = 갈색
+    int mixDemoStep;        // 색 섞기 안내 : 0 없음, 1 붓을 눌러 보라고 말함, 2 붓을 누르기 기다림(도깨비불),
+                            //   3 물감을 넣어 보라고 말함, 4 아이가 물감을 넣는 중, 5 결과를 말함
+    Coroutine mixDone;      // 색 섞기 안내 : 다 넣고 붓 끝 색이 바뀐 걸 본 뒤 대사
+    static readonly int[] MixGoal = { 2, 2, 1 };   // 색 섞기 안내 : 빨강 2 · 노랑 2 · 파랑 1 = 갈색
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;
@@ -273,11 +276,22 @@ public class GameManager : MonoBehaviour
                 bool waiting = peekGuideStep == 1 || peekGuideStep == 2;
                 float wave = Mathf.Abs(Mathf.Sin(Time.time * 4f));
                 magnifierButton.transform.localScale = Vector3.one * (waiting ? 1f + 0.1f * wave : 1f);
-                if (peekGuideStep == 2) SpinFires();
+                if (peekGuideStep == 2) SpinFires(magnifierFires, 80f, 45f);
                 if (peekGuideStep == 4 && !magnifierPeek.Active) SayPeekRule();
                 return;
             }
-            if (mixDemoStep != 0) return;       // 색 섞기 시범 중에도 향이 타지 않아요
+            if (mixDemoStep != 0)
+            {
+                // 색 섞기 안내 중에는 향이 타지 않아요. 붓을 눌러 볼 차례면 붓이 콩콩 뛰고 도깨비불이 돌아요
+                if (mixDemoStep == 2)
+                {
+                    brushHolder.localScale = Vector3.one * (1f + 0.1f * Mathf.Abs(Mathf.Sin(Time.time * 4f)));
+                    SpinFires(brushFires, 78f, 72f);
+                }
+                // 물감을 넣는 중 : 빨강 2 · 노랑 2 · 파랑 1 이 되면, 붓 끝이 바뀌는 걸 본 뒤 대사가 나와요
+                if (mixDemoStep == 4 && mixDone == null && MixReached()) mixDone = StartCoroutine(SayMixDone());
+                return;
+            }
             timeLeft -= Time.deltaTime;
             timerText.text = Mathf.CeilToInt(Mathf.Max(0f, timeLeft)).ToString();
             incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
@@ -512,6 +526,9 @@ public class GameManager : MonoBehaviour
             board.ResetBoard();
             paperView.ResetView();      // 새 쪽지는 책상 위에 똑바로
         }
+        // 향과 남은 초를 바로 맞춰 둬요 (시범 동안은 향이 멈춰 있어서, 안 맞추면 불꽃이 왼쪽 끝에 남아 있어요)
+        timerText.text = Mathf.CeilToInt(timeLeft).ToString();
+        incense.Show(timeLeft / drawSeconds, timeLeft);
         // 쪽지 글은 주인공이 적어 둔 것처럼 한 글자씩 나타나요. 다시 그릴 때는 이미 적혀 있어요.
         drawTitle.text = GameScript.NoteText(stageIndex);
         if (noteRoutine != null) StopCoroutine(noteRoutine);
@@ -589,87 +606,109 @@ public class GameManager : MonoBehaviour
         peekGuideBox.Say(GameScript.MagnifierRule, faceDokkaebi);
     }
 
-    // 도깨비불 셋이 돋보기 둘레를 시계 방향으로 돌아요. 살짝 납작한 원을 돌고, 불꽃은 늘 위를 보며 일렁여요
-    void SpinFires()
+    // 도깨비불 셋이 둘레를 시계 방향으로 돌아요 (돋보기 · 붓). 가로 rx, 세로 ry 인 원을 돌고, 불꽃은 늘 위를 보며 일렁여요.
+    // 크기는 화면 끝에서도 불이 다 보이게 정했어요 (배치 검사가 화면 밖을 확인해요)
+    void SpinFires(RectTransform[] fires, float rx, float ry)
     {
-        for (int i = 0; i < magnifierFires.Length; i++)
+        for (int i = 0; i < fires.Length; i++)
         {
-            float a = -Time.time * 2.2f + i * Mathf.PI * 2f / magnifierFires.Length;
-            magnifierFires[i].anchoredPosition = new Vector2(Mathf.Cos(a) * 95f, Mathf.Sin(a) * 85f);
+            float a = -Time.time * 2.2f + i * Mathf.PI * 2f / fires.Length;
+            fires[i].anchoredPosition = new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry);
             float flicker = 1f + 0.08f * Mathf.Sin(Time.time * 9f + i * 2f);
-            magnifierFires[i].localScale = new Vector3(1f / flicker, flicker, 1f);
+            fires[i].localScale = new Vector3(1f / flicker, flicker, 1f);
         }
     }
 
+    // 5단계 첫 그리기 : 대사가 알려 주고 사라지면 아이가 직접 눌러 봐요. 대사는 원래 자리에 뜨고, 화면은 움직이지 않아요
     void StartMixDemo()
     {
         mixShown = true;
         mixDemoStep = 1;
-        mixDemoAdded = 0;
-        toolBar.OpenMixer();
-        toolBar.Raise(true);         // 대사는 원래 자리(아래)에 뜨니까 아래 줄과 붓 띠를 대사 상자 위로 올리고,
-                                     // 쪽지는 줄여서 그 위에 둬요 (ToolBar 가 PaperView 에 알려요). 아무것도 가리지 않아요
+        toolBar.OnBrushTap = BrushTapped;
+        board.Locked = true;         // 안내 동안은 쪽지에 그려지지 않아요
+        mixGuide.SetActive(true);
+        mixGuideBox.Say(GameScript.MixTapBrush, faceDokkaebi);
+    }
+
+    // 붓을 눌렀어요 : 눌러 볼 차례였으면 물감을 넣어 보라고 말해요. 팔레트는 대사를 넘기면 열려요 (대사 상자에 반쯤 가리지 않게)
+    bool BrushTapped()
+    {
+        if (state != State.Draw || mixDemoStep != 2) return false;
+        mixDemoStep = 3;
+        brushHolder.localScale = Vector3.one;
+        brushHighlight.SetActive(false);
         mixGuide.SetActive(true);
         mixGuideBox.Say(GameScript.MixShow, faceDokkaebi);
-        mixDemo = StartCoroutine(MixDemoRoutine());
+        return true;
     }
 
-    // 팔레트가 열리고 잠깐 뒤부터 물감을 하나씩 넣어요 (일시정지하면 같이 멈춰요)
-    IEnumerator MixDemoRoutine()
+    bool MixReached()
     {
-        yield return new WaitForSeconds(0.9f);
-        while (mixDemoAdded < MixDemoPaints.Length)
-        {
-            mixer.AddPaint(MixDemoPaints[mixDemoAdded++]);
-            yield return new WaitForSeconds(0.85f);
-        }
-        yield return new WaitForSeconds(0.6f);         // 마지막 색이 다 바뀔 때까지
-        mixDemo = null;
+        for (int i = 0; i < MixGoal.Length; i++)
+            if (mixer.CountOf(i) != MixGoal[i]) return false;
+        return true;
     }
 
-    void StopMixDemo()
+    // 마지막 물감이 붓 끝에서 첨벙하고 색이 바뀌는 걸 볼 시간을 준 뒤 말해요. 그사이 물감을 빼면 다시 기다려요
+    IEnumerator SayMixDone()
     {
-        if (mixDemo != null) StopCoroutine(mixDemo);
-        mixDemo = null;
+        yield return new WaitForSeconds(1.2f);
+        mixDone = null;
+        if (mixDemoStep != 4 || !MixReached()) yield break;
+        mixDemoStep = 5;
+        toolBar.ClosePanel();        // 대사 상자에 팔레트가 반쯤 가리지 않게 닫고 말해요
+        mixGuide.SetActive(true);
+        mixGuideBox.Say(GameScript.MixHow, faceDokkaebi);
+    }
+
+    // 안내를 끝내요. 아이가 직접 만든 색은 그대로 둬요 (중간에 그만두면 검정으로)
+    void StopMixDemo(bool keepColor = false)
+    {
+        if (mixDone != null) StopCoroutine(mixDone);
+        mixDone = null;
         if (mixDemoStep != 0)
         {
-            toolBar.ResetPaints();       // 시범으로 만든 갈색은 비워요 (플레이어가 처음부터 섞어요)
+            if (!keepColor) toolBar.ResetPaints();
             toolBar.ClosePanel();
-            toolBar.Raise(false);
+            board.Locked = false;
+            brushHolder.localScale = Vector3.one;
+            brushHighlight.SetActive(false);
         }
         mixDemoStep = 0;
         mixGuide.SetActive(false);
     }
 
-
-    /// <summary>[화면 터치] 색 섞기 시범 대사 넘기기. 물감을 넣는 중에 누르면 남은 물감을 바로 다 넣어요</summary>
+    /// <summary>[화면 터치] 색 섞기 안내 대사 넘기기. 대사가 사라지면 아이가 직접 붓 · 물감을 눌러야 다음으로 가요</summary>
     public void MixGuideTap()
     {
-        if (state != State.Draw || mixDemoStep == 0) return;
+        if (state != State.Draw || mixDemoStep == 0 || mixDemoStep == 2 || mixDemoStep == 4) return;
         if (mixGuideBox.FinishTyping()) return;
         Sfx.Play(Sfx.Tap);
         if (mixDemoStep == 1)
         {
-            if (mixDemo != null)
-            {
-                StopCoroutine(mixDemo);
-                mixDemo = null;
-                while (mixDemoAdded < MixDemoPaints.Length) mixer.AddPaint(MixDemoPaints[mixDemoAdded++]);
-                mixer.SkipAnimation();
-            }
+            // 대사는 사라지고 도깨비불이 붓 둘레를 돌아요 (화면을 눌러도 안 넘어가요. 붓을 눌러야 해요)
             mixDemoStep = 2;
-            mixGuideBox.Say(GameScript.MixHow, faceDokkaebi);
+            mixGuide.SetActive(false);
+            brushHighlight.SetActive(true);
+            SpinFires(brushFires, 78f, 72f);
+        }
+        else if (mixDemoStep == 3)
+        {
+            // 대사가 사라지고 팔레트가 열려요. 이제 아이가 물감을 넣어요
+            mixDemoStep = 4;
+            mixGuide.SetActive(false);
+            toolBar.OpenPanel();
         }
         else
         {
-            // 다 보여 줬으면 팔레트를 닫고 그리기 시작 (만든 갈색은 플레이어 것이 아니라 버려요)
-            StopMixDemo();
+            // 다 했으면 팔레트를 닫고 그리기 시작. 직접 만든 갈색은 그대로 써요
+            StopMixDemo(keepColor: true);
         }
     }
 
     void ShowMagnifierHighlight(bool on)
     {
-        if (on) SpinFires();
+        if (on) SpinFires(magnifierFires, 80f, 45f);
         magnifierHighlight.SetActive(on);
     }
 

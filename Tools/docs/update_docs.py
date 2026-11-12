@@ -58,10 +58,10 @@ def take_shots():
             print("[문서] 경고 : Unity 가 Play 중이거나 바빠서 사진을 찍지 못했어요. 사진은 이전 그대로예요.")
             return False
         time.sleep(2)
-    end = time.time() + 480
+    end = time.time() + 900
     while not os.path.exists(done):
         if time.time() > end:
-            raise SystemExit("[문서] 사진 촬영이 8분 안에 끝나지 않았어요. Unity 를 확인해 주세요.")
+            raise SystemExit("[문서] 사진 촬영이 15분 안에 끝나지 않았어요. Unity 를 확인해 주세요.")
         time.sleep(2)
     return True
 

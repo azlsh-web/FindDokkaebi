@@ -22,8 +22,6 @@ public class ToolBar : MonoBehaviour
     [Header("아래 띠")]
     [SerializeField] Button undoButton;
     [SerializeField] Button redoButton;
-    [SerializeField] RectTransform bar;             // 띠 전체 (색 섞기 시범 때 위로 올려요)
-    [SerializeField] float raiseHeight = 360f;
 
     [Header("팔레트")]
     [SerializeField] GameObject palette;
@@ -34,6 +32,9 @@ public class ToolBar : MonoBehaviour
     [SerializeField] GameObject paintUndo;          // 물감 빼기 (섞는 단계만)
     [SerializeField] Image[] sizeDots;              // 가는 · 보통 · 굵은 점
     [SerializeField] GameObject[] sizeFrames;
+
+    /// <summary>붓을 눌렀어요 (GameManager : 색 섞기 안내에서 붓을 눌러 볼 차례면 true 를 돌려주고, 팔레트는 대사 뒤에 열어요)</summary>
+    public System.Func<bool> OnBrushTap;
 
     // 색 4가지 (검정 · 빨강 · 노랑 · 파랑)
     public static readonly Color[] Palette =
@@ -48,9 +49,6 @@ public class ToolBar : MonoBehaviour
 
     ColorMode mode;
     int selectedSize;
-    Vector2 barHome;
-    bool barHomeSaved;
-    bool raised;
 
     /// <summary>지금 붓 색</summary>
     public Color CurrentColor => mixer.ResultColor;
@@ -71,7 +69,6 @@ public class ToolBar : MonoBehaviour
         board.OnStrokeBegin = OnStrokeBegin;
         mixer.Setup(mixing, mode == ColorMode.MixTwo ? 2 : 3);
         ClosePanel();
-        Raise(false);
         SelectSize(1);
     }
 
@@ -91,7 +88,7 @@ public class ToolBar : MonoBehaviour
     void OnStrokeBegin()
     {
         mixer.MarkUsed();                                   // 섞은 색으로 그렸으면 다음 물감은 새로 섞기
-        if (palette.activeSelf && !raised) ClosePanel();    // 그리기 시작하면 팔레트는 닫혀요
+        if (palette.activeSelf) ClosePanel();               // 그리기 시작하면 팔레트는 닫혀요
     }
 
     // ───────────── 버튼 함수 ─────────────
@@ -100,20 +97,19 @@ public class ToolBar : MonoBehaviour
     public void BrushTap()
     {
         Sfx.Play(Sfx.Tap);
+        if (OnBrushTap != null && OnBrushTap()) return;
         if (palette.activeSelf) ClosePanel(); else OpenPanel();
     }
 
     public void OpenPanel()
     {
         palette.SetActive(true);
-        paperView.Squeeze(raised ? 2 : 1);
         Refresh();
     }
 
     public void ClosePanel()
     {
         palette.SetActive(false);
-        if (paperView != null) paperView.Squeeze(0);
     }
 
     /// <summary>예전 이름 (색 섞기 시범 · 자동 테스트) : 팔레트 열기</summary>
@@ -147,15 +143,6 @@ public class ToolBar : MonoBehaviour
 
     /// <summary>모두 지우기 (자동 테스트용. 화면에는 버튼이 없어요)</summary>
     public void ClearAll() => board.Clear();
-
-    /// <summary>색 섞기 시범 동안 아래 띠(와 팔레트)를 대사 상자 위로 올려요. 아무것도 가리지 않게</summary>
-    public void Raise(bool up)
-    {
-        if (!barHomeSaved) { barHome = bar.anchoredPosition; barHomeSaved = true; }
-        raised = up;
-        bar.anchoredPosition = barHome + (up ? new Vector2(0f, raiseHeight) : Vector2.zero);
-        if (paperView != null) paperView.Squeeze(palette.activeSelf ? (up ? 2 : 1) : 0);
-    }
 
     // ───────────── 내부 ─────────────
 

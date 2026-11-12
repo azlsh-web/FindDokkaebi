@@ -161,7 +161,8 @@ public static class MvpSceneBuilder
 
         // 위 줄 : 돋보기 (오른쪽 아래에 쓸 수 있는 횟수) | 사탕 3개 | 일시정지. 사탕은 단계마다 새로 받아요.
         //   쓴 사탕은 왼쪽부터 흐려지고, 돋보기를 다 쓰면 숫자가 사라지고 흐려져요 (GameManager.UpdateSnacks)
-        var magImg = TeamImage("MagnifierButton", hud, T("Magnifier_Icon"), 120, 104, 330, 352);
+        // 돋보기는 화면 모서리에서 조금 띄워요 (콩콩 뛰거나 도깨비불이 돌아도 화면 안에 있게)
+        var magImg = TeamImage("MagnifierButton", hud, T("Magnifier_Icon"), 207, 119, 417, 367);
         magImg.preserveAspect = true;
         magImg.raycastTarget = true;
         var magnifierButton = magImg.gameObject.AddComponent<Button>();
@@ -169,7 +170,7 @@ public static class MvpSceneBuilder
         magColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.45f);    // 다 쓰면 흐리게
         magnifierButton.colors = magColors;
         // 쓸 수 있는 횟수 : 돋보기 오른쪽 아래의 코랄 동그라미 숫자 (떠올리기 숫자와 같은 모양)
-        var magBadge = TeamImage("MagnifierBadge", hud, circleSprite, 262, 262, 372, 372);
+        var magBadge = TeamImage("MagnifierBadge", hud, circleSprite, 349, 277, 459, 387);
         magBadge.color = OutlineColor;
         var magBadgeFill = NewImage("Fill", magBadge.transform, new Color32(242, 119, 107, 255));
         magBadgeFill.sprite = circleSprite;
@@ -180,7 +181,7 @@ public static class MvpSceneBuilder
         magBadgeText.color = Color.white;
         // 무료 돋보기를 받으면 반짝 (켤 때마다 처음부터)
         var magSparkles = NewEmpty("MagnifierSparkles", hud);
-        float[][] magSparkXY = { new float[] { 96, 120, 60, 0f }, new float[] { 320, 150, 44, 0.25f }, new float[] { 140, 330, 50, 0.5f } };
+        float[][] magSparkXY = { new float[] { 183, 135, 60, 0f }, new float[] { 407, 165, 44, 0.25f }, new float[] { 140, 290, 46, 0.5f } };
         foreach (float[] sp in magSparkXY)
         {
             var spark = TeamImage("Spark", magSparkles, circleSprite, sp[0], sp[1], sp[0] + sp[2], sp[1] + sp[2]);
@@ -213,21 +214,8 @@ public static class MvpSceneBuilder
         // 푸른 도깨비불 세 개가 돋보기 둘레를 빙글빙글 돌아요 (GameManager 가 돌려요). 가운데 = 돋보기 가운데
         var fireOrbit = new GameObject("Orbit", typeof(RectTransform));
         fireOrbit.transform.SetParent(magHighlight, false);
-        PlaceM((RectTransform)fireOrbit.transform, 225, 228, 225, 228);
-        var magFires = new RectTransform[3];
-        for (int i = 0; i < magFires.Length; i++)
-        {
-            var glow = NewImage("Fire_" + i, fireOrbit.transform, new Color32(150, 220, 255, 150));    // 불 뒤의 푸른 빛
-            glow.sprite = T("Common_SoftPuff");
-            glow.raycastTarget = false;
-            Anchor(glow.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(120, 120));
-            var fire = NewImage("Flame", glow.transform, Color.white);
-            fire.sprite = T("Magnifier_DokkaebiFire");
-            fire.preserveAspect = true;
-            fire.raycastTarget = false;
-            Anchor(fire.rectTransform, 0.5f, 0.5f, new Vector2(0, 12), new Vector2(126, 168));
-            magFires[i] = glow.rectTransform;
-        }
+        PlaceM((RectTransform)fireOrbit.transform, 312, 243, 312, 243);
+        var magFires = DokkaebiFires(fireOrbit.transform, 84f);
         magHighlight.SetAsLastSibling();
         magImg.transform.SetAsLastSibling();
         magBadge.transform.SetAsLastSibling();
@@ -247,8 +235,8 @@ public static class MvpSceneBuilder
         var stickRt = incenseBar.rectTransform;
         stickRt.anchorMin = stickRt.anchorMax = new Vector2(0.5f, 1f);
         stickRt.pivot = new Vector2(0.5f, 0.5f);
-        stickRt.sizeDelta = new Vector2(30f, 310f);                     // 굵기 x 길이 (돌리기 전)
-        stickRt.anchoredPosition = new Vector2(342f - 540f, -110f);     // 화면 x 187 ~ 497 (불꽃이 숫자에 닿지 않게)
+        stickRt.sizeDelta = new Vector2(30f, 255f);                     // 굵기 x 길이 (돌리기 전)
+        stickRt.anchoredPosition = new Vector2(370f - 540f, -110f);     // 화면 x 242 ~ 497 (불꽃이 돋보기 · 숫자에 닿지 않게)
         stickRt.localRotation = Quaternion.Euler(0f, 0f, -90f);         // 위(타는 끝)가 오른쪽
         Image IncenseFx(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, Color color)
         {
@@ -509,6 +497,13 @@ public static class MvpSceneBuilder
             b.colors = c;
             return b;
         }
+        // 5단계 색 섞기 시범 : 붓을 눌러 볼 차례면 도깨비불 셋이 붓 둘레를 돌아요 (돋보기 시범과 같아요)
+        var brushHighlight = NewEmpty("BrushHighlight", band.transform);
+        var brushOrbit = new GameObject("Orbit", typeof(RectTransform)).GetComponent<RectTransform>();
+        brushOrbit.SetParent(brushHighlight, false);
+        Place(brushOrbit, new Vector2(-420f, 112f), Vector2.zero);
+        brushOrbit.pivot = new Vector2(0.5f, 0.5f);
+        var brushFires = DokkaebiFires(brushOrbit, 70f);
         // 붓 : 붓 끝(Tip)을 지금 색으로 칠해요. 물방울은 TipPoint 에 닿아요
         var brushHolder = new GameObject("Brush", typeof(RectTransform)).GetComponent<RectTransform>();
         brushHolder.SetParent(band.transform, false);
@@ -1059,6 +1054,9 @@ public static class MvpSceneBuilder
         Set(so, "mixer", mixer);
         Set(so, "magnifierHighlight", magHighlight.gameObject);
         SetArray(so, "magnifierFires", magFires);
+        Set(so, "brushHighlight", brushHighlight.gameObject);
+        SetArray(so, "brushFires", brushFires);
+        Set(so, "brushHolder", brushHolder);
         Set(so, "giftMagnifier", giftMagnifier.rectTransform);
         SetArray(so, "candyIcons", candyIcons);
         SetArray(so, "snackAnims", snackAnims);
@@ -1158,7 +1156,6 @@ public static class MvpSceneBuilder
         Set(tso, "paperView", paperView);
         Set(tso, "undoButton", undoButton);
         Set(tso, "redoButton", redoButton);
-        Set(tso, "bar", band.rectTransform);
         Set(tso, "palette", paletteGroup.gameObject);
         Set(tso, "blackFrame", blackFrame);
         Set(tso, "primaryDivider", primaryDivider);
@@ -1197,6 +1194,7 @@ public static class MvpSceneBuilder
         giveSnack.gameObject.SetActive(false);
         openingGroup.gameObject.SetActive(false);
         paletteGroup.gameObject.SetActive(false);
+        brushHighlight.gameObject.SetActive(false);
         fitImg.gameObject.SetActive(false);
         peekGo.gameObject.SetActive(false);
         peekGuide.gameObject.SetActive(false);
@@ -1416,6 +1414,26 @@ public static class MvpSceneBuilder
         go.transform.SetParent(parent, false);
         Stretch(go.GetComponent<RectTransform>());
         return go.transform;
+    }
+
+    // 푸른 도깨비불 세 개 (GameManager 가 둘레를 돌려요). size = 불 크기 (화면 끝에서도 다 보이게 작게)
+    static RectTransform[] DokkaebiFires(Transform orbit, float size)
+    {
+        var fires = new RectTransform[3];
+        for (int i = 0; i < fires.Length; i++)
+        {
+            var glow = NewImage("Fire_" + i, orbit, new Color32(150, 220, 255, 150));    // 불 뒤의 푸른 빛
+            glow.sprite = T("Common_SoftPuff");
+            glow.raycastTarget = false;
+            Anchor(glow.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(size, size));
+            var fire = NewImage("Flame", glow.transform, Color.white);
+            fire.sprite = T("Magnifier_DokkaebiFire");
+            fire.preserveAspect = true;
+            fire.raycastTarget = false;
+            Anchor(fire.rectTransform, 0.5f, 0.5f, new Vector2(0, size * 0.1f), new Vector2(size, size * 4f / 3f));
+            fires[i] = glow.rectTransform;
+        }
+        return fires;
     }
 
     static Image NewImage(string name, Transform parent, Color color)

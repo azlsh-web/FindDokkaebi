@@ -16,10 +16,6 @@ public class PaperView : MonoBehaviour
     [SerializeField] GameObject fitButton;      // 맞춤 : 처음 자리로
     [SerializeField] float minScale = 0.6f;
     [SerializeField] float maxScale = 3f;
-    // 비키기 : 팔레트가 뜨면(1) 쪽지를 처음 자리로 (팔레트와 안 겹쳐요),
-    //   색 섞기 시범처럼 아래 띠까지 위로 올라오면(2) 쪽지를 작게 줄여 그 위로
-    [SerializeField] float[] squeezeScale = { 1f, 1f, 0.86f };
-    [SerializeField] float[] squeezeLift = { 0f, 0f, 300f };
 
     Vector3 homePos;
     bool homeSaved;
@@ -28,8 +24,6 @@ public class PaperView : MonoBehaviour
     Vector3 userPos;
     float userScale = 1f, userAngle;
 
-    int squeeze;
-    bool squeezed => squeeze > 0;
     bool gesturing;
     Vector2 startA, startB;
     Vector3 startPos;
@@ -80,23 +74,13 @@ public class PaperView : MonoBehaviour
         Apply(true);
     }
 
-    /// <summary>아래에 띠가 뜨는 동안 쪽지를 위로 비켜요 (가리는 것 없이). 0 = 원래 보기, 1 = 붓 띠, 2 = 아래 줄까지 올라옴</summary>
-    public void Squeeze(int level)
-    {
-        SaveHome();
-        squeeze = Mathf.Clamp(level, 0, squeezeScale.Length - 1);
-    }
-
-    /// <summary>지금 비키는 단계</summary>
-    public int SqueezeLevel => squeeze;
-
     void Update()
     {
         SaveHome();
         ReadTouches();
         ReadMouseWheel();
         Apply(false);
-        if (fitButton != null) fitButton.SetActive(!IsHome && !squeezed && !gesturing);
+        if (fitButton != null) fitButton.SetActive(!IsHome && !gesturing);
     }
 
     // 손가락 두 개가 닿아 있으면 그 두 점을 따라 종이를 움직여요
@@ -116,7 +100,7 @@ public class PaperView : MonoBehaviour
             }
         }
 
-        if (count >= 2 && !squeezed)
+        if (count >= 2)
         {
             if (!gesturing) BeginGesture(a, b);
             else MoveGesture(a, b);
@@ -159,7 +143,7 @@ public class PaperView : MonoBehaviour
     void ReadMouseWheel()
     {
         var mouse = Mouse.current;
-        if (mouse == null || squeezed) return;
+        if (mouse == null) return;
         float wheel = mouse.scroll.ReadValue().y;
         if (Mathf.Abs(wheel) < 0.01f) return;
         userScale = Mathf.Clamp(userScale * (wheel > 0f ? 1.1f : 1f / 1.1f), minScale, maxScale);
@@ -177,9 +161,9 @@ public class PaperView : MonoBehaviour
     // 목표 보기로 (instant 가 아니면 부드럽게 따라가요)
     void Apply(bool instant)
     {
-        Vector3 pos = squeezed ? homePos + new Vector3(0f, squeezeLift[squeeze], 0f) : userPos;
-        float scale = squeezed ? squeezeScale[squeeze] : userScale;
-        float angle = squeezed ? 0f : userAngle;
+        Vector3 pos = userPos;
+        float scale = userScale;
+        float angle = userAngle;
         if (instant || gesturing)
         {
             paper.localPosition = pos;

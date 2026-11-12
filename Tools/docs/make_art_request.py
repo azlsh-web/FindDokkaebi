@@ -23,7 +23,8 @@ os.makedirs(OUT, exist_ok=True)
 
 # 새 그림이 들어갈 자리에 지금 쓰는 그림 (표의 "지금 그림" 칸)
 NOW = {"Dialogue_Box": ("UI", "Common_Card", "흰 카드"), "Paper_Score": ("UI", "Common_Card", "흰 카드"),
-       "Chapter_Picnic": ("Background", "BG_Picnic", "배경 + 캐릭터로 임시")}
+       "Chapter_Picnic": ("Background", "BG_Picnic", "배경 + 캐릭터로 임시"),
+       "HUD_CandleGauge": ("UI", "Incense_Stick", "세로 향을 눕혀 임시")}
 
 # 흰 판마다 어떻게 하는지 (2026-11-11 정함)
 PLAN = [
@@ -91,7 +92,7 @@ figcaption { font-size: 10px; color: #6d645c; margin-top: 3px; text-align: cente
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아트팀 전달사항</title><style>{CSS}</style></head><body>
 <h1>찾아라! 도깨비 아트팀 전달사항</h1><p class='sub'>{date.today()} 기준 · 출품 마감 2026-11-15(일)</p>
-<div class='note'><b>요청:</b> 모두 {len(REQUEST)}장 · 쪽지 질감 3장 (대사 상자 · 그림판 · 채점표, 11/11) + 챕터 선택의 소풍 카드 그림 1장 (11/12 새로)<br>
+<div class='note'><b>요청:</b> 모두 {len(REQUEST)}장 · 쪽지 질감 3장 (대사 상자 · 그림판 · 채점표, 11/11) + 챕터 선택의 소풍 카드 그림 1장 (11/12 새로) + 가로 촛대 게이지 1장 (11/13 새로)<br>
 <b>기한:</b> 11월 14일(토). 늦으면 지금 그림으로 출품해요. 한 장씩 먼저 보내셔도 돼요.<br>
 <b>그 밖의 수정본:</b> 같은 기한, 파일 이름은 기존과 같게</div>
 
@@ -105,7 +106,7 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아
 <div class='shots'>
 {shot('1단계', '시작 대화 9', '대사 상자 → Dialogue_Box')}
 {shot('1단계', '시작 대화 3', '오프닝 쪽지 → Draw_Paper 줄임')}
-{shot('1단계', '그리기 시작 : 빈 쪽지', '그림판 → Draw_Paper')}
+{shot('1단계', '그리기 시작 : 빈 쪽지', '그림판 → Draw_Paper, 맨 위 향 → HUD_CandleGauge')}
 {shot('1단계', '건네기 : 쪽지와 간식', '건네는 쪽지 → Draw_Paper 줄임')}
 {shot('3단계', '포기 : 채점표', '채점표 → Paper_Score')}
 {shot('시작', '게임 시작하기 → 챕터 선택 : 소풍만 열려 있고 나머지는 준비 중', '소풍 카드 → Chapter_Picnic')}

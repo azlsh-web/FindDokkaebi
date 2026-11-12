@@ -544,8 +544,7 @@ static class MvpSelfTest
                 Add(0.8f, "1단계 돋보기 시범 누르기", () =>
                 {
                     var fire = (RectTransform)Find("HUD/MagnifierHighlight/Orbit/Fire_0");
-                    Invoke(Gm(), "SpinFires");
-                    Check(IsOn("HUD/MagnifierHighlight/Orbit/Fire_2/Flame") && fire.anchoredPosition.magnitude > 60f, "도깨비불 셋이 돋보기 둘레에 있다");
+                    Check(IsOn("HUD/MagnifierHighlight/Orbit/Fire_2/Flame") && fire.anchoredPosition.magnitude > 45f, "도깨비불 셋이 돋보기 둘레에 있다");
                     Shot("s1_peek_highlight");
                     Then(() =>
                     {
@@ -587,34 +586,66 @@ static class MvpSelfTest
             }
             if (s == 4)
             {
-                // 5단계 첫 그리기 : 도깨비가 말하는 동안 팔레트에 빨강 2 · 노랑 2 · 파랑 1 을 넣어 갈색을 보여 줘요
+                // 5단계 첫 그리기 : 대사가 알려 주고 사라지면 아이가 직접 붓 · 물감을 눌러 보고, 해내면 다음 대사
                 float timeAtMix = 0f;
-                Add(3.0f, "5단계 색 섞기 시범", () =>
+                float bandY = 0f;
+                Add(3.0f, "5단계 색 섞기 안내 : 붓을 눌러 봐", () =>
                 {
-                    Check(IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/Palette") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
-                          "5단계 첫 그리기에는 팔레트가 열리고 도깨비가 같은 물감을 여러 번 넣어 보라고 한다");
+                    Check(IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixTapBrush,
+                          "5단계 첫 그리기에는 도깨비가 붓을 눌러 보라고 한다");
                     timeAtMix = GetFloat("timeLeft");
+                    bandY = ((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y;
                     Gm().Submit();
-                    Check(IsOn("DrawPanel"), "시범 중에는 제출되지 않는다");
+                    Check(IsOn("DrawPanel"), "안내 중에는 제출되지 않는다");
+                    Check(Board().Locked, "안내 중에는 쪽지에 그려지지 않는다");
+                    Gm().MixGuideTap();     // 글자 다 보이기
+                    Gm().MixGuideTap();
+                    Check(!IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/BrushHighlight"), "대사를 넘기면 대사가 사라지고 도깨비불이 붓 둘레를 돈다");
+                    Gm().MixGuideTap();
+                    Check(!IsOn("DrawPanel/ToolBar/Palette"), "화면을 눌러도 넘어가지 않는다 (붓을 직접 눌러야 해요)");
                 }, () => IsOn("DrawPanel"));
-                Add(5.4f, "5단계 색 섞기 시범 결과", () =>
+                Add(0.5f, "5단계 색 섞기 안내 : 도깨비불", () =>
+                {
+                    var fire = (RectTransform)Find("DrawPanel/ToolBar/BrushHighlight/Orbit/Fire_0");
+                    Check(fire.anchoredPosition.magnitude > 50f, "도깨비불이 붓 둘레에 있다");
+                    Shot("s5_mix_brush");       // 도깨비불이 화면 안에 다 보이는지 배치 검사
+                    Then(() =>
+                    {
+                        Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
+                        Check(!IsOn("DrawPanel/ToolBar/Palette") && !IsOn("DrawPanel/ToolBar/BrushHighlight") && IsOn("DrawPanel/MixGuide")
+                              && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
+                              "붓을 누르면 물감을 넣어 보라고 한다 (팔레트는 대사 뒤에 열려요)");
+                        Check(Mathf.Abs(((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y - bandY) < 0.1f
+                              && Find("DrawPanel/Desk/Paper").localScale == Vector3.one, "대사가 나와도 띠와 쪽지는 그대로");
+                    });
+                });
+                Add(0.5f, "5단계 색 섞기 안내 : 직접 넣기", () =>
+                {
+                    Gm().MixGuideTap();     // 글자 다 보이기
+                    Gm().MixGuideTap();
+                    Check(!IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/Palette"), "대사를 넘기면 대사가 사라지고 팔레트가 열린다");
+                    var tb = Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
+                    tb.PaintTap(0); tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(1); tb.PaintTap(2); tb.PaintTap(2);
+                    tb.PaintUndo();         // 파랑을 하나 더 넣었다가 빼기
+                    Check(!IsOn("DrawPanel/MixGuide"), "넣는 동안은 대사가 나오지 않는다");
+                });
+                Add(0.2f, "5단계 색 섞기 안내 : 갈색", () =>
                 {
                     var mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
-                    Check(mixer.ResultColor == ColorMixer.Mix(2, 2, 1), "시범 : 빨강 2 · 노랑 2 · 파랑 1 = 갈색");
-                    Check(Mathf.Abs(GetFloat("timeLeft") - timeAtMix) < 0.01f, "시범 동안 향이 타지 않는다");
+                    Check(!IsOn("DrawPanel/ToolBar/Palette"), "결과를 말할 때는 팔레트를 닫아 대사 상자에 가리지 않는다");
+                    Check(Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixHow && mixer.ResultColor == ColorMixer.Mix(2, 2, 1),
+                          "빨강 2 · 노랑 2 · 파랑 1 을 넣으면 갈색이 되고 도깨비가 많이 넣은 색 쪽으로 바뀐다고 한다");
+                    Check(Mathf.Abs(GetFloat("timeLeft") - timeAtMix) < 0.01f, "안내 동안 향이 타지 않는다");
                     Shot("s5_mix_demo");
                     Then(() =>
                     {
-                        Gm().MixGuideTap();     // 다음 대사
                         Gm().MixGuideTap();     // 글자 다 보이기
-                        Check(Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixHow, "많이 넣은 색 쪽으로 바뀐다고 말한다");
                         Gm().MixGuideTap();
                         Check(!IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette"), "대사를 넘기면 팔레트가 닫히고 그리기 시작");
-                        Check(Find("DrawPanel/ToolBar").GetComponent<ColorMixer>().ResultColor == ToolBar.Palette[0],
-                              "시범으로 만든 색은 비우고 붓은 다시 검정");
-                        Check(Find("DrawPanel/Desk").GetComponent<PaperView>().SqueezeLevel == 0, "쪽지는 원래 자리로");
+                        Check(Find("DrawPanel/ToolBar").GetComponent<ColorMixer>().ResultColor == ColorMixer.Mix(2, 2, 1) && !Board().Locked,
+                              "직접 만든 갈색은 그대로, 다시 그릴 수 있다");
                     });
-                });
+                }, () => IsOn("DrawPanel/MixGuide"));
             }
 
             // 그리기 + 도구

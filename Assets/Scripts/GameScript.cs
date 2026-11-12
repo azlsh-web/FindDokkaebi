@@ -146,9 +146,11 @@ public static class GameScript
     // 한 단계에서 두 번째로 틀렸을 때 (단계마다 한 번, 그 단계에서만)
     public const string MagnifierGift = "자꾸 틀리니까 딱하다. 돋보기 한 번 빌려줄게! 이번 물건 찾을 때만 쓸 수 있어.";
 
-    // 5단계 첫 그리기 : 색 섞기 시범. 도깨비가 말하는 동안 팔레트에 빨강 2 · 노랑 2 · 파랑 1 을 넣어 보여 줘요
-    public const string MixShow = "이번엔 세 가지 색을 섞어 봐. 같은 물감을 여러 번 넣을 수도 있어!";
-    public const string MixHow = "빨강 둘, 노랑 둘, 파랑 하나를 넣으니까 갈색이 됐지? 많이 넣은 색 쪽으로 바뀌어.";
+    // 5단계 첫 그리기 : 색 섞기 안내. 대사가 알려 주고 사라지면 아이가 직접 눌러 보고, 해내면 다음 대사가 나와요
+    //   붓을 눌러 봐 → (붓을 누름, 팔레트가 열림) → 물감을 넣어 봐 → (빨강 2 · 노랑 2 · 파랑 1, 붓 끝이 갈색) → 많이 넣은 색 쪽으로
+    public const string MixTapBrush = "이번엔 세 가지 색을 섞어야 해. 아래에 있는 붓을 눌러 봐!";
+    public const string MixShow = "같은 물감을 여러 번 넣을 수도 있어. 빨강 둘, 노랑 둘, 파랑 하나를 넣어 봐!";
+    public const string MixHow = "갈색이 됐지? 많이 넣은 색 쪽으로 바뀌어.";
 
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
