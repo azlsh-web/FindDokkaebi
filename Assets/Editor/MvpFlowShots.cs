@@ -373,8 +373,8 @@ static class MvpFlowShots
                     {
                         yield return Wait(0.5f);
                         FinishBoxes();
-                        yield return Snap("두 번째로 틀리면 : 도깨비가 돋보기를 빌려줌", 0.1f);
-                        yield return Snap("무료 돋보기가 맨 위 돋보기로 날아가는 중", 0.6f);
+                        yield return Snap("두 번째로 틀리면 : 도깨비가 손에 쥔 돋보기를 빌려줌", 0.3f);
+                        yield return Snap("무료 돋보기가 손을 떠나 맨 위 돋보기로 날아가는 중", 1.2f);
                         yield return Snap("도착하면 숫자가 늘고 반짝임", 0.7f);
                     }
                     FinishBoxes();

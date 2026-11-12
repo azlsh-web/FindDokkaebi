@@ -720,6 +720,11 @@ static class MvpSelfTest
                     Gm().ResultTap();
                     Check(Text("ResultPanel/DialogueBox/Line") == GameScript.MagnifierGift, "두 번째로 틀리면 도깨비가 돋보기를 빌려준다");
                     Check(IsOn("ResultPanel/GiftMagnifier") && !IsOn("ResultPanel/ChoiceRow"), "돋보기가 도깨비에게서 나타난다");
+                    var gift = Find("ResultPanel/GiftMagnifier");
+                    var dok = (RectTransform)Find("ResultPanel/Dokkaebi");
+                    Vector3 local = dok.InverseTransformPoint(gift.position);
+                    Check(gift.localScale.x > 0.99f && local.x > dok.rect.center.x && local.y < dok.rect.center.y,
+                          "처음부터 도깨비 오른손에 쥐어져 있다 (커지며 나타나지 않는다)");
                     Check(Gm().MagnifiersReady == readyBeforeGift + 1, "무료 기회 +1");
                     Shot("s2_gift");
                 }, () => ResultShown() && CandiesLit() == 1);

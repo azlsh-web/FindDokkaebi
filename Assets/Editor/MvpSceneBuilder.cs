@@ -707,9 +707,11 @@ public static class MvpSceneBuilder
         retryCost.raycastTarget = false;
         Anchor(retryCost.rectTransform, 1f, 1f, new Vector2(-21, -21), new Vector2(78, 84));
         var giveUpButton = ChoiceButton("GiveUpButton", 186, Color.white, T("Result_IconGiveUp"), "포기", TextColor);
-        // 무료 돋보기 : 도깨비 손에서 나타나 맨 위 돋보기 자리로 날아가요 (GameManager.GiftFly 가 움직여요)
+        // 무료 돋보기 : 도깨비 손에 쥐어져 있다가 맨 위 돋보기 자리로 날아가요 (GameManager.GiftFly 가 움직여요)
+        //   기준점은 손잡이 끝 (손에 쥐는 곳)
         var giftMagnifier = MImage("GiftMagnifier", result, T("Magnifier_Icon"), 0, 0, 60, 70);
-        Anchor(giftMagnifier.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(180, 210));
+        Anchor(giftMagnifier.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(130, 152));
+        giftMagnifier.rectTransform.pivot = new Vector2(0.8f, 0.12f);
 
         // ── 7. 채점표 : 시험지처럼 번호 위에 동그라미 · 빗금 ──
         var compare = NewPanel("ComparePanel", canvas);

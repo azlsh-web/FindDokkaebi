@@ -1007,33 +1007,56 @@ public class GameManager : MonoBehaviour
         magnifierBadgeText.text = ready.ToString();
     }
 
-    // 무료 기회 : 도깨비 손에서 돋보기가 커지며 나타났다가, 맨 위 돋보기 자리로 날아가 반짝여요
+    // 무료 기회 : 도깨비가 대사를 시작할 때부터 오른손(화면에서 오른쪽)에 돋보기를 쥐고 있다가,
+    //   잠깐 뒤 손을 떠나 포물선으로 맨 위 돋보기 자리에 날아가 반짝여요.
+    // 손 자리 : 도깨비 그림(980x956)에서 잰 비율 (가로, 위에서). 방망이를 든 그림과 빈손 그림의 손 자리가 조금 달라요
+    static readonly Vector2 HandOnNormal = new Vector2(0.75f, 0.66f);
+    static readonly Vector2 HandOnNoBat = new Vector2(0.79f, 0.61f);
+    // 돋보기 그림에서 렌즈 가운데 (기준점은 손잡이 끝이라, 날아갈 때 렌즈가 맨 위 돋보기에 맞게 따로 맞춰요)
+    static readonly Vector2 GiftLensCenter = new Vector2(0.38f, 0.64f);
+    const float GiftHeldAngle = -60f;       // 손에 쥐었을 때 기울기 : 손잡이는 아래, 렌즈는 몸 바깥쪽 위 (얼굴을 가리지 않게)
+
+    Vector3 HandPoint()
+    {
+        RectTransform rt = resultDokkaebi.rectTransform;
+        Vector2 hand = resultDokkaebi.sprite == dokkaebiNoBat ? HandOnNoBat : HandOnNormal;
+        Rect r = rt.rect;
+        return rt.TransformPoint(new Vector3(r.xMin + hand.x * r.width, r.yMax - hand.y * r.height, 0f));
+    }
+
+    // 지금 렌즈 가운데의 화면 위치와 기준점(손잡이 끝)의 차이
+    Vector3 GiftLensOffset()
+    {
+        Rect r = giftMagnifier.rect;
+        Vector2 local = new Vector2((GiftLensCenter.x - giftMagnifier.pivot.x) * r.width, (GiftLensCenter.y - giftMagnifier.pivot.y) * r.height);
+        return giftMagnifier.TransformPoint(local) - giftMagnifier.position;
+    }
+
     IEnumerator GiftFly()
     {
         var target = (RectTransform)magnifierButton.transform;
-        Vector3 from = resultDokkaebi.rectTransform.TransformPoint(resultDokkaebi.rectTransform.rect.center);
         Vector3 to = target.TransformPoint(target.rect.center);
         giftMagnifier.gameObject.SetActive(true);
-        giftMagnifier.position = from;
-        giftMagnifier.localScale = Vector3.zero;
-        Sfx.Play(Sfx.Give);
-        const float popTime = 0.35f, holdTime = 0.35f, flyTime = 0.7f;
-        for (float t = 0f; t < popTime + holdTime + flyTime; t += Time.deltaTime)
+        giftMagnifier.localScale = Vector3.one;
+        giftMagnifier.localRotation = Quaternion.Euler(0f, 0f, GiftHeldAngle);
+        giftMagnifier.position = HandPoint();
+        const float holdTime = 1.2f, flyTime = 0.75f;
+        for (float t = 0f; t < holdTime; t += Time.deltaTime)
         {
-            if (t < popTime)
-            {
-                float p = t / popTime;
-                giftMagnifier.localScale = Vector3.one * (p < 0.7f ? Mathf.Lerp(0f, 1.15f, p / 0.7f) : Mathf.Lerp(1.15f, 1f, (p - 0.7f) / 0.3f));
-            }
-            else if (t >= popTime + holdTime)
-            {
-                float p = (t - popTime - holdTime) / flyTime;
-                float e = p * p * (3f - 2f * p);
-                Vector3 pos = Vector3.Lerp(from, to, e);
-                pos.y += Mathf.Sin(p * Mathf.PI) * Mathf.Abs(to.x - from.x) * 0.25f;   // 살짝 포물선
-                giftMagnifier.position = pos;
-                giftMagnifier.localScale = Vector3.one * Mathf.Lerp(1f, 0.55f, e);
-            }
+            giftMagnifier.position = HandPoint();         // 도깨비가 말하며 움직여도 손에 쥔 채로
+            yield return null;
+        }
+        Sfx.Play(Sfx.Give);
+        Vector3 fromLens = giftMagnifier.position + GiftLensOffset();
+        for (float t = 0f; t < flyTime; t += Time.deltaTime)
+        {
+            float p = t / flyTime;
+            float e = p * p * (3f - 2f * p);
+            giftMagnifier.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(GiftHeldAngle, 0f, e));
+            giftMagnifier.localScale = Vector3.one * Mathf.Lerp(1f, 0.6f, e);
+            Vector3 lens = Vector3.Lerp(fromLens, to, e);
+            lens.y += Mathf.Sin(p * Mathf.PI) * Mathf.Abs(to.x - fromLens.x) * 0.3f;   // 포물선
+            giftMagnifier.position = lens - GiftLensOffset();
             yield return null;
         }
         giftRoutine = null;
@@ -1044,6 +1067,7 @@ public class GameManager : MonoBehaviour
     {
         giftMagnifier.gameObject.SetActive(false);
         giftMagnifier.localScale = Vector3.one;
+        giftMagnifier.localRotation = Quaternion.identity;
         UpdateSnacks();
         magnifierSparkles.SetActive(false);
         magnifierSparkles.SetActive(true);
