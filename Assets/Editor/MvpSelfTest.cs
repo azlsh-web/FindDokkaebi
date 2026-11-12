@@ -424,7 +424,25 @@ static class MvpSelfTest
             Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "시작 화면 배경은 StartBG");
             Check(Find("TitlePanel/TitleLogo") != null && Find("TitlePanel/StartButton").GetComponent<Button>() != null, "시작 화면 물건은 따로 올려져 있다");
             Check(Text("TitlePanel/StartButton/Label") == "게임 시작하기", "시작 버튼은 게임 시작하기");
-            Check(Find("TitlePanel").Find("TitleTagline") == null && Find("TitlePanel").Find("TitleGear") == null, "문구와 설정 버튼이 없다");
+            Check(Find("TitlePanel").Find("TitleTagline") == null, "문구가 없다");
+            Check(IsOn("TitlePanel/SettingsButton") && Find("ChapterPanel/SettingsButton") != null, "시작 화면과 챕터 선택에도 오른쪽 위 톱니가 있다");
+            // 소리 설정 : 시작 화면에서 열고, 볼륨을 바꾸면 저장되고, 닫으면 그대로예요
+            float bgmBefore = Sfx.BgmVolume, sfxBefore = Sfx.SfxVolume;
+            Gm().ToggleSettings();
+            Check(IsOn("SettingsPanel") && Time.timeScale == 0f, "톱니를 누르면 소리 설정 창이 열리고 게임이 멈춘다");
+            Check(Text("SettingsPanel/SettingsCard/BgmSliderLabel") == "배경음" && Text("SettingsPanel/SettingsCard/SfxSliderLabel") == "효과음", "배경음 · 효과음 두 줄");
+            var bgmSlider = Find("SettingsPanel/SettingsCard/BgmSlider").GetComponent<Slider>();
+            var sfxSlider = Find("SettingsPanel/SettingsCard/SfxSlider").GetComponent<Slider>();
+            Check(Mathf.Approximately(bgmSlider.value, bgmBefore) && Mathf.Approximately(sfxSlider.value, sfxBefore), "슬라이더는 저장된 볼륨에서 시작한다");
+            bgmSlider.value = 0.3f;
+            sfxSlider.value = 0.6f;
+            Check(Mathf.Approximately(Sfx.BgmVolume, 0.3f) && Mathf.Approximately(PlayerPrefs.GetFloat("volume_bgm"), 0.3f)
+                  && Mathf.Approximately(PlayerPrefs.GetFloat("volume_sfx"), 0.6f), "볼륨을 바꾸면 PlayerPrefs 에 저장된다");
+            LayoutOnly("settings");
+            Gm().CloseSettings();
+            Check(!IsOn("SettingsPanel") && Time.timeScale == 1f, "닫으면 다시 진행");
+            Sfx.BgmVolume = bgmBefore;      // 사람이 정해 둔 볼륨으로 돌려놔요
+            Sfx.SfxVolume = sfxBefore;
             Check(Find("JudgePanel/DokkaebiEnter/Roam/Step/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
             Check(Find("TitlePanel/StartButton").GetComponent<Button>().onClick.GetPersistentMethodName(0) == "OpenChapters", "게임 시작하기는 챕터 선택으로 간다");
             Shot("title");
@@ -945,11 +963,11 @@ static class MvpSelfTest
             mixer.Apply();
             Check(!IsOn("DrawPanel/MixerPanel"), "섞어서 칠하면 팔레트가 닫힌다");
             var gmPause = Object.FindFirstObjectByType<GameManager>();
-            gmPause.TogglePause();                                          // 일시정지 화면도 배치 검사
-            Check(IsOn("PausePanel"), "일시정지 버튼을 누르면 일시정지 화면");
-            LayoutOnly($"s{st.stageNumber}_pause");
-            gmPause.TogglePause();
-            Check(!IsOn("PausePanel") && Time.timeScale == 1f, "계속하기를 누르면 다시 진행");
+            gmPause.ToggleSettings();                                       // 소리 설정 창도 배치 검사
+            Check(IsOn("SettingsPanel") && Time.timeScale == 0f, "그리는 중 톱니를 누르면 소리 설정 창이 열리고 향이 멈춘다");
+            LayoutOnly($"s{st.stageNumber}_settings");
+            gmPause.ToggleSettings();
+            Check(!IsOn("SettingsPanel") && Time.timeScale == 1f, "톱니를 다시 누르면 닫히고 다시 진행");
             Stroke(new Vector2(0.35f, 0.5f), new Vector2(0.65f, 0.5f));
         }
     }

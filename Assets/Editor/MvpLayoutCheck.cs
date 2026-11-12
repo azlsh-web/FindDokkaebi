@@ -30,6 +30,8 @@ static class MvpLayoutCheck
         new[] { "EndingPanel/CandyJar", "EndingPanel/" },   // 사탕 통은 돗자리 모서리에 걸쳐 놓이고, 사탕은 통 안에 쌓여요
         new[] { "ChapterPanel/Chapter_1/Picture", "ChapterPanel/Chapter_1/Picture" },   // 소풍 카드 그림 : 배경 위에 캐릭터와 돗자리
         new[] { "HUD/MagnifierBadge", "HUD/MagnifierButton" },
+        new[] { "SettingsPanel/SettingsCard/BgmSlider/Fill Area", "SettingsPanel/SettingsCard/BgmSlider/Handle Slide Area" },   // 볼륨 손잡이는 채워진 막대 끝에 올라가요
+        new[] { "SettingsPanel/SettingsCard/SfxSlider/Fill Area", "SettingsPanel/SettingsCard/SfxSlider/Handle Slide Area" },
         new[] { "HUD/MagnifierHighlight", "HUD/" },   // 시범 때 돋보기 둘레를 도는 도깨비불
         new[] { "HUD/MagnifierHighlight", "DrawPanel/" },   // 쓸 수 있는 횟수는 돋보기 오른쪽 아래에 겹쳐 붙여요
         new[] { "HUD/MagnifierSparkles", "HUD/" },   // 무료 돋보기를 받으면 돋보기 둘레가 반짝여요
@@ -138,7 +140,7 @@ static class MvpLayoutCheck
         // 4) 화면 밖 (시작 화면 · 일시정지 화면은 화면 전체를 덮는 그림이라 제외)
         foreach (Item it in items)
         {
-            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
+            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("SettingsPanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
             if (it.path.StartsWith("HUD/MagnifierHighlight")) continue;   // 시범 도깨비불은 돋보기 둘레를 돌다 화면 끝에 걸칠 수 있어요
             if (it.path.StartsWith("HUD/CandyRow")) continue;   // 단계 첫 그리기 때 오른쪽 화면 밖에서 들어오는 중일 수 있어요
             Rect o = Opaque(it);

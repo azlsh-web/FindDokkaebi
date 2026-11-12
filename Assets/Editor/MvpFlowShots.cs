@@ -300,9 +300,9 @@ static class MvpFlowShots
 
             if (s == 0)
             {
-                gm.TogglePause();
-                yield return Snap("일시정지", 0.4f);
-                gm.TogglePause();
+                gm.ToggleSettings();
+                yield return Snap("톱니 : 소리 설정 (배경음 · 효과음, 여는 동안 멈춤)", 0.4f);
+                gm.ToggleSettings();
                 MvpSelfTest.SetPrivate(gm, "timeLeft", 8f);
                 yield return Snap("향이 10초 아래로 남았을 때", 0.8f);
                 MvpSelfTest.SetPrivate(gm, "timeLeft", 60f);

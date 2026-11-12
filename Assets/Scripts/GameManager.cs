@@ -75,7 +75,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
     [SerializeField] TMP_Text timerText;            // 남은 초 숫자 "58"
     [SerializeField] IncenseBurn incense;           // 타들어 가는 향
-    [SerializeField] GameObject pausePanel;         // 일시정지 화면
+    [SerializeField] GameObject settingsPanel;      // 소리 설정 창 (오른쪽 위 톱니). 여는 동안 게임이 멈춰요
+    [SerializeField] Slider bgmSlider;              // 배경음 볼륨
+    [SerializeField] Slider sfxSlider;              // 효과음 볼륨
 
     [Header("배경 : 시작, 게임 중, 이야기 종료 그림이 달라요")]
     [SerializeField] Image backgroundImage;
@@ -954,11 +956,44 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>[버튼] 오른쪽 위 일시정지 ↔ 계속하기. 멈춘 동안은 시간(향·관찰)이 흐르지 않아요.</summary>
-    public void TogglePause() => SetPaused(!pausePanel.activeSelf);
+    /// <summary>[버튼] 오른쪽 위 톱니 : 소리 설정 창 열기 ↔ 닫기. 시작 · 챕터 화면에서도 열려요.
+    /// 여는 동안은 시간(향 · 관찰 · 돋보기)이 흐르지 않아요.</summary>
+    public void ToggleSettings()
+    {
+        Sfx.Play(Sfx.Tap);
+        SetPaused(!settingsPanel.activeSelf);
+    }
+
+    /// <summary>[버튼] 설정 창의 닫기, 창 바깥 누르기</summary>
+    public void CloseSettings()
+    {
+        if (!settingsPanel.activeSelf) return;
+        Sfx.Play(Sfx.Tap);
+        SetPaused(false);
+    }
+
+    /// <summary>[슬라이더] 배경음 볼륨 (저장돼요)</summary>
+    public void SetBgmVolume(float volume) => Sfx.BgmVolume = volume;
+
+    float lastSfxSample;
+
+    /// <summary>[슬라이더] 효과음 볼륨 (저장돼요). 움직이면 그 크기로 톡 소리를 들려줘요</summary>
+    public void SetSfxVolume(float volume)
+    {
+        Sfx.SfxVolume = volume;
+        if (Time.unscaledTime - lastSfxSample < 0.15f) return;     // 끄는 동안 너무 자주 울리지 않게
+        lastSfxSample = Time.unscaledTime;
+        Sfx.Play(Sfx.Tap);
+    }
 
     void SetPaused(bool paused)
     {
-        pausePanel.SetActive(paused);
+        if (paused)
+        {
+            bgmSlider.SetValueWithoutNotify(Sfx.BgmVolume);
+            sfxSlider.SetValueWithoutNotify(Sfx.SfxVolume);
+        }
+        settingsPanel.SetActive(paused);
         Time.timeScale = paused ? 0f : 1f;
     }
 

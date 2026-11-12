@@ -64,7 +64,7 @@ arch = [
     "  Builds/WebGL/       웹 빌드 결과 (git 에 안 올림)\n"
     "  UserSettings/OpenAI.json   (선택) 판정 서버 주소가 비어 있을 때만 쓰는 OpenAI 키 — git 에 안 올림</pre>",
     "<h2 class='pb'>3. 게임 코드 (Assets/Scripts)</h2><table><tr><th>파일</th><th>하는 일</th><th>주로 고칠 때</th></tr>"
-    "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식(단계마다 사탕 3) · 돋보기(전체 1번 · 1단계 시범 · 두 번째 실패 때 무료 기회) · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 일시정지</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/기획/13_대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요</td><td>소리 연결</td></tr>"
+    "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식(단계마다 사탕 3) · 돋보기(전체 1번 · 1단계 시범 · 두 번째 실패 때 무료 기회) · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 소리 설정 창(여는 동안 멈춤)</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/기획/13_대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요. 배경음 · 효과음 볼륨은 PlayerPrefs(<code>volume_bgm</code> · <code>volume_sfx</code>)에 저장</td><td>소리 연결</td></tr>"
     "<tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 색 모드 · 원본 그림 · 특징 목록 · O·X 조합별 그림 <code>wrongSprites</code>). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr>"
     "<tr><td><code>DrawingBoard</code></td><td>512×604 쪽지 (클립보드의 하얀 면과 같은 비율) : 펜 · 지우개 · 굵기 · 되돌리기(20번) · 모두 지우기, 제출할 그림 텍스처. 그림판은 종이 면이 뚫린 틀 뒤에 있어서 잉크가 둥근 모서리 안에만 보이고, 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
     "<tr><td><code>ToolBar</code></td><td>색 · 연필 · 지우개 · 굵기 버튼, 고른 표시, 단계마다 색 버튼 보이기/숨기기</td><td>도구 버튼</td></tr>"
@@ -82,7 +82,7 @@ arch = [
     "Give · Result 의 돋보기 : 1단계 첫 그리기 시범(peekGuideStep 1~5), 두 번째로 틀리면 무료 기회(ResultPhase.Gift)\n"
     "1단계를 못 찾으면 batLost : 이야기 종료까지 도깨비 그림이 빈손(dokkaebiNoBat)\n"
     "Judge ─AI 실패→ (사탕+1) Result(오류 대사) ─터치→ Draw(그리던 그림)\n"
-    "그리기 화면 ─TogglePause→ 일시정지 (Time.timeScale 0)</pre>",
+    "어느 화면이든 ─ToggleSettings(오른쪽 위 톱니)→ 소리 설정 창 (Time.timeScale 0) ─X · 창 바깥 · 톱니→ 닫기</pre>",
     "<h3>결과 규칙 (ShowResult)</h3><p>특징이 n개면 2ⁿ가지. 전부 맞음 → 진짜 물건 A / 일부 → 그 조합의 A' / 전부 틀림 → 완전히 다른 물건 B (<code>StageData.WrongSpriteFor</code>). 실패했고 사탕이 남으면 「다시」 · 「포기」 버튼이 대사 상자 자리에 나와요. 결과 화면에는 O · X 목록이 없고, 채점표에서만 보여 줘요.</p>",
     "<h2>4. 판정이 흐르는 길</h2><pre>"
     "제출 → board.Texture → PNG → base64\n"

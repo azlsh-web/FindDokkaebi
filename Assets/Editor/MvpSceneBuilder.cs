@@ -148,9 +148,16 @@ public static class MvpSceneBuilder
         // ── HUD (게임 중에만 보임) : 위 줄에 돋보기 · 사탕 · 일시정지, 오른쪽 긴 향 ──
         //   좌표는 시안 그림(2248x3952) 픽셀 그대로 적고, PlaceM 이 화면(1080x1899) 크기로 바꿔요.
         var hud = NewEmpty("HUD", canvas);
-        var pauseImg = TeamImage("PauseButton", hud, T("HUD_PauseButton"), 1880, 112, 2108, 344);
-        pauseImg.raycastTarget = true;
-        var pauseButton = pauseImg.gameObject.AddComponent<Button>();
+        // 오른쪽 위 톱니 : 소리 설정 창 (시작 · 챕터 화면에도 같은 자리에 있어요)
+        Button SettingsButton(Transform parent)
+        {
+            var img = TeamImage("SettingsButton", parent, T("HUD_SettingsButton"), 1880, 112, 2108, 344);
+            img.preserveAspect = true;
+            img.raycastTarget = true;
+            return img.gameObject.AddComponent<Button>();
+        }
+        var pauseButton = SettingsButton(hud);
+        var pauseImg = pauseButton.GetComponent<Image>();
 
         // 위 줄 : 돋보기 (오른쪽 아래에 쓸 수 있는 횟수) | 사탕 3개 | 일시정지. 사탕은 단계마다 새로 받아요.
         //   쓴 사탕은 왼쪽부터 흐려지고, 돋보기를 다 쓰면 숫자가 사라지고 흐려져요 (GameManager.UpdateSnacks)
@@ -225,7 +232,7 @@ public static class MvpSceneBuilder
         magImg.transform.SetAsLastSibling();
         magBadge.transform.SetAsLastSibling();
         magSparkles.SetAsLastSibling();
-        pauseImg.transform.SetAsLastSibling();  // 사탕은 일시정지 버튼 뒤를 지나 나와요
+        pauseImg.transform.SetAsLastSibling();  // 사탕은 톱니 버튼 뒤를 지나 나와요
 
         // 향 : 줄기가 위에서부터 타고, 불꽃 · 재 · 연기가 끝을 따라 움직여요 (IncenseBurn)
         var timerGroup = NewEmpty("TimerGroup", hud);
@@ -270,11 +277,13 @@ public static class MvpSceneBuilder
         M((RectTransform)startGameButton.transform, 50, 516, 260, 70);
         startGameButton.GetComponentInChildren<TMP_Text>().fontSize = 96;
         startGameButton.GetComponentInChildren<TMP_Text>().color = Color.white;
+        var titleSettingsButton = SettingsButton(title);
 
         // ── 1-2. 챕터 선택 : 큰 소풍 카드 하나 + 준비 중인 카드 4개 (자물쇠). 화면 제목 없이 카드만 ──
         //   그림은 아트팀에 요청할 예정이라, 지금은 있는 그림(소풍 배경 · 캐릭터 · 돗자리)으로 임시로 꾸며요
         var chapter = NewPanel("ChapterPanel", canvas);
         var chapterButtons = new Button[5];
+        var chapterSettingsButton = SettingsButton(chapter);
         var chapterLockedAnims = new SimpleAnim[4];
         var picnicCard = NewCard("Chapter_1", chapter, Vector2.zero, Vector2.zero);
         M((RectTransform)picnicCard, 30, 70, 300, 268);
@@ -825,13 +834,55 @@ public static class MvpSceneBuilder
         M((RectTransform)endingBoxComp.transform, 12, 24, 336, 104);     // 하늘 쪽 위에 : 돗자리 · 김밥 · 사탕 통을 가리지 않게
         var endingTapButton = NewTap("TapButton", ending);
 
-        // ── 일시정지 화면 (HUD 오른쪽 위 버튼) : 어둡게 덮고 "계속하기" ──
-        var pause = NewEmpty("PausePanel", root);
-        pause.gameObject.AddComponent<Image>().color = new Color(0f, 0f, 0f, 0.45f);   // 뒤 화면을 못 누르게 덮음
-        var pauseCard = NewCard("PauseCard", pause, new Vector2(0, 700), new Vector2(760, 430));
-        NewText("Title", pauseCard, "잠깐 쉬는 중", 64, new Vector2(0, 56), new Vector2(700, 100), bold: true);
-        NewText("Sub", pauseCard, "멈춘 동안은 향이 타지 않아요", 36, new Vector2(0, 160), new Vector2(700, 60)).color = SubTextColor;
-        var resumeButton = NewButton("ResumeButton", pauseCard, "계속하기", new Vector2(0, 260), new Vector2(520, 130));
+        // ── 소리 설정 창 (오른쪽 위 톱니) : 어둡게 덮고 배경음 · 효과음 볼륨. 창 바깥을 누르거나 X 로 닫아요 ──
+        //   제목 글 없이 줄마다 이름과 슬라이더만 있어요. 여는 동안 게임은 멈춰요 (GameManager.SetPaused)
+        var pause = NewEmpty("SettingsPanel", root);
+        var settingsDim = pause.gameObject.AddComponent<Image>();
+        settingsDim.color = new Color(0f, 0f, 0f, 0.45f);                       // 뒤 화면을 못 누르게 덮음
+        var settingsDimButton = pause.gameObject.AddComponent<Button>();     // 창 바깥을 누르면 닫혀요
+        settingsDimButton.transition = Selectable.Transition.None;
+        var pauseCard = NewCard("SettingsCard", pause, new Vector2(0, 640), new Vector2(880, 520));
+        var settingsClose = NewRoundTool("CloseButton", pauseCard, iconClose, Color.white, 110, out GameObject settingsCloseFrame);
+        Object.DestroyImmediate(settingsCloseFrame);
+        Place((RectTransform)settingsClose.transform.parent, new Vector2(370, 26), new Vector2(110, 110));
+        Slider VolumeRow(string name, string label, float y)
+        {
+            var text = NewText(name + "Label", pauseCard, label, 60, new Vector2(-250, y), new Vector2(260, 110), bold: true);
+            var go = new GameObject(name, typeof(RectTransform), typeof(Slider));
+            go.transform.SetParent(pauseCard, false);
+            Place((RectTransform)go.transform, new Vector2(110, y + 15), new Vector2(520, 80));
+            var track = NewImage("Background", go.transform, Color.white);
+            track.sprite = pillCream; track.type = Image.Type.Sliced; track.pixelsPerUnitMultiplier = 2f / K;
+            Anchor(track.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(520, 44));
+            track.rectTransform.anchorMin = new Vector2(0f, 0.5f); track.rectTransform.anchorMax = new Vector2(1f, 0.5f);
+            track.rectTransform.sizeDelta = new Vector2(0f, 44f);
+            var fillArea = new GameObject("Fill Area", typeof(RectTransform)).GetComponent<RectTransform>();
+            fillArea.SetParent(go.transform, false);
+            fillArea.anchorMin = new Vector2(0f, 0.5f); fillArea.anchorMax = new Vector2(1f, 0.5f);
+            fillArea.sizeDelta = new Vector2(-40f, 44f);
+            var fill = NewImage("Fill", fillArea, Color.white);
+            fill.sprite = pillCoral; fill.type = Image.Type.Sliced; fill.pixelsPerUnitMultiplier = 2f / K;
+            fill.rectTransform.sizeDelta = new Vector2(40f, 0f);
+            var handleArea = new GameObject("Handle Slide Area", typeof(RectTransform)).GetComponent<RectTransform>();
+            handleArea.SetParent(go.transform, false);
+            Stretch(handleArea);
+            handleArea.offsetMin = new Vector2(40f, 0f); handleArea.offsetMax = new Vector2(-40f, 0f);
+            var handle = NewImage("Handle", handleArea, OutlineColor);
+            handle.sprite = circleSprite;
+            handle.rectTransform.sizeDelta = new Vector2(84f, 0f);
+            var handleFill = NewImage("Fill", handle.transform, CreamColor);
+            handleFill.sprite = circleSprite;
+            handleFill.raycastTarget = false;
+            Stretch(handleFill.rectTransform, 9);
+            var slider = go.GetComponent<Slider>();
+            slider.fillRect = fill.rectTransform;
+            slider.handleRect = handle.rectTransform;
+            slider.targetGraphic = handle;
+            slider.minValue = 0f; slider.maxValue = 1f; slider.value = 1f;
+            return slider;
+        }
+        var bgmSlider = VolumeRow("BgmSlider", "배경음", 170);
+        var sfxSlider = VolumeRow("SfxSlider", "효과음", 330);
 
         // HUD 가 패널보다 위에 그려지도록 맨 뒤로 보내기 (Hierarchy 아래쪽일수록 앞에 그려짐). 일시정지 화면은 그보다 위
         peekGo.transform.SetAsLastSibling();    // 둘러보는 동안은 색 섞기 판까지 덮어요
@@ -850,8 +901,12 @@ public static class MvpSceneBuilder
         UnityEventTools.AddPersistentListener(resultTapButton.onClick, gm.ResultTap);
         UnityEventTools.AddPersistentListener(compareTapButton.onClick, gm.NextStage);
         UnityEventTools.AddPersistentListener(endingTapButton.onClick, gm.EndingTap);
-        UnityEventTools.AddPersistentListener(pauseButton.onClick, gm.TogglePause);
-        UnityEventTools.AddPersistentListener(resumeButton.onClick, gm.TogglePause);
+        foreach (Button b in new[] { pauseButton, titleSettingsButton, chapterSettingsButton })
+            UnityEventTools.AddPersistentListener(b.onClick, gm.ToggleSettings);
+        UnityEventTools.AddPersistentListener(settingsClose.onClick, gm.CloseSettings);
+        UnityEventTools.AddPersistentListener(settingsDimButton.onClick, gm.CloseSettings);
+        UnityEventTools.AddPersistentListener(bgmSlider.onValueChanged, gm.SetBgmVolume);
+        UnityEventTools.AddPersistentListener(sfxSlider.onValueChanged, gm.SetSfxVolume);
 
         for (int i = 0; i < 4; i++) UnityEventTools.AddIntPersistentListener(colorButtonComps[i].onClick, toolBar.SelectColor, i);
         UnityEventTools.AddPersistentListener(mixedSlot.onClick, toolBar.SelectMixed);
@@ -899,7 +954,9 @@ public static class MvpSceneBuilder
         Set(burnSo, "secondsText", timerText);
         burnSo.ApplyModifiedPropertiesWithoutUndo();
         Set(so, "incense", burn);
-        Set(so, "pausePanel", pause.gameObject);
+        Set(so, "settingsPanel", pause.gameObject);
+        Set(so, "bgmSlider", bgmSlider);
+        Set(so, "sfxSlider", sfxSlider);
         Set(so, "backgroundImage", bg);
         Set(so, "startBackground", startBackground);
         Set(so, "gameBackground", room);

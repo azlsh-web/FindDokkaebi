@@ -38,7 +38,7 @@ SFX = [
 
 # 코드와 대조
 code = open(os.path.join(ROOT, "Assets", "Scripts", "Sfx.cs"), encoding="utf-8").read()
-in_code = set(re.findall(r'const string \w+ = "(\w+)"', code))
+in_code = set(re.findall(r'const string \w+ = "((?:sfx|bgm)_\w+)"', code))   # 소리 이름만 (볼륨 저장 키는 빼요)
 in_doc = {r[0] for r in BGM + SFX}
 assert in_code == in_doc, in_code ^ in_doc
 

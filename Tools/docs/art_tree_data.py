@@ -14,7 +14,7 @@ TREE = [
         ("MagnifierBadge (쓸 수 있는 돋보기 수)", "UI/Common_Circle", "코드로 그린 동그라미, 숫자는 글꼴"),
         ("MagnifierHighlight/Orbit/Fire_0~2 (1단계 시범 때 돋보기 둘레를 도는 도깨비불)", "UI/Magnifier_DokkaebiFire", TEMP + ", 향 불꽃을 푸른빛으로 바꿈 (make_candy_jar.py)"),
         ("CandyRow/Candy_0~2 (쪽지를 건넬 때 씀)", "UI/HUD_Candy", TEAM + ", 여백을 잘라 냄. 쓴 것은 왼쪽부터 흐리게"),
-        ("PauseButton", "UI/HUD_PauseButton", G9),
+        ("SettingsButton (소리 설정, 시작 · 챕터 화면에도)", "UI/HUD_SettingsButton", "기획 단계에 받은 톱니 그림 (Title_Gear)"),
     ]),
     ("향과 촛대 (그리는 동안)", "Frame/HUD/TimerGroup", [
         ("IncenseHolder", "UI/Incense_Holder", TEAM + ", 칸 안 여백을 맞춤 (fit_incense_art.py)"),

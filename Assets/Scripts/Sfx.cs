@@ -6,6 +6,7 @@ using UnityEngine;
 // Assets/Resources/Sound 폴더에 아래 이름의 파일을 넣으면 바로 소리가 나요.
 // 파일이 없으면 조용히 넘어가서, 소리가 아직 없어도 게임은 그대로 돌아가요.
 // 필요한 소리 목록 : Docs/전달/12_사운드팀_전달사항.pdf
+// 볼륨 : 설정 창(오른쪽 위 톱니)에서 배경음 · 효과음을 따로 0 ~ 1 로 조절하고, PlayerPrefs 에 저장해서 다시 켜도 그대로예요.
 public static class Sfx
 {
     // 효과음
@@ -29,6 +30,37 @@ public static class Sfx
     public const string BgmJudge = "bgm_judge";
     public const string BgmPicnic = "bgm_picnic";
 
+    const string BgmKey = "volume_bgm";
+    const string SfxKey = "volume_sfx";
+    const float BgmBase = 0.5f;     // 배경음은 효과음보다 작게 깔아요 (볼륨 1 일 때 0.5)
+
+    static float bgmVolume = -1f, sfxVolume = -1f;  // -1 = 아직 저장값을 안 읽음
+
+    /// <summary>배경음 볼륨 0 ~ 1 (저장돼요)</summary>
+    public static float BgmVolume
+    {
+        get { if (bgmVolume < 0f) bgmVolume = PlayerPrefs.GetFloat(BgmKey, 1f); return bgmVolume; }
+        set
+        {
+            bgmVolume = Mathf.Clamp01(value);
+            PlayerPrefs.SetFloat(BgmKey, bgmVolume);
+            PlayerPrefs.Save();
+            if (bgmSource != null) bgmSource.volume = BgmBase * bgmVolume;
+        }
+    }
+
+    /// <summary>효과음 볼륨 0 ~ 1 (저장돼요)</summary>
+    public static float SfxVolume
+    {
+        get { if (sfxVolume < 0f) sfxVolume = PlayerPrefs.GetFloat(SfxKey, 1f); return sfxVolume; }
+        set
+        {
+            sfxVolume = Mathf.Clamp01(value);
+            PlayerPrefs.SetFloat(SfxKey, sfxVolume);
+            PlayerPrefs.Save();
+        }
+    }
+
     static AudioSource sfxSource;
     static AudioSource bgmSource;
     static string currentBgm;
@@ -45,7 +77,7 @@ public static class Sfx
         bgmSource = go.AddComponent<AudioSource>();
         bgmSource.playOnAwake = false;
         bgmSource.loop = true;
-        bgmSource.volume = 0.5f;
+        bgmSource.volume = BgmBase * BgmVolume;
     }
 
     public static void Play(string name)
@@ -53,7 +85,8 @@ public static class Sfx
         var clip = Resources.Load<AudioClip>("Sound/" + name);
         if (clip == null) return;
         Prepare();
-        sfxSource.PlayOneShot(clip);
+        if (SfxVolume <= 0f) return;
+        sfxSource.PlayOneShot(clip, SfxVolume);
     }
 
     /// <summary>배경음 바꾸기. 이미 같은 곡이면 그대로 두고, null 이면 멈춰요.</summary>
