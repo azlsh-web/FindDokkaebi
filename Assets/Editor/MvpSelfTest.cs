@@ -544,7 +544,7 @@ static class MvpSelfTest
                         Gm().PeekGuideTap();     // 닫기
                         Check(!IsOn("DrawPanel/PeekGuide"), "대사를 누르면 그리기로 돌아간다");
                     });
-                }, () => !IsOn("DrawPanel/MagnifierPeek"));
+                }, () => !IsOn("DrawPanel/MagnifierPeek") && IsOn("DrawPanel/PeekGuide"));   // 렌즈가 닫힌 다음 프레임에 대사가 떠요
             }
 
             // 그리기 + 도구
