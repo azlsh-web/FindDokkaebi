@@ -114,7 +114,7 @@ arch = [
     "<tr><td>조합 그림 연결</td><td>MvpSceneBuilder · MvpAutoBuild</td><td>단계 폴더의 물건_Wrong_*.png 를 단계 데이터에 연결, 씬은 그대로 (mvp_wrongart.flag)</td></tr>"
     "<tr><td>판정 서버 프롬프트</td><td>MvpJudgeServer</td><td>stages.json 내보내기, server_url.txt → 씬의 서버 주소</td></tr>"
     "<tr><td>몇 단계부터 시작</td><td>GameManager</td><td>Inspector 의 Editor Start Stage (에디터 전용, 앞 단계는 찾은 것으로 기록). 웹 빌드는 항상 1단계부터</td></tr>"
-    "<tr><td>플레이 영상</td><td>MvpPlayRecorder</td><td>자동 플레이를 프레임으로 저장. 시연 영상은 Unity Recorder 로 찍은 <code>Recordings/시연용영상.mp4</code> (git 에 안 올림)</td></tr></table>",
+    "<tr><td>플레이 영상</td><td>MvpPlayRecorder</td><td>사람 속도로 거의 모든 기능을 써 보며 자동 플레이 (mvp_record.flag). 화면 프레임과 게임 소리를 저장하고 <code>python Tools/sound/make_play_video.py</code> 로 소리 있는 <code>Recordings/플레이영상_날짜.mp4</code> 를 만들어요 (git 에 안 올림)</td></tr></table>",
     "<h2>7. 자주 하는 수정</h2><table><tr><th>하고 싶은 것</th><th>방법</th></tr>"
     "<tr><td>엉뚱한 물건 · 캐릭터를 바꿔요</td><td><code>Assets/Sprites/Stage*/물건_Wrong_*.png</code> 저장 → mvp_wrongart.flag → 웹 빌드. 캐릭터는 <code>Assets/Sprites/Characters</code> 의 같은 이름으로 덮어쓰기 → 웹 빌드</td></tr>"
     "<tr><td>아트팀 그림 ZIP 이 왔어요</td><td><code>python Tools/docs/apply_art_zip.py 받은파일.zip --apply</code> → 자동 테스트 → 웹 빌드 (<code>Docs/전달/아트.pdf</code>)</td></tr>"
