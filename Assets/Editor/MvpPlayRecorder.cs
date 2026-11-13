@@ -242,10 +242,8 @@ class PlayDirector : MonoBehaviour
         yield return Line(V(190, 120), V(322, 124));
         yield return Line(V(188, 150), V(320, 152));
         yield return Wait(0.8f);
-        yield return Click("DrawPanel/FitButton");                                            // 전체 화면 : 쪽지가 똑바로 가득
+        yield return Click("DrawPanel/FitButton");                                            // 흐트러지면 뜨는 전체 화면 버튼 : 쪽지가 다시 똑바로 가득
         yield return Wait(1.2f);
-        yield return Click("DrawPanel/FitButton");                                            // 한 번 더 : 누르기 전 보기로
-        yield return Wait(1.0f);
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Compare();
@@ -494,12 +492,13 @@ class PlayDirector : MonoBehaviour
         cursor2.position = mid - Vector3.right * spread0;
         cursor.localScale = cursor2.localScale = Vector3.one * 0.75f;
         float s0 = view.Scale, a0 = view.Angle;
+        Vector2 o0 = view.Offset;                       // 처음은 전체 화면 자리에서
         int n = Mathf.RoundToInt(1.4f * Fps);
         for (int i = 1; i <= n; i++)
         {
             float k = Mathf.SmoothStep(0, 1, i / (float)n);
             float s = Mathf.Lerp(s0, scale, k), a = Mathf.Lerp(a0, angle, k);
-            view.SetView(s, a, offset * k);
+            view.SetView(s, a, Vector2.Lerp(o0, offset, k));
             Vector3 dir = Quaternion.Euler(0, 0, a) * Vector3.right * spread0 * s / s0;
             Vector3 center = mid + (Vector3)(offset * k) * ((RectTransform)board.root).localScale.x;
             cursor.position = center + dir;

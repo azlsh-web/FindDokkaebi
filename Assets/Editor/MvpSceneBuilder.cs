@@ -362,16 +362,18 @@ public static class MvpSceneBuilder
             ask.color = new Color32(200, 72, 60, 255);
             Anim(ask.gameObject, SimpleAnim.Kind.Look, 2f, 0f, 0f);
         }
+        // 쪽지 위에 사탕을 겹쳐 놓아요 (쪽지 + 간식을 같이 두면 도깨비가 와요)
         var openingIdea = NewEmpty("Idea", openingGroup);
         var ideaNote = NewCard("Note", openingIdea, Vector2.zero, Vector2.zero);
-        M((RectTransform)ideaNote, 96, 120, 64, 76);
+        M((RectTransform)ideaNote, 128, 100, 96, 112);
         Anim(ideaNote.gameObject, SimpleAnim.Kind.Pop, 0.45f, 0f, 0f);
-        var ideaPencil = NewImage("Pencil", ideaNote, Color.white);
-        ideaPencil.sprite = T("Draw_PencilButton");
-        ideaPencil.preserveAspect = true;
-        ideaPencil.raycastTarget = false;
-        Stretch(ideaPencil.rectTransform, 24);
-        var ideaSnack = MImage("Snack", openingIdea, snack, 196, 136, 62, 68);
+        for (int i = 0; i < 2; i++)                                         // 쪽지에 적힌 줄
+        {
+            var noteLine = NewImage("Line_" + i, ideaNote, new Color32(205, 190, 170, 255));
+            noteLine.raycastTarget = false;
+            PIn(noteLine.rectTransform, 16, 22 + i * 20, i == 1 ? 44 : 64, 5);
+        }
+        var ideaSnack = MImage("Snack", openingIdea, snack, 150, 148, 66, 72);   // 쪽지 아래쪽 위에 올려요
         Anim(ideaSnack.gameObject, SimpleAnim.Kind.Pop, 0.45f, 0.2f, 0f);
         var openingCall = NewEmpty("Call", openingGroup);
         var callLeft = NewText("Left", openingCall, "((", 150, Vector2.zero, Vector2.zero);
@@ -478,7 +480,8 @@ public static class MvpSceneBuilder
         drawTitle.rectTransform.sizeDelta = new Vector2(740f, 64f);
         drawTitle.enableAutoSizing = true; drawTitle.fontSizeMin = 30; drawTitle.fontSizeMax = 46;   // 긴 글도 한 줄에
         drawTitle.raycastTarget = false;                                    // 글자 밑에도 그릴 수 있게
-        // 전체 화면 : 오른쪽 위에 늘 있어요. 누르면 쪽지가 똑바로 서서 FullArea(위 HUD 와 아래 띠 사이)를 가득 채워요
+        // 전체 화면 : 쪽지는 처음부터 똑바로 서서 FullArea(위 HUD 와 아래 띠 사이)를 가득 채워요.
+        //   키우기 · 돌리기 · 옮기기로 흐트러지면 오른쪽 위에 버튼이 뜨고, 누르면 다시 똑바로 가득 (PaperView)
         var fullArea = (RectTransform)NewEmpty("FullArea", draw);             // 긴 폰이면 위아래로 함께 늘어나요
         fullArea.offsetMax = new Vector2(0f, -300f);                        // 위 줄 아래부터
         fullArea.offsetMin = new Vector2(0f, FrameHeight - 1660f);          // 아래 띠 위까지

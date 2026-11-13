@@ -588,13 +588,14 @@ static class MvpSelfTest
             {
                 // 5단계 첫 그리기 : 대사가 알려 주고 사라지면 아이가 직접 붓 · 물감을 눌러 보고, 해내면 다음 대사
                 float timeAtMix = 0f;
-                float bandY = 0f;
+                float bandY = 0f, paperScaleAtMix = 1f;
                 Add(3.0f, "5단계 색 섞기 안내 : 붓을 눌러 봐", () =>
                 {
                     Check(IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixTapBrush,
                           "5단계 첫 그리기에는 도깨비가 붓을 눌러 보라고 한다");
                     timeAtMix = GetFloat("timeLeft");
                     bandY = ((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y;
+                    paperScaleAtMix = Find("DrawPanel/Desk/Paper").localScale.x;
                     Gm().Submit();
                     Check(IsOn("DrawPanel"), "안내 중에는 제출되지 않는다");
                     Check(Board().Locked, "안내 중에는 쪽지에 그려지지 않는다");
@@ -616,7 +617,7 @@ static class MvpSelfTest
                               && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
                               "붓을 누르면 빨강부터 넣어 보라고 한다 (팔레트는 대사 뒤에 열려요)");
                         Check(Mathf.Abs(((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y - bandY) < 0.1f
-                              && Find("DrawPanel/Desk/Paper").localScale == Vector3.one, "대사가 나와도 띠와 쪽지는 그대로");
+                              && Mathf.Abs(Find("DrawPanel/Desk/Paper").localScale.x - paperScaleAtMix) < 0.001f, "대사가 나와도 띠와 쪽지는 그대로");
                     });
                 });
                 // 빨강 2 → 노랑 2 → 파랑 1 : 대사를 넘기면 도깨비불이 그 물감 둘레를 돌고, 그 물감만 넣을 수 있어요
@@ -692,21 +693,30 @@ static class MvpSelfTest
                 Check(Text("DrawPanel/Desk/Paper/Guide") == GameScript.NoteText(s), "쪽지 글이 적혀 있다");
                 if (s == 1)
                 {
-                    // 전체 화면 : 쪽지가 똑바로 서서 FullArea 를 가득, 다시 누르면 누르기 전 보기로
+                    // 전체 화면 : 새 쪽지는 처음부터 똑바로 서서 FullArea 를 가득 (버튼은 숨어요)
+                    //   보기가 흐트러지면 버튼이 뜨고, 누르면 다시 똑바로 가득 (각도 0도)
                     var view = Find("DrawPanel/Desk").GetComponent<PaperView>();
-                    Check(IsOn("DrawPanel/FitButton"), "전체 화면 버튼이 늘 보인다");
-                    view.SetView(1.3f, 25f, new Vector2(40f, -60f));
-                    view.FitTap();
+                    var paperT = Find("DrawPanel/Desk/Paper");
                     var area = ((RectTransform)Find("DrawPanel/FullArea")).rect;
-                    var paperRect = ((RectTransform)Find("DrawPanel/Desk/Paper")).rect;
-                    float w = paperRect.width * view.Scale, h = paperRect.height * view.Scale;
-                    Check(view.IsFull && Mathf.Abs(view.Angle) < 0.01f && w <= area.width + 0.5f && h <= area.height + 0.5f
-                          && (area.width - w < 50f || area.height - h < 50f), "전체 화면이면 똑바로 서서 그리는 자리를 가득 채운다");
+                    var paperRect = ((RectTransform)paperT).rect;
+                    bool Filled()
+                    {
+                        float w = paperRect.width * paperT.localScale.x, h = paperRect.height * paperT.localScale.y;
+                        return w <= area.width + 0.5f && h <= area.height + 0.5f && (area.width - w < 50f || area.height - h < 50f);
+                    }
+                    Check(view.IsFull && paperT.localRotation == Quaternion.identity && Filled(), "새 쪽지는 처음부터 똑바로 서서 그리는 자리를 가득 채운다");
+                    view.SendMessage("Update");
+                    Check(!IsOn("DrawPanel/FitButton"), "전체 화면일 때는 버튼이 숨는다");
+                    view.SetView(1.3f, 385f, new Vector2(40f, -60f));
+                    view.SendMessage("Update");
+                    Check(!view.IsFull && IsOn("DrawPanel/FitButton"), "보기가 흐트러지면 전체 화면 버튼이 뜬다");
                     view.FitTap();
-                    Check(!view.IsFull && Mathf.Abs(view.Angle - 25f) < 0.01f && Mathf.Abs(view.Scale - 1.3f) < 0.01f, "다시 누르면 누르기 전 보기로");
-                    view.FitTap();
+                    for (int f = 0; f < 3000 && !(paperT.localRotation == Quaternion.identity && Filled()); f++) view.SendMessage("Update");   // 다 올 때까지
+                    Check(view.IsFull && paperT.localRotation == Quaternion.identity && Filled(), $"버튼을 누르면 꼭 0도로 똑바로 서서 가득 채운다 (각도 {paperT.localEulerAngles.z:0.###}, 크기 {paperT.localScale.x:0.###}/{view.Scale:0.###}, dt {Time.unscaledDeltaTime:0.####})");
+                    Check(!IsOn("DrawPanel/FitButton"), "누른 뒤에는 버튼이 다시 숨는다");
+                    view.SetView(0.8f, -40f, Vector2.zero);
                     view.ResetView();
-                    Check(!view.IsFull && view.Scale == 1f && Find("DrawPanel/Desk/Paper").localScale == Vector3.one, "새 쪽지는 전체 화면이 아닌 처음 자리");
+                    Check(view.IsFull && paperT.localRotation == Quaternion.identity && Filled(), "다음 쪽지도 처음부터 전체 화면");
                 }
                 DrawStage(st);
             }, () => IsOn("DrawPanel"));

@@ -38,6 +38,7 @@ static class MvpLayoutCheck
         new[] { "ChapterPanel/Chapter_1/Picture", "ChapterPanel/Chapter_1/Picture" },   // 소풍 카드 그림 : 배경 위에 캐릭터와 돗자리
         new[] { "HUD/MagnifierBadge", "HUD/MagnifierButton" },
         new[] { "DrawPanel/MixGuide/DialogueBox", "DrawPanel/ToolBar" },   // 시범 대사는 다른 대사처럼 아래 자리 (돋보기 시범과 같아요)
+        new[] { "DrawPanel/MixGuide/DialogueBox", "DrawPanel/Desk/Paper" },   // 전체 화면 쪽지의 아래 끝을 시범 대사가 잠깐 덮어요 (그동안은 그리기가 잠겨요)
         new[] { "SettingsPanel/SettingsCard/BgmSlider/Fill Area", "SettingsPanel/SettingsCard/BgmSlider/Handle Slide Area" },   // 볼륨 손잡이는 채워진 막대 끝에 올라가요
         new[] { "SettingsPanel/SettingsCard/SfxSlider/Fill Area", "SettingsPanel/SettingsCard/SfxSlider/Handle Slide Area" },
         new[] { "HUD/MagnifierHighlight", "HUD/" },   // 시범 때 돋보기 둘레를 도는 도깨비불
