@@ -667,6 +667,24 @@ static class MvpSelfTest
                 Check(!IsOn("DrawPanel/ToolBar/Palette"), "붓을 다시 누르면 닫힌다");
                 Check(!Find("DrawPanel/ToolBar/SubmitButton").GetComponent<Button>().interactable, "빈 쪽지면 제출 비활성");
                 Check(Text("DrawPanel/Desk/Paper/Guide") == GameScript.NoteText(s), "쪽지 글이 적혀 있다");
+                if (s == 1)
+                {
+                    // 전체 화면 : 쪽지가 똑바로 서서 FullArea 를 가득, 다시 누르면 누르기 전 보기로
+                    var view = Find("DrawPanel/Desk").GetComponent<PaperView>();
+                    Check(IsOn("DrawPanel/FitButton"), "전체 화면 버튼이 늘 보인다");
+                    view.SetView(1.3f, 25f, new Vector2(40f, -60f));
+                    view.FitTap();
+                    var area = ((RectTransform)Find("DrawPanel/FullArea")).rect;
+                    var paperRect = ((RectTransform)Find("DrawPanel/Desk/Paper")).rect;
+                    float w = paperRect.width * view.Scale, h = paperRect.height * view.Scale;
+                    Check(view.IsFull && Mathf.Abs(view.Angle) < 0.01f && w <= area.width + 0.5f && h <= area.height + 0.5f
+                          && (area.width - w < 50f || area.height - h < 50f), "전체 화면이면 똑바로 서서 그리는 자리를 가득 채운다");
+                    view.FitTap();
+                    Check(!view.IsFull && Mathf.Abs(view.Angle - 25f) < 0.01f && Mathf.Abs(view.Scale - 1.3f) < 0.01f, "다시 누르면 누르기 전 보기로");
+                    view.FitTap();
+                    view.ResetView();
+                    Check(!view.IsFull && view.Scale == 1f && Find("DrawPanel/Desk/Paper").localScale == Vector3.one, "새 쪽지는 전체 화면이 아닌 처음 자리");
+                }
                 DrawStage(st);
             }, () => IsOn("DrawPanel"));
             if (s == 0)

@@ -1,4 +1,5 @@
 using System.IO;
+using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEditor.Events;
@@ -114,7 +115,9 @@ public static class MvpSceneBuilder
         var scaler = canvasGo.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         // 팀 시안 크기(2248x3952)를 가로 1080 으로 줄인 1080x1899 가 기준. Expand = 이 크기가 항상 다 보이게
-        //   → 더 긴 폰이면 위아래에, 더 넓은 화면이면 양옆에 방 배경이 더 보여요. 화면 내용은 가운데 "Frame" 안에.
+        //   → 더 넓은 화면이면 양옆에 방 배경이 더 보여요. 화면 내용은 가운데 폭 1080 "Frame" 안에.
+        //   → 더 긴 폰이면 Frame 이 화면 높이만큼 늘어나요. 위 줄은 맨 위, 대사 상자 · 버튼 · 아래 띠는 맨 아래에 붙고
+        //     인물 · 카드처럼 가운데 있는 것은 가운데에 남아요 (PinToScreenEdges).
         scaler.referenceResolution = new Vector2(1080, FrameHeight);
         scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
         Transform root = canvasGo.transform;
@@ -137,7 +140,12 @@ public static class MvpSceneBuilder
 
         var frameGo = new GameObject("Frame", typeof(RectTransform));        // 시안 크기 화면 (가운데)
         frameGo.transform.SetParent(root, false);
-        Anchor(frameGo.GetComponent<RectTransform>(), 0.5f, 0.5f, Vector2.zero, new Vector2(1080, FrameHeight));
+        var frameRt = frameGo.GetComponent<RectTransform>();
+        frameRt.anchorMin = new Vector2(0.5f, 0f);                          // 폭은 1080 그대로, 높이는 화면에 꽉
+        frameRt.anchorMax = new Vector2(0.5f, 1f);
+        frameRt.pivot = new Vector2(0.5f, 0.5f);
+        frameRt.anchoredPosition = Vector2.zero;
+        frameRt.sizeDelta = new Vector2(1080f, 0f);
         Transform canvas = frameGo.transform;
 
         // GameManager 오브젝트 (+ AI 판정 스크립트)
@@ -470,7 +478,10 @@ public static class MvpSceneBuilder
         drawTitle.rectTransform.sizeDelta = new Vector2(740f, 64f);
         drawTitle.enableAutoSizing = true; drawTitle.fontSizeMin = 30; drawTitle.fontSizeMax = 46;   // 긴 글도 한 줄에
         drawTitle.raycastTarget = false;                                    // 글자 밑에도 그릴 수 있게
-        // 맞춤 : 쪽지를 움직였으면 오른쪽 위에 떠요 (누르면 처음 자리로)
+        // 전체 화면 : 오른쪽 위에 늘 있어요. 누르면 쪽지가 똑바로 서서 FullArea(위 HUD 와 아래 띠 사이)를 가득 채워요
+        var fullArea = (RectTransform)NewEmpty("FullArea", draw);             // 긴 폰이면 위아래로 함께 늘어나요
+        fullArea.offsetMax = new Vector2(0f, -300f);                        // 위 줄 아래부터
+        fullArea.offsetMin = new Vector2(0f, FrameHeight - 1660f);          // 아래 띠 위까지
         var fitImg = NewImage("FitButton", draw, Color.white);
         fitImg.sprite = T("Draw_FitIcon");
         fitImg.preserveAspect = true;
@@ -1170,6 +1181,7 @@ public static class MvpSceneBuilder
         Set(pvso, "paper", paperRt);
         Set(pvso, "board", board);
         Set(pvso, "fitButton", fitImg.gameObject);
+        Set(pvso, "fullArea", fullArea);
         pvso.ApplyModifiedPropertiesWithoutUndo();
 
         // 웹 게임용 AI 판정 중계 서버 주소 (Server/judge/server_url.txt, 없으면 빈 칸 = 서버 안 씀)
@@ -1204,6 +1216,8 @@ public static class MvpSceneBuilder
         magSparkles.gameObject.SetActive(false);
         pause.gameObject.SetActive(false);
         hud.gameObject.SetActive(false);
+
+        PinToScreenEdges(frameRt);
 
         // ── 저장 + Build Settings 의 첫 번째 씬으로 등록 ──
         EditorSceneManager.SaveScene(scene, ScenePath);
@@ -1637,6 +1651,44 @@ public static class MvpSceneBuilder
     }
 
     // 부모 크기에 꽉 채우기 (inset 만큼 안쪽으로. 음수면 바깥으로)
+    // 긴 폰에서 Frame 이 늘어나도 자리가 맞게 : 위쪽 기준으로 놓은 것들을 구역에 따라 다시 붙여요 (보이는 자리는 기준 화면에서 그대로)
+    //   아래 끝이 TopZone 위 → 맨 위에 / 위 끝이 BottomZone 아래 → 맨 아래에 / 나머지 → 가운데에
+    //   Frame 높이만큼 꽉 찬 묶음(패널 등) 안으로 들어가며 바꿔요. 크기가 정해진 부모 안의 것은 부모를 따라가요.
+    const float TopZone = 320f, BottomZone = 1450f;
+    // 한 장면으로 모여 있어야 하는 화면 : 아래쪽 것도 가운데에 붙여요 (챕터 카드 묶음, 소풍 그림의 돗자리와 사탕 통)
+    static readonly string[] KeepTogether = { "ChapterPanel", "EndingPanel" };
+    // 구역과 다르게 붙일 것 (경로 → 0 아래, 0.5 가운데, 1 위)
+    static readonly Dictionary<string, float> PinOverride = new Dictionary<string, float>
+    {
+        { "EndingPanel/DialogueBox", 1f },     // 소풍 장면 대사는 하늘 쪽 맨 위에
+    };
+    static void PinToScreenEdges(RectTransform parent, string path = "", bool together = false)
+    {
+        foreach (Transform child in parent)
+        {
+            var rt = child as RectTransform;
+            if (rt == null) continue;
+            string childPath = path + child.name;
+            bool childTogether = together || System.Array.IndexOf(KeepTogether, childPath) >= 0;
+            bool stretchedY = rt.anchorMin.y == 0f && rt.anchorMax.y == 1f;
+            if (stretchedY)
+            {
+                if (Mathf.Abs(rt.offsetMin.y) < 0.01f && Mathf.Abs(rt.offsetMax.y) < 0.01f) PinToScreenEdges(rt, childPath + "/", childTogether);
+                continue;
+            }
+            if (rt.anchorMin.y != 1f || rt.anchorMax.y != 1f) continue;      // 이미 가운데나 아래 기준
+            float pivotFromTop = -rt.anchoredPosition.y;
+            float h = rt.rect.height;
+            float top = pivotFromTop - (1f - rt.pivot.y) * h, bottom = top + h;
+            float anchorY = bottom <= TopZone ? 1f : top >= BottomZone && !together ? 0f : 0.5f;
+            if (PinOverride.TryGetValue(childPath, out float forced)) anchorY = forced;
+            if (anchorY == 1f) continue;
+            rt.anchorMin = new Vector2(rt.anchorMin.x, anchorY);
+            rt.anchorMax = new Vector2(rt.anchorMax.x, anchorY);
+            rt.anchoredPosition = new Vector2(rt.anchoredPosition.x, FrameHeight * (1f - anchorY) - pivotFromTop);
+        }
+    }
+
     static void Stretch(RectTransform rt, float inset = 0f)
     {
         rt.anchorMin = Vector2.zero;

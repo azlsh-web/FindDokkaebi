@@ -192,6 +192,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     public void OnPointerDown(PointerEventData eventData)
     {
         if (Locked || stroking) return;
+        if (eventData.button != PointerEventData.InputButton.Left) return;   // 오른쪽 버튼은 쪽지 돌리기 (PaperView)
         if (!TryGetPixel(eventData, out Vector2 p)) return;
         stroking = true;
         strokePointer = eventData.pointerId;

@@ -240,11 +240,13 @@ public class GameManager : MonoBehaviour
     int giveStep;           // 건네기 : 0 주인공, 1 먹기, 2 읽기
     Coroutine noteRoutine;
     Vector2 boyTargetPos, boyTargetSize;
+    Vector2 boyAnchorShift;     // 씬에서 주인공 자리 기준이 위쪽이 아닐 때(긴 폰용 가운데 기준) 더할 값
 
     StageData Stage => stages[stageIndex];
 
     void Start()
     {
+        boyAnchorShift = new Vector2(0f, dialogueBoy.anchoredPosition.y - BoyWithPos.y);    // 씬은 "도깨비와 함께" 높이로 만들어져 있어요
         ShowTitle();
     }
 
@@ -398,7 +400,7 @@ public class GameManager : MonoBehaviour
         opening = index == 0;                       // 맨 처음에는 주인공 혼자 말해요
         openingGroup.SetActive(opening);
         dialogueDim.SetActive(!opening);
-        boyTargetPos = opening ? BoyAlonePos : BoyWithPos;
+        boyTargetPos = (opening ? BoyAlonePos : BoyWithPos) + boyAnchorShift;
         boyTargetSize = opening ? BoyAloneSize : BoyWithSize;
         dialogueBoy.anchoredPosition = boyTargetPos;
         dialogueBoy.sizeDelta = boyTargetSize;
@@ -412,7 +414,7 @@ public class GameManager : MonoBehaviour
         dialogueBox.Say(line.text, FaceOf(line.face));
 
         opening = stageIndex == 0 && dialogueLine < GameScript.OpeningAloneLines;
-        boyTargetPos = opening ? BoyAlonePos : BoyWithPos;
+        boyTargetPos = (opening ? BoyAlonePos : BoyWithPos) + boyAnchorShift;
         boyTargetSize = opening ? BoyAloneSize : BoyWithSize;
         openingGroup.SetActive(opening);
         if (opening)
@@ -769,7 +771,7 @@ public class GameManager : MonoBehaviour
         dialogueDokkaebi.GetComponent<SimpleAnim>().enabled = false;    // 건넬 때는 이미 곁에 있어요
         dialogueDokkaebi.SetActive(true);
         dialogueDokkaebiImage.sprite = stageIndex == 0 || batLost ? dokkaebiNoBat : dokkaebiNormal;
-        boyTargetPos = BoyWithPos;
+        boyTargetPos = BoyWithPos + boyAnchorShift;
         boyTargetSize = BoyWithSize;
         dialogueBoy.anchoredPosition = boyTargetPos;
         dialogueBoy.sizeDelta = boyTargetSize;

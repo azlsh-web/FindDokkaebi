@@ -242,8 +242,10 @@ class PlayDirector : MonoBehaviour
         yield return Line(V(190, 120), V(322, 124));
         yield return Line(V(188, 150), V(320, 152));
         yield return Wait(0.8f);
-        yield return Click("DrawPanel/FitButton");                                            // 맞춤 : 처음 자리로
+        yield return Click("DrawPanel/FitButton");                                            // 전체 화면 : 쪽지가 똑바로 가득
         yield return Wait(1.2f);
+        yield return Click("DrawPanel/FitButton");                                            // 한 번 더 : 누르기 전 보기로
+        yield return Wait(1.0f);
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Compare();

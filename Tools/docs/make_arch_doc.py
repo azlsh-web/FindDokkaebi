@@ -67,7 +67,7 @@ arch = [
     "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식(단계마다 사탕 3) · 돋보기(전체 1번 · 1단계 시범 · 두 번째 실패 때 무료 기회) · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 소리 설정 창(여는 동안 멈춤)</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/기획/13_대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요. 배경음 · 효과음 볼륨은 PlayerPrefs(<code>volume_bgm</code> · <code>volume_sfx</code>)에 저장</td><td>소리 연결</td></tr>"
     "<tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 색 모드 · 원본 그림 · 특징 목록 · O·X 조합별 그림 <code>wrongSprites</code>). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr>"
     "<tr><td><code>DrawingBoard</code></td><td>512×604 쪽지 : 붓 · 굵기 · 되돌리기(20번) · 다시 하기, 제출할 그림 텍스처. 한 손가락만 그리고, 두 번째 손가락이 닿으면 긋던 선을 취소해요. 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
-    "<tr><td><code>PaperView</code></td><td>방 위의 쪽지를 두 손가락으로 키우기 · 돌리기 · 옮기기, 움직였으면 맞춤 버튼. 팔레트가 뜨거나 시범 때 띠가 올라오면 쪽지를 비켜요 (Squeeze)</td><td>쪽지 보기</td></tr>"
+    "<tr><td><code>PaperView</code></td><td>방 위의 쪽지를 두 손가락(에디터는 휠 · 오른쪽 끌기)으로 키우기 · 돌리기 · 옮기기. 오른쪽 위 전체 화면 버튼은 쪽지를 똑바로 세워 위 줄과 아래 띠 사이를 채우고, 다시 누르면 전 보기로. 팔레트가 뜨거나 시범 때 띠가 올라오면 쪽지를 비켜요 (Squeeze)</td><td>쪽지 보기</td></tr>"
     "<tr><td><code>ToolBar</code></td><td>아래 띠 (붓 | 되돌리기 · 다시 하기) 와 붓을 누르면 뜨는 팔레트 한 줄 (검정 | 빨강 · 노랑 · 파랑 · 물감 빼기 | 굵기 3개). 단계마다 색 보이기/숨기기, 그리기 시작하면 팔레트 닫기</td><td>도구 버튼</td></tr>"
     "<tr><td><code>ColorMixer</code></td><td>붓 끝 색 : 색을 고르면 물방울이 붓 끝으로 날아가 첨벙하고 색이 바뀜. 4 · 5단계는 물감을 누를 때마다 넣어 섞고(넣은 횟수 표시) · 물감 빼기 (물방울이 물감으로 돌아감). 섞은 색으로 그린 뒤 물감을 누르면 새로 섞기. 넣은 비율로 계산한 색 (Mix)</td><td>섞는 규칙</td></tr>"
     "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
@@ -101,7 +101,7 @@ arch = [
     "<div class='note'>자동 플레이 테스트(MvpSelfTest)는 AI 를 부르지 않아요. 화면 흐름을 보려고 판정 결과를 미리 정해서 넣고, 그 결과에 맞는 손그림(HandSketch)을 제출해요.</div>",
     "<h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table>"
     "<tr><td class='k'>좌표</td><td><code>PlaceM(rt, x0,y0,x1,y1)</code> = 시안 픽셀 상자 그대로 (K = 1080/2248). <code>TeamImage</code> = 오린 그림을 원래 자리에, <code>TeamTool</code> = 시안 그림 버튼 + 고른 표시 고리</td></tr>"
-    "<tr><td class='k'>화면 크기</td><td>CanvasScaler 1080×1899 Expand, 가운데 <code>Frame</code> 안에 모든 화면. 폰이 더 길면 위아래에 방 배경</td></tr>"
+    "<tr><td class='k'>화면 크기</td><td>CanvasScaler 1080×1899 Expand, 폭 1080 <code>Frame</code> 안에 모든 화면. 폰이 더 길면 Frame 높이가 화면에 맞게 늘고, 씬 빌더의 <code>PinToScreenEdges</code>가 위 줄은 맨 위 · 대사 상자와 버튼 · 아래 띠는 맨 아래 · 인물과 카드는 가운데에 붙여요. Game 창 크기는 <code>Temp/mvp_gameview.flag</code>(예: 1080x2400)로 바꿔 확인</td></tr>"
     "<tr><td class='k'>그림 설정</td><td>시안 UI · 시작 화면은 압축 없이 + 밉맵 + 최대 4096 (외곽선이 또렷하게). 시안 부품은 시안 원본 크기예요. 카드 · 버튼은 9-slice (Common_Card · Common_ButtonCoral · Common_ButtonCream)</td></tr>"
     "<tr><td class='k'>글꼴</td><td>Jua SDF (<code>MvpFontBake</code> 가 게임 글자만 구움). 글자를 새로 넣었으면 글꼴 굽기를 다시</td></tr>"
     "<tr><td class='k'>단계 데이터</td><td><code>CreateStageDataFiles</code> : 이야기 · 규칙 · 특징(이름 · 기준 글) · 그림 연결. 씬 만들 때마다 덮어써요</td></tr></table>",
