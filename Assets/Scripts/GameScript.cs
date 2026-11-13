@@ -44,8 +44,8 @@ public static class GameScript
             new Line(Face.Dokkaebi, "가방이라… 어떤 가방인데?"),
             new Line(Face.BoyHappy, "내가 제일 아끼는 가방이야. 네모난 몸체에 위쪽 손잡이, 앞주머니가 달렸어."),
             new Line(Face.BoyHappy, "주머니 안에는 가로 줄무늬도 있어!"),
+            new Line(Face.Dokkaebi, "줄무늬까지 있구나! 그럼 모양에 무늬도 잘 그려야겠네."),
             new Line(Face.Dokkaebi, "좋아! 네가 떠올린 그대로 쪽지에 그려 줘."),
-            new Line(Face.Dokkaebi, "이번엔 모양만으로는 부족해. 무늬도 잘 그려야 해!"),
         },
         new[]
         {
@@ -53,8 +53,8 @@ public static class GameScript
             new Line(Face.Dokkaebi, "너는 어쩜 그렇게 다 잃어버리니? 어떤 돗자리인데?"),
             new Line(Face.BoyHappy, "네모난 모양에, 띠가 네 줄 있어."),
             new Line(Face.BoyHappy, "띠 색 순서가 중요해!"),
+            new Line(Face.Dokkaebi, "색 순서까지? 그럼 이번엔 색도 잘 칠해야겠네!"),
             new Line(Face.Dokkaebi, "좋아! 떠올린 그대로 쪽지에 그려 줘."),
-            new Line(Face.Dokkaebi, "모양이랑 무늬에 색깔까지! 이번엔 색도 잘 칠해야 해!"),
         },
         new[]
         {
@@ -62,7 +62,8 @@ public static class GameScript
             new Line(Face.Dokkaebi, "김밥? 그건 나도 먹고 싶은데! 어떻게 생겼어?"),
             new Line(Face.BoyHappy, "까만 김이 둥글게 말려 있고, 안에 재료가 위에 둘, 아래에 하나 있어."),
             new Line(Face.BoyHappy, "노란 단무지랑 초록 시금치도 들어 있어!"),
-            new Line(Face.Dokkaebi, "좋아, 쪽지에 그려 줘. 없는 색은 두 가지를 섞어서 만들어 봐!"),
+            new Line(Face.Dokkaebi, "초록 물감은 없는데… 그럼 두 가지 색을 섞어서 만들어야겠네!"),
+            new Line(Face.Dokkaebi, "좋아, 쪽지에 그려 줘."),
         },
         new[]
         {
@@ -72,7 +73,8 @@ public static class GameScript
             new Line(Face.Dokkaebi, "어떻게 생긴 친구야?"),
             new Line(Face.BoySurprised, "양 갈래로 묶은 갈색 머리야."),
             new Line(Face.BoySurprised, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
-            new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 데려올게. 이번엔 세 가지 색도 섞어야 해!"),
+            new Line(Face.Dokkaebi, "갈색 머리라… 그럼 이번엔 세 가지 색을 섞어야겠네!"),
+            new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 데려올게."),
         },
     };
 
@@ -146,11 +148,16 @@ public static class GameScript
     // 한 단계에서 두 번째로 틀렸을 때 (단계마다 한 번, 그 단계에서만)
     public const string MagnifierGift = "자꾸 틀리니까 딱하다. 돋보기 한 번 빌려줄게! 이번 물건 찾을 때만 쓸 수 있어.";
 
-    // 5단계 첫 그리기 : 색 섞기 안내. 대사가 알려 주고 사라지면 아이가 직접 눌러 보고, 해내면 다음 대사가 나와요
-    //   붓을 눌러 봐 → (붓을 누름, 팔레트가 열림) → 물감을 넣어 봐 → (빨강 2 · 노랑 2 · 파랑 1, 붓 끝이 갈색) → 많이 넣은 색 쪽으로
-    public const string MixTapBrush = "이번엔 세 가지 색을 섞어야 해. 아래에 있는 붓을 눌러 봐!";
-    public const string MixShow = "같은 물감을 여러 번 넣을 수도 있어. 빨강 둘, 노랑 둘, 파랑 하나를 넣어 봐!";
+    // 5단계 첫 그리기 : 색 섞기 안내. 대사가 알려 주고 사라지면 도깨비불이 눌러야 할 곳을 돌고, 아이가 직접 누르면 다음 대사가 나와요
+    //   붓을 눌러 봐 → (붓) → 빨강 두 번 → (빨강) → 노랑 두 번 → (노랑) → 파랑 한 번 → (파랑, 붓 끝이 갈색) → 많이 넣은 색 쪽으로
+    public const string MixTapBrush = "갈색은 세 가지 색을 섞어야 나와. 아래에 있는 붓을 눌러 봐!";
+    public const string MixShow = "같은 물감을 여러 번 넣을 수도 있어. 먼저 빨강을 두 번 넣어 봐!";
+    public const string MixYellow = "잘했어! 이번엔 노랑도 두 번 넣어 봐.";
+    public const string MixBlue = "마지막으로 파랑은 한 번만 넣어 봐!";
     public const string MixHow = "갈색이 됐지? 많이 넣은 색 쪽으로 바뀌어.";
+    public const string MixBlack = "이번엔 검정 물감이 없어. 세 가지를 똑같이 넣으면 검정이 돼!";
+    // 물감 차례대로 하는 말 (빨강 · 노랑 · 파랑)
+    public static readonly string[] MixPaintSteps = { MixShow, MixYellow, MixBlue };
 
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
@@ -171,7 +178,7 @@ public static class GameScript
         foreach (string[][] table in new[] { DokkaebiSuccess, DokkaebiPartial, DokkaebiAllWrong })
             foreach (string[] stage in table) foreach (string l in stage) yield return l;
         foreach (string l in new[] { BoyBatSuccess, BoyBatWrong, BoySuccess, BoyWrong, BoyFriendSuccess, BoyFriendWrong,
-                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, MixShow, MixHow, BoyOutOfSnacks, JudgeError, EndingBye })
+                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, MixTapBrush, MixShow, MixYellow, MixBlue, MixHow, MixBlack, BoyOutOfSnacks, JudgeError, EndingBye })
             yield return l;
     }
 

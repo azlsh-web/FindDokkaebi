@@ -11,6 +11,9 @@ using Random = UnityEngine.Random;
 // 붓 끝 색이 곧 지금 그리는 색이에요. 팔레트에서 색을 고르면 물방울이 그 색에서 붓 끝으로 날아가
 // 첨벙 튀고, 붓 끝 색이 천천히 바뀌어요.
 //   - 검정 · (섞지 않는 단계의) 빨강 · 노랑 · 파랑 : 그 색 하나로 (SetPure)
+//   - 5단계(세 가지 섞기)에는 검정 물감이 없어요 (ToolBar 가 숨겨요). 빨강 · 노랑 · 파랑을 똑같이 넣으면 검정이 돼요.
+//     처음 붓 · 물감을 다 뺀 붓은 검정이에요.
+//   - 색 섞기 안내(SetGuide) 중에는 도깨비불이 도는 물감 하나만 정한 횟수까지 넣을 수 있어요.
 //   - 섞는 단계(4 · 5단계) : 빨강 · 노랑 · 파랑 물감을 누를 때마다 하나씩 넣어져 섞여요 (AddPaint).
 //     물감 옆 숫자 = 넣은 횟수, ↶ = 마지막에 넣은 물감 빼기 (물방울이 붓 끝에서 그 물감으로 돌아가요).
 //     섞은 색으로 한 번 그린 뒤(MarkUsed) 물감을 누르면 새로 섞기 시작해요.
@@ -19,7 +22,7 @@ using Random = UnityEngine.Random;
 // 왜 RGB 평균을 안 쓰나요?
 //   물감은 빛과 달라서, 노랑+파랑을 평균 내면 칙칙한 회색이 나와요.
 //   그래서 대표 비율의 색(Anchors)을 정해 두고, 그 사이 비율은 Mix 에서 이어서 계산해요.
-//   - 빨강 : 노랑 : 파랑 = 1:1:1 은 검은색에 가깝고, 2:2:1 이 갈색이에요.
+//   - 빨강 : 노랑 : 파랑 = 1:1:1 은 검은색(검정 물감과 같은 색), 2:2:1 이 갈색이에요.
 public class ColorMixer : MonoBehaviour
 {
     [Header("팔레트 버튼")]
@@ -43,7 +46,7 @@ public class ColorMixer : MonoBehaviour
     static readonly Color32 Green = new Color32(40, 160, 60, 255);
     static readonly Color32 Purple = new Color32(130, 50, 160, 255);
     static readonly Color32 Brown = new Color32(130, 80, 40, 255);
-    static readonly Color32 NearBlack = new Color32(35, 30, 30, 255);
+    static readonly Color32 NearBlack = ToolBar.Palette[0];     // 세 물감을 똑같이 넣으면 검정 물감과 같은 색
 
     // 세 물감이 모두 들어갔을 때 기준이 되는 색들 (빨강, 노랑, 파랑 비율 → 색)
     static readonly (Vector3 ratio, Color32 color)[] Anchors =
@@ -68,6 +71,7 @@ public class ColorMixer : MonoBehaviour
     int pureIndex;                                      // 섞지 않을 때 고른 색 (Palette 번호), 섞는 중이면 -1
     bool used;                                          // 섞은 색으로 그렸는지 (그 뒤 물감을 누르면 새로 섞어요)
     Color resultColor = Color.black;
+    int guidePaint = -1, guideUpTo;                     // 색 섞기 안내 : 이 물감만 이 횟수까지 (-1 이면 안내 아님)
 
     /// <summary>지금 붓 색 (화면의 붓 끝은 이 색을 향해 천천히 바뀌어요)</summary>
     public Color ResultColor => resultColor;
@@ -81,11 +85,23 @@ public class ColorMixer : MonoBehaviour
     /// <summary>물감별로 넣은 횟수 (자동 테스트용)</summary>
     public int CountOf(int paint) => counts[paint];
 
+    /// <summary>물감 칸 (색 섞기 안내 때 도깨비불이 둘레를 돌아요)</summary>
+    public RectTransform PaintButton(int paint) => (RectTransform)materialButtons[paint].transform.parent.parent;
+
+    /// <summary>색 섞기 안내 : paint 물감만 upTo 번까지 넣을 수 있어요. 다른 물감 · 검정 · 물감 빼기는 막아요. paint = -1 이면 풀어요</summary>
+    public void SetGuide(int paint, int upTo)
+    {
+        guidePaint = paint;
+        guideUpTo = upTo;
+        Refresh();
+    }
+
     /// <summary>단계 시작 : 검정 붓으로. mixing = 섞는 단계, maxKinds = 섞을 수 있는 물감 가짓수</summary>
     public void Setup(bool mixing, int maxKinds)
     {
         this.mixing = mixing;
         this.maxKinds = maxKinds;
+        guidePaint = -1;
         ClearPaints();
         pureIndex = 0;
         resultColor = Color.black;
@@ -102,6 +118,7 @@ public class ColorMixer : MonoBehaviour
     /// <summary>[버튼] 검정 · 섞지 않는 색 : 그 색 하나로. index 는 Palette 번호 (0 검정, 1 빨강, 2 노랑, 3 파랑)</summary>
     public void SetPure(int index)
     {
+        if (guidePaint >= 0) return;
         ClearPaints();
         pureIndex = index;
         resultColor = ToolBar.Palette[index];
@@ -114,6 +131,7 @@ public class ColorMixer : MonoBehaviour
     public void AddPaint(int index)
     {
         if (!mixing) { SetPure(index + 1); return; }
+        if (guidePaint >= 0 && (index != guidePaint || counts[index] >= guideUpTo)) return;
         if (used || pureIndex >= 0) ClearPaints();      // 그렸거나 다른 색을 쓰던 중이면 새로 섞기
         if (IsLocked(index)) return;
         pureIndex = -1;
@@ -126,7 +144,7 @@ public class ColorMixer : MonoBehaviour
     /// <summary>[버튼] 마지막에 넣은 물감 빼기 : 물방울이 붓 끝에서 그 물감으로 돌아가요</summary>
     public void UndoPaint()
     {
-        if (history.Count == 0) return;
+        if (history.Count == 0 || guidePaint >= 0) return;
         int index = history[history.Count - 1];
         counts[index]--;
         history.RemoveAt(history.Count - 1);
@@ -163,12 +181,19 @@ public class ColorMixer : MonoBehaviour
         for (int i = 0; i < materialButtons.Length; i++)
         {
             bool locked = mixing && IsLocked(i);
+            if (guidePaint >= 0) locked = i != guidePaint || counts[i] >= guideUpTo;
             materialButtons[i].interactable = !locked;
-            var group = materialButtons[i].transform.parent.GetComponent<CanvasGroup>();
+            var group = materialButtons[i].GetComponentInParent<CanvasGroup>();     // 물감 칸에 붙어 있어요
             if (group != null) group.alpha = locked ? 0.3f : 1f;      // 못 넣는 물감은 흐리게
         }
         if (history.Count > 0) resultColor = Mix(counts[0], counts[1], counts[2]);
-        if (undoButton != null) undoButton.interactable = history.Count > 0;
+        if (undoButton != null) undoButton.interactable = history.Count > 0 && guidePaint < 0;
+        var blackGroup = blackButton != null ? blackButton.GetComponent<CanvasGroup>() : null;
+        if (blackGroup != null)
+        {
+            blackGroup.alpha = guidePaint >= 0 ? 0.3f : 1f;         // 안내 중에는 검정도 흐리게 (못 눌러요)
+            blackGroup.interactable = guidePaint < 0;
+        }
         if (countTexts != null)
             for (int i = 0; i < countTexts.Length && i < counts.Length; i++)
             {

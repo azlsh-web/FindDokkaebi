@@ -307,14 +307,30 @@ static class MvpFlowShots
                 guideBar.BrushTap();
                 yield return Wait(0.3f);
                 FinishBoxes();
-                yield return Snap("붓을 누르면 : 물감을 넣어 보라고 함", 0.2f);
+                yield return Snap("붓을 누르면 : 빨강을 두 번 넣어 보라고 함", 0.2f);
                 gm.MixGuideTap();       // 대사가 사라지고 팔레트가 열려요
+                yield return Snap("대사를 넘기면 : 팔레트가 열리고 도깨비불이 빨강 둘레를 돎", 0.4f);
                 guideBar.PaintTap(0);
-                yield return Snap("대사를 넘기면 : 팔레트가 열리고 직접 물감을 넣음 (물방울이 붓 끝으로)", 0.16f);
-                guideBar.PaintTap(0); guideBar.PaintTap(1); guideBar.PaintTap(1); guideBar.PaintTap(2);
+                yield return Snap("빨강을 누르면 : 물방울이 붓 끝으로", 0.16f);
+                guideBar.PaintTap(0);
+                yield return Wait(1.6f);
+                FinishBoxes();
+                yield return Snap("빨강 두 번 : 노랑도 두 번 넣어 보라고 함", 0.2f);
+                gm.MixGuideTap();
+                guideBar.PaintTap(1); guideBar.PaintTap(1);
+                yield return Wait(1.6f);
+                FinishBoxes();
+                yield return Snap("노랑 두 번 : 파랑은 한 번만 넣어 보라고 함", 0.2f);
+                gm.MixGuideTap();
+                yield return Snap("대사를 넘기면 : 도깨비불이 파랑 둘레를 돎", 0.4f);
+                guideBar.PaintTap(2);
                 yield return Wait(2.2f);
                 FinishBoxes();
                 yield return Snap("빨강 2 · 노랑 2 · 파랑 1 = 갈색 : 많이 넣은 색 쪽으로 바뀐다고 알려 줌", 0.2f);
+                gm.MixGuideTap();
+                yield return Wait(0.3f);
+                FinishBoxes();
+                yield return Snap("검정 물감이 없으니 세 가지를 똑같이 넣으면 검정이라고 알려 줌", 0.2f);
                 gm.MixGuideTap();
             }
             yield return Snap("그리기 시작 : 빈 쪽지", 1.2f);

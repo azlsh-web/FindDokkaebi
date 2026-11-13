@@ -622,6 +622,7 @@ public static class MvpSceneBuilder
             return b;
         }
         var blackSlot = Slot("Color_검정", 104f, 104f);
+        blackSlot.gameObject.AddComponent<CanvasGroup>();                   // 색 섞기 안내 중에는 흐리게 (ColorMixer)
         var blackButton = ColorDot(blackSlot, ToolBar.Palette[0], out GameObject blackFrame);
         Gap("Gap_1");
         var primaryDivider = PaletteDivider("Divider_1");
@@ -689,6 +690,14 @@ public static class MvpSceneBuilder
             Anchor(dot.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(dotSizes[i], dotSizes[i]));
             sizeDots[i] = dot;
         }
+
+        // 5단계 색 섞기 안내 : 넣을 물감 둘레를 도깨비불 셋이 돌아요 (GameManager 가 그 물감 자리로 옮겨요). 팔레트와 같이 보였다 숨어요
+        var paintHighlight = NewEmpty("PaintHighlight", paletteGroup);
+        var paintOrbit = new GameObject("Orbit", typeof(RectTransform)).GetComponent<RectTransform>();
+        paintOrbit.SetParent(paintHighlight, false);
+        paintOrbit.anchorMin = paintOrbit.anchorMax = paintOrbit.pivot = new Vector2(0.5f, 0.5f);
+        paintOrbit.sizeDelta = Vector2.zero;
+        var paintFires = DokkaebiFires(paintOrbit, 46f);
 
         // 돋보기 시범 (1단계 첫 그리기) : 그림판을 살짝 덮고 도깨비가 "돋보기를 눌러 봐" 라고 말해요.
         //   HUD 가 이 덮개보다 위에 있어서 돋보기는 또렷하게 보이고 누를 수 있어요.
@@ -1067,6 +1076,9 @@ public static class MvpSceneBuilder
         SetArray(so, "magnifierFires", magFires);
         Set(so, "brushHighlight", brushHighlight.gameObject);
         SetArray(so, "brushFires", brushFires);
+        Set(so, "paintHighlight", paintHighlight.gameObject);
+        Set(so, "paintOrbit", paintOrbit);
+        SetArray(so, "paintFires", paintFires);
         Set(so, "brushHolder", brushHolder);
         Set(so, "giftMagnifier", giftMagnifier.rectTransform);
         SetArray(so, "candyIcons", candyIcons);
@@ -1207,6 +1219,7 @@ public static class MvpSceneBuilder
         openingGroup.gameObject.SetActive(false);
         paletteGroup.gameObject.SetActive(false);
         brushHighlight.gameObject.SetActive(false);
+        paintHighlight.gameObject.SetActive(false);
         fitImg.gameObject.SetActive(false);
         peekGo.gameObject.SetActive(false);
         peekGuide.gameObject.SetActive(false);

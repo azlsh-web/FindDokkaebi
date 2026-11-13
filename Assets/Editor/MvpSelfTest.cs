@@ -614,21 +614,41 @@ static class MvpSelfTest
                         Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
                         Check(!IsOn("DrawPanel/ToolBar/Palette") && !IsOn("DrawPanel/ToolBar/BrushHighlight") && IsOn("DrawPanel/MixGuide")
                               && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
-                              "붓을 누르면 물감을 넣어 보라고 한다 (팔레트는 대사 뒤에 열려요)");
+                              "붓을 누르면 빨강부터 넣어 보라고 한다 (팔레트는 대사 뒤에 열려요)");
                         Check(Mathf.Abs(((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y - bandY) < 0.1f
                               && Find("DrawPanel/Desk/Paper").localScale == Vector3.one, "대사가 나와도 띠와 쪽지는 그대로");
                     });
                 });
-                Add(0.5f, "5단계 색 섞기 안내 : 직접 넣기", () =>
+                // 빨강 2 → 노랑 2 → 파랑 1 : 대사를 넘기면 도깨비불이 그 물감 둘레를 돌고, 그 물감만 넣을 수 있어요
+                string[] paintSlots = { "Color_빨강", "Color_노랑", "Color_파랑" };
+                for (int p = 0; p < 3; p++)
                 {
-                    Gm().MixGuideTap();     // 글자 다 보이기
-                    Gm().MixGuideTap();
-                    Check(!IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/Palette"), "대사를 넘기면 대사가 사라지고 팔레트가 열린다");
-                    var tb = Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
-                    tb.PaintTap(0); tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(1); tb.PaintTap(2); tb.PaintTap(2);
-                    tb.PaintUndo();         // 파랑을 하나 더 넣었다가 빼기
-                    Check(!IsOn("DrawPanel/MixGuide"), "넣는 동안은 대사가 나오지 않는다");
-                });
+                    int paint = p;
+                    Add(0.5f, $"5단계 색 섞기 안내 : {paintSlots[paint]} 넣기", () =>
+                    {
+                        Check(Plain("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixPaintSteps[paint] && !IsOn("DrawPanel/ToolBar/Palette"),
+                              $"{paintSlots[paint]} 차례 : 팔레트를 닫고 넣어 보라고 한다");
+                        Gm().MixGuideTap();     // 글자 다 보이기
+                        Gm().MixGuideTap();
+                        Check(!IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/Palette") && IsOn("DrawPanel/ToolBar/Palette/PaintHighlight"),
+                              "대사를 넘기면 팔레트가 열리고 도깨비불이 나온다");
+                        var orbit = (RectTransform)Find("DrawPanel/ToolBar/Palette/PaintHighlight/Orbit");
+                        var slot = (RectTransform)Find("DrawPanel/ToolBar/Palette/Card/" + paintSlots[paint]);
+                        Check(Vector3.Distance(orbit.position, slot.TransformPoint(slot.rect.center)) < 1f, "도깨비불이 넣을 물감 둘레를 돈다");
+                        var tb = Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
+                        var mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
+                        string Counts() => $"{mixer.CountOf(0)}{mixer.CountOf(1)}{mixer.CountOf(2)}";
+                        string before = Counts();
+                        tb.PaintTap((paint + 1) % 3);   // 다른 물감
+                        tb.BlackTap();
+                        tb.PaintUndo();
+                        Check(Counts() == before, "안내 중에는 다른 물감 · 검정 · 물감 빼기가 안 된다");
+                        for (int k = 0; k < 3; k++) tb.PaintTap(paint);     // 한 번 더 눌러도 정한 횟수까지만
+                        Check(mixer.CountOf(paint) == (paint == 2 ? 1 : 2), "정한 횟수만큼만 들어간다");
+                        Check(!IsOn("DrawPanel/MixGuide"), "넣는 동안은 대사가 나오지 않는다");
+                        if (paint == 0) Shot("s5_mix_paint");      // 도깨비불이 화면 안에 다 보이는지 배치 검사
+                    }, () => IsOn("DrawPanel/MixGuide"));
+                }
                 Add(0.2f, "5단계 색 섞기 안내 : 갈색", () =>
                 {
                     var mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
@@ -639,6 +659,9 @@ static class MvpSelfTest
                     Shot("s5_mix_demo");
                     Then(() =>
                     {
+                        Gm().MixGuideTap();     // 글자 다 보이기
+                        Gm().MixGuideTap();
+                        Check(IsOn("DrawPanel/MixGuide") && Plain("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixBlack, "검정 물감이 없으니 세 가지를 똑같이 넣으면 검정이라고 한다");
                         Gm().MixGuideTap();     // 글자 다 보이기
                         Gm().MixGuideTap();
                         Check(!IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette"), "대사를 넘기면 팔레트가 닫히고 그리기 시작");
@@ -1055,7 +1078,19 @@ static class MvpSelfTest
             Check(mixer.ResultColor == ColorMixer.Mix(0, 0, 1) && mixer.CountOf(0) == 0, "섞은 색으로 그린 뒤 물감을 누르면 새로 섞기");
             tb.PaintUndo();
             Check(mixer.ResultColor == ToolBar.Palette[0] && mixer.PureIndex == 0, "물감을 다 빼면 검정");
-            tb.BlackTap();
+            if (st.colorMode == ColorMode.MixFree)
+            {
+                Check(!IsOn("DrawPanel/ToolBar/Palette/Card/Color_검정") && !IsOn("DrawPanel/ToolBar/Palette/Card/Divider_1"), "세 가지 섞기 : 검정 물감이 없다");
+                tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(2);
+                Check(mixer.ResultColor == ToolBar.Palette[0], "세 가지 섞기 : 빨강 · 노랑 · 파랑을 똑같이 넣으면 검정");
+                tb.PaintUndo(); tb.PaintUndo(); tb.PaintUndo();
+            }
+            else
+            {
+                Check(IsOn("DrawPanel/ToolBar/Palette/Card/Color_검정"), "두 가지 섞기 : 검정 물감이 있다");
+                tb.BlackTap();
+                Check(mixer.PureIndex == 0 && mixer.CountOf(0) + mixer.CountOf(1) + mixer.CountOf(2) == 0, "두 가지 섞기 : 검정은 물감 숫자 없이 검정 하나");
+            }
             mixer.SkipAnimation();
             tb.ClosePanel();
             Check(mixed != Color.black, "섞은 색이 검정과 다르다");
@@ -1104,6 +1139,8 @@ static class MvpSelfTest
 
     internal static bool IsOn(string path) => Find(path).gameObject.activeInHierarchy;
     static string Text(string path) => Find(path).GetComponent<TMP_Text>().text;
+    // 대사 상자 글 (줄바꿈용 <nobr> 같은 태그를 뺀 글)
+    static string Plain(string path) => System.Text.RegularExpressions.Regex.Replace(Text(path), "<[^>]*>", "");
     static DrawingBoard Board() => Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>();
 
     // 또렷하게 보이는 사탕 수 = 남은 수

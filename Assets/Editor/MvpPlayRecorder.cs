@@ -295,34 +295,42 @@ class PlayDirector : MonoBehaviour
         yield return Wait(1.0f);
         yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 붓을 눌러 봐 → 도깨비불이 붓 둘레를 돌아요
         yield return Wait(1.8f);
-        yield return Click("DrawPanel/ToolBar/Brush/Button");                              // 물감을 넣어 보라고 해요
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 넘기면 팔레트가 열려요
-        yield return Wait(0.8f);
-        yield return Mix("Color_빨강", "Color_빨강", "Color_노랑", "Color_노랑", "Color_파랑");   // 직접 넣어 갈색
+        yield return Click("DrawPanel/ToolBar/Brush/Button");                              // 빨강을 두 번 넣어 보라고 해요
+        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 넘기면 팔레트가 열리고 도깨비불이 빨강 둘레를 돌아요
+        yield return Wait(1.2f);
+        yield return Mix("Color_빨강", "Color_빨강");
+        yield return Wait(1.2f);
+        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 노랑도 두 번
         yield return Wait(1.0f);
+        yield return Mix("Color_노랑", "Color_노랑");
+        yield return Wait(1.2f);
+        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 파랑은 한 번
+        yield return Wait(1.0f);
+        yield return Mix("Color_파랑");                                                    // 붓 끝이 갈색
+        yield return Wait(1.4f);
         yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 많이 넣은 색 쪽으로 바뀐다는 대사
+        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 세 가지를 똑같이 넣으면 검정
         yield return Wait(0.8f);
-        yield return Tool("Color_검정");
+        // 5단계는 검정 물감이 없어요 : 안내에서 만든 갈색으로 머리카락부터 칠하고, 검정은 세 가지를 섞어서 만들어요
+        yield return Tool("Size_2");
+        yield return Scribble(200, 405, 312, 458, 11);                                      // 머리카락 (안내에서 만든 갈색)
+        yield return QuickMix("Color_빨강", "Color_노랑", "Color_파랑");                      // 검정은 섞어서
         yield return Tool("Size_1");
         yield return Ellipse(V(256, 400), 55, 55, 0f);                                      // 머리
         yield return Ellipse(V(178, 395), 22, 28, 0f);
         yield return Ellipse(V(334, 395), 22, 28, 0f);                                      // 양 갈래
-        yield return Mix("Color_빨강", "Color_빨강", "Color_노랑", "Color_노랑", "Color_파랑");   // 갈색
+        yield return Line(V(240, 175), V(272, 175), V(272, 205), V(240, 205), V(240, 175));  // 천 조각 (검정일 때 같이)
         yield return Tool("Size_2");
-        yield return Scribble(200, 405, 312, 458, 11);                                      // 머리카락
-        yield return Mix("Color_빨강", "Color_노랑", "Color_파랑");                           // 파랑까지 넣었다가
-        yield return Wait(0.6f);
+        yield return QuickMix("Color_빨강", "Color_노랑", "Color_파랑");                      // 파랑까지 넣었다가
         yield return Tool("PaintUndo");                                                     // 빼서 주황으로
-        yield return Wait(1.2f);
-        yield return Scribble(165, 225, 347, 335, 11);                                      // 주황 상의
-        yield return Scribble(110, 250, 165, 320, 11);
-        yield return Scribble(347, 250, 402, 320, 11);                                      // 팔
+        yield return Wait(0.8f);
+        yield return Scribble(165, 225, 347, 335, 14);                                      // 주황 상의
+        yield return Scribble(110, 250, 165, 320, 14);
+        yield return Scribble(347, 250, 402, 320, 14);                                      // 팔
         yield return Mix("Color_파랑");
-        yield return Scribble(175, 70, 235, 215, 11);
-        yield return Scribble(280, 70, 340, 215, 11);                                       // 두 다리
-        yield return Tool("Color_검정");
-        yield return Tool("Size_1");
-        yield return Line(V(240, 175), V(272, 175), V(272, 205), V(240, 205), V(240, 175));  // 천 조각
+        yield return Scribble(175, 70, 235, 215, 14);
+        yield return Scribble(280, 70, 340, 215, 14);                                       // 두 다리
+        Debug.Log("[녹화] 5단계 제출 전 남은 향 : " + typeof(GameManager).GetField("timeLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm));
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Compare();
@@ -398,6 +406,13 @@ class PlayDirector : MonoBehaviour
     }
 
     // 혼색 : 팔레트를 열고 물감을 차례로 넣어요 (누를 때마다 붓 끝에서 섞여요)
+    // 손에 익은 색(검정)은 조금 빠르게 섞어요
+    IEnumerator QuickMix(params string[] paints)
+    {
+        foreach (string m in paints) { yield return Tool(m); yield return Wait(0.25f); }
+        yield return Wait(0.4f);
+    }
+
     IEnumerator Mix(params string[] paints)
     {
         foreach (string m in paints) { yield return Tool(m); yield return Wait(0.6f); }

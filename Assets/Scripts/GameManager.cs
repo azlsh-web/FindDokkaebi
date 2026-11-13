@@ -158,6 +158,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] RectTransform[] magnifierFires;
     [SerializeField] GameObject brushHighlight;     // 5단계 색 섞기 시범 : 붓 둘레를 도는 도깨비불
     [SerializeField] RectTransform[] brushFires;
+    [SerializeField] GameObject paintHighlight;     // 5단계 색 섞기 시범 : 넣을 물감 둘레를 도는 도깨비불
+    [SerializeField] RectTransform paintOrbit;
+    [SerializeField] RectTransform[] paintFires;
     [SerializeField] RectTransform brushHolder;     // 붓 (눌러 볼 차례면 콩콩 뛰어요)
 
     [Header("판정 대기 화면")]
@@ -219,8 +222,9 @@ public class GameManager : MonoBehaviour
     Coroutine giftRoutine;
     bool mixShown;          // 5단계 색 섞기 시범을 했는지
     int mixDemoStep;        // 색 섞기 안내 : 0 없음, 1 붓을 눌러 보라고 말함, 2 붓을 누르기 기다림(도깨비불),
-                            //   3 물감을 넣어 보라고 말함, 4 아이가 물감을 넣는 중, 5 결과를 말함
-    Coroutine mixDone;      // 색 섞기 안내 : 다 넣고 붓 끝 색이 바뀐 걸 본 뒤 대사
+                            //   3 물감(mixPaint)을 넣어 보라고 말함, 4 그 물감을 넣기 기다림(도깨비불), 5 결과를 말함, 6 검정 만드는 법을 말함
+    int mixPaint;           // 색 섞기 안내 : 지금 넣을 물감 (0 빨강, 1 노랑, 2 파랑)
+    Coroutine mixDone;      // 색 섞기 안내 : 넣은 물감이 붓 끝에 닿아 색이 바뀐 걸 본 뒤 다음 대사
     static readonly int[] MixGoal = { 2, 2, 1 };   // 색 섞기 안내 : 빨강 2 · 노랑 2 · 파랑 1 = 갈색
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
@@ -290,8 +294,12 @@ public class GameManager : MonoBehaviour
                     brushHolder.localScale = Vector3.one * (1f + 0.1f * Mathf.Abs(Mathf.Sin(Time.time * 4f)));
                     SpinFires(brushFires, 78f, 72f);
                 }
-                // 물감을 넣는 중 : 빨강 2 · 노랑 2 · 파랑 1 이 되면, 붓 끝이 바뀌는 걸 본 뒤 대사가 나와요
-                if (mixDemoStep == 4 && mixDone == null && MixReached()) mixDone = StartCoroutine(SayMixDone());
+                // 물감을 넣을 차례 : 도깨비불이 그 물감 둘레를 돌고, 정한 횟수만큼 넣으면 붓 끝이 바뀌는 걸 본 뒤 다음 대사
+                if (mixDemoStep == 4)
+                {
+                    PlacePaintFires();
+                    if (mixDone == null && mixer.CountOf(mixPaint) >= MixGoal[mixPaint]) mixDone = StartCoroutine(SayMixNext());
+                }
                 return;
             }
             timeLeft -= Time.deltaTime;
@@ -632,33 +640,48 @@ public class GameManager : MonoBehaviour
         mixGuideBox.Say(GameScript.MixTapBrush, faceDokkaebi);
     }
 
-    // 붓을 눌렀어요 : 눌러 볼 차례였으면 물감을 넣어 보라고 말해요. 팔레트는 대사를 넘기면 열려요 (대사 상자에 반쯤 가리지 않게)
+    // 붓을 눌렀어요 : 눌러 볼 차례였으면 빨강부터 넣어 보라고 말해요. 팔레트는 대사를 넘기면 열려요 (대사 상자에 반쯤 가리지 않게)
+    // 안내 중 다른 때 붓을 누르면 아무 일도 없어요 (팔레트가 닫혀 버리면 도깨비불이 가리킬 물감이 안 보여요)
     bool BrushTapped()
     {
-        if (state != State.Draw || mixDemoStep != 2) return false;
-        mixDemoStep = 3;
+        if (mixDemoStep == 0) return false;
+        if (state != State.Draw || mixDemoStep != 2) return true;
         brushHolder.localScale = Vector3.one;
         brushHighlight.SetActive(false);
+        SayMixPaint(0);
+        return true;
+    }
+
+    // 물감 하나를 넣어 보라고 말해요 (빨강 2 → 노랑 2 → 파랑 1)
+    void SayMixPaint(int paint)
+    {
+        mixDemoStep = 3;
+        mixPaint = paint;
+        mixer.SetGuide(paint, MixGoal[paint]);     // 이 물감만 정한 횟수까지 넣을 수 있어요
         mixGuide.SetActive(true);
-        mixGuideBox.Say(GameScript.MixShow, faceDokkaebi);
-        return true;
+        mixGuideBox.Say(GameScript.MixPaintSteps[paint], faceDokkaebi);
     }
 
-    bool MixReached()
+    // 도깨비불 셋이 넣을 물감 둘레를 돌아요
+    void PlacePaintFires()
     {
-        for (int i = 0; i < MixGoal.Length; i++)
-            if (mixer.CountOf(i) != MixGoal[i]) return false;
-        return true;
+        RectTransform slot = mixer.PaintButton(mixPaint);
+        paintOrbit.position = slot.TransformPoint(slot.rect.center);
+        SpinFires(paintFires, 68f, 68f);
     }
 
-    // 마지막 물감이 붓 끝에서 첨벙하고 색이 바뀌는 걸 볼 시간을 준 뒤 말해요. 그사이 물감을 빼면 다시 기다려요
-    IEnumerator SayMixDone()
+    // 넣은 물감이 붓 끝에서 첨벙하고 색이 바뀌는 걸 볼 시간을 준 뒤, 팔레트를 닫고 다음 대사 (대사 상자에 반쯤 가리지 않게)
+    IEnumerator SayMixNext()
     {
-        yield return new WaitForSeconds(1.2f);
+        bool last = mixPaint == MixGoal.Length - 1;
+        yield return new WaitForSeconds(last ? 1.2f : 0.9f);
         mixDone = null;
-        if (mixDemoStep != 4 || !MixReached()) yield break;
+        if (mixDemoStep != 4) yield break;
+        paintHighlight.SetActive(false);
+        toolBar.ClosePanel();
+        if (!last) { SayMixPaint(mixPaint + 1); yield break; }
         mixDemoStep = 5;
-        toolBar.ClosePanel();        // 대사 상자에 팔레트가 반쯤 가리지 않게 닫고 말해요
+        mixer.SetGuide(-1, 0);
         mixGuide.SetActive(true);
         mixGuideBox.Say(GameScript.MixHow, faceDokkaebi);
     }
@@ -675,6 +698,8 @@ public class GameManager : MonoBehaviour
             board.Locked = false;
             brushHolder.localScale = Vector3.one;
             brushHighlight.SetActive(false);
+            paintHighlight.SetActive(false);
+            mixer.SetGuide(-1, 0);
         }
         mixDemoStep = 0;
         mixGuide.SetActive(false);
@@ -696,14 +721,23 @@ public class GameManager : MonoBehaviour
         }
         else if (mixDemoStep == 3)
         {
-            // 대사가 사라지고 팔레트가 열려요. 이제 아이가 물감을 넣어요
+            // 대사가 사라지고 팔레트가 열려요. 도깨비불이 넣을 물감 둘레를 돌고, 아이가 직접 넣어요
             mixDemoStep = 4;
             mixGuide.SetActive(false);
             toolBar.OpenPanel();
+            Canvas.ForceUpdateCanvases();            // 팔레트 칸 자리를 먼저 정해 두고 도깨비불을 옮겨요
+            paintHighlight.SetActive(true);
+            PlacePaintFires();
+        }
+        else if (mixDemoStep == 5)
+        {
+            // 검정 물감이 없으니 세 가지를 똑같이 넣으면 검정이라고 알려 줘요
+            mixDemoStep = 6;
+            mixGuideBox.Say(GameScript.MixBlack, faceDokkaebi);
         }
         else
         {
-            // 다 했으면 팔레트를 닫고 그리기 시작. 직접 만든 갈색은 그대로 써요
+            // 다 했으면 그리기 시작. 직접 만든 갈색은 그대로 써요
             StopMixDemo(keepColor: true);
         }
     }

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 //   - 색을 고르면 물방울이 붓 끝으로 날아가 첨벙하고 색이 바뀌어요 (ColorMixer).
 //   - 섞는 단계(4 · 5단계)는 빨강 · 노랑 · 파랑이 물감이에요 : 누를 때마다 넣어져 섞이고, 옆에 넣은 횟수가 떠요.
 //   - 굵기 점 세 개 중 고른 점은 지금 색으로 칠하고 고리를 둘러요.
-// 단계마다 쓸 수 있는 색 : BlackOnly 검정 / Primaries 4색 / MixTwo · MixFree 4색 + 물감 섞기
+// 단계마다 쓸 수 있는 색 : BlackOnly 검정 / Primaries 4색 / MixTwo 4색 + 물감 섞기 / MixFree 빨강 · 노랑 · 파랑 섞기 (검정은 섞어서)
 public class ToolBar : MonoBehaviour
 {
     [Header("연결")]
@@ -61,7 +61,10 @@ public class ToolBar : MonoBehaviour
         mode = colorMode;
         bool primaries = mode != ColorMode.BlackOnly;
         bool mixing = mode == ColorMode.MixTwo || mode == ColorMode.MixFree;
-        primaryDivider.SetActive(primaries);
+        // 5단계(세 가지 섞기)는 검정 물감이 없어요. 빨강 · 노랑 · 파랑을 똑같이 넣어 검정을 만들어요
+        bool black = mode != ColorMode.MixFree;
+        blackFrame.transform.parent.gameObject.SetActive(black);
+        primaryDivider.SetActive(primaries && black);
         foreach (GameObject b in primaryButtons) b.SetActive(primaries);
         paintUndo.SetActive(mixing);
 
