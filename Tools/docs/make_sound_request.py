@@ -1,6 +1,7 @@
-# 12_사운드팀_전달사항.pdf : 사운드팀에 보내는 요청
+# 사운드.pdf : 사운드팀에 보내는 요청
 #   python Tools/docs/make_sound_request.py
 #   파일 이름은 Assets/Scripts/Sfx.cs 와 대조해요. 어긋나면 멈춰요.
+from datetime import date
 import os
 import re
 import sys
@@ -14,29 +15,38 @@ os.makedirs(OUT, exist_ok=True)
 
 # (파일, 우선, 나오는 곳, 느낌, 권장 길이)
 BGM = [
-    ("bgm_room", "먼저", "시작, 단계 시작 대화, 쪽지, 관찰", "따뜻하고 아기자기한 아침", "30~60초 반복"),
-    ("bgm_draw", "먼저", "그리기", "가볍게 긴장되지만 집중을 방해하지 않는 곡", "30~60초 반복"),
-    ("bgm_judge", "먼저", "판정 대기, 결과, 채점표, 대파 장면", "도깨비가 두리번거리는 장난스러운 곡. 맞았을 때와 틀렸을 때 모두 어울려야 해요.", "20~40초 반복"),
-    ("bgm_picnic", "먼저", "이야기 종료", "신나는 소풍 곡", "30~60초 반복"),
+    ("bgm_room", "먼저", "시작, 단계 시작 대화, 쪽지, 관찰", "포근한 아침, 아기자기. 느리게", "30~60초 반복"),
+    ("bgm_draw", "먼저", "그리기", "조용히 집중. 아주 살짝 똑딱똑딱, 멜로디는 거의 없게. 보통 빠르기", "30~60초 반복"),
+    ("bgm_judge", "먼저", "판정 대기, 결과, 채점표", "도깨비가 갸웃갸웃 살금살금 두리번거리는 곡(바순 · 클라리넷 스타카토). 맞았을 때와 틀렸을 때 모두 어울려야 해요. 보통 빠르기", "20~40초 반복"),
+    ("bgm_picnic", "먼저", "이야기 종료", "소풍이라 신나지만 시끄럽지 않게. 조금 빠르게", "30~60초 반복"),
 ]
+# VARCO Sound 입력 문장 (C-28)
+BGM_PROMPT = {
+    "bgm_room": "Gentle, cute background music for a children's game (ages 6-9). Soft music box, glockenspiel, ukulele and light pizzicato. Warm cozy morning feeling. Quiet, sparse, simple melody, low dynamics so dialogue stays clear. Slow tempo, seamless loop, no vocals, no drums.",
+    "bgm_draw": "Calm, quiet background music for kids drawing. Soft marimba and pizzicato with a light ticking clock-like pulse. Focused and gentle, barely any melody, very low dynamics, never distracting. Medium tempo, seamless loop, no vocals, no drums.",
+    "bgm_judge": "Cute, mischievous tiptoe music for a playful little goblin wondering and peeking around. Light bassoon and clarinet staccato, pizzicato and glockenspiel. Curious, neutral mood that fits both right and wrong answers. Quiet and sparse, medium tempo, seamless loop, no vocals.",
+    "bgm_picnic": "Happy, cheerful picnic music for a children's game ending. Ukulele, glockenspiel, whistling-like flute and bouncy pizzicato. Joyful and sunny but soft, not loud, gentle dynamics. Slightly upbeat tempo, seamless loop, no vocals.",
+}
+assert set(BGM_PROMPT) == {r[0] for r in BGM}
 SFX = [
-    ("sfx_tap", "먼저", "대사 넘기기, 소풍 가기, 다시", "짧고 가벼운 톡", "0.1초"),
+    ("sfx_tap", "먼저", "대사 넘기기, 게임 시작하기, 다시, 채점표 넘기기, 처음으로", "짧고 가벼운 톡", "0.1초"),
     ("sfx_count", "먼저", "관찰 숫자 3, 2, 1 (1초에 한 번)", "짧은 똑딱", "0.2초"),
-    ("sfx_submit", "먼저", "다 그렸어! 버튼", "쪽지를 건네는 소리", "0.5초"),
-    ("sfx_item", "먼저", "결과에서 물건이 나타날 때, 도깨비가 방망이를 찾아올 때", "뿅", "0.3초"),
+    ("sfx_submit", "먼저", "다 그렸어! 버튼. 누르면 건네기 장면으로 넘어가요.", "쪽지를 착 접는 소리", "0.5초"),
+    ("sfx_give", "먼저", "건네기 장면에서 터치하면 쪽지와 사탕이 도깨비에게 날아갈 때", "가볍게 휙 건네는 소리", "0.6초"),
+    ("sfx_item", "먼저", "결과에서 물건이 나타날 때", "뿅", "0.3초"),
     ("sfx_success", "먼저", "전부 맞았을 때. `sfx_item`과 동시에 나요.", "밝은 짠", "1초"),
     ("sfx_fail", "먼저", "틀렸을 때. `sfx_item`과 동시에 나요.", "어이없는 띠용", "1초"),
     ("sfx_mark", "먼저", "채점표가 나올 때 한 번. 표시는 0.5초 간격으로 최대 5개 그어져요.", "연필로 슥슥 긋는 소리", "최대 3초"),
     ("sfx_cheer", "먼저", "이야기 종료 시작", "작은 환호", "2초"),
     ("sfx_talk", "나중", "대사 글자가 나올 때. 1초에 약 15번 울려요.", "아주 작고 짧은 틱. 반복해도 거슬리지 않게 해 주세요.", "0.05초 이하"),
-    ("sfx_snack_in", "나중", "단계 첫 그리기에 간식 3개가 들어올 때 한 번. 약 0.7초 동안 들어와요.", "샤샤샥", "0.7초"),
-    ("sfx_step", "나중", "1단계를 못 찾아 도깨비가 뛰어나갈 때", "통통 발소리", "1초"),
-    ("sfx_land", "나중", "소풍 장면에 물건이 놓일 때. 코드 연결은 파일을 받은 뒤에 해요.", "톡", "0.2초"),
+    ("sfx_magnifier", "나중", "그리는 중 맨 위 돋보기를 누를 때 (게임 전체 1번, 1단계 시범, 단계별 무료 기회). 렌즈 안에 원본이 5초 보여요. 1초마다 `sfx_count`.", "렌즈가 반짝 켜지는 소리", "0.6초"),
+    ("sfx_snack_in", "나중", "단계 첫 그리기에 사탕 3개가 오른쪽에서 들어올 때 한 번, 무료 돋보기가 맨 위 돋보기에 도착할 때 한 번. 약 0.7초.", "샤샤샥", "0.7초"),
+    ("sfx_land", "나중", "소풍 장면에 물건이 하나씩 날아와 돗자리에 닿을 때", "톡", "0.2초"),
 ]
 
 # 코드와 대조
 code = open(os.path.join(ROOT, "Assets", "Scripts", "Sfx.cs"), encoding="utf-8").read()
-in_code = set(re.findall(r'const string \w+ = "(\w+)"', code))
+in_code = set(re.findall(r'const string \w+ = "((?:sfx|bgm)_\w+)"', code))   # 소리 이름만 (볼륨 저장 키는 빼요)
 in_doc = {r[0] for r in BGM + SFX}
 assert in_code == in_doc, in_code ^ in_doc
 
@@ -60,15 +70,18 @@ later = [r for r in SFX if r[1] == "나중"]
 
 flow = """찾아라! 도깨비
 ├─ 시작 ······················ bgm_room
-│  └─ 소풍 가기 ·············· sfx_tap
-├─ 단계 시작 대화 · 쪽지 ······ bgm_room
+│  └─ 게임 시작하기 ·········· sfx_tap
+├─ 단계 시작 대화 ············· bgm_room
 │  ├─ 글자가 나올 때 ········· sfx_talk
 │  └─ 대사 넘기기 ············ sfx_tap
-├─ 관찰 3초 ·················· bgm_room
+├─ 떠올리기 3초 ··············· bgm_room
 │  └─ 숫자 3, 2, 1 ··········· sfx_count
-├─ 그리기 60초 ··············· bgm_draw
+├─ 쪽지 쓰기 60초 ············· bgm_draw
 │  ├─ 단계 첫 그리기 ········· sfx_snack_in
+│  ├─ 돋보기 ················· sfx_magnifier
 │  └─ 다 그렸어! ············· sfx_submit
+├─ 건네기 ···················· bgm_draw 이어짐
+│  └─ 쪽지 · 사탕 건네기 ······ sfx_give
 ├─ 판정 대기 ················· bgm_judge
 ├─ 결과 ······················ bgm_judge 이어짐
 │  ├─ 물건 등장 ·············· sfx_item
@@ -77,9 +90,6 @@ flow = """찾아라! 도깨비
 │  └─ 다시 ··················· sfx_tap → 그리기로
 ├─ 채점표 ···················· bgm_judge 이어짐
 │  └─ 표시 긋기 ·············· sfx_mark
-├─ 1단계를 못 찾았을 때 ······· bgm_judge 이어짐
-│  ├─ 뛰어나감 ··············· sfx_step
-│  └─ 방망이를 찾아옴 ········ sfx_item
 └─ 이야기 종료 ··············· bgm_picnic
    ├─ 시작 ··················· sfx_cheer
    └─ 물건이 놓일 때 ·········· sfx_land"""
@@ -97,8 +107,8 @@ figcaption b { color: #2b2622; font-size: 10.5px; }
 """
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사운드팀 전달사항</title><style>{CSS}</style></head><body>
-<h1>찾아라! 도깨비 사운드팀 전달사항</h1><p class='sub'>2026-11-05 기준 · 출품 마감 2026-11-08(일)</p>
-<div class='note'><b>소리 파일 {len(in_doc)}개를 부탁드려요.</b> 배경음 {len(BGM)}곡과 효과음 {len(SFX)}개예요. 넣고 확인할 시간이 필요해서 <b>11월 7일(토)까지</b> 받으면 좋겠어요. 시간이 모자라면 <b>먼저 {len(first)}개</b>부터 보내 주세요. 없는 파일은 조용히 넘어가서 일부만 있어도 게임은 돌아가요.</div>
+<h1>찾아라! 도깨비 사운드팀 전달사항</h1><p class='sub'>{date.today()} 기준 · 출품 마감 2026-11-15(일)</p>
+<div class='note'><b>요청:</b> {len(in_doc)}개 (배경음 {len(BGM)}, 효과음 {len(SFX)})<br><b>기한:</b> 11월 14일(토)<br><b>우선:</b> {len(first)}개 (표의 먼저 항목)<br><b>빠진 파일:</b> 소리 없이 진행<br><b>지금:</b> 효과음 {len(SFX)}개는 2026-11-11에 VARCO Sound로 만들어 넣었어요. 배경음 {len(BGM)}곡도 2026-11-12~13에 VARCO Sound로 만들어 넣었어요. 더 요청할 소리는 없어요.</div>
 <h2>게임 분위기</h2>
 <p>주인공과 도깨비가 사라진 소풍 준비물을 찾는 아기자기하고 장난스러운 게임이에요. 플레이어가 기억해서 그린 쪽지대로 도깨비가 물건을 찾아오고, 그림이 틀리면 엉뚱한 물건을 가져와 놀려요. 전시장에서 플레이하므로 오래 들어도 피곤하지 않아야 해요.</p>
 <div class='shots'>
@@ -111,7 +121,10 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사
 <h2>화면별 소리</h2>
 <pre>{flow}</pre>
 <h2>배경음 {len(BGM)}곡</h2>
+<div class='note'><b>공통 방향:</b> 초등 저학년용 게임이라 귀엽고 잔잔하게, 대사와 효과음을 가리지 않게 깔기만 해요. 4곡 모두 같은 악기(뮤직박스 · 실로폰, 피치카토, 우쿨렐레, 마림바)로 맞춰 한 게임처럼 들리게 하고, 북 같은 센 타악기는 빼요. 도깨비의 장난스러움은 전통 악기 대신 바순 · 클라리넷의 통통 튀는 소리로 내요. 곡마다 빠르기와 기분만 달라요.</div>
 {table(BGM)}
+<h3>VARCO Sound 입력 문장</h3>
+<ul>{''.join(f"<li><code>{n}</code> : {t}</li>" for n, t in BGM_PROMPT.items())}</ul>
 <p>끝과 시작이 자연스럽게 이어지게 만들어 주세요. 곡이 바뀔 때 페이드 없이 바로 넘어가요. 같은 곡이 이어지면 처음으로 돌아가지 않아요.</p>
 <h2>효과음 : 먼저 필요한 {len([r for r in SFX if r[1] == '먼저'])}개</h2>
 {table([r for r in SFX if r[1] == '먼저'])}
@@ -129,9 +142,9 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사
 <p>아래 구조로 ZIP 하나로 묶어 주세요. 있는 파일만 넣으면 돼요. 수정본은 ZIP 이름만 <code>_v2</code>, <code>_v3</code>으로 올리고 바뀐 파일만 넣어 주세요.</p>
 <pre>{tree}</pre></div>
 <div class='keep'><h2>받은 뒤 (개발 쪽)</h2>
-<p>파일을 <code>Assets/Resources/Sound</code>에 넣으면 코드를 고치지 않아도 소리가 나요. <code>sfx_land</code>만 코드 연결이 필요해요.</p></div>
+<p>파일을 <code>Assets/Resources/Sound</code>에 넣으면 코드를 고치지 않아도 소리가 나요.</p></div>
 </body></html>"""
 
 os.makedirs(os.path.join(ROOT, "Temp", "DocsHtml"), exist_ok=True)
-open(os.path.join(ROOT, "Temp", "DocsHtml", "12_사운드팀_전달사항.html"), "w", encoding="utf-8").write(html)
-print("12_사운드팀_전달사항.pdf", write_pdf(html, os.path.join(OUT, "12_사운드팀_전달사항.pdf")))
+open(os.path.join(ROOT, "Temp", "DocsHtml", "사운드.html"), "w", encoding="utf-8").write(html)
+print("사운드.pdf", write_pdf(html, os.path.join(OUT, "사운드.pdf")))

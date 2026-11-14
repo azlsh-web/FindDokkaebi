@@ -24,19 +24,22 @@ public class SimpleAnim : MonoBehaviour
         Float,      // 둥실둥실 떠 있기
         Look,       // 잠깐 나타났다 사라지기 (물음표)
         FadeIn,     // 화면 전환 : 서서히 나타나기
-        CardIn,     // 쪽지 : 제자리에서 살짝 커지며 나타나기
+        CardIn,     // 제자리에서 살짝 커지며 나타나기
         SlideRight, // 왼쪽 화면 밖에서 오른쪽으로 들어오기 (간식)
         EnterLeft,  // 왼쪽에서 들어오기
         EnterRight, // 오른쪽에서 들어오기
         RunOff,     // 오른쪽 화면 밖으로 뛰어나가기
         RunBack,    // 오른쪽 화면 밖에서 돌아오기
-        SnackOut,   // 간식이 도깨비 쪽으로 빠져나가기
+        SnackOut,   // 간식이 위에서 도깨비에게 날아가기
+        NoteGive,   // 쪽지가 작아지며 도깨비에게 건네지기
+        Vanish,     // 살짝 커졌다가 사라지기 (없어지는 물건)
         NumPop,     // 숫자가 바뀔 때 커졌다 돌아오기
         Spark,      // 반짝임
         Rise,       // 아래에서 살짝 올라오기
         Land,       // 위에서 날아와 자리 잡기 (물건)
         Fall,       // 꽃가루 떨어지기
         FillIn,     // 채워지며 그려지기 (채점 동그라미 · 빗금)
+        SlideLeft,  // 오른쪽에서 왼쪽으로 들어오기 (사탕). 씬에 숫자로 저장되니 새 종류는 맨 뒤에 붙여요
     }
 
     public Kind kind = Kind.Sway;
@@ -104,6 +107,15 @@ public class SimpleAnim : MonoBehaviour
 
     public void Play() => Play(kind);
 
+    /// <summary>움직임이 끝나고 돌아갈 기본 투명도를 바꿔요 (흐리게 그리는 그림)</summary>
+    public void SetBaseAlpha(float a)
+    {
+        Cache();
+        baseAlpha = a;
+        captured = true;
+        SetAlpha(a);
+    }
+
     void ResetPose()
     {
         if (!captured) return;
@@ -129,7 +141,11 @@ public class SimpleAnim : MonoBehaviour
 
     void Update()
     {
+        float before = t;
         t += Time.deltaTime;
+        // 물건이 돗자리에 닿는 순간(움직임의 80%) 톡
+        float touch = delay + popTime * 0.8f;
+        if (kind == Kind.Land && before < touch && t >= touch) Sfx.Play(Sfx.Land);
         Apply();
     }
 
@@ -243,6 +259,15 @@ public class SimpleAnim : MonoBehaviour
                     break;
                 }
 
+            case Kind.SlideLeft:
+                {
+                    float k = p < 0.8f ? Mathf.Lerp(distance, -18f, Ease(p / 0.8f)) : Mathf.Lerp(-18f, 0f, (p - 0.8f) / 0.2f);
+                    Move(k, 0f);
+                    SetAlpha(waiting ? 0f : baseAlpha * Mathf.Clamp01(p / 0.15f));
+                    if (p >= 1f) enabled = false;       // 다 들어오면 끝 (쓴 간식 흐리게 하는 색을 덮어쓰지 않게)
+                    break;
+                }
+
             case Kind.EnterLeft:
                 Move(Mathf.Lerp(-distance, 0f, Ease(p)), 0f);
                 break;
@@ -257,9 +282,21 @@ public class SimpleAnim : MonoBehaviour
                 break;
 
             case Kind.SnackOut:
-                Move(Mathf.Lerp(0f, -330f, p * p), Mathf.Lerp(0f, -1140f, p * p));
-                transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.6f, p);
-                SetAlpha(1f - p);
+                Move(Mathf.Lerp(0f, 60f, p * p), Mathf.Lerp(0f, -990f, p * p));
+                transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.7f, p);
+                SetAlpha(p < 0.85f ? 1f : (1f - p) / 0.15f);
+                break;
+
+            case Kind.NoteGive:
+                Move(Mathf.Lerp(0f, 210f, p * p), Mathf.Lerp(0f, -750f, p * p));
+                transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.2f, p);
+                transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-3f, 10f, p));
+                SetAlpha(1f - p * p);
+                break;
+
+            case Kind.Vanish:
+                transform.localScale = Vector3.one * (waiting ? 1f
+                    : p < 0.35f ? Mathf.Lerp(1f, 1.15f, p / 0.35f) : Mathf.Lerp(1.15f, 0f, (p - 0.35f) / 0.65f));
                 break;
 
             case Kind.NumPop:

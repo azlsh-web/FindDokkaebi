@@ -1,6 +1,7 @@
 # 3_아트_구조.pdf : 게임 그림이 화면마다 어떻게 들어가 있는지 트리로 정리해요.
 #   python Tools/docs/make_art_structure.py
 #   트리에 없는 그림이 씬에서 쓰이거나, 없는 파일을 적으면 멈춰요. 문서가 실제 게임과 어긋나지 않게 하려고요.
+from datetime import date
 import base64, io, itertools, os, re, sys
 from PIL import Image
 
@@ -81,7 +82,7 @@ ul.tree ul > li:last-child::before { bottom: auto; height: 18px; }
 pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px; font-size: 11px; line-height: 1.5; font-family: Consolas, monospace; }
 """
 
-p = ["<h1>찾아라! 도깨비 아트 구조</h1><p class='sub'>게임에 들어간 그림 파일이 화면과 오브젝트에 어떻게 연결돼 있는지 정리한 문서예요. 2026-11-05 기준이며, 씬과 단계 데이터의 실제 참조와 대조해 만들었어요.</p>"]
+p = [f"<h1>찾아라! 도깨비 아트 구조</h1><p class='sub'>게임에 들어간 그림 파일이 화면과 오브젝트에 어떻게 연결돼 있는지 정리한 문서예요. {date.today()} 기준이며, 씬과 단계 데이터의 실제 참조와 대조해 만들었어요.</p>"]
 counts = {k: len([e for e in existing if e.split("/")[0] == k]) for k in ("Background", "Characters", "UI")}
 stage_total = sum(len([e for e in existing if e.startswith(s[1] + "/")]) for s in STAGES)
 p.append(f"<h2>한눈에</h2><p><b>게임 그림은 전부 <code>Assets/Sprites</code> 안에 있어요.</b> 파일 {len(existing)}장을 모두 게임에서 써요.</p>")

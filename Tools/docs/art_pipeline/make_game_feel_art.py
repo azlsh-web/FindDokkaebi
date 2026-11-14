@@ -41,30 +41,23 @@ for y in range(1014, 1120):
         px[x, y] = cream
 logo.save(S + 'UI/Title_Logo.png', optimize=True)
 
-# ── 빈손 도깨비 · 대파 든 도깨비 · 도깨비 얼굴 (임시) ──
-d = Image.open(S + 'Characters/Char_Dokkaebi_Normal.png').convert('RGBA')
-mask = Image.new('L', d.size, 0)
-ImageDraw.Draw(mask).polygon(
-    [(60, 300), (188, 300), (193, 348), (216, 368), (270, 380), (282, 470), (284, 522), (216, 540), (216, 640), (60, 640)],
-    fill=255)
-d = Image.composite(Image.new('RGBA', d.size, (0, 0, 0, 0)), d, mask)
-green = d.getpixel((250, 600))
-ImageDraw.Draw(d).ellipse((216, 528, 306, 632), fill=green, outline=(15, 10, 5, 255), width=5)
-d.save(S + 'Characters/Char_Dokkaebi_NoBat.png', optimize=True)
+# ── 빈손 도깨비 : 아트팀에게 받은 그림 ──
+empty = Image.open('ArtSource/원본/받은그림/Dokkaebi_EmptyHand.png').convert('RGBA')
+empty.save(S + 'Characters/Char_Dokkaebi_NoBat.png', optimize=True)
 
-face = d.crop((180, 40, 840, 600))
-face.save(S + 'Characters/Char_DokkaebiFace_Normal.png', optimize=True)
-
-daepa = Image.open(S + 'Stage1_Bat/Bat_Wrong_X.png').convert('RGBA')
-daepa = daepa.crop(daepa.getbbox())
-daepa.thumbnail((300, 300))
-holding = Image.new('RGBA', d.size, (0, 0, 0, 0))
-holding.paste(daepa, (60, 300), daepa)
-holding.alpha_composite(d)
-hand = Image.new('L', d.size, 0)
-ImageDraw.Draw(hand).ellipse((216, 528, 306, 632), fill=255)
-holding.paste(d, (0, 0), hand)
-holding.save(S + 'Characters/Char_Dokkaebi_Daepa.png', optimize=True)
+# ── 도깨비 대사 얼굴 (기본 · 뿌듯 · 놀림) : 아트팀 그림의 빈 여백을 세 장 똑같이 잘라 660x560 에 맞춰요 ──
+#    여백째 넣으면 대사 상자에서 얼굴이 작아 보여요. 세 장을 같은 범위로 잘라야 표정이 바뀔 때 얼굴이 흔들리지 않아요.
+faces = {n: Image.open(f'ArtSource/원본/받은그림/DokkaebiFace/Char_DokkaebiFace_{n}.png').convert('RGBA')
+         for n in ('Normal', 'Proud', 'Tease')}
+boxes = [im.getchannel('A').getbbox() for im in faces.values()]
+box = (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+fw, fh = box[2] - box[0], box[3] - box[1]
+k = min(644 / fw, 524 / fh)
+fw, fh = round(fw * k), round(fh * k)
+for n, im in faces.items():
+    face = Image.new('RGBA', (660, 560), (0, 0, 0, 0))
+    face.alpha_composite(im.crop(box).resize((fw, fh), Image.LANCZOS), ((660 - fw) // 2, (560 - fh) // 2))
+    face.save(S + f'Characters/Char_DokkaebiFace_{n}.png', optimize=True)
 
 # ── 도구 버튼 : 아이콘의 긴 변을 원 지름의 56% 로 똑같이 맞춰요 ──
 base = Image.open(keep('UI/Draw_ClearButton.png')).convert('RGBA')
@@ -170,7 +163,7 @@ bg.resize((1080, 1899), Image.LANCZOS).save(S + 'Background/BG_Picnic.png', opti
 # ── 안 쓰게 된 그림 보관 ──
 for rel in ['UI/Title_Tagline.png', 'UI/Title_Gear.png', 'UI/Title_StartButton.png', 'UI/Observe_Card.png',
             'UI/Observe_CountOn.png', 'UI/Observe_CountOff.png', 'UI/Observe_FlameDeco.png', 'UI/Observe_Sparkle.png',
-            'UI/Draw_TrashIcon.png']:
+            'UI/Draw_TrashIcon.png', 'Characters/Char_Dokkaebi_Daepa.png']:
     retire(rel)
 
 print('연출 개편 그림을 만들었어요.')

@@ -17,16 +17,38 @@ public class DialogueBox : MonoBehaviour
     float shown;
     int total;
 
+    // 마지막 줄에 이보다 적은 글자만 남으면 ("그려 / 줘." 처럼) 앞 어절과 묶어서 같이 내려보내요
+    public const int MinLastLine = 4;
+
     /// <summary>대사를 보여 주기 시작</summary>
     public void Say(string line, Sprite faceSprite)
     {
         gameObject.SetActive(true);
         if (faceSprite != null) face.sprite = faceSprite;
-        text.text = line;
         text.maxVisibleCharacters = 0;
-        text.ForceMeshUpdate();
+        text.text = KeepTailTogether(text, line);
         total = text.textInfo.characterCount;
         shown = 0f;
+    }
+
+    /// <summary>
+    /// 마지막 줄이 짧은 조각 하나만 남지 않게, 끝의 어절 몇 개를 &lt;nobr&gt; 로 묶어 줄을 바꿔요.
+    /// 상자 크기에 맞춰 실제로 줄을 나눠 보고 정하니까, 상자나 글꼴 크기가 바뀌어도 맞아요.
+    /// </summary>
+    public static string KeepTailTogether(TMP_Text box, string line)
+    {
+        string[] words = line.Split(' ');
+        string result = line;
+        for (int glue = 2; ; glue++)
+        {
+            box.text = result;
+            box.ForceMeshUpdate(true);
+            TMP_TextInfo info = box.textInfo;
+            if (info.lineCount < 2 || info.lineInfo[info.lineCount - 1].visibleCharacterCount >= MinLastLine) return result;
+            if (glue > 3 || glue >= words.Length) return result;     // 세 어절까지만 묶어요 (더 묶으면 앞줄이 너무 짧아져요)
+            int head = words.Length - glue;
+            result = string.Join(" ", words, 0, head) + " <nobr>" + string.Join(" ", words, head, glue) + "</nobr>";
+        }
     }
 
     public bool IsTyping => shown < total;

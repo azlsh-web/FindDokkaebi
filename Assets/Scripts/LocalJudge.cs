@@ -74,7 +74,7 @@ public static class LocalJudge
             case AutoCheck.ColorBands: return ColorBands(p, out note);
             case AutoCheck.ColorInZone: return ColorInZone(p, f.area, f.color, out note);
             case AutoCheck.BatShape:
-                return p.Bat().LongHandle(out note) && p.Bat().ThickHead(out note) && p.Bat().Spikes(out note);
+                return p.Bat().ThickHead(out note) && p.Bat().Spikes(out note);
             case AutoCheck.BagShape:
                 return RectOutline(p, out note) && HandleOnTop(p, out note) && InnerPocket(p, out note);
             case AutoCheck.BandOrder: return BandOrder(p, out note);
@@ -563,7 +563,13 @@ public static class LocalJudge
 
         public bool ThickHead(out string note)
         {
-            if (!HasHandle) { note = "손잡이와 이어진 머리를 찾지 못했어요."; return false; }
+            if (!HasHandle)     // 손잡이는 판정하지 않아요 : 손잡이가 없으면 알맹이가 있는지만 봐요
+            {
+                float core = 0f;
+                foreach (float t in coreThickness) core = Mathf.Max(core, t);
+                note = core > 0f ? "굵은 머리가 있어요." : "굵은 머리가 보이지 않아요.";
+                return core > 0f;
+            }
 
             // 손잡이 굵기 = 손잡이 토막 굵기의 가운데 값 (막대 전체가 손잡이면 전체의 가운데 값)
             var hs = new List<float>();

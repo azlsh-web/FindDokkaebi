@@ -126,11 +126,11 @@ static class MvpJudgeCases
             }
             SetField(gm, "thinkSeconds", 0.15f);   // 검사에서는 도깨비 고민을 짧게
             SetField(gm, "roamLoopSeconds", 0.05f);
-            SetField(gm, "snacks", 3);             // 간식이 떨어지지 않게
+            SetField(gm, "candies", 10);            // 사탕이 떨어지지 않게
             Call(gm, "StartDraw", false);
 
             Texture2D tex = Draw(c.stage, c.drawn, c.pen);
-            Find("DrawPanel/Board").GetComponent<DrawingBoard>().LoadPixels(tex.GetPixels32());
+            Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>().LoadPixels(tex.GetPixels32());
             OpenAIJudge.Verdict v = LocalJudge.Judge(stage, tex);   // 게임과 같은 판정 함수 (리포트 기록용)
             c.judged = v.present;
             c.notes = v.notes;
@@ -222,7 +222,7 @@ static class MvpJudgeCases
         var s = new HandSketch();
         switch (stage)
         {
-            case 0: // 방망이 : F1 형태 (긴 손잡이 + 굵은 머리 + 돌기)
+            case 0: // 방망이 : F1 형태 (굵은 머리 + 돌기)
             {
                 Vector2 c = V(256, 335);
                 s.Line(k, pen, 2f, V(250, 40), V(253, 140), V(256, c.y - 84));

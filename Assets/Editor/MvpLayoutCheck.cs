@@ -23,9 +23,31 @@ static class MvpLayoutCheck
     // 시안 그림 자체가 원래 겹쳐 그려진 것 (시안과 같으면 괜찮아요)
     static readonly string[][] Intended =
     {
-        new[] { "DrawPanel/BoardFrame", "DrawPanel/Board" },   // 그림판은 틀의 뚫린 종이 면 뒤에 있어요
-        new[] { "JudgePanel/MyDrawingBack", "JudgePanel/SnackOut" },   // 간식이 내 그림 앞을 지나 빠져나가요
+        new[] { "DrawPanel/ToolBar/Brush/", "DrawPanel/ToolBar/Brush/" },
+        new[] { "HUD/TimerGroup/Incense", "HUD/TimerGroup/Incense" },   // 향 불꽃은 향 끝에 얹혀요
+        new[] { "HUD/TimerGroup/GaugeSlot", "HUD/TimerGroup/Incense" },   // 게이지 바는 같은 크기의 옅은 틀 위에 놓여요
+        new[] { "DrawPanel/ToolBar/BrushHighlight", "DrawPanel/" },   // 5단계 시범 때 붓 둘레를 도는 도깨비불   // 붓 끝(지금 색) 위에 붓대
+        new[] { "DrawPanel/ToolBar/Palette/PaintHighlight", "DrawPanel/" },   // 5단계 안내 때 넣을 물감 둘레를 도는 도깨비불
+        new[] { "DrawPanel/ToolBar/Palette/Tail", "DrawPanel/ToolBar/" },   // 팔레트 꼬리는 카드와 띠 사이에 걸쳐 붓을 가리켜요
+        new[] { "DrawPanel/ToolBar/Palette/Card/Color_", "DrawPanel/ToolBar/Palette/Card/Color_" },   // 넣은 횟수는 물감 오른쪽 위에 겹쳐 붙여요
+        new[] { "DrawPanel/ToolBar/PaintDrop", "DrawPanel/" },   // 물방울이 물감에서 붓 끝으로 날아가요
+        new[] { "DrawPanel/Desk/Paper", "DrawPanel/ToolBar" },   // 쪽지를 키우거나 옮기면 아래 띠 밑으로 들어가요
+        new[] { "DrawPanel/MagnifierPeek/Lens/Hole", "DrawPanel/MagnifierPeek/Lens/Frame" },
+        new[] { "JudgePanel/MyDrawingBack", "JudgePanel/DokkaebiEnter" },   // 간식이 내 그림 앞을 지나 빠져나가요
         new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
+        new[] { "EndingPanel/CandyJar", "EndingPanel/" },   // 사탕 통은 돗자리 모서리에 걸쳐 놓이고, 사탕은 통 안에 쌓여요
+        new[] { "ChapterPanel/Chapter_1/Picture", "ChapterPanel/Chapter_1/Picture" },   // 소풍 카드 그림 : 배경 위에 캐릭터와 돗자리
+        new[] { "HUD/MagnifierBadge", "HUD/MagnifierButton" },
+        new[] { "DrawPanel/MixGuide/DialogueBox", "DrawPanel/ToolBar" },   // 시범 대사는 다른 대사처럼 아래 자리 (돋보기 시범과 같아요)
+        new[] { "DrawPanel/MixGuide/DialogueBox", "DrawPanel/Desk/Paper" },   // 전체 화면 쪽지의 아래 끝을 시범 대사가 잠깐 덮어요 (그동안은 그리기가 잠겨요)
+        new[] { "SettingsPanel/SettingsCard/BgmSlider/Fill Area", "SettingsPanel/SettingsCard/BgmSlider/Handle Slide Area" },   // 볼륨 손잡이는 채워진 막대 끝에 올라가요
+        new[] { "SettingsPanel/SettingsCard/SfxSlider/Fill Area", "SettingsPanel/SettingsCard/SfxSlider/Handle Slide Area" },
+        new[] { "HUD/MagnifierHighlight", "HUD/" },   // 시범 때 돋보기 둘레를 도는 도깨비불
+        new[] { "HUD/MagnifierHighlight", "DrawPanel/" },   // 쓸 수 있는 횟수는 돋보기 오른쪽 아래에 겹쳐 붙여요
+        new[] { "HUD/MagnifierSparkles", "HUD/" },   // 무료 돋보기를 받으면 돋보기 둘레가 반짝여요
+        new[] { "DrawPanel/MagnifierPeek/Lens/TimeRing", "DrawPanel/MagnifierPeek/Lens/" },   // 남은 시간 띠는 렌즈 테두리 위에 겹쳐요
+        new[] { "DrawPanel/PeekGuide", "DrawPanel/" },   // 돋보기 시범 : 그리기 화면을 살짝 덮고 대사가 나와요
+        new[] { "ResultPanel/GiftMagnifier", "ResultPanel/" },   // 무료 돋보기가 도깨비 손에서 날아가요
         new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
     };
@@ -65,7 +87,7 @@ static class MvpLayoutCheck
         var items = new List<Item>();
         foreach (Graphic g in canvas.GetComponentsInChildren<Graphic>(false))
         {
-            if (!g.enabled || g.color.a < 0.05f || g.name == "Background" || g.name.StartsWith("IncenseFx") || g.name == "IncenseHolder") continue;   // 움직이는 향 연출 · 향이 꽂힌 촛대는 배치 검사에서 빼요
+            if (!g.enabled || g.color.a < 0.05f || g.name == "Background" || g.name.StartsWith("IncenseFx") && g.name != "IncenseFx_Flame") continue;   // 움직이는 향 연출 · 향이 꽂힌 촛대는 배치 검사에서 빼요
             var item = new Item { g = g, path = Path(g.transform, canvas), r = WorldRect(g.rectTransform, scale) };
             if (g is TMP_Text t)
             {
@@ -128,7 +150,9 @@ static class MvpLayoutCheck
         // 4) 화면 밖 (시작 화면 · 일시정지 화면은 화면 전체를 덮는 그림이라 제외)
         foreach (Item it in items)
         {
-            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("PausePanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
+            if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("SettingsPanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
+            if (it.path.StartsWith("HUD/CandyRow")) continue;   // 단계 첫 그리기 때 오른쪽 화면 밖에서 들어오는 중일 수 있어요
+            if (it.path == "DrawPanel/ToolBar" || it.path == "DrawPanel/ToolBar/Line") continue;   // 아래 띠는 긴 폰에서도 끝까지 덮게 화면보다 넓게 깔아요
             Rect o = Opaque(it);
             if (o.width <= 0) continue;
             if (o.xMin < frameR.xMin - 2 || o.xMax > frameR.xMax + 2 || o.yMin < frameR.yMin - 2 || o.yMax > frameR.yMax + 2)

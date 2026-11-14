@@ -2,158 +2,170 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // ─────────────────────────────────────────────────────────────
-// ToolBar : 쪽지 아래 그리기 도구 줄 (색 · 연필 · 지우개 · 굵기 · 되돌리기 · 모두 지우기 · 색 섞기)
+// ToolBar : 그리기 화면 아래 띠
 // ─────────────────────────────────────────────────────────────
-// - 버튼을 누르면 DrawingBoard 의 함수를 불러서 펜 색·굵기를 바꿔요.
-// - 지금 고른 색과 도구는 "테두리(Frame)"로 표시해요. (기획서 4장)
-// - 단계마다 쓸 수 있는 색이 달라요 → Setup(ColorMode) 에서 버튼을 보이거나 숨겨요.
-//     BlackOnly : 검정만 / Primaries : 검정·빨강·노랑·파랑 / MixTwo·MixFree : + 혼합색 칸 + 색 섞기
-// - 빈 쪽지에서는 되돌리기·모두 지우기가 비활성 (Update 에서 매 프레임 확인)
+// 아래 띠  : [붓] | [↶ 되돌리기] [↷ 다시 하기]                  [다 그렸어!] (GameManager)
+//   - 붓 끝 색 = 지금 색. 붓을 누르면 띠 바로 위에 팔레트가 떠요 (꼬리가 붓을 가리켜요). 한 번 더 누르면 닫혀요.
+//   - 쪽지에 그리기 시작하면 팔레트는 닫혀요.
+// 팔레트   : [검정] | [빨강] [노랑] [파랑] ( [↶ 물감 빼기] ) | [가는] [보통] [굵은]   (화면 폭에 맞춰 고르게)
+//   - 색을 고르면 물방울이 붓 끝으로 날아가 첨벙하고 색이 바뀌어요 (ColorMixer).
+//   - 섞는 단계(4 · 5단계)는 빨강 · 노랑 · 파랑이 물감이에요 : 누를 때마다 넣어져 섞이고, 옆에 넣은 횟수가 떠요.
+//   - 굵기 점 세 개 중 고른 점은 지금 색으로 칠하고 고리를 둘러요.
+// 단계마다 쓸 수 있는 색 : BlackOnly 검정 / Primaries 4색 / MixTwo 4색 + 물감 섞기 / MixFree 빨강 · 노랑 · 파랑 섞기 (검정은 섞어서)
 public class ToolBar : MonoBehaviour
 {
     [Header("연결")]
     [SerializeField] DrawingBoard board;
     [SerializeField] ColorMixer mixer;
+    [SerializeField] PaperView paperView;
 
-    [Header("색 버튼 (순서 고정 : 검정, 빨강, 노랑, 파랑)")]
-    [SerializeField] GameObject[] colorButtons;
-    [SerializeField] GameObject[] colorFrames;
+    [Header("아래 띠")]
+    [SerializeField] Button undoButton;
+    [SerializeField] Button redoButton;
 
-    [Header("혼합색 칸 + 색 섞기 버튼")]
-    [SerializeField] GameObject mixedSlotButton;
-    [SerializeField] Image mixedSlotSwatch;
-    [SerializeField] GameObject mixedSlotFrame;
-    [SerializeField] GameObject mixOpenButton;
-
-    [Header("연필 · 지우개 · 굵기 (가는, 보통, 굵은)")]
-    [SerializeField] GameObject pencilFrame;
-    [SerializeField] GameObject eraserFrame;
+    [Header("팔레트")]
+    [SerializeField] GameObject palette;
+    [SerializeField] GameObject blackFrame;         // 검정을 골랐으면 고리
+    [SerializeField] GameObject primaryDivider;     // 검정 | 빨강 · 노랑 · 파랑 사이 구분선
+    [SerializeField] GameObject[] primaryButtons;   // 빨강, 노랑, 파랑
+    [SerializeField] GameObject[] primaryFrames;
+    [SerializeField] GameObject paintUndo;          // 물감 빼기 (섞는 단계만)
+    [SerializeField] Image[] sizeDots;              // 가는 · 보통 · 굵은 점
     [SerializeField] GameObject[] sizeFrames;
 
-    [Header("되돌리기 · 모두 지우기")]
-    [SerializeField] Button undoButton;
-    [SerializeField] Button clearButton;
+    /// <summary>붓을 눌렀어요 (GameManager : 색 섞기 안내에서 붓을 눌러 볼 차례면 true 를 돌려주고, 팔레트는 대사 뒤에 열어요)</summary>
+    public System.Func<bool> OnBrushTap;
 
-    // 색 4가지와 굵기 3가지 (반지름 픽셀)
+    // 색 4가지 (검정 · 빨강 · 노랑 · 파랑)
     public static readonly Color[] Palette =
     {
-        new Color32(0, 0, 0, 255),       // 검정
-        new Color32(225, 45, 45, 255),   // 빨강
-        new Color32(250, 210, 40, 255),  // 노랑
-        new Color32(40, 90, 220, 255),   // 파랑
+        new Color32(0, 0, 0, 255),
+        new Color32(225, 45, 45, 255),
+        new Color32(250, 210, 40, 255),
+        new Color32(40, 90, 220, 255),
     };
-    static readonly int[] PenSizes = { 3, 5, 10 };
-
-    const int MixedSlot = 4;    // selectedColor 가 4 면 혼합색
-    const int Eraser = -1;      // selectedColor 가 -1 이면 지우개
+    static readonly int[] PenSizes = { 3, 6, 11 };       // 가는 · 보통 · 굵은 (반지름 픽셀)
+    static readonly Color DotColor = new Color32(140, 107, 78, 255);    // 고르지 않은 굵기 점
 
     ColorMode mode;
-    int selectedColor;
-    int lastColor;              // 지우개를 쓰기 전에 고른 색 (연필을 누르면 이 색으로 돌아가요)
     int selectedSize;
-    bool hasMixed;              // 혼합색을 한 번이라도 만들었는지
-    Color mixedColor;
 
-    /// <summary>단계 시작 때 GameManager 가 불러요. 쓸 수 있는 색에 맞춰 버튼을 정리.</summary>
+    /// <summary>지금 붓 색</summary>
+    public Color CurrentColor => mixer.ResultColor;
+    public bool PanelOpen => palette.activeSelf;
+    public int SelectedSize => selectedSize;
+
+    /// <summary>단계 시작 때 GameManager 가 불러요. 쓸 수 있는 색에 맞춰 팔레트를 정리</summary>
     public void Setup(ColorMode colorMode)
     {
         mode = colorMode;
         bool primaries = mode != ColorMode.BlackOnly;
         bool mixing = mode == ColorMode.MixTwo || mode == ColorMode.MixFree;
+        // 5단계(세 가지 섞기)는 검정 물감이 없어요. 빨강 · 노랑 · 파랑을 똑같이 넣어 검정을 만들어요
+        bool black = mode != ColorMode.MixFree;
+        blackFrame.transform.parent.gameObject.SetActive(black);
+        primaryDivider.SetActive(primaries && black);
+        foreach (GameObject b in primaryButtons) b.SetActive(primaries);
+        paintUndo.SetActive(mixing);
 
-        colorButtons[0].SetActive(true);
-        for (int i = 1; i < colorButtons.Length; i++) colorButtons[i].SetActive(primaries);
-        mixedSlotButton.SetActive(mixing);
-        mixOpenButton.SetActive(mixing);
-
-        // 혼합색은 단계마다 새로 만들어요
-        hasMixed = false;
-        mixedSlotSwatch.color = new Color(0.85f, 0.85f, 0.85f);
-        mixer.OnMixed = OnMixed;
-        mixer.Close();
-
+        mixer.OnChanged = OnColorChanged;
+        board.OnStrokeBegin = OnStrokeBegin;
+        mixer.Setup(mixing, mode == ColorMode.MixTwo ? 2 : 3);
+        ClosePanel();
         SelectSize(1);
-        SelectColor(0);
+    }
+
+    /// <summary>색 섞기 시범이 끝나면 붓을 다시 검정으로 (플레이어가 처음부터 섞어요)</summary>
+    public void ResetPaints()
+    {
+        mixer.Setup(mode == ColorMode.MixTwo || mode == ColorMode.MixFree, mode == ColorMode.MixTwo ? 2 : 3);
     }
 
     void Update()
     {
         undoButton.interactable = board.CanUndo;
-        clearButton.interactable = board.HasDrawn;
+        redoButton.interactable = board.CanRedo;
+    }
+
+    // 쪽지에 선을 긋기 시작했어요
+    void OnStrokeBegin()
+    {
+        mixer.MarkUsed();                                   // 섞은 색으로 그렸으면 다음 물감은 새로 섞기
+        if (palette.activeSelf) ClosePanel();               // 그리기 시작하면 팔레트는 닫혀요
     }
 
     // ───────────── 버튼 함수 ─────────────
 
-    /// <summary>[버튼] 색 고르기. 0 검정, 1 빨강, 2 노랑, 3 파랑</summary>
-    public void SelectColor(int index)
+    /// <summary>[버튼] 붓 : 팔레트 열기 · 닫기</summary>
+    public void BrushTap()
     {
-        selectedColor = lastColor = index;
-        board.SetColor(Palette[index]);
-        RefreshFrames();
+        Sfx.Play(Sfx.Tap);
+        if (OnBrushTap != null && OnBrushTap()) return;
+        if (palette.activeSelf) ClosePanel(); else OpenPanel();
     }
 
-    /// <summary>[버튼] 혼합색 칸 (만든 색이 있을 때만)</summary>
-    public void SelectMixed()
+    public void OpenPanel()
     {
-        if (!hasMixed) return;
-        selectedColor = lastColor = MixedSlot;
-        board.SetColor(mixedColor);
-        RefreshFrames();
+        palette.SetActive(true);
+        Refresh();
     }
 
-    /// <summary>[버튼] 연필 : 지우개에서 마지막으로 쓰던 색으로 돌아가기</summary>
-    public void SelectPen()
+    public void ClosePanel()
     {
-        if (lastColor == MixedSlot && hasMixed) SelectMixed();
-        else SelectColor(lastColor == MixedSlot ? 0 : lastColor);
+        palette.SetActive(false);
     }
 
-    /// <summary>[버튼] 지우개</summary>
-    public void SelectEraser()
-    {
-        selectedColor = Eraser;
-        board.UseEraser();
-        RefreshFrames();
-    }
+    /// <summary>예전 이름 (색 섞기 시범 · 자동 테스트) : 팔레트 열기</summary>
+    public void OpenMixer() => OpenPanel();
 
-    /// <summary>[버튼] 굵기. 0 가는 선, 1 보통 선, 2 굵은 선</summary>
+    /// <summary>[버튼] 검정</summary>
+    public void BlackTap() => mixer.SetPure(0);
+
+    /// <summary>[버튼] 빨강 · 노랑 · 파랑. index 0 빨강, 1 노랑, 2 파랑. 섞는 단계면 물감을 넣어요</summary>
+    public void PaintTap(int index) => mixer.AddPaint(index);
+
+    /// <summary>[버튼] 마지막에 넣은 물감 빼기</summary>
+    public void PaintUndo() => mixer.UndoPaint();
+
+    /// <summary>색 하나로 고르기 (0 검정, 1 빨강, 2 노랑, 3 파랑). 자동 테스트 · 녹화용</summary>
+    public void SelectColor(int index) => mixer.SetPure(index);
+
+    /// <summary>[버튼] 굵기. 0 가는, 1 보통, 2 굵은</summary>
     public void SelectSize(int index)
     {
         selectedSize = index;
         board.SetPenSize(PenSizes[index]);
-        RefreshFrames();
+        Refresh();
     }
 
-    /// <summary>[버튼] 색 섞기 → 팔레트 열기</summary>
-    public void OpenMixer()
-    {
-        mixer.Open(mode == ColorMode.MixTwo ? 2 : 3);
-    }
-
-    /// <summary>[버튼] 되돌리기</summary>
+    /// <summary>[버튼 ↶] 되돌리기</summary>
     public void Undo() => board.Undo();
 
-    /// <summary>[버튼] 모두 지우기</summary>
+    /// <summary>[버튼 ↷] 다시 하기</summary>
+    public void Redo() => board.Redo();
+
+    /// <summary>모두 지우기 (자동 테스트용. 화면에는 버튼이 없어요)</summary>
     public void ClearAll() => board.Clear();
 
     // ───────────── 내부 ─────────────
 
-    // 팔레트에서 색을 다 섞으면 불려요 → 혼합색 칸에 저장하고 바로 그 색 선택
-    void OnMixed(Color color, string colorName)
+    void OnColorChanged(Color color)
     {
-        hasMixed = true;
-        mixedColor = color;
-        mixedSlotSwatch.color = color;
-        SelectMixed();
+        board.SetColor(color);
+        Refresh();
     }
 
-    // 고른 것만 테두리 보이게
-    void RefreshFrames()
+    // 고른 색 고리 · 굵기 점 (고른 점은 지금 색으로)
+    void Refresh()
     {
-        for (int i = 0; i < colorFrames.Length; i++) colorFrames[i].SetActive(selectedColor == i);
-        mixedSlotFrame.SetActive(selectedColor == MixedSlot);
-        pencilFrame.SetActive(selectedColor != Eraser);
-        eraserFrame.SetActive(selectedColor == Eraser);
-        for (int i = 0; i < sizeFrames.Length; i++) sizeFrames[i].SetActive(selectedSize == i);
+        int pure = mixer.PureIndex;
+        blackFrame.SetActive(pure == 0);
+        bool mixing = mode == ColorMode.MixTwo || mode == ColorMode.MixFree;
+        for (int i = 0; i < primaryFrames.Length; i++) primaryFrames[i].SetActive(!mixing && pure == i + 1);
+        for (int i = 0; i < sizeDots.Length; i++)
+        {
+            sizeDots[i].color = i == selectedSize ? CurrentColor : DotColor;
+            sizeFrames[i].SetActive(i == selectedSize);
+        }
     }
 }
