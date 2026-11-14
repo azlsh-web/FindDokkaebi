@@ -230,10 +230,14 @@ public static class MvpSceneBuilder
         magSparkles.SetAsLastSibling();
         pauseImg.transform.SetAsLastSibling();  // 사탕은 톱니 버튼 뒤를 지나 나와요
 
-        // 남은 시간 : 위 줄(돋보기 · 사탕 · 톱니)과 전체 화면 쪽지 사이에 가로로 길게 누운 초 (HUD_CandleGauge).
-        //   왼쪽 끝은 촛대 받침, 오른쪽 끝부터 잘려 나가며 불꽃이 왼쪽으로 와요 (IncenseBurn horizontal).
-        //   지금 그림은 임시예요 (Codex 로 만듦). 아트팀 그림이 오면 같은 이름으로 바꿔 넣어요.
+        // 남은 시간 : 위 줄(돋보기 · 사탕 · 톱니)과 전체 화면 쪽지 사이에 화면 가로 가득 놓인 게이지 바 (HUD_CandleGauge).
+        //   오른쪽 끝부터 줄어들어요 (IncenseBurn horizontal). 지금 그림은 자리만 보이는 임시 직사각형 바예요
+        //   (make_gauge_placeholder.py). 아트팀 그림(2000 x 200)이 오면 같은 이름 파일만 바꿔 넣으면 돼요.
+        //   뒤에 같은 크기의 옅은 틀(GaugeSlot)이 깔려 있어서 바가 다 줄어도 게이지 자리가 보여요.
         var timerGroup = NewEmpty("TimerGroup", hud);
+        var gaugeSlot = NewImage("GaugeSlot", timerGroup, new Color(OutlineColor.r, OutlineColor.g, OutlineColor.b, 0.15f));
+        gaugeSlot.raycastTarget = false;
+        Place(gaugeSlot.rectTransform, new Vector2(0f, GaugeTop), new Vector2(GaugeWidth, GaugeWidth / 10f));
         var incenseBar = NewImage("Incense", timerGroup, Color.white);
         incenseBar.sprite = T("HUD_CandleGauge");
         incenseBar.raycastTarget = false;
@@ -241,7 +245,7 @@ public static class MvpSceneBuilder
         incenseBar.fillMethod = Image.FillMethod.Horizontal;
         incenseBar.fillOrigin = (int)Image.OriginHorizontal.Left;
         var stickRt = incenseBar.rectTransform;
-        Place(stickRt, new Vector2(485f - 540f, GaugeTop), new Vector2(890f, 99f));   // 화면 x 40 ~ 930, 그림 1800 x 200 비율
+        Place(stickRt, new Vector2(0f, GaugeTop), new Vector2(GaugeWidth, GaugeWidth / 10f));   // 화면 x 50 ~ 1030 (좌우 여백 50), 그림 2000 x 200 비율
         Image IncenseFx(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, Color color)
         {
             var img = NewImage(name, parent, color);
@@ -253,17 +257,18 @@ public static class MvpSceneBuilder
         var incenseTipGo = new GameObject("IncenseFx_Tip", typeof(RectTransform));
         incenseTipGo.transform.SetParent(incenseBar.transform, false);
         var incenseTip = (RectTransform)incenseTipGo.transform;
-        Anchor(incenseTip, 0f, 0.5f, Vector2.zero, Vector2.zero);           // 초 몸통 가운데 줄의 잘린 끝 (불꽃이 그 바로 위)
-        incenseTip.localScale = Vector3.one * 1.3f;                       // 굵은 초에 맞게 불꽃도 조금 크게
+        Anchor(incenseTip, 0f, 0.5f, Vector2.zero, Vector2.zero);           // 바의 줄어드는 끝 (불꽃 · 빛은 숨겨 둬요)
         var incenseAsh = IncenseFx("IncenseFx_Ash", incenseTip, T("Incense_Ash"), new Vector2(0, 40), new Vector2(70, 4), Color.white);
         var incenseGlow = IncenseFx("IncenseFx_Glow", incenseTip, T("Common_SoftPuff"), new Vector2(0, -35), new Vector2(150, 150), Color.clear);
+        incenseGlow.enabled = false;                                    // 그냥 바라서 불꽃 · 빛은 없어요
         IncenseFx("IncenseFx_Ember", incenseTip, T("Incense_Ember"), new Vector2(0, -8), new Vector2(70, 38), Color.white).enabled = false;   // 향 불씨는 초에 안 어울려요
-        var incenseFlame = IncenseFx("IncenseFx_Flame", incenseTip, T("Incense_Flame"), new Vector2(0, -14), new Vector2(66, 88), Color.white);   // 잘린 끝 심지 위에 붙어요
+        var incenseFlame = IncenseFx("IncenseFx_Flame", incenseTip, T("Incense_Flame"), new Vector2(0, -14), new Vector2(66, 88), Color.white);
+        incenseFlame.enabled = false;
         var incenseFallingAsh = IncenseFx("IncenseFx_FallingAsh", incenseTip, T("Incense_Ash"), Vector2.zero, new Vector2(34, 42), Color.white);
         incenseFallingAsh.enabled = false;
-        var incenseSmoke = new Image[0];                                // 누운 초는 연기 없이
-        var timerText = NewText("TimerText", timerGroup, "60", 40, Vector2.zero, Vector2.zero, bold: true);
-        Place(timerText.rectTransform, new Vector2(990f - 540f, GaugeTop + 49.5f - 28f), new Vector2(90f, 56f));   // 초 오른쪽, 가운데 높이
+        var incenseSmoke = new Image[0];                                // 연기 없이
+        var timerText = NewText("TimerText", timerGroup, "60", 48, Vector2.zero, Vector2.zero, bold: true);
+        Place(timerText.rectTransform, new Vector2(412f - 540f, 78f), new Vector2(140f, 64f));   // 위 줄 빈 가운데 (돋보기와 사탕 사이). 초가 화면 폭을 다 써서 옆에 둘 곳이 없어요
         timerText.textWrappingMode = TextWrappingModes.NoWrap;
 
         // ── 1. 시작 화면 : 로고 · 캐릭터 · 시작 버튼만 ──
@@ -1094,7 +1099,7 @@ public static class MvpSceneBuilder
         SetArray(burnSo, "smoke", incenseSmoke);
         Set(burnSo, "secondsText", timerText);
         burnSo.FindProperty("horizontal").boolValue = true;
-        burnSo.FindProperty("baseRatio").floatValue = 0.15f;              // 촛대 받침(왼쪽 15%)은 끝까지 남아요
+        burnSo.FindProperty("baseRatio").floatValue = 0f;                 // 바는 끝까지 다 줄어요
         burnSo.FindProperty("maxAshHeight").floatValue = 0f;
         burnSo.FindProperty("ashDrops").intValue = 0;
         burnSo.ApplyModifiedPropertiesWithoutUndo();
@@ -1591,6 +1596,7 @@ public static class MvpSceneBuilder
 
     // 남은 시간 초 게이지의 위 끝 (화면 1080 폭 기준). 위 줄 아래 ~ 전체 화면 쪽지(FullArea 위 300 + 여백) 사이
     const float GaugeTop = 200f;
+    const float GaugeWidth = 980f;   // 화면 1080 - 좌우 여백 50 x 2
 
     // 시안의 상자 (x0,y0)-(x1,y1) 자리에 놓기 (부모 = 화면 크기 패널)
     static void PlaceM(RectTransform rt, float x0, float y0, float x1, float y1)

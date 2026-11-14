@@ -25,6 +25,7 @@ static class MvpLayoutCheck
     {
         new[] { "DrawPanel/ToolBar/Brush/", "DrawPanel/ToolBar/Brush/" },
         new[] { "HUD/TimerGroup/Incense", "HUD/TimerGroup/Incense" },   // 향 불꽃은 향 끝에 얹혀요
+        new[] { "HUD/TimerGroup/GaugeSlot", "HUD/TimerGroup/Incense" },   // 게이지 바는 같은 크기의 옅은 틀 위에 놓여요
         new[] { "DrawPanel/ToolBar/BrushHighlight", "DrawPanel/" },   // 5단계 시범 때 붓 둘레를 도는 도깨비불   // 붓 끝(지금 색) 위에 붓대
         new[] { "DrawPanel/ToolBar/Palette/PaintHighlight", "DrawPanel/" },   // 5단계 안내 때 넣을 물감 둘레를 도는 도깨비불
         new[] { "DrawPanel/ToolBar/Palette/Tail", "DrawPanel/ToolBar/" },   // 팔레트 꼬리는 카드와 띠 사이에 걸쳐 붓을 가리켜요

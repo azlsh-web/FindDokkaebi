@@ -38,13 +38,20 @@ public class IncenseBurn : MonoBehaviour
     const float AshFallDistance = 150f;
 
     Color normalTextColor;
+    bool ready;
     float flameBaseY;
     float fallTime = -1f;
     float fallStartY;
     int lastAshStep;
 
-    void Awake()
+    void Awake() => Init();
+
+    // GameManager 가 묶음을 켜기 전에 Show 를 먼저 부르면 Awake 보다 앞서요.
+    //   그때 비어 있는 색(투명)을 숫자에 칠하지 않게, 처음 한 번 원래 색을 먼저 기억해요.
+    void Init()
     {
+        if (ready) return;
+        ready = true;
         normalTextColor = secondsText.color;
         flameBaseY = flame.anchoredPosition.y;
     }
@@ -52,6 +59,7 @@ public class IncenseBurn : MonoBehaviour
     /// <summary>remaining = 남은 비율 (1 → 0), seconds = 남은 초</summary>
     public void Show(float remaining, float seconds)
     {
+        Init();
         remaining = Mathf.Clamp01(remaining);
         stick.fillAmount = Mathf.Lerp(baseRatio, 1f, remaining);
         bool urgent = seconds <= urgentSeconds;

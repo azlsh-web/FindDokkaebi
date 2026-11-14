@@ -680,6 +680,8 @@ static class MvpSelfTest
                 Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 1단계 첫 그리기에서만");
                 candiesAtDraw = GetInt("candies");
                 Check(candiesAtDraw == 3, $"{st.Title} 사탕 3개로 시작");
+                Check(Find("HUD/TimerGroup/TimerText").GetComponent<TMP_Text>().color.a > 0.5f, "남은 초 숫자가 보인다 (투명하지 않음)");
+                Check(((RectTransform)Find("HUD/TimerGroup/Incense")).rect.width >= 950f, "남은 시간 게이지는 화면 가로 가득");
                 bool primaries = st.colorMode != ColorMode.BlackOnly;
                 bool mixing = st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree;
                 Check(!IsOn("DrawPanel/ToolBar/Palette"), "팔레트는 닫힌 채로 시작");
@@ -810,7 +812,7 @@ static class MvpSelfTest
             // 판정 대기
             Add(s == 2 ? 1.0f : 0.3f, $"{st.Title} 판정", () =>
             {
-                if (s == 2) Check(Find("HUD/TimerGroup/Incense/IncenseFx_Tip").position.x < Find("HUD/TimerGroup/Incense").position.x - 100f, "향이 다 타면 불꽃이 왼쪽 끝까지 온다");
+                if (s == 2) Check(Find("HUD/TimerGroup/Incense/IncenseFx_Tip").position.x < Find("HUD/TimerGroup/Incense").position.x - 100f, "시간이 다 되면 게이지 바가 왼쪽 끝까지 줄어든다");
                 Check(IsOn("JudgePanel"), s == 2 ? "향이 다 타서 자동 제출됐다" : "판정 화면");
                 Check(CandiesLit() == candiesAtDraw - 1, $"제출하면 사탕 -1 ({CandiesLit()})");
                 Check(Find("HUD/CandyRow/Candy_0").GetComponent<Image>().color.a < 0.9f, "사탕은 왼쪽부터 흐려진다");
