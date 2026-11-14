@@ -24,7 +24,7 @@ os.makedirs(OUT, exist_ok=True)
 # 새 그림이 들어갈 자리에 지금 쓰는 그림 (표의 "지금 그림" 칸)
 NOW = {"Dialogue_Box": ("UI", "Common_Card", "흰 카드"), "Paper_Score": ("UI", "Common_Card", "흰 카드"),
        "Chapter_Picnic": ("Background", "BG_Picnic", "배경 + 캐릭터로 임시"),
-       "HUD_CandleGauge": ("UI", "Incense_Stick", "세로 향을 눕혀 임시")}
+       "HUD_CandleGauge": ("UI", "HUD_CandleGauge", "Codex 로 만든 임시 그림 (같은 이름)")}
 
 # 흰 판마다 어떻게 하는지 (2026-11-11 정함)
 PLAN = [
