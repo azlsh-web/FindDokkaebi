@@ -1410,11 +1410,14 @@ public static class MvpSceneBuilder
             var compression = crisp ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
             int maxSize = 4096;                                  // 기본 2048 이면 긴 그림이 줄어들어 흐려져요
             //   쪽지 질감 3장은 아주 커서(그림판 종이 3230 x 3814) 그대로 두면 메모리를 많이 먹어요.
-            //   결이 옅고 테두리가 굵어서 압축하고 2048 로 줄여도 티가 안 나요 (화면에서는 가장 커도 2460 정도)
+            //   웹(WebGL)에서는 크기가 2의 거듭제곱이 아니고 밉맵이 켜진 그림은 압축이 풀려 무압축으로 들어가요.
+            //   종이 결(잡티) 때문에 gzip 도 잘 안 돼서, 2048 이면 세 장이 웹 용량 약 12MB 를 차지했어요.
+            //   1024 로 줄이면 약 3MB : 화면(폭 1080)에서 그림판 종이 820 x 963 · 대사 상자 1008 x 312 는 거의 1:1,
+            //   채점표 972 x 1560 만 1.5 배 늘어나요 (테두리가 굵어서 티가 거의 안 나요)
             if (path.EndsWith("UI/Draw_Paper.png") || path.EndsWith("UI/Paper_Score.png") || path.EndsWith("UI/Dialogue_Box.png"))
             {
                 compression = TextureImporterCompression.CompressedHQ;
-                maxSize = 2048;
+                maxSize = 1024;
             }
             //   소풍 카드 그림은 화면에서 846 x 618 로만 보여서, 1024 로 줄여 넣어요 (선이 또렷하게 압축은 안 해요. 웹 용량 약 12MB → 4MB)
             if (path.EndsWith("UI/Chapter_Picnic.png")) maxSize = 1024;
