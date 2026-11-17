@@ -33,14 +33,16 @@ TREE = [
         ("StartButton", "UI/Common_ButtonCoral", G10),
     ]),
     ("1-2. 챕터 선택", "Frame/ChapterPanel", [
-        ("Chapter_1/Picture (소풍 카드 그림, 아트팀 그림 Chapter_Picnic 요청 중)", "Background/BG_Picnic", "소풍 배경 일부에 캐릭터 · 돗자리를 얹은 임시 그림"),
+        ("Chapter_1/Picture (소풍 카드 그림)", "UI/Chapter_Picnic", TEAM),
         ("Chapter_2~5/Lock (준비 중)", "UI/Chapter_Lock", TEMP + " (make_candy_jar.py)"),
     ]),
     ("2. 대화 + 오프닝 + 건네기", "Frame/DialoguePanel", [
         ("Boy", "Characters/Char_Boy_Normal", TEAM),
         ("Dokkaebi (1단계)", "Characters/Char_Dokkaebi_NoBat", TEAM),
         ("Dokkaebi (2단계부터)", "Characters/Char_Dokkaebi_Normal", TEAM),
-        ("GiveNote, DialogueBox", "UI/Common_Card", CODE),
+        ("DialogueBox (모든 대사 상자)", "UI/Dialogue_Box", TEAM),
+        ("GiveNote (건네는 쪽지, 그림판 종이를 줄여서)", "UI/Draw_Paper", TEAM),
+        ("Opening/Idea/Note (오프닝 쪽지, 그림판 종이를 줄여서)", "UI/Draw_Paper", TEAM),
         ("Opening/Bag · Mat · Gimbap", "물건별 원본 (아래 단계 폴더)", ""),
         ("Opening/Idea/Pencil", "UI/Draw_PencilButton", TEAM),
         ("Opening/Idea/Snack, SnackOut", "UI/HUD_Candy", TEAM),
@@ -61,7 +63,7 @@ TREE = [
         ("CountText", "3 · 2 · 1 은 게임 글자 (Jua)", ""),
     ]),
     ("4. 그리기", "Frame/DrawPanel", [
-        ("Desk/Paper (쪽지, 두 손가락으로 키우기 · 돌리기 · 옮기기)", "UI/Common_Card", CODE + ". 쪽지 그림(Draw_Paper)을 받으면 바꿔요"),
+        ("Desk/Paper (쪽지, 두 손가락으로 키우기 · 돌리기 · 옮기기)", "UI/Draw_Paper", TEAM + ", 둥근 테두리 바깥을 투명하게 (cut_paper_corners.py). 그린 선은 위의 투명한 층(Board)에 따로 그려요"),
         ("FitButton (맞춤, 쪽지를 움직였을 때만)", "UI/Draw_FitIcon", TEMP + " (make_candy_jar.py)"),
         ("ToolBar (아래 띠)", "단색 + 진갈색 윗줄", CODE),
         ("ToolBar/Brush/Body (붓)", "UI/Draw_Brush", TEMP + ", 붓 끝이 왼쪽 아래를 봐요 (make_candy_jar.py)"),
@@ -77,6 +79,7 @@ TREE = [
         ("MagnifierPeek/Lens/TimeRing (남은 시간, 시계 방향으로 줄어듦)", "UI/Magnifier_TimeRing", TEMP + ", 돋보기 테두리의 크림색 띠를 오림 (make_candy_jar.py)"),
     ]),
     ("6. 판정 대기", "Frame/JudgePanel", [
+        ("MyDrawingBack (건네받은 쪽지)", "UI/Draw_Paper", TEAM),
         ("Dokkaebi", "Characters/Char_Dokkaebi_Think", TEAM),
     ]),
     ("7. 결과", "Frame/ResultPanel", [
@@ -88,6 +91,8 @@ TREE = [
         ("GiveUpButton 아이콘", "UI/Result_IconGiveUp", CODE),
     ]),
     ("8. 채점표", "Frame/ComparePanel", [
+        ("Paper (채점표 바깥 판)", "UI/Paper_Score", TEAM),
+        ("MyCard (칸 없이 내가 그린 선만)", "그림판의 선 층", ""),
         ("Circle", "UI/Score_Circle", CODE),
         ("Slash", "UI/Score_Slash", CODE),
         ("OriginalCard", "물건별 원본 (아래 단계 폴더)", ""),

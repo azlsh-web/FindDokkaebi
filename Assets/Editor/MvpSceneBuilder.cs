@@ -285,7 +285,7 @@ public static class MvpSceneBuilder
         var titleSettingsButton = SettingsButton(title);
 
         // ── 1-2. 챕터 선택 : 큰 소풍 카드 하나 + 준비 중인 카드 4개 (자물쇠). 화면 제목 없이 카드만 ──
-        //   그림은 아트팀에 요청할 예정이라, 지금은 있는 그림(소풍 배경 · 캐릭터 · 돗자리)으로 임시로 꾸며요
+        //   소풍 카드 그림은 아트팀 그림(Chapter_Picnic). 파일이 없으면 있는 그림(소풍 배경 · 캐릭터 · 돗자리)으로 임시로 꾸며요
         var chapter = NewPanel("ChapterPanel", canvas);
         var chapterButtons = new Button[5];
         var chapterSettingsButton = SettingsButton(chapter);
@@ -364,8 +364,8 @@ public static class MvpSceneBuilder
         }
         // 쪽지 위에 사탕을 겹쳐 놓아요 (쪽지 + 간식을 같이 두면 도깨비가 와요)
         var openingIdea = NewEmpty("Idea", openingGroup);
-        var ideaNote = NewCard("Note", openingIdea, Vector2.zero, Vector2.zero);
-        M((RectTransform)ideaNote, 128, 100, 96, 112);
+        var ideaNote = NewPaper("Note", openingIdea, "Draw_Paper").transform;    // 그림판 종이를 줄여서
+        M((RectTransform)ideaNote, 128, 100, 96, 113);
         Anim(ideaNote.gameObject, SimpleAnim.Kind.Pop, 0.45f, 0f, 0f);
         for (int i = 0; i < 2; i++)                                         // 쪽지에 적힌 줄
         {
@@ -407,16 +407,17 @@ public static class MvpSceneBuilder
         var dokImageAnim = Anim(dokImage.gameObject, SimpleAnim.Kind.None, 0.8f, 0f, 15f);
 
         // 건네기 : 그림과 글이 적힌 쪽지. 간식은 위쪽 간식 자리에서 도깨비에게 날아가요.
-        var giveNote = NewCard("GiveNote", dialogue, Vector2.zero, Vector2.zero);
-        M((RectTransform)giveNote, 82, 58, 190, 192);
+        //   쪽지는 그림판 종이(Draw_Paper)를 줄인 것. 판정 대기 화면의 쪽지와 같은 모양이에요
+        var giveNote = NewPaper("GiveNote", dialogue, "Draw_Paper").transform;
+        M((RectTransform)giveNote, 95, 58, 163, 192);
         giveNote.gameObject.AddComponent<CanvasGroup>();
         var giveNoteAnim = Anim(giveNote.gameObject, SimpleAnim.Kind.Float, 3f, 0f, 30f, 2f);
         var giveNoteText = NewText("Text", giveNote, "", 42, Vector2.zero, Vector2.zero);
-        PIn(giveNoteText.rectTransform, 12, 8, 166, 40);
-        giveNoteText.enableAutoSizing = true; giveNoteText.fontSizeMin = 30; giveNoteText.fontSizeMax = 42;
+        PIn(giveNoteText.rectTransform, 7, 5, 149, 27);
+        giveNoteText.enableAutoSizing = true; giveNoteText.fontSizeMin = 24; giveNoteText.fontSizeMax = 33;
         var giveNoteDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         giveNoteDrawing.transform.SetParent(giveNote, false);
-        PIn(giveNoteDrawing.rectTransform, 22, 46, 146, 138);
+        PIn(giveNoteDrawing.rectTransform, 9, 30, 145, 154);
         giveNoteDrawing.raycastTarget = false;
         var giveSnack = MImage("SnackOut", dialogue, snack, 191, 20, 30, 33);
         Anim(giveSnack.gameObject, SimpleAnim.Kind.SnackOut, 0.7f, 0f, 0f);
@@ -458,11 +459,8 @@ public static class MvpSceneBuilder
         var desk = NewEmpty("Desk", draw);                                  // 쪽지가 움직이는 자리 (화면보다 넓게)
         Stretch((RectTransform)desk, -700f);
         var paperView = desk.gameObject.AddComponent<PaperView>();
-        // 쪽지 : 화면 폭의 4분의 3쯤, 똑바로. 쪽지 질감 그림(Draw_Paper)이 오면 이 카드 자리에 깔아요
-        var paperImg = NewImage("Paper", desk, Color.white);
-        paperImg.sprite = cardSprite;
-        paperImg.type = Image.Type.Sliced;
-        paperImg.pixelsPerUnitMultiplier = 1f / K;
+        // 쪽지 : 화면 폭의 4분의 3쯤, 똑바로. 쪽지 질감 그림(Draw_Paper) 위에 그린 선만 투명한 층(Board)으로 올려요
+        var paperImg = NewPaper("Paper", desk, "Draw_Paper");
         paperImg.raycastTarget = false;
         var paperRt = paperImg.rectTransform;
         paperRt.anchorMin = paperRt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -730,7 +728,7 @@ public static class MvpSceneBuilder
         lensMask.rectTransform.anchoredPosition = Vector2.zero;
         lensMask.rectTransform.sizeDelta = Vector2.one * (lensHole + 12f);      // 테두리 밑까지
         lensMask.gameObject.AddComponent<Mask>().showMaskGraphic = false;
-        var peekView = NewImage("View", lensMask.transform, new Color32(253, 252, 245, 255));   // 쪽지 종이 색
+        var peekView = NewImage("View", lensMask.transform, new Color32(250, 237, 219, 255));   // 쪽지 종이(Draw_Paper) 색
         peekView.raycastTarget = false;
         peekView.rectTransform.sizeDelta = new Vector2(796f, 939f);
         var peekOriginal = NewImage("Original", peekView.transform, Color.white);
@@ -771,10 +769,7 @@ public static class MvpSceneBuilder
 
         // ── 5. 판정 대기 : 내 그림은 떠 있고, 도깨비는 가운데서 좁게 오가요 ──
         var judgeP = NewPanel("JudgePanel", canvas);
-        var judgeDrawingBack = MImage("MyDrawingBack", judgeP, cardSprite, 105, 90, 150, 177);
-        judgeDrawingBack.type = Image.Type.Sliced;
-        judgeDrawingBack.preserveAspect = false;
-        judgeDrawingBack.pixelsPerUnitMultiplier = 1f / K;
+        var judgeDrawingBack = MImage("MyDrawingBack", judgeP, T("Draw_Paper"), 105, 90, 150, 177);   // 그림판 종이를 줄여서
         Anim(judgeDrawingBack.gameObject, SimpleAnim.Kind.Float, 3f, 0f, 30f, 2f);
         var judgeDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         judgeDrawing.transform.SetParent(judgeDrawingBack.transform, false);
@@ -863,9 +858,10 @@ public static class MvpSceneBuilder
 
         // ── 7. 채점표 : 시험지처럼 번호 위에 동그라미 · 빗금 ──
         var compare = NewPanel("ComparePanel", canvas);
-        var paper = NewCard("Paper", compare, Vector2.zero, Vector2.zero);
+        //   바깥 판은 아트팀 그림(Paper_Score). 왼쪽 위는 칸 없이 내가 그린 선만, 오른쪽 위는 흰 칸에 원본
+        var paper = NewPaper("Paper", compare, "Paper_Score").transform;
         M((RectTransform)paper, 18, 62, 324, 520);
-        var mineCard = NewCard("MyCard", paper, Vector2.zero, Vector2.zero);
+        var mineCard = NewEmpty("MyCard", paper);
         PIn((RectTransform)mineCard, 14, 14, 138, 150);
         var compareMine = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         compareMine.transform.SetParent(mineCard, false);
@@ -1410,9 +1406,17 @@ public static class MvpSceneBuilder
             //   모든 그림에 밉맵(미리 줄여 둔 그림)을 켜서 작은 화면에서 크게 줄어들어도 선이 끊기지 않게
             bool crisp = path.Contains("/UI/") || path.EndsWith("Background/BG_Start.png");
             var compression = crisp ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
+            int maxSize = 4096;                                  // 기본 2048 이면 긴 그림이 줄어들어 흐려져요
+            //   쪽지 질감 3장은 아주 커서(그림판 종이 3230 x 3814) 그대로 두면 메모리를 많이 먹어요.
+            //   결이 옅고 테두리가 굵어서 압축하고 2048 로 줄여도 티가 안 나요 (화면에서는 가장 커도 2460 정도)
+            if (path.EndsWith("UI/Draw_Paper.png") || path.EndsWith("UI/Paper_Score.png") || path.EndsWith("UI/Dialogue_Box.png"))
+            {
+                compression = TextureImporterCompression.CompressedHQ;
+                maxSize = 2048;
+            }
             if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
                 || importer.spriteBorder != border || importer.textureCompression != compression
-                || !importer.mipmapEnabled || importer.maxTextureSize < 4096)
+                || !importer.mipmapEnabled || importer.maxTextureSize != maxSize || !importer.alphaIsTransparency)
             {
                 importer.textureType = TextureImporterType.Sprite;
                 importer.spriteImportMode = SpriteImportMode.Single;
@@ -1420,7 +1424,8 @@ public static class MvpSceneBuilder
                 importer.textureCompression = compression;
                 importer.mipmapEnabled = true;
                 importer.filterMode = FilterMode.Trilinear;
-                importer.maxTextureSize = 4096;                  // 기본 2048 이면 긴 그림이 줄어들어 흐려져요
+                importer.maxTextureSize = maxSize;
+                importer.alphaIsTransparency = true;             // 투명한 곳의 색이 가장자리에 번지지 않게
                 importer.SaveAndReimport();
             }
         }
@@ -1520,6 +1525,14 @@ public static class MvpSceneBuilder
     }
 
     // 크림(또는 흰) 카드 : 진갈색 굵은 테두리가 있는 둥근 네모
+    // 쪽지 질감 그림 한 장 (늘리지 않고 그대로 깔아요. 크기는 그림 비율에 맞춰 놓아요). 카드처럼 클릭은 막아요
+    static Image NewPaper(string name, Transform parent, string sprite)
+    {
+        var img = NewImage(name, parent, Color.white);
+        img.sprite = T(sprite);
+        return img;
+    }
+
     static Transform NewCard(string name, Transform parent, Vector2 pos, Vector2 size)
     {
         var img = NewImage(name, parent, Color.white);
@@ -1793,7 +1806,7 @@ public static class MvpSceneBuilder
     // 대사 상자 : 모든 대사가 같은 크기 · 같은 자리예요
     static DialogueBox NewDialogueBox(Transform parent, Sprite face)
     {
-        var card = NewCard("DialogueBox", parent, Vector2.zero, Vector2.zero);
+        var card = NewPaper("DialogueBox", parent, "Dialogue_Box").transform;   // 아트팀 그림 (2098 x 649), 늘리지 않아요
         M((RectTransform)card, 12, 513, 336, 104);
         var faceImg = NewImage("Face", card, Color.white);
         faceImg.sprite = face;

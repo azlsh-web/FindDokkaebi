@@ -872,7 +872,7 @@ public class GameManager : MonoBehaviour
         }
         else if (judge.IsReady)
         {
-            StartCoroutine(judge.Judge(Stage, board.Texture,
+            StartCoroutine(judge.Judge(Stage, board.FlatTexture(),   // AI 에는 흰 바탕에 합친 그림을 보내요
                 v => { if (ticket == judgeTicket) StartCoroutine(FinishLoopThen(ticket, () => OnVerdict(v))); },
                 e => { if (ticket == judgeTicket) StartCoroutine(FinishLoopThen(ticket, () => OnJudgeError(e))); }));
         }
@@ -1171,7 +1171,7 @@ public class GameManager : MonoBehaviour
         string dir = System.IO.Path.Combine(Application.dataPath, "..", "Temp", "Submissions");
         System.IO.Directory.CreateDirectory(dir);
         string name = $"{System.DateTime.Now:MMdd_HHmmss}_stage{Stage.stageNumber}";
-        System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, name + ".png"), board.Texture.EncodeToPNG());
+        System.IO.File.WriteAllBytes(System.IO.Path.Combine(dir, name + ".png"), board.FlatTexture().EncodeToPNG());
         string log = "";
         for (int i = 0; i < verdict.present.Length; i++)
             log += $"{Stage.features[i].id} {(verdict.present[i] ? "O" : "X")} {Stage.features[i].name} : {verdict.notes?[i]}\n";

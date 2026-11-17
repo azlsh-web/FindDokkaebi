@@ -1337,18 +1337,18 @@ static class MvpSelfTest
     internal static void LoadSketch(Texture2D tex)
     {
         Color32[] px = tex.GetPixels32();
-        var paper = new Color32(253, 252, 245, 255);                 // 손그림의 흰 종이 → 쪽지 종이 색
+        var blank = new Color32(255, 255, 255, 0);                   // 손그림의 흰 종이 → 투명 (종이 그림은 뒤에 따로 깔려 있어요)
         for (int i = 0; i < px.Length; i++)
-            if (px[i].r == 255 && px[i].g == 255 && px[i].b == 255) px[i] = paper;
+            if (px[i].r == 255 && px[i].g == 255 && px[i].b == 255) px[i] = blank;
         Board().LoadPixels(px);
     }
 
-    // 그림판 비율 좌표(0~1)의 픽셀에 잉크가 있는지 (종이 색이 아니면 잉크)
+    // 그림판 비율 좌표(0~1)의 픽셀에 잉크가 있는지 (투명하지 않으면 잉크)
     static bool Ink(float u, float v)
     {
         Texture2D t = Board().Texture;
         Color32 c = t.GetPixel(Mathf.Clamp((int)(u * t.width), 0, t.width - 1), Mathf.Clamp((int)(v * t.height), 0, t.height - 1));
-        return !(c.r == 253 && c.g == 252 && c.b == 245);
+        return c.a >= 128;
     }
 
     // 그림판 위 비율 좌표(0~1)를 따라 가짜 드래그 (0~1 밖이면 그림판 밖)
