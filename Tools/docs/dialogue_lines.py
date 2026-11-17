@@ -8,7 +8,7 @@ from PIL import ImageFont
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 SOURCE = os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs")
 STAGES = ["방망이", "가방", "돗자리", "김밥", "친구"]
-FACE = {"BoySurprised": "주인공 (놀람)", "BoyHappy": "주인공 (기쁨)", "BoySad": "주인공 (울음)", "Dokkaebi": "도깨비"}
+FACE = {"BoySurprised": "주인공 (놀람)", "BoyHappy": "주인공 (기쁨)", "BoySad": "주인공 (울음)", "BoyNormal": "주인공 (보통)", "Dokkaebi": "도깨비"}
 
 # 대사 상자 크기 : MvpSceneBuilder.NewDialogueBox (글자 칸 폭 663, 글자 크기 48, 세 줄까지 들어가요)
 BOX_WIDTH, FONT_SIZE, MAX_LINES = 663, 48, 3

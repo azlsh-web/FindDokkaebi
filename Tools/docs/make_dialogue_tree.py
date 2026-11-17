@@ -12,7 +12,7 @@ from doc_pdf import BASE_CSS, write_pdf
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 src = open(os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs"), encoding="utf-8").read()
-FACE = {"BoySurprised": "주인공(놀람)", "BoyHappy": "주인공(기쁨)", "BoySad": "주인공(울음)", "Dokkaebi": "도깨비"}
+FACE = {"BoySurprised": "주인공(놀람)", "BoyHappy": "주인공(기쁨)", "BoySad": "주인공(울음)", "BoyNormal": "주인공(보통)", "Dokkaebi": "도깨비"}
 
 
 def block(name):

@@ -82,6 +82,7 @@ public static class MvpSceneBuilder
         Sprite boyHappy = LoadSprite("Characters/Char_Boy_Happy.png");
         Sprite faceHappy = LoadSprite("Characters/Char_BoyFace_Happy.png");
         Sprite faceSurprised = LoadSprite("Characters/Char_BoyFace_Surprised.png");
+        Sprite faceNormal = LoadSprite("Characters/Char_BoyFace_Normal.png");           // 물건 생김새를 차분히 설명할 때
         Sprite faceSad = LoadSprite("Characters/Char_BoyFace_Sad.png");                 // 틀렸을 때 · 간식이 떨어졌을 때
         Sprite dokkaebi = LoadSprite("Characters/Char_Dokkaebi_Normal.png");
         Sprite dokkaebiThink = LoadSprite("Characters/Char_Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
@@ -1120,6 +1121,7 @@ public static class MvpSceneBuilder
         Set(so, "dialogueDim", dialogueDim.gameObject);
         Set(so, "faceBoySurprised", faceSurprised);
         Set(so, "faceBoyHappy", faceHappy);
+        Set(so, "faceBoyNormal", faceNormal);
         Set(so, "faceBoySad", faceSad);
         Set(so, "magnifierButton", magnifierButton);
         Set(so, "magnifierPeek", peek);

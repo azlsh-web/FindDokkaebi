@@ -8,7 +8,7 @@ using UnityEngine;
 // 특징 이름은 결과 대사에 넣지 않아요 (정답 힌트가 되니까요). 판정 기준은 시작 대화의 생김새 대사로 알려 줘요.
 public static class GameScript
 {
-    public enum Face { BoySurprised, BoyHappy, Dokkaebi, BoySad }
+    public enum Face { BoySurprised, BoyHappy, Dokkaebi, BoySad, BoyNormal }   // BoyNormal : 물건 생김새를 차분히 설명할 때
 
     public struct Line
     {
@@ -42,17 +42,17 @@ public static class GameScript
         {
             new Line(Face.BoyHappy, "먼저 소풍 준비물을 담을 가방부터 찾아 줘!"),
             new Line(Face.Dokkaebi, "가방이라… 어떤 가방인데?"),
-            new Line(Face.BoyHappy, "내가 제일 아끼는 가방이야. 네모난 몸체에 위쪽 손잡이, 앞주머니가 달렸어."),
-            new Line(Face.BoyHappy, "주머니 안에는 가로 줄무늬도 있어!"),
+            new Line(Face.BoyNormal, "내가 제일 아끼는 가방이야. 네모난 몸체에 위쪽 손잡이, 앞주머니가 달렸어."),
+            new Line(Face.BoyNormal, "주머니 안에는 가로 줄무늬도 있어!"),
             new Line(Face.Dokkaebi, "줄무늬까지 있구나! 그럼 모양에 무늬도 잘 그려야겠네."),
             new Line(Face.Dokkaebi, "좋아! 네가 떠올린 그대로 쪽지에 그려 줘."),
         },
         new[]
         {
-            new Line(Face.BoyHappy, "돗자리도 분명히 챙겼는데… 또 어디 뒀더라?"),
+            new Line(Face.BoyNormal, "돗자리도 분명히 챙겼는데… 또 어디 뒀더라?"),
             new Line(Face.Dokkaebi, "너는 어쩜 그렇게 다 잃어버리니? 어떤 돗자리인데?"),
-            new Line(Face.BoyHappy, "네모난 모양에, 띠가 네 줄 있어."),
-            new Line(Face.BoyHappy, "띠 색 순서가 중요해!"),
+            new Line(Face.BoyNormal, "네모난 모양에, 띠가 네 줄 있어."),
+            new Line(Face.BoyNormal, "띠 색 순서가 중요해!"),
             new Line(Face.Dokkaebi, "색 순서까지? 그럼 이번엔 색도 잘 칠해야겠네!"),
             new Line(Face.Dokkaebi, "좋아! 떠올린 그대로 쪽지에 그려 줘."),
         },
@@ -60,8 +60,8 @@ public static class GameScript
         {
             new Line(Face.BoyHappy, "아차! 김밥도 어디 뒀는지 깜빡했어!"),
             new Line(Face.Dokkaebi, "김밥? 그건 나도 먹고 싶은데! 어떻게 생겼어?"),
-            new Line(Face.BoyHappy, "까만 김이 둥글게 말려 있고, 안에 재료가 위에 둘, 아래에 하나 있어."),
-            new Line(Face.BoyHappy, "노란 단무지랑 초록 시금치도 들어 있어!"),
+            new Line(Face.BoyNormal, "까만 김이 둥글게 말려 있고, 안에 재료가 위에 둘, 아래에 하나 있어."),
+            new Line(Face.BoyNormal, "노란 단무지랑 초록 시금치도 들어 있어!"),
             new Line(Face.Dokkaebi, "초록 물감은 없는데… 그럼 두 가지 색을 섞어서 만들어야겠네!"),
             new Line(Face.Dokkaebi, "좋아, 쪽지에 그려 줘."),
         },
@@ -71,8 +71,8 @@ public static class GameScript
             new Line(Face.Dokkaebi, "물건도 모자라서 이번엔 친구까지 잃어버린 거야? 정말 못 말린다."),
             new Line(Face.BoySurprised, "같이 소풍 가기로 했단 말이야! 꼭 찾아 줘."),
             new Line(Face.Dokkaebi, "어떻게 생긴 친구야?"),
-            new Line(Face.BoySurprised, "양 갈래로 묶은 갈색 머리야."),
-            new Line(Face.BoySurprised, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
+            new Line(Face.BoyNormal, "양 갈래로 묶은 갈색 머리야."),
+            new Line(Face.BoyNormal, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
             new Line(Face.Dokkaebi, "갈색 머리라… 그럼 이번엔 세 가지 색을 섞어야겠네!"),
             new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 데려올게."),
         },

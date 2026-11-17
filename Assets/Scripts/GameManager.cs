@@ -106,6 +106,7 @@ public class GameManager : MonoBehaviour
     [Header("캐릭터 그림")]
     [SerializeField] Sprite faceBoySurprised;
     [SerializeField] Sprite faceBoyHappy;
+    [SerializeField] Sprite faceBoyNormal;          // 물건 생김새를 차분히 설명할 때
     [SerializeField] Sprite faceBoySad;             // 틀렸을 때 · 간식이 떨어졌을 때 : 우는 얼굴
     [SerializeField] Sprite faceDokkaebi;
     [SerializeField] Sprite faceDokkaebiProud;     // 맞았을 때 : 뿌듯한 얼굴
@@ -1162,7 +1163,7 @@ public class GameManager : MonoBehaviour
 
     Sprite FaceOf(GameScript.Face face) =>
         face == GameScript.Face.BoySurprised ? faceBoySurprised : face == GameScript.Face.BoyHappy ? faceBoyHappy
-        : face == GameScript.Face.BoySad ? faceBoySad : faceDokkaebi;
+        : face == GameScript.Face.BoySad ? faceBoySad : face == GameScript.Face.BoyNormal ? faceBoyNormal : faceDokkaebi;
 
     // (에디터에서만) 제출한 그림과 판정 결과를 Temp/Submissions 에 저장 → 판정 기준을 조절할 때 참고해요.
     void SaveSubmission(OpenAIJudge.Verdict verdict)
