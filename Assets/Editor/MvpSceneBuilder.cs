@@ -1414,6 +1414,8 @@ public static class MvpSceneBuilder
                 compression = TextureImporterCompression.CompressedHQ;
                 maxSize = 2048;
             }
+            //   소풍 카드 그림은 화면에서 846 x 618 로만 보여서, 1024 로 줄여 넣어요 (선이 또렷하게 압축은 안 해요. 웹 용량 약 12MB → 4MB)
+            if (path.EndsWith("UI/Chapter_Picnic.png")) maxSize = 1024;
             if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
                 || importer.spriteBorder != border || importer.textureCompression != compression
                 || !importer.mipmapEnabled || importer.maxTextureSize != maxSize || !importer.alphaIsTransparency)

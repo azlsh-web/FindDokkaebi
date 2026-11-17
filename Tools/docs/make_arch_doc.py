@@ -102,7 +102,7 @@ arch = [
     "<h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table>"
     "<tr><td class='k'>좌표</td><td><code>PlaceM(rt, x0,y0,x1,y1)</code> = 시안 픽셀 상자 그대로 (K = 1080/2248). <code>TeamImage</code> = 오린 그림을 원래 자리에, <code>TeamTool</code> = 시안 그림 버튼 + 고른 표시 고리</td></tr>"
     "<tr><td class='k'>화면 크기</td><td>CanvasScaler 1080×1899 Expand, 폭 1080 <code>Frame</code> 안에 모든 화면. 폰이 더 길면 Frame 높이가 화면에 맞게 늘고, 씬 빌더의 <code>PinToScreenEdges</code>가 위 줄은 맨 위 · 대사 상자와 버튼 · 아래 띠는 맨 아래 · 인물과 카드는 가운데에 붙여요. Game 창 크기는 <code>Temp/mvp_gameview.flag</code>(예: 1080x2400)로 바꿔 확인</td></tr>"
-    "<tr><td class='k'>그림 설정</td><td>시안 UI · 시작 화면은 압축 없이 + 밉맵 + 최대 4096 (외곽선이 또렷하게). 시안 부품은 시안 원본 크기예요. 카드 · 버튼은 9-slice (Common_Card · Common_ButtonCoral · Common_ButtonCream). 쪽지 질감 3장(Draw_Paper · Paper_Score · Dialogue_Box)은 커서 압축하고 최대 2048</td></tr>"
+    "<tr><td class='k'>그림 설정</td><td>시안 UI · 시작 화면은 압축 없이 + 밉맵 + 최대 4096 (외곽선이 또렷하게). 시안 부품은 시안 원본 크기예요. 카드 · 버튼은 9-slice (Common_Card · Common_ButtonCoral · Common_ButtonCream). 쪽지 질감 3장(Draw_Paper · Paper_Score · Dialogue_Box)은 커서 압축하고 최대 2048, 소풍 카드(Chapter_Picnic)는 최대 1024</td></tr>"
     "<tr><td class='k'>글꼴</td><td>Jua SDF (<code>MvpFontBake</code> 가 게임 글자만 구움). 글자를 새로 넣었으면 글꼴 굽기를 다시</td></tr>"
     "<tr><td class='k'>단계 데이터</td><td><code>CreateStageDataFiles</code> : 이야기 · 규칙 · 특징(이름 · 기준 글) · 그림 연결. 씬 만들 때마다 덮어써요</td></tr></table>",
     "<h2>6. 도구 (Tools → 찾아라도깨비, 또는 Temp/ 의 flag 파일)</h2><table><tr><th>도구</th><th>파일</th><th>하는 일</th></tr>"
