@@ -10,7 +10,9 @@ using UnityEngine.UI;
 //
 //   [로비 씬] 시작 화면 → 챕터 선택 (LobbyManager) → ChapterSelect.Current 를 정하고 이 씬을 열어요
 //
-//   보통 챕터 (1~4) : 물건 5개를 차례로
+//   보통 챕터 (1~4) : 물건을 차례로 (1챕터 5개, 2~4챕터 3개). 2~4챕터는 방에서 시작 장면 → 물건 → 방 끝 장면
+//   챕터 안내 : 첫 물건의 첫 그리기 때 1챕터 펜(그려 보기 → 되돌리기 → 다 그렸어!), 2챕터 돋보기, 3챕터 색(붓 → 팔레트)
+//   4챕터 : 사탕 0개. 쪽지만 건네고, 물건마다 한 번만 그려요 (틀리면 바로 채점표)
 //   [시작 대화] → [떠올리기 3초] → [쪽지 쓰기 60초] → [건네기: 사탕 -1] → [판정 대기] → [결과]
 //        ↑ 다시 (이전 그림에 이어 그리기) ← (틀림 + 사탕 남음)          맞음 / 포기 / 사탕 없음 → [채점표] → 다음 물건
 //   5번째 물건 뒤 → [끝 장면] → 로비의 챕터 선택
@@ -28,10 +30,10 @@ using UnityEngine.UI;
 //   - 씬은 하나(Game)뿐이고, 화면마다 "패널(Panel)"이라는 UI 묶음이 있어요. 한 번에 패널 하나만 켜요.
 //   - 위쪽 HUD(간식, 일시정지, 향)는 그리기부터 채점표까지만 보여요.
 //
-// 간식 규칙 : 물건(5챕터는 단계)마다 사탕 3개를 새로 받아요. 쪽지를 건넬 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
+// 간식 규칙 : 물건(5챕터는 단계)마다 사탕 3개를 새로 받아요(4챕터는 0개). 쪽지를 건넬 때마다 1개. 다 쓰면 다시 그릴 수 없어요.
 // 돋보기 : 그리는 중에 맨 위 돋보기를 누르면 렌즈 안으로 원본을 5초 둘러봐요. 향은 계속 타요.
-//   - 챕터마다 1번 (magnifierPerChapter, 챕터를 시작할 때 새로 받아요).
-//   - 1챕터 첫 물건의 첫 그리기 때 도깨비가 쓰는 법을 보여 줘요. 이 시범은 공짜이고, 시범 동안은 향이 타지 않아요.
+//   - 2챕터부터 챕터마다 1번 (magnifierPerChapter, 챕터를 시작할 때 새로 받아요). 1챕터에는 돋보기가 없어요.
+//   - 2챕터 첫 물건의 첫 그리기 때 도깨비가 쓰는 법을 보여 줘요. 이 시범은 공짜이고, 시범 동안은 향이 타지 않아요.
 //     눌러 보라는 대사 → (대사를 넘기면 대사가 사라지고 도깨비불 셋이 돋보기 둘레를 돎) → (플레이어가 돋보기를 누름)
 //     → 보는 법 대사 → (대사를 넘김) → 5초 둘러보기 → 한 번만 더 빌려준다는 대사
 //   - 한 물건에서 2번째로 틀리면 그 물건에서만 쓰는 무료 기회를 1번 줘요 (도깨비가 돋보기를 건네줘요). 단계가 끝나면 사라져요.
@@ -180,6 +182,33 @@ public class GameManager : MonoBehaviour
     [SerializeField] Image endingDokkaebi;
     [SerializeField] Image[] endingItems;
 
+    [Header("2~4챕터 : 방 시작 · 끝 장면, 복선")]
+    [SerializeField] GameObject windowFire;         // 2챕터 시작 첫 대사 : 창밖 도깨비불 (대화 화면 안)
+    [SerializeField] GameObject roomEndPanel;       // 방에 찾은 물건 3개가 놓이고 도깨비가 인사
+    [SerializeField] Image roomEndDokkaebi;
+    [SerializeField] SimpleAnim roomEndDokkaebiAnim;
+    [SerializeField] Image[] roomEndItems;
+    [SerializeField] DialogueBox roomEndBox;
+    [SerializeField] GameObject roomEndEyes;        // 4챕터 독백 : 창 안의 빨간 눈
+    [SerializeField] Image judgeDokkaebi;           // 판정 대기 도깨비 (기분에 따라 그림이 달라요)
+
+    [Header("도깨비 기분 (머리 불 색) : [0 보통, 1 주황, 2 붉음]")]
+    [SerializeField] Sprite[] moodNormal;
+    [SerializeField] Sprite[] moodNoBat;
+    [SerializeField] Sprite[] moodSwing;
+    [SerializeField] Sprite[] moodThink;
+    [SerializeField] Sprite[] moodFace;
+    [SerializeField] Sprite[] moodFaceProud;
+    [SerializeField] Sprite[] moodFaceTease;
+
+    [Header("챕터 안내 (펜 · 색) : 도깨비불이 누를 곳 둘레를 돌아요")]
+    [SerializeField] RectTransform guideHighlight;  // 도깨비불 셋 (GameManager 가 대상 자리로 옮겨요)
+    [SerializeField] RectTransform[] guideFires;
+    [SerializeField] RectTransform guidePaper;      // 쪽지 (그려 보기)
+    [SerializeField] RectTransform guideUndo;       // 되돌리기
+    [SerializeField] RectTransform guideSubmit;     // 다 그렸어!
+    [SerializeField] RectTransform guideBrush;      // 붓
+
     [Header("설정 창 : 나가기 (게임 무대에서만)")]
     [SerializeField] GameObject settingsMain;       // 볼륨 두 줄
     [SerializeField] GameObject settingsConfirm;    // [취소] [나가기]
@@ -232,6 +261,10 @@ public class GameManager : MonoBehaviour
     int stageWrongs;        // 이번 단계에서 틀린 횟수
     bool peekShown;         // 1단계 돋보기 시범을 했는지
     int peekGuideStep;      // 시범 : 0 없음, 1 눌러 보라고 말함, 2 돋보기 강조 (대사 없음), 3 보는 법을 말함, 4 둘러보는 중, 5 규칙을 말함
+    int toolGuideStep;      // 펜 · 색 안내 : 0 없음. 홀수 = 도깨비가 말함, 짝수 = 도깨비불이 누를 곳을 가리킴
+    bool guideShown;        // 이번 챕터 안내를 했는지
+    Vector2 peekBoxPos;     // 안내 대사 상자 원래 자리 (색 안내 마지막 대사는 팔레트를 가리지 않게 위로 올려요)
+    int roomEndLine;        // 방 끝 장면 : 0 대사 전, 1부터 대사 번호
 
     Coroutine giftRoutine;
     // 5챕터
@@ -269,6 +302,8 @@ public class GameManager : MonoBehaviour
     StageData[] stages => chapter.items;
     bool IsCurse => chapter != null && chapter.rule == ChapterRule.Curse;
     bool BatItem => chapter != null && chapter.number == 1 && stageIndex == 0;    // 1챕터 첫 물건 = 도깨비 방망이
+    bool RoomChapter => chapter != null && !IsCurse && chapter.number != 1;        // 2~4챕터 : 방 시작 · 끝 장면
+    bool PenGuide => chapter.guide == ChapterGuide.Pen;
     StageData Stage => IsCurse ? chosen : stages[stageIndex];
 
     void Start()
@@ -299,6 +334,11 @@ public class GameManager : MonoBehaviour
         }
         else if (state == State.Draw)
         {
+            if (toolGuideStep != 0)
+            {
+                UpdateToolGuide();      // 안내 중에는 시간이 흐르지 않아요
+                return;
+            }
             if (peekGuideStep != 0)
             {
                 // 돋보기 시범 중에는 향이 타지 않아요. 눌러 볼 차례면 돋보기가 콩콩 뛰어요
@@ -328,12 +368,15 @@ public class GameManager : MonoBehaviour
         requestFails = new int[stages.Length];
         // 방망이 : 1챕터에서는 찾기 전까지 빈손. 다른 챕터는 1챕터 결과대로 (기록이 없으면 들고 있어요)
         batLost = chapter.number != 1 && Progress.BatKnown && !Progress.BatFound;
-        magnifiers = magnifierPerChapter;
+        magnifiers = chapter.hasMagnifier ? magnifierPerChapter : 0;
+        magnifierButton.gameObject.SetActive(chapter.hasMagnifier);     // 1챕터에는 돋보기가 없어요
+        ApplyMood(chapter.dokkaebiMood);
+        guideShown = false;
         hearts = heartsPerCurse;
         friendLost = false;
         dark = false;
         curseEnd = 0;
-        peekShown = chapter.number != 1;        // 돋보기 시범은 1챕터 첫 물건에서만
+        peekShown = chapter.guide != ChapterGuide.Magnifier;     // 돋보기 시범은 2챕터 첫 물건에서만
         backgroundImage.sprite = PlayBackground;
         int first = 0;
 #if UNITY_EDITOR
@@ -347,7 +390,7 @@ public class GameManager : MonoBehaviour
                 attempts[i] = 1;
                 itemsFound[i] = stages[i].originalSprite;
             }
-            if (first > 0) peekShown = true;
+            if (first > 0) { peekShown = true; guideShown = true; }
         }
 #endif
         StartStage(first);
@@ -369,7 +412,7 @@ public class GameManager : MonoBehaviour
     {
         state = State.Dialogue;
         stageIndex = index;
-        candies = candiesPerStage;
+        candies = chapter.candies;
         freePeek = false;
         freeGiven = false;
         stageWrongs = 0;
@@ -377,7 +420,7 @@ public class GameManager : MonoBehaviour
         lastPresent = null;
         gameOverPending = false;
         if (IsCurse) chosen = stages[index];        // 고르기 전까지는 요청 물건으로
-        toolBar.Setup(ToolBar.GameplayColorMode);  // 펜 도구는 늘 하나 (빨강 · 노랑 · 파랑 섞기)
+        toolBar.Setup(chapter.penMode);             // 1 · 2챕터 검정 펜, 3챕터부터 빨강 · 노랑 · 파랑 섞기
         hud.SetActive(false);
         timerGroup.SetActive(false);
         backgroundImage.sprite = PlayBackground;
@@ -393,8 +436,8 @@ public class GameManager : MonoBehaviour
         ShowFriend();
         ShowPanel(dialoguePanel);
 
-        opening = BatItem;                          // 1챕터 맨 처음에는 주인공 혼자 말해요
-        openingGroup.SetActive(opening);
+        opening = AloneAt(0);                       // 챕터 맨 처음에는 주인공 혼자 말해요
+        openingGroup.SetActive(opening && BatItem);
         dialogueDim.SetActive(!opening);
         boyTargetPos = (opening ? BoyAlonePos : BoyWithPos) + boyAnchorShift;
         boyTargetSize = opening ? BoyAloneSize : BoyWithSize;
@@ -419,13 +462,16 @@ public class GameManager : MonoBehaviour
             Sfx.Play(Sfx.Fail);
         }
 
-        opening = BatItem && dialogueLine < GameScript.OpeningAloneLines;
+        opening = AloneAt(dialogueLine);
         boyTargetPos = (opening ? BoyAlonePos : BoyWithPos) + boyAnchorShift;
         boyTargetSize = opening ? BoyAloneSize : BoyWithSize;
-        openingGroup.SetActive(opening);
+        openingGroup.SetActive(opening && BatItem);
+        windowFire.SetActive(chapter.windowFire && stageIndex == 0 && dialogueLine == 0);    // 2챕터 복선 : 창밖 도깨비불
         if (opening)
         {
-            ShowOpeningBeat(dialogueLine);
+            dialogueDim.SetActive(false);
+            dialogueDokkaebi.SetActive(false);
+            if (BatItem) ShowOpeningBeat(dialogueLine);
         }
         else
         {
@@ -477,9 +523,14 @@ public class GameManager : MonoBehaviour
         openingItems[item].Play(SimpleAnim.Kind.Vanish);
     }
 
-    // 시작 대화 : 보통 챕터는 물건마다, 5챕터는 (첫 단계만 시작 장면 +) 단계 대화
+    /// <summary>이 대사에서 주인공 혼자 있는지 (챕터 첫 물건의 앞쪽 대사, 도깨비가 나오기 전)</summary>
+    bool AloneAt(int line) =>
+        BatItem ? line < GameScript.OpeningAloneLines : RoomChapter && stageIndex == 0 && line < chapter.aloneLines;
+
+    // 시작 대화 : 보통 챕터는 물건마다 (2~4챕터 첫 물건은 챕터 시작 장면 +), 5챕터는 (첫 단계만 시작 장면 +) 단계 대화
     GameScript.Line[] IntroLines()
     {
+        if (RoomChapter) return GameScript.RoomIntroLines(chapter.number, stageIndex);
         if (!IsCurse) return GameScript.IntroLines(stageIndex, batLost);
         GameScript.Line[] step = GameScript.CurseStepLines(stageIndex);
         if (stageIndex != 0) return step;
@@ -592,12 +643,20 @@ public class GameManager : MonoBehaviour
         StopGift();
         toolBar.ClosePanel();
 
-        // 1단계 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요
+        // 챕터 첫 그리기 : 도깨비가 안내해요 (1챕터 펜, 2챕터 돋보기, 3챕터 색)
         peekGuideStep = 0;
+        toolGuideStep = 0;
         peekGuide.SetActive(false);
+        guideHighlight.gameObject.SetActive(false);
         ShowMagnifierHighlight(false);
         magnifierButton.transform.localScale = Vector3.one;
-        if (BatItem && !peekShown && !keepDrawing)
+        bool firstDraw = stageIndex == 0 && !keepDrawing && !guideShown;
+        if (firstDraw && (chapter.guide == ChapterGuide.Pen || chapter.guide == ChapterGuide.Mix))
+        {
+            guideShown = true;
+            StartToolGuide();
+        }
+        else if (chapter.guide == ChapterGuide.Magnifier && stageIndex == 0 && !peekShown && !keepDrawing)
         {
             peekShown = true;
             peekGuideStep = 1;
@@ -611,9 +670,10 @@ public class GameManager : MonoBehaviour
         UpdateSnacks();
         if (!keepDrawing) noteRoutine = StartCoroutine(WriteNote());
 
-        if (snackIntroPending)
+        bool snackIn = snackIntroPending && chapter.candies > 0;     // 4챕터는 사탕이 없어서 들어오지 않아요
+        snackIntroPending = false;
+        if (snackIn)
         {
-            snackIntroPending = false;
             foreach (SimpleAnim a in snackAnims) a.Play();     // 사탕은 오른쪽 끝에서 왼쪽으로
             Sfx.Play(Sfx.SnackIn);
         }
@@ -622,6 +682,7 @@ public class GameManager : MonoBehaviour
     /// <summary>[화면 터치] 돋보기 시범 중 대사 넘기기. 눌러 보라는 대사는 돋보기를 직접 눌러야 넘어가요</summary>
     public void PeekGuideTap()
     {
+        if (state == State.Draw && toolGuideStep != 0) { ToolGuideTap(); return; }
         if (state != State.Draw || peekGuideStep == 0) return;
         if (peekGuideBox.FinishTyping()) return;
         if (peekGuideStep == 1)
@@ -713,7 +774,7 @@ public class GameManager : MonoBehaviour
     /// <summary>[버튼] 다 그렸어 (또는 시간 초과로 자동 제출) : 쪽지와 간식을 건네러 가요</summary>
     public void Submit()
     {
-        if (state != State.Draw || peekGuideStep != 0) return;
+        if (state != State.Draw || peekGuideStep != 0 || toolGuideStep != 0) return;
         magnifierPeek.Stop();
         jamOverlay.SetActive(false);
         toolBar.ClosePanel();
@@ -743,7 +804,7 @@ public class GameManager : MonoBehaviour
         giveNoteAnim.Play(SimpleAnim.Kind.Float);
         dialogueBoyAnim.Play(SimpleAnim.Kind.Gentle);
         dialogueDokkaebiAnim.Play(SimpleAnim.Kind.None);
-        dialogueBox.Say(GameScript.GiveBoy, faceBoyHappy);
+        dialogueBox.Say(chapter.candies > 0 ? GameScript.GiveBoy : GameScript.GiveBoyNoCandy, faceBoyHappy);
     }
 
     // 주인공이 건네면 쪽지와 간식이 날아가고, 도깨비가 먹고 읽은 뒤 찾으러 가요
@@ -751,7 +812,17 @@ public class GameManager : MonoBehaviour
     {
         if (dialogueBox.FinishTyping()) return;
         Sfx.Play(giveStep == 0 ? Sfx.Give : Sfx.Tap);     // 쪽지와 사탕이 날아갈 때는 건네는 소리
-        if (giveStep == 0)
+        if (giveStep == 0 && chapter.candies <= 0)
+        {
+            // 4챕터 : 사탕 없이 쪽지만 건네요. 도깨비는 먹지 않고 바로 읽어요
+            giveStep = 2;
+            attempts[stageIndex]++;
+            giveNoteAnim.Play(SimpleAnim.Kind.NoteGive);
+            dialogueBoyAnim.Play(SimpleAnim.Kind.None);
+            dialogueDokkaebiAnim.Play(SimpleAnim.Kind.Gentle);
+            dialogueBox.Say(GameScript.ItemRead(Stage.targetName), faceDokkaebi);
+        }
+        else if (giveStep == 0)
         {
             giveStep = 1;
             int usedBefore = candiesPerStage - candies;
@@ -772,7 +843,7 @@ public class GameManager : MonoBehaviour
         {
             giveStep = 2;
             giveNote.SetActive(false);
-            dialogueBox.Say(IsCurse ? GameScript.ItemRead(Stage.targetName) : GameScript.GiveReadLine(stageIndex), faceDokkaebi);
+            dialogueBox.Say(chapter.number != 1 ? GameScript.ItemRead(Stage.targetName) : GameScript.GiveReadLine(stageIndex), faceDokkaebi);
         }
         else
         {
@@ -847,7 +918,7 @@ public class GameManager : MonoBehaviour
     void OnJudgeError(string message)
     {
         if (state != State.Judge) return;
-        candies++;
+        if (chapter.candies > 0) candies++;
         attempts[stageIndex]--;
         judgeTicket++;      // 이 제출은 끝난 것으로 (늦게 오는 결과는 무시)
         UpdateSnacks();
@@ -905,7 +976,8 @@ public class GameManager : MonoBehaviour
         Sfx.Play(Sfx.Item);
         Sfx.Play(success ? Sfx.Success : Sfx.Fail);
 
-        string line = GameScript.DokkaebiResult(Mathf.Min(stageIndex, 4), outcome);
+        string line = RoomChapter ? GameScript.RoomResult(chapter.number, stageIndex, success)
+                    : GameScript.DokkaebiResult(Mathf.Min(stageIndex, 4), outcome);
         if (IsCurse)
         {
             if (success && chosenCounter)
@@ -975,12 +1047,13 @@ public class GameManager : MonoBehaviour
                 resultSparkles.SetActive(false);
             }
             resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
-            string line = wrong && candies <= 0 ? GameScript.BoyOutOfSnacks
+            string line = wrong && candies <= 0 && chapter.CanRetry ? GameScript.BoyOutOfSnacks
+                : RoomChapter ? GameScript.RoomBoyResult(chapter.number, stageIndex, !wrong)
                 : IsCurse ? (wrong ? GameScript.CurseBoyWrong : chosenCounter ? GameScript.CurseBoyHit : GameScript.CurseBoyBoast)
                 : GameScript.BoyResult(stageIndex, outcome);
             resultBox.Say(line, wrong ? faceBoySad : faceBoyHappy);     // 엉뚱한 물건 · 간식 없음 : 우는 얼굴
         }
-        else if (resultPhase == ResultPhase.Boy && outcome != 0 && candies > 0 && stageWrongs == 2 && !freeGiven)
+        else if (resultPhase == ResultPhase.Boy && outcome != 0 && candies > 0 && stageWrongs == 2 && !freeGiven && chapter.hasMagnifier)
         {
             // 이 단계에서 두 번째로 틀렸어요 : 도깨비가 돋보기를 건네주고, 맨 위 돋보기로 날아가 반짝여요
             resultPhase = ResultPhase.Gift;
@@ -1054,6 +1127,7 @@ public class GameManager : MonoBehaviour
     /// <summary>소풍 장면 : 물건이 날아와 놓이고, 단계마다 남은 사탕이 사탕 통에 모여요.</summary>
     void ShowEnding()
     {
+        if (RoomChapter) { ShowRoomEnd(); return; }
         state = State.Ending;
         hud.SetActive(false);
         backgroundImage.sprite = chapter.endBackground != null ? chapter.endBackground : endingBackground;
@@ -1077,6 +1151,7 @@ public class GameManager : MonoBehaviour
     public void EndingTap()
     {
         if (state != State.Ending) return;
+        if (RoomChapter) { RoomEndTap(); return; }
         if (!endingAsking)
         {
             endingAsking = true;
@@ -1087,6 +1162,167 @@ public class GameManager : MonoBehaviour
         Sfx.Play(Sfx.Tap);
         ChapterSelect.BackToChapters();
     }
+
+    // ───────────── 2~4챕터 끝 장면 ─────────────
+
+    /// <summary>방 끝 장면 : 찾은 물건 3개가 방에 놓여요. 화면을 누르면 도깨비 인사 (4챕터는 도깨비가 떠나고 주인공 독백)</summary>
+    void ShowRoomEnd()
+    {
+        state = State.Ending;
+        hud.SetActive(false);
+        backgroundImage.sprite = chapter.endBackground != null ? chapter.endBackground : PlayBackground;
+        roomEndLine = 0;
+        roomEndBox.gameObject.SetActive(false);
+        roomEndEyes.SetActive(false);
+        roomEndDokkaebi.gameObject.SetActive(true);
+        roomEndDokkaebi.color = Color.white;
+        roomEndDokkaebi.sprite = DokkaebiSprite();
+        roomEndDokkaebiAnim.Play(SimpleAnim.Kind.Gentle);
+        for (int i = 0; i < roomEndItems.Length; i++)
+        {
+            bool used = i < stages.Length;
+            roomEndItems[i].gameObject.SetActive(used);
+            if (used) roomEndItems[i].sprite = itemsFound[i] != null ? itemsFound[i] : stages[i].originalSprite;
+        }
+        Progress.MarkCleared(chapter.number);       // 물건을 다 거치면 깬 것 → 다음 챕터가 열려요
+        Sfx.Bgm(Sfx.BgmRoom);
+        Sfx.Play(Sfx.Cheer);
+        ShowPanel(roomEndPanel);
+    }
+
+    /// <summary>[화면 터치] 방 끝 장면 : 대사를 하나씩, 다 보면 챕터 선택으로</summary>
+    public void RoomEndTap()
+    {
+        if (state != State.Ending || !RoomChapter) return;
+        if (roomEndBox.gameObject.activeSelf && roomEndBox.FinishTyping()) return;
+        GameScript.Line[] lines = GameScript.RoomEndLines(chapter.number);
+        if (roomEndLine >= lines.Length)
+        {
+            Sfx.Play(Sfx.Tap);
+            ChapterSelect.BackToChapters();
+            return;
+        }
+        if (roomEndLine > 0) Sfx.Play(Sfx.Tap);
+        GameScript.Line line = lines[roomEndLine];
+        // 주인공 독백 (4챕터) : 도깨비는 떠나고, 창 안에서 빨간 눈이 지켜봐요
+        if (line.face != GameScript.Face.Dokkaebi && roomEndLine > 0)
+        {
+            roomEndDokkaebiAnim.Play(SimpleAnim.Kind.Vanish);
+            roomEndEyes.SetActive(chapter.endEyes);
+        }
+        roomEndLine++;
+        roomEndBox.Say(line.text, FaceOf(line.face));
+    }
+
+    // ───────────── 챕터 안내 : 펜 (1챕터) · 색 (3챕터) ─────────────
+    //   홀수 단계 = 도깨비가 말해요 (화면을 누르면 다음). 짝수 단계 = 대사가 사라지고 도깨비불이 누를 곳 둘레를 돌아요.
+    //   펜 : 1 "그려 봐" → 2 쪽지 (그리면 다음) → 3 "되돌려" → 4 되돌리기 (누르면 다음) → 5 "다 그렸으면" → 6 다 그렸어! (화면을 누르면 끝)
+    //   색 : 1 "붓을 눌러 봐" → 2 붓 (팔레트가 열리면 다음) → 3 "하나만 써도, 섞어도 돼" (누르면 끝)
+    //   안내하는 동안은 시간이 흐르지 않아요.
+
+    void StartToolGuide()
+    {
+        toolGuideStep = 1;
+        peekBoxPos = ((RectTransform)peekGuideBox.transform).anchoredPosition;
+        SayToolGuide();
+    }
+
+    string[] ToolGuideLines => PenGuide ? new[] { GameScript.PenDraw, GameScript.PenUndo, GameScript.PenDone } : new[] { GameScript.MixBrush, GameScript.MixHow };
+
+    RectTransform ToolGuideTarget(int step) =>
+        PenGuide ? (step == 2 ? guidePaper : step == 4 ? guideUndo : guideSubmit) : guideBrush;
+
+    void SayToolGuide()
+    {
+        int index = (toolGuideStep - 1) / 2;
+        peekGuide.SetActive(true);
+        peekGuideBox.gameObject.SetActive(true);
+        // 색 안내 마지막 대사는 열린 팔레트를 가리지 않게 화면 위쪽에서 말해요
+        bool top = !PenGuide && index == 1;
+        ((RectTransform)peekGuideBox.transform).anchoredPosition = top ? new Vector2(peekBoxPos.x, peekBoxPos.y + GuideBoxRise) : peekBoxPos;
+        peekGuideBox.Say(ToolGuideLines[index], faceDokkaebi);
+        guideHighlight.gameObject.SetActive(false);
+    }
+
+    const float GuideBoxRise = 1000f;      // 색 안내 마지막 대사 : 아래 자리에서 이만큼 위로 (팔레트 위, 위 줄 아래)
+
+    void PointToolGuide()
+    {
+        // 마지막(다 그렸어!)은 가리키기만 하고 화면을 누르면 끝나요. 그 전에는 덮개를 치워서 쪽지 · 버튼을 직접 눌러요
+        bool lastPen = PenGuide && toolGuideStep == 6;
+        peekGuide.SetActive(lastPen);
+        peekGuideBox.gameObject.SetActive(false);
+        guideHighlight.gameObject.SetActive(true);
+        UpdateToolGuide();
+    }
+
+    void ToolGuideTap()
+    {
+        if (peekGuideBox.gameObject.activeSelf && peekGuideBox.FinishTyping()) return;
+        bool talking = toolGuideStep % 2 == 1;
+        if (talking)
+        {
+            Sfx.Play(Sfx.Tap);
+            bool lastLine = (toolGuideStep + 1) / 2 >= ToolGuideLines.Length;
+            if (lastLine && !PenGuide) { EndToolGuide(); return; }     // 색 안내 마지막 대사 : 끝
+            toolGuideStep++;
+            PointToolGuide();
+            return;
+        }
+        if (PenGuide && toolGuideStep == 6)
+        {
+            Sfx.Play(Sfx.Tap);
+            EndToolGuide();                         // 다 그렸어! 를 가리킨 뒤 화면을 누르면 끝
+        }
+    }
+
+    // 도깨비불을 대상 자리로 옮기고 돌려요. 해야 할 일을 하면 다음 대사로
+    void UpdateToolGuide()
+    {
+        if (toolGuideStep % 2 == 1) return;
+        RectTransform target = ToolGuideTarget(toolGuideStep);
+        Rect r = target.rect;
+        guideHighlight.position = target.TransformPoint(r.center);
+        Vector3 scale = target.lossyScale;
+        Vector3 own = guideHighlight.lossyScale;
+        float rx = Mathf.Min(r.width * 0.5f * scale.x / own.x + 10f, 470f);
+        float ry = Mathf.Min(r.height * 0.5f * scale.y / own.y + 10f, 560f);
+        // 화면 가장자리의 붓 · 버튼이면 도깨비불이 화면 밖으로 나가지 않게 원을 줄여요
+        var area = (RectTransform)guideHighlight.parent;
+        Vector2 c = area.InverseTransformPoint(guideHighlight.position);
+        Rect a = area.rect;
+        rx = Mathf.Max(30f, Mathf.Min(rx, c.x - a.xMin - 50f, a.xMax - c.x - 50f));
+        ry = Mathf.Max(30f, Mathf.Min(ry, c.y - a.yMin - 60f, a.yMax - c.y - 60f));
+        SpinFires(guideFires, rx, ry);
+        bool done = PenGuide ? (toolGuideStep == 2 && board.HasDrawn) || (toolGuideStep == 4 && board.CanRedo)
+                             : toolGuideStep == 2 && toolBar.PanelOpen;
+        if (!done) return;
+        toolGuideStep++;
+        SayToolGuide();
+    }
+
+    void EndToolGuide()
+    {
+        toolGuideStep = 0;
+        peekGuide.SetActive(false);
+        peekGuideBox.gameObject.SetActive(true);
+        ((RectTransform)peekGuideBox.transform).anchoredPosition = peekBoxPos;
+        guideHighlight.gameObject.SetActive(false);
+    }
+
+    /// <summary>도깨비 기분(머리 불 색)에 맞는 그림으로 바꿔요 : 0 보통, 1 주황 (3챕터), 2 붉음 (4챕터)</summary>
+    void ApplyMood(int mood)
+    {
+        Sprite Pick(Sprite[] set, Sprite keep) => set != null && mood >= 0 && mood < set.Length && set[mood] != null ? set[mood] : keep;
+        dokkaebiNormal = Pick(moodNormal, dokkaebiNormal);
+        dokkaebiNoBat = Pick(moodNoBat, dokkaebiNoBat);
+        dokkaebiSwing = Pick(moodSwing, dokkaebiSwing);
+        faceDokkaebi = Pick(moodFace, faceDokkaebi);
+        faceDokkaebiProud = Pick(moodFaceProud, faceDokkaebiProud);
+        faceDokkaebiTease = Pick(moodFaceTease, faceDokkaebiTease);
+        if (judgeDokkaebi != null) judgeDokkaebi.sprite = Pick(moodThink, judgeDokkaebi.sprite);
+    }
+
 
     // ───────────── 5챕터 엔딩 ─────────────
 
@@ -1222,7 +1458,7 @@ public class GameManager : MonoBehaviour
     // 패널 하나만 켜고 나머지는 끄기
     void ShowPanel(GameObject panel)
     {
-        GameObject[] all = { dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel, choosePanel, curseEndPanel };
+        GameObject[] all = { dialoguePanel, observePanel, drawPanel, judgePanel, resultPanel, comparePanel, endingPanel, choosePanel, curseEndPanel, roomEndPanel };
         foreach (GameObject p in all) p.SetActive(p == panel);
         dialogueDim.SetActive(panel == dialoguePanel || panel == observePanel || panel == choosePanel);
     }
@@ -1246,7 +1482,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < heartIcons.Length; i++) heartIcons[i].color = i < hearts ? Color.white : UsedSnackColor;
     }
 
-    string NoteText() => IsCurse ? GameScript.ItemNote(Stage.targetName) : GameScript.NoteText(stageIndex);
+    string NoteText() => chapter.number != 1 ? GameScript.ItemNote(Stage.targetName) : GameScript.NoteText(stageIndex);
 
     // 무료 기회 : 도깨비가 대사를 시작할 때부터 오른손(화면에서 오른쪽)에 돋보기를 쥐고 있다가,
     //   잠깐 뒤 손을 떠나 포물선으로 맨 위 돋보기 자리에 날아가 반짝여요.

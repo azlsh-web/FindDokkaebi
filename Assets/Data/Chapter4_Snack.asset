@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9176eb6d1308b0f4e8ae40ef15657fa1, type: 3}
+  m_Name: Chapter4_Snack
+  m_EditorClassIdentifier: Assembly-CSharp::ChapterData
+  number: 4
+  title: "\uB3C4\uAE68\uBE44 \uAC04\uC2DD \uBC14\uAD6C\uB2C8"
+  rule: 0
+  criteriaLevel: 4
+  penMode: 3
+  hasMagnifier: 1
+  candies: 0
+  guide: 0
+  aloneLines: 2
+  windowFire: 0
+  dokkaebiMood: 2
+  endEyes: 1
+  photo: {fileID: 21300000, guid: 98e0687f393739148a60e01174dfe3bc, type: 3}
+  playBackground: {fileID: 21300000, guid: 00cbe942d7007a24ba1ad955aae5d69b, type: 3}
+  endBackground: {fileID: 21300000, guid: 00cbe942d7007a24ba1ad955aae5d69b, type: 3}
+  darkBackground: {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: 426646ac039fb094a96bf8637e38bf2b, type: 2}
+  - {fileID: 11400000, guid: a32015fd7facc184eb399ec34c4aadc8, type: 2}
+  - {fileID: 11400000, guid: bd8e33deb7725924fa04dc682cd54a00, type: 2}
+  counterItems: []

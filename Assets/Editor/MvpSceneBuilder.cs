@@ -74,7 +74,7 @@ public static class MvpSceneBuilder
         pillCoral = T("Common_ButtonCoral");
         pillCream = T("Common_ButtonCream");
         circleSprite = LoadSprite("UI/Common_Circle.png");
-        ChapterData[] chapters = { LoadChapter("Chapter1_Picnic"), LoadChapter("Chapter5_Curse") };
+        ChapterData[] chapters = { LoadChapter("Chapter1_Picnic"), LoadChapter("Chapter2_Rain"), LoadChapter("Chapter3_Birthday"), LoadChapter("Chapter4_Snack"), LoadChapter("Chapter5_Curse") };
         StageData[] stages = chapters[0].items;     // 1챕터 물건 (방망이 · 가방 · 돗자리 · 김밥 · 친구)
         Sprite boyNormal = LoadSprite("Characters/Char_Boy_Normal.png");
         Sprite boyHappy = LoadSprite("Characters/Char_Boy_Happy.png");
@@ -285,6 +285,10 @@ public static class MvpSceneBuilder
 
         // ── 2. 대화 화면 : 캐릭터 + 대사 상자. 오프닝 그림과 건네기 쪽지도 여기에 있어요 ──
         var dialogue = NewPanel("DialoguePanel", canvas);
+        // 2챕터 복선 : 시작 첫 대사 때 비 오는 창밖에 도깨비불이 잠깐 (방 배경 창 x 620~1080, y 280~826 안)
+        var windowFire = MImage("WindowFire", dialogue, T("Magnifier_DokkaebiFire"), 296, 150, 26, 35);
+        windowFire.color = new Color(1f, 1f, 1f, 0.85f);
+        Anim(windowFire.gameObject, SimpleAnim.Kind.Float, 2.4f, 0f, 18f);
         // 오프닝 : 물건 그림은 GameManager 가 단계 데이터에서 넣어요
         var openingGroup = NewEmpty("Opening", dialogue);
         var openingBag = MImage("Bag", openingGroup, null, 12, 300, 84, 84);
@@ -648,6 +652,16 @@ public static class MvpSceneBuilder
         Stretch(peekGuideDim.rectTransform);
         var peekGuideBox = NewDialogueBox(peekGuide, faceDokkaebi);
         var peekGuideTap = NewTap("TapButton", peekGuide);
+        // 챕터 안내 (1챕터 펜 · 3챕터 색) : 도깨비불 셋이 누를 곳(쪽지 · 되돌리기 · 다 그렸어! · 붓) 둘레를 돌아요.
+        //   GameManager 가 대상 자리로 옮기고 크기에 맞춰 돌려요. 누르기는 통과시켜요
+        var guideHighlight = (RectTransform)NewEmpty("GuideHighlight", draw);
+        guideHighlight.anchorMin = guideHighlight.anchorMax = guideHighlight.pivot = new Vector2(0.5f, 0.5f);
+        guideHighlight.sizeDelta = Vector2.zero;
+        var guideOrbit = new GameObject("Orbit", typeof(RectTransform)).GetComponent<RectTransform>();
+        guideOrbit.SetParent(guideHighlight, false);
+        guideOrbit.anchorMin = guideOrbit.anchorMax = guideOrbit.pivot = new Vector2(0.5f, 0.5f);
+        guideOrbit.sizeDelta = Vector2.zero;
+        var guideFires = DokkaebiFires(guideOrbit, 84f);
 
         // 둘러보기 : 화면을 어둡게 덮고, 렌즈 안에만 그림판 자리에 놓인 원본이 보여요 (MagnifierPeek)
         var peekGo = NewImage("MagnifierPeek", draw, new Color(0f, 0f, 0f, 0.4f));    // 덮개가 누르기를 모두 받아서 그릴 수 없어요
@@ -880,6 +894,28 @@ public static class MvpSceneBuilder
         M((RectTransform)endingBoxComp.transform, 12, 24, 336, 104);     // 하늘 쪽 위에 : 돗자리 · 김밥 · 사탕 통을 가리지 않게
         var endingTapButton = NewTap("TapButton", ending);
 
+        // ── 8-2. 2~4챕터 끝 장면 : 방에 찾은 물건 3개가 놓이고, 화면을 누르면 도깨비 인사 (4챕터는 도깨비가 떠나고 주인공 독백) ──
+        //   자리 (게임 좌표) : 주인공 18, 700, 300, 458 · 도깨비 726, 826, 340, 332 · 물건 240 x 240 (120 · 420 · 720, 1250) · 대사 상자 위
+        var roomEnd = NewPanel("RoomEndPanel", canvas);
+        var roomEndBoyImg = MImage("Boy", roomEnd, boyHappy, 6, 233.3f, 100, 152.7f);
+        PivotBottom(roomEndBoyImg.rectTransform);
+        Anim(roomEndBoyImg.gameObject, SimpleAnim.Kind.FootSway, 2.6f, 0f, 0f, 1.5f);
+        var roomEndDokImg = MImage("Dokkaebi", roomEnd, dokkaebi, 242, 275.3f, 113.3f, 110.7f);
+        var roomEndDokAnim = Anim(roomEndDokImg.gameObject, SimpleAnim.Kind.Gentle, 0.8f, 0f, 15f);
+        var roomEndItems = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            roomEndItems[i] = MImage("Item_" + i, roomEnd, null, 40 + 100 * i, 416.7f, 80, 80);
+            Anim(roomEndItems[i].gameObject, SimpleAnim.Kind.Land, 0.7f, 0.2f + 0.5f * i, 1080f);
+        }
+        // 4챕터 독백 : 밤 창 안에서 빨간 눈이 지켜봐요 (방 배경 창 x 620~1080, y 280~826 안)
+        var roomEndEyes = MImage("RedEyes", roomEnd, LoadSprite("Chapter4/Room_RedEyes.png"), 263, 200, 70, 24);     // 위 대사 상자(아래 끝 y 504) 밑
+        Anim(roomEndEyes.gameObject, SimpleAnim.Kind.FadeIn, 1.2f, 0.3f, 0f);
+        var roomEndBoxComp = NewDialogueBox(roomEnd, faceSurprised);
+        M((RectTransform)roomEndBoxComp.transform, 12, 64, 336, 104);          // 위쪽 (36, 192) : 인물 · 물건을 가리지 않게
+        var roomEndTapButton = NewTap("TapButton", roomEnd);
+        UnityEventTools.AddPersistentListener(roomEndTapButton.onClick, gm.RoomEndTap);
+
         // ── 5챕터 (도깨비의 저주) 화면들 ──
         //   그림은 Sprites/Chapter5 에 있어요. 아직 없는 그림은 있는 그림이나 단색으로 대신해요.
         //   아래 좌표는 1080 x 1899 화면 기준 (왼쪽 위 x, y, 폭, 높이) → M() 은 3으로 나눈 단위라서 Img3 가 나눠 줘요.
@@ -960,7 +996,7 @@ public static class MvpSceneBuilder
             PIn(jamFire.rectTransform, jamFirePos[i][0] / 3f, jamFirePos[i][1] / 3f, 100f / 3f, 133f / 3f);
             jamFires[i] = jamFire.rectTransform;
         }
-        float[][] scribbles = { new float[] { 60, 300, 520, 14, -12 }, new float[] { 420, 700, 480, 12, 9 }, new float[] { 100, 1020, 560, 14, -6 }, new float[] { 520, 140, 380, 12, 18 } };
+        float[][] scribbles = { new float[] { 60, 300, 520, 14, -12 }, new float[] { 420, 700, 480, 12, 9 }, new float[] { 100, 1020, 560, 14, -6 }, new float[] { 520, 240, 380, 12, 18 } };    // 마지막 낙서는 쪽지 글 아래
         foreach (float[] sc in scribbles)
         {
             var scribble = NewImage("Scribble", jamOverlay, new Color32(200, 40, 40, 200));
@@ -1201,6 +1237,30 @@ public static class MvpSceneBuilder
         SetArray(so, "scoreSlashes", scoreSlashes);
         Set(so, "endingDokkaebi", endDokkaebi);
         Set(so, "endingBox", endingBoxComp);
+        Set(so, "windowFire", windowFire.gameObject);
+        Set(so, "roomEndPanel", roomEnd.gameObject);
+        Set(so, "roomEndDokkaebi", roomEndDokImg);
+        Set(so, "roomEndDokkaebiAnim", roomEndDokAnim);
+        SetArray(so, "roomEndItems", roomEndItems);
+        Set(so, "roomEndBox", roomEndBoxComp);
+        Set(so, "roomEndEyes", roomEndEyes.gameObject);
+        Set(so, "judgeDokkaebi", judgeDokkaebi);
+        // 도깨비 기분 : 3챕터 주황, 4챕터 붉은 머리 불 (Tools/art_temp/make_dokkaebi_mood.py 로 만든 임시 그림)
+        Sprite Mood(string name, int mood, Sprite normal) => mood == 0 ? normal : LoadSprite($"Characters/Mood/{name}_M{mood}.png") ?? normal;
+        Sprite[] Moods(string name, Sprite normal) => new[] { normal, Mood(name, 1, normal), Mood(name, 2, normal) };
+        SetArray(so, "moodNormal", Moods("Char_Dokkaebi_Normal", dokkaebi));
+        SetArray(so, "moodNoBat", Moods("Char_Dokkaebi_NoBat", dokkaebiNoBat));
+        SetArray(so, "moodSwing", Moods("Char_Dokkaebi_Swing", dokkaebiSwing));
+        SetArray(so, "moodThink", Moods("Char_Dokkaebi_Think", dokkaebiThink));
+        SetArray(so, "moodFace", Moods("Char_DokkaebiFace_Normal", faceDokkaebi));
+        SetArray(so, "moodFaceProud", Moods("Char_DokkaebiFace_Proud", faceDokkaebiProud));
+        SetArray(so, "moodFaceTease", Moods("Char_DokkaebiFace_Tease", faceDokkaebiTease));
+        Set(so, "guideHighlight", guideHighlight);
+        SetArray(so, "guideFires", guideFires);
+        Set(so, "guidePaper", paperImg.rectTransform);
+        Set(so, "guideUndo", (RectTransform)undoButton.transform);
+        Set(so, "guideSubmit", (RectTransform)submitButton.transform);
+        Set(so, "guideBrush", brushHolder);
         SetArray(so, "endingItems", new[] { endBat, endBag, endMat, endGimbap, endFriend });
         Set(so, "observeImage", observeImage);
         Set(so, "drawTitle", drawTitle);
@@ -1268,6 +1328,10 @@ public static class MvpSceneBuilder
         fitImg.gameObject.SetActive(false);
         peekGo.gameObject.SetActive(false);
         peekGuide.gameObject.SetActive(false);
+        guideHighlight.gameObject.SetActive(false);
+        windowFire.gameObject.SetActive(false);
+        roomEnd.gameObject.SetActive(false);
+        roomEndEyes.gameObject.SetActive(false);
         magHighlight.gameObject.SetActive(false);
         giftMagnifier.gameObject.SetActive(false);
         magSparkles.gameObject.SetActive(false);
@@ -1345,7 +1409,52 @@ public static class MvpSceneBuilder
             ("매듭", "주머니 위쪽에 묶은 매듭이나 끈이 있어야 합니다."),
             ("팥색", "주머니의 주된 채색이 어두운 붉은 갈색(팥색) 계열이어야 합니다."));
 
+        // 2~4챕터 (기획서 표 : 2 형태 + 무늬, 3 + 삼원색, 4 + 두 색 섞기). 그림은 codex 임시 그림, 판정 기준은 기획자 확인 전
+        RoomItem("Ch2_Socks", 2, 1, "줄무늬 양말", 3, "발목이 길고 발끝이 옆으로 굽은 양말입니다. 양말에 가로 줄무늬가 있습니다.",
+            ("양말 모양", "발목 부분과 옆으로 굽은 발끝이 이어진 L자 양말 모양이 식별되어야 합니다. 네모나 원만 그린 것은 인정하지 않습니다."),
+            ("가로 줄무늬", "양말 안에 가로 방향 줄이 두 줄 이상 반복되어야 합니다. 세로줄이나 점무늬는 인정하지 않습니다."));
+        RoomItem("Ch2_Umbrella", 2, 2, "물방울무늬 우산", 3, "펼친 우산입니다. 둥근 지붕 아래에 손잡이가 있고, 지붕에 물방울(점)무늬가 있습니다.",
+            ("우산 모양", "위가 둥근 지붕 모양과 그 아래로 이어진 손잡이 대가 식별되어야 합니다."),
+            ("물방울무늬", "우산 지붕 안에 작은 점이나 동그라미가 세 개 이상 있어야 합니다. 줄무늬는 인정하지 않습니다."));
+        RoomItem("Ch2_Pillow", 2, 3, "체크무늬 베개", 3, "네모난 베개입니다. 가로줄과 세로줄이 엇갈린 체크무늬가 있습니다.",
+            ("베개 모양", "모서리가 둥글거나 살짝 부푼 네모 모양이 식별되어야 합니다."),
+            ("체크무늬", "베개 안에 가로줄과 세로줄이 엇갈려 작은 네모 칸이 여러 개 생겨야 합니다. 한 방향 줄만 있으면 인정하지 않습니다."));
+        RoomItem("Ch3_PartyHat", 3, 1, "고깔모자", 3, "끝이 뾰족한 고깔모자입니다. 비스듬한 띠가 위에서부터 빨강, 노랑, 파랑 순서입니다.",
+            ("고깔 모양", "위가 뾰족하고 아래가 넓은 삼각뿔 모자 모양이 식별되어야 합니다."),
+            ("띠 무늬", "모자 안에 띠가 두 줄 이상 있어야 합니다."),
+            ("빨강 · 노랑 · 파랑 띠", "띠의 색이 위에서부터 빨강, 노랑, 파랑 순서로 칠해져 있어야 합니다."));
+        RoomItem("Ch3_Balloons", 3, 2, "풍선", 3, "둥근 풍선 세 개가 아래에서 한데 묶여 있습니다. 풍선은 빨강, 노랑, 파랑입니다.",
+            ("풍선 세 개", "둥근 풍선 모양이 세 개 식별되어야 합니다."),
+            ("묶은 끈", "풍선마다 아래로 줄이 있고, 줄이 아래에서 한 점으로 모여야 합니다."),
+            ("빨강 · 노랑 · 파랑 풍선", "풍선이 빨강, 노랑, 파랑으로 하나씩 칠해져 있어야 합니다."));
+        RoomItem("Ch3_GiftBox", 3, 3, "선물 상자", 3, "네모난 선물 상자입니다. 파란 상자에 빨간 리본이 묶여 있고, 노란 별무늬가 있습니다.",
+            ("상자 모양", "네모난 상자와 위의 리본 매듭이 식별되어야 합니다."),
+            ("별무늬", "상자 안에 별 모양이 하나 이상 있어야 합니다."),
+            ("파랑 · 빨강 · 노랑", "상자는 파랑, 리본은 빨강, 별은 노랑으로 칠해져 있어야 합니다."));
+        RoomItem("Ch4_Tangerine", 4, 1, "귤", 1, "동그란 주황색 귤입니다. 꼭대기에 초록색 잎이 하나 있습니다.",
+            ("둥근 모양", "둥근 귤 몸통이 식별되어야 합니다."),
+            ("잎", "몸통 위쪽에 잎 모양이 붙어 있어야 합니다."),
+            ("주황 몸통 · 초록 잎", "몸통은 주황색(빨강 + 노랑), 잎은 초록색(노랑 + 파랑) 계열로 칠해져 있어야 합니다."));
+        RoomItem("Ch4_Grapes", 4, 2, "포도", 1, "보라색 알이 위는 넓고 아래는 좁게 모인 포도송이입니다. 위에 초록색 줄기가 있습니다.",
+            ("송이 모양", "알들이 모여 위가 넓고 아래가 좁은 송이 모양이 식별되어야 합니다."),
+            ("알 배열", "둥근 알이 여러 개 다닥다닥 붙어 있어야 합니다."),
+            ("보라 알 · 초록 줄기", "알은 보라색(빨강 + 파랑), 줄기는 초록색(노랑 + 파랑) 계열로 칠해져 있어야 합니다."));
+        RoomItem("Ch4_Candy", 4, 3, "줄무늬 사탕", 1, "양 끝을 꼬아 싼 둥근 사탕입니다. 가운데에 주황색과 초록색 줄이 번갈아 있습니다.",
+            ("사탕 모양", "둥근 사탕과 양 끝에 꼬인 포장이 식별되어야 합니다."),
+            ("줄무늬", "사탕 가운데에 줄이 두 줄 이상 번갈아 있어야 합니다."),
+            ("주황 · 초록 줄", "줄 색이 주황색(빨강 + 노랑)과 초록색(노랑 + 파랑) 계열이어야 합니다."));
+
         AssetDatabase.SaveAssets();
+    }
+
+    // 2~4챕터 물건 : 그림은 Sprites/Chapter{n}/{file}_Original · _Wrong1~3 (4챕터는 오답 1장, 나머지 칸은 같은 그림으로 채워요)
+    static void RoomItem(string file, int chapter, int number, string target, int wrongCount, string description, params (string name, string criteria)[] features)
+    {
+        var full = new (string, string, AutoCheck, InkColor, Area)[features.Length];
+        for (int i = 0; i < features.Length; i++) full[i] = (features[i].name, features[i].criteria, AutoCheck.LongHandle, InkColor.Black, Area.TopLeft);
+        var wrongs = new string[wrongCount];
+        for (int i = 0; i < wrongCount; i++) wrongs[i] = $"Chapter{chapter}/{file}_Wrong{i + 1}.png";
+        CreateItem(file, number, target, description, $"Chapter{chapter}/{file}_Original.png", wrongs, full);
     }
 
     static void Ch5Item(string file, int number, string target, string description, params (string name, string criteria)[] features)
@@ -1365,9 +1474,11 @@ public static class MvpSceneBuilder
         if (isNew) stage = ScriptableObject.CreateInstance<StageData>();
         stage.stageNumber = number;
         stage.targetName = target;
-        stage.colorMode = ToolBar.GameplayColorMode;    // 펜 도구는 늘 친구(5단계) 도구 하나
+        stage.colorMode = ToolBar.GameplayColorMode;    // (참고용) 실제 펜 도구는 챕터 데이터의 penMode 를 써요
         stage.shapeOnly = file.StartsWith("Stage");     // 1챕터 소풍 : 형태 하나만 (서버 이름 picnic-shape-N)
-        stage.serverKey = file.StartsWith("Ch5_") ? "curse-" + number : "";     // 5챕터 : 서버에 curse-N 프롬프트가 있어야 해요
+        // 서버 프롬프트 이름 : 5챕터 curse-N, 2~4챕터 room-{챕터}-{N} (서버에 아직 없어요. 배포는 사용자 허락 뒤)
+        stage.serverKey = file.StartsWith("Ch5_") ? "curse-" + number
+                        : file.StartsWith("Ch") ? $"room-{file[2]}-{number}" : "";
         stage.targetDescription = description;
         stage.originalSprite = LoadSprite(original);
         stage.features = new Feature[features.Length];
@@ -1402,14 +1513,40 @@ public static class MvpSceneBuilder
         return sprites;
     }
 
-    // 챕터 데이터 : 1챕터 소풍 준비 (물건 5개), 5챕터 도깨비의 저주 (요청 물건 · 맞설 물건 3쌍)
+    // 챕터 데이터 : 1챕터 소풍 준비 (물건 5개), 2~4챕터 방 (물건 3개), 5챕터 도깨비의 저주 (요청 물건 · 맞설 물건 3쌍)
+    //   챕터마다 규칙 : 펜(1 · 2 검정, 3~ 섞기), 돋보기(1챕터 없음), 사탕(4챕터 0개), 첫 그리기 안내(1 펜, 2 돋보기, 3 색), 복선
     static void CreateChapterFiles()
     {
         Chapter("Chapter1_Picnic", 1, "소풍 준비", ChapterRule.Normal, 1, "UI/Chapter_Picnic.png", "Background/BG_Room.png", "Background/BG_Picnic.png", null,
             new[] { "Stage1_Bat", "Stage2_Bag", "Stage3_Mat", "Stage4_Gimbap", "Stage5_Friend" }, null);
+        Rules("Chapter1_Picnic", ColorMode.BlackOnly, magnifier: false, candies: 3, ChapterGuide.Pen);
+        Chapter("Chapter2_Rain", 2, "비 오는 날 방 정리", ChapterRule.Normal, 2, "Chapter2/Chapter_Rain.png", "Background/BG_RoomRain.png", "Background/BG_RoomRain.png", null,
+            new[] { "Ch2_Socks", "Ch2_Umbrella", "Ch2_Pillow" }, null);
+        Rules("Chapter2_Rain", ColorMode.BlackOnly, magnifier: true, candies: 3, ChapterGuide.Magnifier, windowFire: true);
+        Chapter("Chapter3_Birthday", 3, "동생 생일 파티 준비", ChapterRule.Normal, 3, "Chapter3/Chapter_Birthday.png", "Background/BG_RoomEvening.png", "Background/BG_RoomEvening.png", null,
+            new[] { "Ch3_PartyHat", "Ch3_Balloons", "Ch3_GiftBox" }, null);
+        Rules("Chapter3_Birthday", ColorMode.MixFree, magnifier: true, candies: 3, ChapterGuide.Mix, mood: 1);
+        Chapter("Chapter4_Snack", 4, "도깨비 간식 바구니", ChapterRule.Normal, 4, "Chapter4/Chapter_Snack.png", "Background/BG_RoomNight.png", "Background/BG_RoomNight.png", null,
+            new[] { "Ch4_Tangerine", "Ch4_Grapes", "Ch4_Candy" }, null);
+        Rules("Chapter4_Snack", ColorMode.MixFree, magnifier: true, candies: 0, ChapterGuide.None, mood: 2, endEyes: true);
         Chapter("Chapter5_Curse", 5, "도깨비의 저주", ChapterRule.Curse, 5, "Chapter5/Chapter_Forest.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestDark.png",
             new[] { "Ch5_Jipsin", "Ch5_Buchae", "Ch5_Gamtu" }, new[] { "Ch5_Bujeok", "Ch5_DakpiBowl", "Ch5_PatBag" });
+        Rules("Chapter5_Curse", ColorMode.MixFree, magnifier: true, candies: 3, ChapterGuide.None);
         AssetDatabase.SaveAssets();
+    }
+
+    static void Rules(string file, ColorMode pen, bool magnifier, int candies, ChapterGuide guide, bool windowFire = false, int mood = 0, bool endEyes = false)
+    {
+        var c = LoadChapter(file);
+        c.penMode = pen;
+        c.hasMagnifier = magnifier;
+        c.candies = candies;
+        c.guide = guide;
+        c.aloneLines = 2;
+        c.windowFire = windowFire;
+        c.dokkaebiMood = mood;
+        c.endEyes = endEyes;
+        EditorUtility.SetDirty(c);
     }
 
     static void Chapter(string file, int number, string title, ChapterRule rule, int level, string photo, string play, string end, string dark, string[] items, string[] counters)
@@ -1489,7 +1626,9 @@ public static class MvpSceneBuilder
                 maxSize = 1024;
             }
             //   소풍 카드 그림은 화면에서 846 x 618 로만 보여서, 1024 로 줄여 넣어요 (선이 또렷하게 압축은 안 해요. 웹 용량 약 12MB → 4MB)
-            if (path.EndsWith("UI/Chapter_Picnic.png")) maxSize = 1024;
+            if (path.EndsWith("UI/Chapter_Picnic.png") || path.Contains("/Chapter_")) maxSize = 1024;       // 챕터 사진은 모두 작게
+            //   2~4챕터 방 배경 3장은 방 그림에 색을 덮은 임시 그림이라, 웹 용량을 아끼려고 2048 로 줄여요
+            if (path.Contains("Background/BG_Room") && !path.EndsWith("BG_Room.png")) maxSize = 2048;
             if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
                 || importer.spriteBorder != border || importer.textureCompression != compression
                 || !importer.mipmapEnabled || importer.maxTextureSize != maxSize || !importer.alphaIsTransparency)
@@ -1768,11 +1907,12 @@ public static class MvpSceneBuilder
     //   Frame 높이만큼 꽉 찬 묶음(패널 등) 안으로 들어가며 바꿔요. 크기가 정해진 부모 안의 것은 부모를 따라가요.
     const float TopZone = 320f, BottomZone = 1450f;
     // 한 장면으로 모여 있어야 하는 화면 : 아래쪽 것도 가운데에 붙여요 (챕터 카드 묶음, 소풍 그림의 돗자리와 사탕 통)
-    static readonly string[] KeepTogether = { "ChapterPanel", "EndingPanel" };
+    static readonly string[] KeepTogether = { "ChapterPanel", "EndingPanel", "RoomEndPanel" };
     // 구역과 다르게 붙일 것 (경로 → 0 아래, 0.5 가운데, 1 위)
     static readonly Dictionary<string, float> PinOverride = new Dictionary<string, float>
     {
         { "EndingPanel/DialogueBox", 1f },     // 소풍 장면 대사는 하늘 쪽 맨 위에
+        { "RoomEndPanel/DialogueBox", 1f },    // 방 끝 장면 대사도 맨 위에
     };
     static void PinToScreenEdges(RectTransform parent, string path = "", bool together = false)
     {

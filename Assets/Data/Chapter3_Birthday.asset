@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9176eb6d1308b0f4e8ae40ef15657fa1, type: 3}
+  m_Name: Chapter3_Birthday
+  m_EditorClassIdentifier: Assembly-CSharp::ChapterData
+  number: 3
+  title: "\uB3D9\uC0DD \uC0DD\uC77C \uD30C\uD2F0 \uC900\uBE44"
+  rule: 0
+  criteriaLevel: 3
+  penMode: 3
+  hasMagnifier: 1
+  candies: 3
+  guide: 3
+  aloneLines: 2
+  windowFire: 0
+  dokkaebiMood: 1
+  endEyes: 0
+  photo: {fileID: 21300000, guid: 7e45b48d9c0708c478580704d0c05c30, type: 3}
+  playBackground: {fileID: 21300000, guid: 4da4cd89aa8ef3343be89440cfe90e89, type: 3}
+  endBackground: {fileID: 21300000, guid: 4da4cd89aa8ef3343be89440cfe90e89, type: 3}
+  darkBackground: {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: 551ca4b446c1f6447aae3384fe7d877d, type: 2}
+  - {fileID: 11400000, guid: d891a7e93d4b41d4dbaa2d2c05256621, type: 2}
+  - {fileID: 11400000, guid: 21de276d6812d2d479b6a60e206a8c29, type: 2}
+  counterItems: []

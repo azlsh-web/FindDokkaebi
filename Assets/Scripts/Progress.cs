@@ -36,8 +36,8 @@ public static class Progress
     /// <summary>1챕터를 끝까지 해서 방망이를 찾았는지 못 찾았는지 이미 정해졌는지 (BatFound 를 한 번이라도 정했으면 true)</summary>
     public static bool BatKnown => PlayerPrefs.GetInt(BatKnownKey, 0) == 1;
 
-    /// <summary>들어갈 수 있는 챕터인지. 1 · 5 만 열려 있고, 2 · 3 · 4 는 아직 만들지 않아 잠겨 있어요.</summary>
-    public static bool IsOpen(int chapter) => chapter == 1 || chapter == 5;
+    /// <summary>들어갈 수 있는 챕터인지. 1챕터는 늘 열려 있고, 다른 챕터는 바로 앞 챕터를 깨야 열려요 (5챕터도).</summary>
+    public static bool IsOpen(int chapter) => chapter == 1 || (chapter >= 2 && chapter <= 5 && IsCleared(chapter - 1));
 
     /// <summary>저장한 진행을 모두 지워요 (테스트용)</summary>
     public static void ResetAll()

@@ -16,6 +16,14 @@ MonoBehaviour:
   title: "\uB3C4\uAE68\uBE44\uC758 \uC800\uC8FC"
   rule: 1
   criteriaLevel: 5
+  penMode: 3
+  hasMagnifier: 1
+  candies: 3
+  guide: 0
+  aloneLines: 2
+  windowFire: 0
+  dokkaebiMood: 0
+  endEyes: 0
   photo: {fileID: 21300000, guid: 76a94576b1c641646855e642632d8452, type: 3}
   playBackground: {fileID: 21300000, guid: 5fe039312c90f2a489c921cc953ace25, type: 3}
   endBackground: {fileID: 21300000, guid: 5fe039312c90f2a489c921cc953ace25, type: 3}

@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76559bebd3ca412438493db7848d8f3b, type: 3}
+  m_Name: Ch2_Umbrella
+  m_EditorClassIdentifier: Assembly-CSharp::StageData
+  stageNumber: 2
+  targetName: "\uBB3C\uBC29\uC6B8\uBB34\uB2AC \uC6B0\uC0B0"
+  colorMode: 3
+  originalSprite: {fileID: 21300000, guid: 9c1aaee09358b6b40b7a2c016f05e821, type: 3}
+  shapeOnly: 0
+  serverKey: room-2-2
+  targetDescription: "\uD3BC\uCE5C \uC6B0\uC0B0\uC785\uB2C8\uB2E4. \uB465\uADFC \uC9C0\uBD95
+    \uC544\uB798\uC5D0 \uC190\uC7A1\uC774\uAC00 \uC788\uACE0, \uC9C0\uBD95\uC5D0
+    \uBB3C\uBC29\uC6B8(\uC810)\uBB34\uB2AC\uAC00 \uC788\uC2B5\uB2C8\uB2E4."
+  features:
+  - id: F1
+    name: "\uC6B0\uC0B0 \uBAA8\uC591"
+    criteria: "\uC704\uAC00 \uB465\uADFC \uC9C0\uBD95 \uBAA8\uC591\uACFC \uADF8 \uC544\uB798\uB85C
+      \uC774\uC5B4\uC9C4 \uC190\uC7A1\uC774 \uB300\uAC00 \uC2DD\uBCC4\uB418\uC5B4\uC57C
+      \uD569\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  - id: F2
+    name: "\uBB3C\uBC29\uC6B8\uBB34\uB2AC"
+    criteria: "\uC6B0\uC0B0 \uC9C0\uBD95 \uC548\uC5D0 \uC791\uC740 \uC810\uC774\uB098
+      \uB3D9\uADF8\uB77C\uBBF8\uAC00 \uC138 \uAC1C \uC774\uC0C1 \uC788\uC5B4\uC57C
+      \uD569\uB2C8\uB2E4. \uC904\uBB34\uB2AC\uB294 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  wrongSprites:
+  - {fileID: 21300000, guid: 0119f7d65f7559349b07f7573699722e, type: 3}
+  - {fileID: 21300000, guid: 377fc086394b2464a876e1a371f8b5ca, type: 3}
+  - {fileID: 21300000, guid: 22015d1bf9843bb4e86d573a79a25e1f, type: 3}

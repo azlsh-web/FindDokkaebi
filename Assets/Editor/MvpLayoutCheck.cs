@@ -40,6 +40,7 @@ static class MvpLayoutCheck
         new[] { "SettingsPanel/SettingsCard/SettingsMain/SfxSlider/Fill Area", "SettingsPanel/SettingsCard/SettingsMain/SfxSlider/Handle Slide Area" },
         new[] { "HUD/MagnifierHighlight", "HUD/" },   // 시범 때 돋보기 둘레를 도는 도깨비불
         new[] { "HUD/MagnifierHighlight", "DrawPanel/" },   // 쓸 수 있는 횟수는 돋보기 오른쪽 아래에 겹쳐 붙여요
+        new[] { "DrawPanel/GuideHighlight", "DrawPanel/" },   // 챕터 안내(펜 · 색) : 도깨비불이 쪽지 · 버튼 · 붓 둘레를 돌아요
         new[] { "HUD/MagnifierSparkles", "HUD/" },   // 무료 돋보기를 받으면 돋보기 둘레가 반짝여요
         new[] { "DrawPanel/MagnifierPeek/Lens/TimeRing", "DrawPanel/MagnifierPeek/Lens/" },   // 남은 시간 띠는 렌즈 테두리 위에 겹쳐요
         new[] { "DrawPanel/PeekGuide", "DrawPanel/" },   // 돋보기 시범 : 그리기 화면을 살짝 덮고 대사가 나와요

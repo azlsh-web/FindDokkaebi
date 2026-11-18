@@ -1,0 +1,559 @@
+fileFormatVersion: 2
+guid: efacdcadeb18eec49a150704bd610ad3
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8543331021732915147
+    second: Ch3_PartyHat_Wrong2_0
+  - first:
+      213: 3741255322125056903
+    second: Ch3_PartyHat_Wrong2_1
+  - first:
+      213: 1459003566597303255
+    second: Ch3_PartyHat_Wrong2_2
+  - first:
+      213: -2689740391966695805
+    second: Ch3_PartyHat_Wrong2_3
+  - first:
+      213: 735811705895677299
+    second: Ch3_PartyHat_Wrong2_4
+  - first:
+      213: -3945026507630074856
+    second: Ch3_PartyHat_Wrong2_5
+  - first:
+      213: 4646783894070774452
+    second: Ch3_PartyHat_Wrong2_6
+  - first:
+      213: 1676667663859253547
+    second: Ch3_PartyHat_Wrong2_7
+  - first:
+      213: 3042586576742248597
+    second: Ch3_PartyHat_Wrong2_8
+  - first:
+      213: -7631661350456024751
+    second: Ch3_PartyHat_Wrong2_9
+  - first:
+      213: 3471602079703414092
+    second: Ch3_PartyHat_Wrong2_10
+  - first:
+      213: -7402291619790009330
+    second: Ch3_PartyHat_Wrong2_11
+  - first:
+      213: 9012767794722052265
+    second: Ch3_PartyHat_Wrong2_12
+  - first:
+      213: -963071978446357373
+    second: Ch3_PartyHat_Wrong2_13
+  - first:
+      213: 6027936464908182105
+    second: Ch3_PartyHat_Wrong2_14
+  - first:
+      213: 6245618986521781661
+    second: Ch3_PartyHat_Wrong2_15
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_0
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 46
+        width: 943
+        height: 910
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc727fcbc42009670800000000000000
+      internalID: 8543331021732915147
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_1
+      rect:
+        serializedVersion: 2
+        x: 389
+        y: 951
+        width: 50
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78bbd49b4eb9be330800000000000000
+      internalID: 3741255322125056903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_2
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 935
+        width: 35
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7db6f01830c6f3410800000000000000
+      internalID: 1459003566597303255
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_3
+      rect:
+        serializedVersion: 2
+        x: 601
+        y: 931
+        width: 31
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38e1ec64d5f1caad0800000000000000
+      internalID: -2689740391966695805
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_4
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 930
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37d6c7719d0263a00800000000000000
+      internalID: 735811705895677299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_5
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 915
+        width: 33
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 814a53ffa437049c0800000000000000
+      internalID: -3945026507630074856
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_6
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 922
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ba481af451bc7040800000000000000
+      internalID: 4646783894070774452
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_7
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 903
+        width: 54
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2107be5b58b44710800000000000000
+      internalID: 1676667663859253547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_8
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 925
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 590f7190f50793a20800000000000000
+      internalID: 3042586576742248597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_9
+      rect:
+        serializedVersion: 2
+        x: 506
+        y: 922
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 151adff9f64e61690800000000000000
+      internalID: -7631661350456024751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_10
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 720
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c45ba3ab2bb9d2030800000000000000
+      internalID: 3471602079703414092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_11
+      rect:
+        serializedVersion: 2
+        x: 974
+        y: 169
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0cc096adf6c54990800000000000000
+      internalID: -7402291619790009330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_12
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 93
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a81d7fbe88c31d70800000000000000
+      internalID: 9012767794722052265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_13
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 99
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38c729f532b72a2f0800000000000000
+      internalID: -963071978446357373
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_14
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 87
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 952e977074887a350800000000000000
+      internalID: 6027936464908182105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_PartyHat_Wrong2_15
+      rect:
+        serializedVersion: 2
+        x: 259
+        y: 64
+        width: 42
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d95e016a065eca650800000000000000
+      internalID: 6245618986521781661
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch3_PartyHat_Wrong2_0: 8543331021732915147
+      Ch3_PartyHat_Wrong2_1: 3741255322125056903
+      Ch3_PartyHat_Wrong2_10: 3471602079703414092
+      Ch3_PartyHat_Wrong2_11: -7402291619790009330
+      Ch3_PartyHat_Wrong2_12: 9012767794722052265
+      Ch3_PartyHat_Wrong2_13: -963071978446357373
+      Ch3_PartyHat_Wrong2_14: 6027936464908182105
+      Ch3_PartyHat_Wrong2_15: 6245618986521781661
+      Ch3_PartyHat_Wrong2_2: 1459003566597303255
+      Ch3_PartyHat_Wrong2_3: -2689740391966695805
+      Ch3_PartyHat_Wrong2_4: 735811705895677299
+      Ch3_PartyHat_Wrong2_5: -3945026507630074856
+      Ch3_PartyHat_Wrong2_6: 4646783894070774452
+      Ch3_PartyHat_Wrong2_7: 1676667663859253547
+      Ch3_PartyHat_Wrong2_8: 3042586576742248597
+      Ch3_PartyHat_Wrong2_9: -7631661350456024751
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

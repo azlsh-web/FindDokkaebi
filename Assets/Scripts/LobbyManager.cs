@@ -6,8 +6,9 @@ using UnityEngine.UI;
 // LobbyManager : 로비 씬 (시작 화면 + 챕터 선택)
 // ─────────────────────────────────────────────────────────────
 // 시작 화면 : 아무 데나 누르면 챕터 선택으로.
-// 챕터 선택 : 줄에 매달린 사진 5장. 열린 챕터(1 · 5)를 누르면 큰 사진 창이 뜨고, 창을 누르면 게임 시작.
-//             잠긴 챕터는 흔들려요. 오른쪽 위 톱니는 소리 설정.
+// 챕터 선택 : 줄에 매달린 사진 5장. 앞 챕터를 깨야 다음 챕터가 열려요 (Progress.IsOpen).
+//             열린 챕터를 누르면 큰 사진 창이 뜨고, 창을 누르면 게임 시작.
+//             아직 못 연 챕터는 흑백이고, 누르면 흔들리기만 해요. 오른쪽 위 톱니는 소리 설정.
 // 칸은 LobbySceneBuilder 가 씬을 조립할 때 채워요.
 public class LobbyManager : MonoBehaviour
 {
@@ -23,7 +24,9 @@ public class LobbyManager : MonoBehaviour
 
     [Header("챕터 사진")]
     [SerializeField] SimpleAnim[] cardAnims;        // 5장 (잠긴 것은 누르면 흔들려요)
-    [SerializeField] Sprite[] chapterPhotos;        // 5장 (잠긴 챕터는 비어 있어도 돼요)
+    [SerializeField] Sprite[] chapterPhotos;        // 5장
+    [SerializeField] Image[] cardPictures;          // 줄에 매달린 사진 5장 (못 연 챕터는 흑백)
+    [SerializeField] Material grayMaterial;         // 흑백으로 그리는 재질 (FindDokkaebi/UI Grayscale)
     [SerializeField] Color chapter5Tint = Color.white;  // 5챕터 그림이 아직 없으면 어둡게
     [SerializeField] Image popupPhoto;
     [SerializeField] TMP_Text popupName;
@@ -32,7 +35,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] Slider bgmSlider;
     [SerializeField] Slider sfxSlider;
 
-    static readonly string[] Names = { "소풍 준비", "", "", "", "도깨비의 저주" };
+    static readonly string[] Names = { "소풍 준비", "비 오는 날 방 정리", "동생 생일 파티 준비", "도깨비 간식 바구니", "도깨비의 저주" };
 
     int popupChapter;
     float lastSfxSample;
@@ -68,7 +71,16 @@ public class LobbyManager : MonoBehaviour
     {
         startPanel.SetActive(false);
         chapterPanel.SetActive(true);
+        RefreshCards();
         if (background != null && roomBackground != null) background.sprite = roomBackground;
+    }
+
+    /// <summary>열린 챕터는 컬러, 아직 못 연 챕터는 흑백</summary>
+    void RefreshCards()
+    {
+        if (cardPictures == null) return;
+        for (int i = 0; i < cardPictures.Length; i++)
+            if (cardPictures[i] != null) cardPictures[i].material = Progress.IsOpen(i + 1) ? null : grayMaterial;
     }
 
     /// <summary>[버튼] 시작 화면 어디든 누르기</summary>

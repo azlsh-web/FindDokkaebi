@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9176eb6d1308b0f4e8ae40ef15657fa1, type: 3}
+  m_Name: Chapter2_Rain
+  m_EditorClassIdentifier: Assembly-CSharp::ChapterData
+  number: 2
+  title: "\uBE44 \uC624\uB294 \uB0A0 \uBC29 \uC815\uB9AC"
+  rule: 0
+  criteriaLevel: 2
+  penMode: 0
+  hasMagnifier: 1
+  candies: 3
+  guide: 2
+  aloneLines: 2
+  windowFire: 1
+  dokkaebiMood: 0
+  endEyes: 0
+  photo: {fileID: 21300000, guid: 3cb2f595d99821a419d36f11cb77f2a4, type: 3}
+  playBackground: {fileID: 21300000, guid: a18a6c6d834803349b9b40698d65a04b, type: 3}
+  endBackground: {fileID: 21300000, guid: a18a6c6d834803349b9b40698d65a04b, type: 3}
+  darkBackground: {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: f7b8a20f1c4402643a72c8a91e181eaf, type: 2}
+  - {fileID: 11400000, guid: 8b1b4242e69adb945b6d3237e57d07da, type: 2}
+  - {fileID: 11400000, guid: 6c48b0844257cf244aec943e5d2f4c83, type: 2}
+  counterItems: []

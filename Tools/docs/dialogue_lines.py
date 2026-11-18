@@ -51,6 +51,19 @@ def _groups(src, name):
     return out
 
 
+def _top_groups(src, start, end):
+    """범위 안에서 바로 아래 단계의 new[] { ... } 묶음만 (안쪽 묶음은 건너뛰어요)"""
+    out, i = [], start + 1
+    for m in re.finditer(r"new\[\]\s*\{", src[start + 1:end]):
+        a = start + 1 + m.end() - 1
+        if a < i:
+            continue
+        b = _closing(src, a)
+        out.append((a, b))
+        i = b
+    return out
+
+
 def _strings(src, start, end):
     return [(m.group(1), m.start(1), m.end(1)) for m in _STRING.finditer(src, start, end)]
 
@@ -112,10 +125,15 @@ def read_lines(path=SOURCE):
 
     for num, stage, scene, who, name in (("주인공-간식없음", "모든 챕터", "사탕을 다 쓰고 틀렸을 때 (게임오버는 제외)", FACE["BoySad"], "BoyOutOfSnacks"),
                                          ("도깨비-오류", "모든 챕터", "판정 서버 오류", "도깨비", "JudgeError"),
-                                         ("도깨비-돋보기-1", "1챕터 · 방망이", "첫 그리기 : 돋보기 시범 (넘기면 돋보기가 도깨비불로 강조돼요)", "도깨비", "MagnifierShow"),
-                                         ("도깨비-돋보기-2", "1챕터 · 방망이", "돋보기를 누른 뒤 (넘기면 둘러봐요)", "도깨비", "MagnifierHow"),
-                                         ("도깨비-돋보기-3", "1챕터 · 방망이", "시범으로 둘러본 뒤", "도깨비", "MagnifierRule"),
-                                         ("도깨비-무료돋보기", "모든 챕터", "한 물건에서 두 번째로 틀렸을 때 (사탕이 남았으면, 게임오버는 제외)", "도깨비", "MagnifierGift"),
+                                         ("안내-펜-1", "1챕터 · 방망이", "첫 그리기 : 펜 안내 (넘기면 도깨비불이 쪽지를 가리켜요)", "도깨비", "PenDraw"),
+                                         ("안내-펜-2", "1챕터 · 방망이", "쪽지에 그린 뒤 (넘기면 되돌리기를 가리켜요)", "도깨비", "PenUndo"),
+                                         ("안내-펜-3", "1챕터 · 방망이", "되돌린 뒤 (넘기면 다 그렸어! 를 가리켜요)", "도깨비", "PenDone"),
+                                         ("도깨비-돋보기-1", "2챕터 · 양말", "첫 그리기 : 돋보기 시범 (넘기면 돋보기가 도깨비불로 강조돼요)", "도깨비", "MagnifierShow"),
+                                         ("도깨비-돋보기-2", "2챕터 · 양말", "돋보기를 누른 뒤 (넘기면 둘러봐요)", "도깨비", "MagnifierHow"),
+                                         ("도깨비-돋보기-3", "2챕터 · 양말", "시범으로 둘러본 뒤", "도깨비", "MagnifierRule"),
+                                         ("안내-색-1", "3챕터 · 고깔모자", "첫 그리기 : 색 안내 (넘기면 도깨비불이 붓을 가리켜요)", "도깨비", "MixBrush"),
+                                         ("안내-색-2", "3챕터 · 고깔모자", "붓을 눌러 팔레트가 열린 뒤", "도깨비", "MixHow"),
+                                         ("도깨비-무료돋보기", "2~5챕터", "한 물건에서 두 번째로 틀렸을 때 (사탕이 남았으면, 게임오버는 제외)", "도깨비", "MagnifierGift"),
                                          ("도깨비-마무리", "1챕터 · 마무리", "화면을 누른 뒤 (넘기면 챕터 선택)", "도깨비", "EndingBye")):
         add(num, stage, scene, who, *const(name))
 
@@ -125,6 +143,42 @@ def read_lines(path=SOURCE):
         assert len(matches) == len(scenes), name
         for k, (m, scene) in enumerate(zip(matches, scenes), 1):
             add(f"{code}-{k}", label, scene, FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
+
+    # 2~4챕터 : 방 (시작 장면 → 물건 3개 → 끝 장면)
+    rooms = [(2, ["양말", "우산", "베개"]), (3, ["고깔모자", "풍선", "선물 상자"]), (4, ["귤", "포도", "줄무늬 사탕"])]
+    line_re = r'new Line\(Face\.(\w+),\s*"((?:[^"\\]|\\.)*)"\)'
+    opening = _top_groups(src, *_block(src, "RoomOpening"))
+    item_intro = _top_groups(src, *_block(src, "RoomItemIntro"))
+    right = _top_groups(src, *_block(src, "RoomDokkaebiRight"))
+    wrong = _top_groups(src, *_block(src, "RoomDokkaebiWrong"))
+    boy_right = _top_groups(src, *_block(src, "RoomBoyRight"))
+    boy_wrong = _top_groups(src, *_block(src, "RoomBoyWrong"))
+    ends = _top_groups(src, *_block(src, "RoomEnd"))
+    assert len(opening) == len(item_intro) == len(right) == len(wrong) == len(boy_right) == len(boy_wrong) == len(ends) == 3
+    for c, (chapter, items) in enumerate(rooms):
+        code = f"C{chapter}"
+        a, b = opening[c]
+        for k, m in enumerate(re.finditer(line_re, src[a:b]), 1):
+            scene = "시작 장면 : 주인공 혼자" if k <= 2 else "시작 장면 : 도깨비와 대화"
+            add(f"{code}-시작-{k}", f"{chapter}챕터 · 시작", scene, FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
+        intros = _top_groups(src, *item_intro[c])
+        rights, wrongs = _top_groups(src, *right[c]), _top_groups(src, *wrong[c])
+        boy_r, boy_w = _strings(src, *boy_right[c]), _strings(src, *boy_wrong[c])
+        for i, item in enumerate(items):
+            label = f"{chapter}챕터 · {item}"
+            a, b = intros[i]
+            for k, m in enumerate(re.finditer(line_re, src[a:b]), 1):
+                add(f"{code}-{item}-시작-{k}", label, "물건 대화 (순서대로)", FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
+            for key, title, ranges in (("맞음", "기준 통과 (무작위)", rights), ("틀림", "기준 실패 (무작위)", wrongs)):
+                for k, st in enumerate(_strings(src, *ranges[i]), 1):
+                    add(f"{code}-{item}-{key}-{k}", label, title, "도깨비", *st)
+            add(f"{code}-{item}-주인공-맞음", label, "기준 통과 뒤 주인공", FACE["BoyHappy"], *boy_r[i])
+            add(f"{code}-{item}-주인공-틀림", label, "기준 실패 뒤 주인공" + (" (사탕이 없어 다시 못 그려요)" if chapter == 4 else " (사탕이 남았을 때)"),
+                FACE["BoySad"], *boy_w[i])
+        a, b = ends[c]
+        for k, m in enumerate(re.finditer(line_re, src[a:b]), 1):
+            add(f"{code}-끝-{k}", f"{chapter}챕터 · 끝 장면", "끝 장면 : 화면을 누르면 (순서대로)", FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
+    add("C4-건네기", "4챕터 · 모든 물건", "사탕 없이 쪽지만 건넬 때", FACE["BoyHappy"], *const("GiveBoyNoCandy"))
 
     line_array("CurseIntro", "C5-시작", "5챕터 · 시작", [
         "밝은 숲 : 주인공과 친구가 도깨비를 찾아옴",

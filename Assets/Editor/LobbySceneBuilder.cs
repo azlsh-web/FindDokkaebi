@@ -54,9 +54,12 @@ public static class LobbySceneBuilder
         Sprite bgRoom = Sp("Background/BG_Room.png");
         Sprite picnicPhoto = Sp("UI/Chapter_Picnic.png");
         Sprite forestPhoto = Sp("Chapter5/Chapter_Forest.png");
+        Sprite rainPhoto = Sp("Chapter2/Chapter_Rain.png") ?? picnicPhoto;          // 2~4챕터 사진 (임시 그림, 없으면 소풍 사진)
+        Sprite birthdayPhoto = Sp("Chapter3/Chapter_Birthday.png") ?? picnicPhoto;
+        Sprite snackPhoto = Sp("Chapter4/Chapter_Snack.png") ?? picnicPhoto;
+        Material grayMaterial = GrayMaterial();
         bool forestMissing = forestPhoto == null;
         if (forestMissing) forestPhoto = picnicPhoto;       // 아직 없으면 소풍 그림을 어둡게
-        Sprite lockSprite = Ui("Chapter_Lock");
 
         // 카메라 · EventSystem · Canvas
         var cam = new GameObject("Main Camera").AddComponent<Camera>();
@@ -122,7 +125,8 @@ public static class LobbySceneBuilder
         var chapterButtons = new Button[5];
         var cardAnims = new SimpleAnim[5];
         float[] tilt = { -3f, 2.5f, -2f, 3f, -1.5f };
-        Sprite[] photos = { picnicPhoto, null, null, null, forestPhoto };
+        Sprite[] photos = { picnicPhoto, rainPhoto, birthdayPhoto, snackPhoto, forestPhoto };
+        var cardPictures = new Image[5];
         for (int n = 0; n < 5; n++)
         {
             float x = n % 2 == 0 ? 340f : 364f;
@@ -145,23 +149,13 @@ public static class LobbySceneBuilder
             chapterButtons[n].transition = Selectable.Transition.None;
             cardAnims[n] = Anim(card.gameObject, SimpleAnim.Kind.None, 0.4f, 0f, 18f);
 
-            if (Progress.IsOpen(n + 1))
-            {
-                var pic = NewImage("Picture", card.transform, Color.white);
-                pic.sprite = photos[n];
-                pic.raycastTarget = false;
-                Stretch(pic.rectTransform, 24);
-                if (n == 4 && forestMissing) pic.color = DarkPhoto;
-            }
-            else
-            {
-                card.color = new Color(0.82f, 0.8f, 0.76f, 1f);       // 잠긴 칸은 살짝 어둡게
-                var lockImg = NewImage("Lock", card.transform, Color.white);
-                lockImg.sprite = lockSprite;
-                lockImg.preserveAspect = true;
-                lockImg.raycastTarget = false;
-                Anchor(lockImg.rectTransform, 0.5f, 0.5f, Vector2.zero, new Vector2(120, 150));
-            }
+            // 사진은 늘 넣고, 아직 못 연 챕터는 LobbyManager 가 흑백 재질로 바꿔요 (깬 기록은 실행할 때 읽어요)
+            var pic = NewImage("Picture", card.transform, Color.white);
+            pic.sprite = photos[n];
+            pic.raycastTarget = false;
+            Stretch(pic.rectTransform, 24);
+            if (n == 4 && forestMissing) pic.color = DarkPhoto;
+            cardPictures[n] = pic;
         }
 
         // ── 위 줄 톱니 (두 화면 모두) ──
@@ -244,6 +238,8 @@ public static class LobbySceneBuilder
         Set(so, "startText", startText);
         SetArray(so, "cardAnims", cardAnims);
         SetArray(so, "chapterPhotos", photos);
+        SetArray(so, "cardPictures", cardPictures);
+        Set(so, "grayMaterial", grayMaterial);
         Set(so, "popupPhoto", popupPhoto);
         Set(so, "popupName", popupName);
         Set(so, "bgmSlider", bgmSlider);
@@ -279,6 +275,7 @@ public static class LobbySceneBuilder
             "Background/BG_Start.png", "Background/BG_Room.png",
             "Characters/Char_Boy_Normal.png", "Characters/Char_Dokkaebi_Normal.png",
             "Chapter5/Chapter_Forest.png",
+            "Chapter2/Chapter_Rain.png", "Chapter3/Chapter_Birthday.png", "Chapter4/Chapter_Snack.png",
         };
         foreach (string f in files)
         {
@@ -297,10 +294,24 @@ public static class LobbySceneBuilder
             importer.textureCompression = crisp ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
             importer.mipmapEnabled = true;
             importer.filterMode = FilterMode.Trilinear;
-            importer.maxTextureSize = path.EndsWith("UI/Chapter_Picnic.png") ? 1024 : 4096;
+            importer.maxTextureSize = path.Contains("Chapter_") ? 1024 : 4096;
             importer.alphaIsTransparency = true;
             importer.SaveAndReimport();
         }
+    }
+
+    // 아직 못 연 챕터 사진을 흑백으로 그리는 재질 (Assets/Materials/UI_Grayscale.mat). 없으면 만들어요
+    static Material GrayMaterial()
+    {
+        const string path = "Assets/Materials/UI_Grayscale.mat";
+        var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (mat != null) return mat;
+        Shader shader = Shader.Find("FindDokkaebi/UI Grayscale");
+        if (shader == null) return null;
+        if (!AssetDatabase.IsValidFolder("Assets/Materials")) AssetDatabase.CreateFolder("Assets", "Materials");
+        mat = new Material(shader);
+        AssetDatabase.CreateAsset(mat, path);
+        return mat;
     }
 
     static Sprite Sp(string relative) => AssetDatabase.LoadAssetAtPath<Sprite>($"{SpriteFolder}/{relative}");
