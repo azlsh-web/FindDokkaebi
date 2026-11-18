@@ -784,7 +784,7 @@ public static class MvpSceneBuilder
 
         // ── 7. 채점표 : 시험지처럼 번호 위에 동그라미 · 빗금 ──
         var compare = NewPanel("ComparePanel", canvas);
-        //   바깥 판은 아트팀 그림(Paper_Score). 왼쪽 위는 칸 없이 내가 그린 선만, 오른쪽 위는 흰 칸에 원본
+        //   바깥 판은 아트팀 그림(Paper_Score). 위 두 그림은 둘 다 칸 없이 쪽지 위에 누끼로 (왼쪽 내 그림, 오른쪽 원본)
         var paper = NewPaper("Paper", compare, "Paper_Score").transform;
         M((RectTransform)paper, 18, 62, 324, 520);
         var mineCard = NewEmpty("MyCard", paper);
@@ -793,10 +793,10 @@ public static class MvpSceneBuilder
         compareMine.transform.SetParent(mineCard, false);
         Stretch(compareMine.rectTransform, 12);
         compareMine.raycastTarget = false;
-        var origCard = NewCard("OriginalCard", paper, Vector2.zero, Vector2.zero);
+        var origCard = NewEmpty("OriginalCard", paper);     // 흰 카드 · 테두리 없이 (원본 그림은 이미 배경이 투명해요)
         PIn((RectTransform)origCard, 164, 14, 138, 150);
         var compareOriginal = NewImage("Original", origCard, Color.white);
-        Stretch(compareOriginal.rectTransform, 24);
+        Stretch(compareOriginal.rectTransform, 12);         // 내 그림과 같은 여백
         compareOriginal.preserveAspect = true;
         compareOriginal.raycastTarget = false;
         var scoreRows = new GameObject[5];

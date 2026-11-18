@@ -916,6 +916,9 @@ static class MvpSelfTest
                     if (IsOn($"ComparePanel/Paper/Row_{k}"))
                         marks += IsOn($"ComparePanel/Paper/Row_{k}/Circle") != IsOn($"ComparePanel/Paper/Row_{k}/Slash") ? 1 : 0;
                 Check(marks == st.features.Length, "번호마다 동그라미 또는 빗금");
+                Check(Find("ComparePanel/Paper/OriginalCard").GetComponent<Image>() == null
+                      && Find("ComparePanel/Paper/OriginalCard/Original").GetComponent<Image>().sprite == st.originalSprite,
+                      "원본은 흰 카드 없이 쪽지 위에 누끼로");
                 if (s == 1) Check(!IsOn("ComparePanel/Paper/Row_1/Circle") && IsOn("ComparePanel/Paper/Row_1/Slash"), "틀리면 빨간 빗금");
                 else Check(IsOn("ComparePanel/Paper/Row_1/Circle"), "맞으면 초록 동그라미");
                 Check(!(bool)typeof(GameManager).GetField("freePeek", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm()), "단계가 끝나면 무료 기회는 사라진다");
