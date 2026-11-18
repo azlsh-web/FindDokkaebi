@@ -50,7 +50,7 @@ static class MvpWebGLBuild
 
         var options = new BuildPlayerOptions
         {
-            scenes = new[] { "Assets/Scenes/Game.unity" },
+            scenes = new[] { "Assets/Scenes/Lobby.unity", "Assets/Scenes/Game.unity" },   // 로비가 먼저 열려요
             locationPathName = OutDir,
             target = BuildTarget.WebGL,
             targetGroup = BuildTargetGroup.WebGL,

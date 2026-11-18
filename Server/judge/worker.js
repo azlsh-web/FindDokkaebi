@@ -18,6 +18,7 @@
 //   - 허락한 주소(ALLOWED_ORIGINS)의 웹 게임에서 온 요청만 받아요.
 //   - 그림 크기 제한, 같은 사람(IP)이 1분에 너무 많이 보내면 거절 (JUDGE_LIMIT).
 import stages from "./stages.json";
+import legacyStages from "./legacy_stages.json";   // 기존 웹 게임의 숫자 단계와 판정 기준
 import appendixB from "./appendix_b.json";   // 기획서 부록 B 의 검증용 프롬프트 원문 (기획서 8장 테스트를 그대로 다시 할 때)
 
 const MAX_IMAGE_CHARS = 1_500_000;   // 512x512 PNG 는 보통 수십 KB 라 넉넉해요
@@ -60,7 +61,8 @@ export default {
 
     let body;
     try { body = await request.json(); } catch { return reply(400, { ok: false, error: "JSON 이 아니에요" }); }
-    const prompt = stages[String(body.stage)] ?? appendixB[String(body.stage)];
+    const stage = String(body?.stage);
+    const prompt = [stages, legacyStages, appendixB].find(set => Object.hasOwn(set, stage))?.[stage];
     if (!prompt) return reply(400, { ok: false, error: "없는 단계예요" });
     const image = body.image;
     if (typeof image !== "string" || !image.startsWith("data:image/png;base64,") || image.length > MAX_IMAGE_CHARS)

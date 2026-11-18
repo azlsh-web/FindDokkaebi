@@ -22,9 +22,12 @@ using Object = UnityEngine.Object;
 //   - 또는 flag 파일에 그룹 이름을 적어요 (예: stage3 ending). 비어 있으면 전체예요.
 //   logic  : 조사 · 색 섞기 · 단계 데이터         judge  : 손그림 판정
 //            (이 둘만 고르면 Play 에 들어가지 않아요)
-//   title  : 시작 화면                            stage1 ~ stage5 : 그 단계의 화면 흐름
-//   ending : 이야기 종료 · 방망이를 못 찾은 경우
-//   단계나 엔딩만 돌릴 때는 앞 단계를 건너뛰고 그 자리에서 시작해요 (EntryStep).
+//   lobby  : 로비 씬 파일이 빌드에 들어 있는지 (Play 에 들어가지 않아요)
+//   start  : 게임 시작 · 설정 창 · 대사 줄바꿈
+//   stage1 ~ stage5 : 1챕터의 물건 1 ~ 5 의 화면 흐름
+//   ending : 1챕터 이야기 종료 · 방망이를 못 찾은 경우
+//   chapter5 : 5챕터 (고르기 → 맞설 물건 성공 하트 -1 → 요청 물건 두 번 실패 게임오버 → 하트 0 해피 엔딩)
+//   물건이나 엔딩만 돌릴 때는 앞 물건을 건너뛰고 그 자리에서 시작해요 (EntryStep).
 //
 // 하는 일
 //   Play 모드에 들어가서 사람이 버튼을 누르는 대신 GameManager·ToolBar 의 함수를 차례로 부르고,
@@ -35,15 +38,17 @@ using Object = UnityEngine.Object;
 //   - 화면 흐름 검사에서는 "이번엔 이 특징을 빠뜨렸다"는 결과를 미리 정해서 넣어요 (LocalJudge.TestOverride).
 //
 // 시나리오
-//   시작 → 1~5단계 (각 단계 : 대화 → 떠올리기 → 쪽지 쓰기 → 건네기 → 부분 성공 → 이어 그리기 → 성공 → 채점표 → 다음 단계)
-//   + 1단계 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
-//   + 1단계 : 도깨비가 돋보기 쓰는 법을 보여 줌 (공짜, 향이 안 탐) → 게임 전체 1번을 씀
-//   + 2단계 : 두 번째로 틀리면 무료 돋보기를 받아서 씀 → 사탕 3개를 다 써서 포기
-//   + 3단계 : 향이 다 타면 자동 제출
-//   + 4·5단계 : 혼색 팔레트 (노랑 1:파랑 1=초록, 빨강 2:노랑 2:파랑 1=갈색, 되돌리기)
-//   + 시작 화면 → 챕터 선택 (소풍만 열림, 나머지 4개는 자물쇠)
-//   → 이야기 종료 화면 기록 확인 (사탕 통) → 도깨비 인사 → 챕터 선택
+//   Game 씬이 열리면 1챕터가 바로 시작돼요 (ChapterSelect.Current 기본값 1).
+//   1챕터 물건 1~5 (각 물건 : 대화 → 떠올리기 → 쪽지 쓰기 → 건네기 → 틀림 → 이어 그리기 → 성공 → 채점표 → 다음)
+//   + 물건 1 : AI 오류 처리(간식 돌려주기), 모두 지우기/되돌리기
+//   + 물건 1 : 도깨비가 돋보기 쓰는 법을 보여 줌 (공짜, 향이 안 탐) → 챕터 전체 1번을 씀
+//   + 물건 2 : 두 번째로 틀리면 무료 돋보기를 받아서 씀 → 사탕 3개를 다 써서 포기 (틀릴 때마다 오답 그림 1 · 2 · 3)
+//   + 물건 3 : 향이 다 타면 자동 제출
+//   + 물건 4·5 : 혼색 팔레트 (노랑 1:파랑 1=초록, 빨강 2:노랑 2:파랑 1=갈색, 되돌리기)
+//   → 이야기 종료 화면 기록 확인 → 도깨비 인사 (마지막 탭은 로비 씬을 불러서 눌러 보지 않아요)
 //   + 방망이를 못 찾았을 때 : 이야기 종료까지 도깨비가 빈손이고 소풍 장면에 대파가 놓이는지
+//   + 5챕터 : 시작 대사 → 고르기(그림 2장) → 떠올리기 → 그리기 → 판정은 미리 정해 넣기 (LocalJudge.TestOverride)
+//   ※ 검사가 저장된 진행(Progress)을 건드려요. 시작 전에 적어 두었다가 끝나면 되돌려요.
 //
 // 결과
 //   - Console 에 [SelfTest] 전체 PASS / FAIL n개
@@ -59,7 +64,8 @@ static class MvpSelfTest
     const string OutDir = "Temp/SelfTest";
     const string RunningKey = "MvpSelfTest.Running";
     const string GroupsKey = "MvpSelfTest.Groups";
-    static readonly string[] AllGroups = { "logic", "judge", "title", "stage1", "stage2", "stage3", "stage4", "stage5", "ending" };
+    static readonly string[] AllGroups = { "logic", "judge", "lobby", "start", "stage1", "stage2", "stage3", "stage4", "stage5", "ending", "chapter5" };
+    const string ProgressKey = "MvpSelfTest.Progress";
 
     // 한 단계 = (앞 단계 후 기다릴 초, 이름, 할 일, [조건])
     //   until 이 있으면 그 조건이 참이 될 때까지(최대 20초) 기다린 뒤 실행해요.
@@ -90,13 +96,15 @@ static class MvpSelfTest
 
     [MenuItem("Tools/찾아라도깨비/부분 테스트/규칙 (logic)")] static void RunLogic() => RunGroups("logic");
     [MenuItem("Tools/찾아라도깨비/부분 테스트/손그림 판정 (judge)")] static void RunJudge() => RunGroups("judge");
-    [MenuItem("Tools/찾아라도깨비/부분 테스트/시작 화면 (title)")] static void RunTitle() => RunGroups("title");
-    [MenuItem("Tools/찾아라도깨비/부분 테스트/1단계 (stage1)")] static void RunStage1() => RunGroups("stage1");
-    [MenuItem("Tools/찾아라도깨비/부분 테스트/2단계 (stage2)")] static void RunStage2() => RunGroups("stage2");
-    [MenuItem("Tools/찾아라도깨비/부분 테스트/3단계 (stage3)")] static void RunStage3() => RunGroups("stage3");
-    [MenuItem("Tools/찾아라도깨비/부분 테스트/4단계 (stage4)")] static void RunStage4() => RunGroups("stage4");
-    [MenuItem("Tools/찾아라도깨비/부분 테스트/5단계 (stage5)")] static void RunStage5() => RunGroups("stage5");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/로비 씬 (lobby)")] static void RunLobby() => RunGroups("lobby");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/게임 시작 (start)")] static void RunStart() => RunGroups("start");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/1챕터 물건 1 (stage1)")] static void RunStage1() => RunGroups("stage1");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/1챕터 물건 2 (stage2)")] static void RunStage2() => RunGroups("stage2");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/1챕터 물건 3 (stage3)")] static void RunStage3() => RunGroups("stage3");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/1챕터 물건 4 (stage4)")] static void RunStage4() => RunGroups("stage4");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/1챕터 물건 5 (stage5)")] static void RunStage5() => RunGroups("stage5");
     [MenuItem("Tools/찾아라도깨비/부분 테스트/이야기 종료 (ending)")] static void RunEnding() => RunGroups("ending");
+    [MenuItem("Tools/찾아라도깨비/부분 테스트/5챕터 (chapter5)")] static void RunChapter5() => RunGroups("chapter5");
 
     // text : 돌릴 그룹 이름들 (빈칸 · 쉼표로 구분). 비어 있거나 all 이면 전체
     static void RunGroups(string text)
@@ -127,8 +135,10 @@ static class MvpSelfTest
             return;
         }
 
+        SaveProgress();     // 검사가 저장된 진행을 건드리니 먼저 적어 둬요 (끝나면 되돌려요)
+
         // 화면이 필요 없는 그룹만 고르면 Play 에 들어가지 않아요
-        if (names.TrueForAll(n => n == "logic" || n == "judge"))
+        if (names.TrueForAll(n => n == "logic" || n == "judge" || n == "lobby"))
         {
             Begin(names.ToArray());
             foreach (Step s in steps)
@@ -228,28 +238,54 @@ static class MvpSelfTest
         {
             wait = 0.3f, name = "ending 입구", group = group, run = () =>
             {
-                // 전체 실행이 끝났을 때와 같은 기록 : 2단계만 엉뚱한 물건, 나머지는 찾음. 남은 사탕 2 · 0 · 2 · 2 · 2
+                // 전체 실행이 끝났을 때와 같은 기록 : 2번째 물건만 엉뚱한 물건(3번째 오답), 나머지는 찾음
                 StartAt(1);
                 StageData[] stages = Stages();
                 var hidden = BindingFlags.NonPublic | BindingFlags.Instance;
                 var items = (Sprite[])typeof(GameManager).GetField("itemsFound", hidden).GetValue(Gm());
-                var candiesLeft = (int[])typeof(GameManager).GetField("candiesLeft", hidden).GetValue(Gm());
                 for (int i = 0; i < stages.Length; i++)
-                {
-                    items[i] = i == 1 ? stages[i].wrongSprites[stages[i].wrongSprites.Length - 1] : stages[i].originalSprite;
-                    candiesLeft[i] = i == 1 ? 0 : 2;
-                }
+                    items[i] = i == 1 ? stages[i].WrongSpriteFor(3) : stages[i].originalSprite;
                 SetPrivate(Gm(), "stageIndex", stages.Length - 1);
                 Gm().NextStage();
             }
         };
     }
 
+    // 1챕터의 물건 stageNumber 번부터 시작
     static void StartAt(int stageNumber)
     {
+        ChapterSelect.Current = 1;
         SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
         SetPrivate(Gm(), "editorStartStage", stageNumber);
         Gm().StartGame();
+    }
+
+    // 로비에서 고른 것처럼 챕터를 정하고 그 챕터를 처음부터 시작
+    static void StartChapter(int number)
+    {
+        ChapterSelect.Current = number;
+        SetPrivate(Gm(), "roamLoopSeconds", 0.05f);
+        SetPrivate(Gm(), "editorStartStage", 1);
+        Gm().StartGame();
+    }
+
+    // 진행 저장 (PlayerPrefs) 을 적어 두고 되돌리기 : 검사가 챕터를 깬 것으로 만들어 버리지 않게
+    static void SaveProgress()
+    {
+        string text = "";
+        for (int i = 1; i <= 5; i++) text += Progress.IsCleared(i) ? "1" : "0";
+        text += Progress.BatKnown ? "1" : "0";
+        text += Progress.BatFound ? "1" : "0";
+        SessionState.SetString(ProgressKey, text);
+    }
+
+    static void RestoreProgress()
+    {
+        string text = SessionState.GetString(ProgressKey, "");
+        if (text.Length != 7) return;
+        Progress.ResetAll();
+        for (int i = 1; i <= 5; i++) if (text[i - 1] == '1') Progress.MarkCleared(i);
+        if (text[5] == '1') Progress.BatFound = text[6] == '1';
     }
 
     // 정해진 시간이 지나면 다음 단계 실행
@@ -300,6 +336,8 @@ static class MvpSelfTest
         OpenAIJudge.DisableAI = false;
         LocalJudge.TestOverride = null;
         pending = null;
+        RestoreProgress();
+        ChapterSelect.Current = 1;
         int passCount = report.FindAll(l => l.StartsWith("  PASS")).Count;
         string summary = failCount == 0 ? $"[SelfTest] {(scope == "" ? "전체 " : scope)}PASS ({passCount}개)" : $"[SelfTest] {scope}FAIL {failCount}개 / PASS {passCount}개";
         report.Add(summary);
@@ -350,12 +388,21 @@ static class MvpSelfTest
             foreach (StageData s in Stages())
             {
                 string prompt = OpenAIJudge.BuildPrompt(s);
-                bool all = true;
+                bool all = s.features.Length == 1;      // 1챕터는 물건마다 형태 하나
                 foreach (Feature f in s.features) all &= prompt.Contains("featureId: " + f.id);
-                all &= s.wrongSprites.Length == 1 << s.features.Length;
-                for (int i = 1; i < s.wrongSprites.Length; i++) all &= s.wrongSprites[i] != null;
-                Check(all && s.originalSprite != null, $"{s.Title} 데이터 (그림 + 특징 {s.features.Length}개 + 프롬프트)");
+                all &= s.wrongSprites.Length == 3;      // 오답 그림 3장 (사탕이 3개라 3번까지 틀려요)
+                for (int i = 0; i < s.wrongSprites.Length; i++) all &= s.wrongSprites[i] != null;
+                Check(all && s.originalSprite != null, $"{s.Title} 데이터 (그림 + 특징 1개 + 오답 3장 + 프롬프트)");
             }
+            // 5챕터 : 단계마다 요청 물건 · 맞설 물건 한 쌍
+            ChapterData curse = ChapterOf(5);
+            Check(curse != null && curse.rule == ChapterRule.Curse && curse.ItemCount == 3 && curse.counterItems != null && curse.counterItems.Length == 3,
+                  "5챕터 데이터 (저주 규칙, 단계 3개, 맞설 물건 3개)");
+            if (curse != null && curse.items != null && curse.counterItems != null)
+                for (int i = 0; i < curse.ItemCount && i < curse.counterItems.Length; i++)
+                    Check(curse.items[i] != null && curse.counterItems[i] != null && curse.items[i].originalSprite != null && curse.counterItems[i].originalSprite != null,
+                          $"5챕터 {i + 1}단계 : 요청 물건과 맞설 물건에 그림이 있다");
+            Check(!Progress.IsOpen(2) && !Progress.IsOpen(3) && !Progress.IsOpen(4) && Progress.IsOpen(1) && Progress.IsOpen(5), "열린 챕터는 1 · 5 뿐");
         });
 
         // 0-2) (참고) 팀 아트 원본·엉뚱한 물건 그림을 자동 판정에 넣어 보기
@@ -378,23 +425,33 @@ static class MvpSelfTest
         Add(0.1f, "손그림 판정", () =>
         {
             StageData[] all = Stages();
+            // 1챕터는 물건마다 형태 하나. 제대로 그린 손그림은 모두 통과해야 해요
             ExpectJudge(all[0], HandBat(spikes: true), -1, "손그림 방망이 (선 손잡이 + 타원 머리 + 선 돌기)");
-            ExpectJudge(all[0], HandBat(spikes: false), 0, "손그림 방망이, 돌기 없음");
             ExpectJudge(all[0], HandCloudBat(), -1, "손그림 방망이 (구름처럼 볼록한 머리)");
             ExpectJudge(all[1], HandBag(), -1, "손그림 가방 (손잡이 + 주머니 + 줄무늬)");
-            ExpectJudge(all[1], HandBag(stripes: false), 1, "손그림 가방, 줄무늬 없음");
-            ExpectJudge(all[2], HandMat(bands: true), -1, "손그림 돗자리 (파랑·빨강·노랑·파랑 띠, 쓱쓱 칠한 색)");
-            ExpectJudgeMiss(all[2], HandMat(bands: false), new[] { 1, 2 }, "손그림 돗자리, 띠 없이 파랑 한 가지");
+            ExpectJudge(all[2], HandMat(bands: true), -1, "손그림 돗자리");
             ExpectJudge(all[3], HandGimbap(), -1, "손그림 김밥");
             ExpectJudge(all[4], HandFriend(), -1, "손그림 친구");
-            // 흐름 검사에서 "하나 빠뜨림" 으로 제출하는 손그림이 정말 그 특징만 빠졌는지
-            ExpectJudge(all[2], HandMat(bands: true, endsBlue: false), 2, "손그림 돗자리, 맨 아래 띠가 빨강");
-            ExpectJudge(all[3], HandGimbap(green: false), 3, "손그림 김밥, 시금치가 파랑");
-            ExpectJudge(all[4], HandFriend(brownHair: false), 4, "손그림 친구, 머리가 갈색이 아니라 주황");
+            // 돌기가 없는 방망이는 방망이 형태가 아니에요 (그 특징일 때만 확인)
+            if (all[0].features.Length == 1 && all[0].features[0].check == AutoCheck.BatShape)
+                ExpectJudge(all[0], HandBat(spikes: false), 0, "손그림 방망이, 돌기 없음");
+        });
+
+        // 0-4) 로비 : 씬 파일이 빌드에 들어 있어야 챕터 선택에서 Game 씬을 열 수 있어요 (Play 에 들어가지 않아요)
+        group = "lobby";
+        Add(0.1f, "로비 씬 파일", () =>
+        {
+            var inBuild = new List<string>();
+            foreach (EditorBuildSettingsScene sc in EditorBuildSettings.scenes) if (sc.enabled) inBuild.Add(Path.GetFileNameWithoutExtension(sc.path));
+            Check(File.Exists("Assets/Scenes/Lobby.unity"), "Assets/Scenes/Lobby.unity 파일이 있다");
+            Check(inBuild.Contains(ChapterSelect.LobbyScene), "빌드 설정에 로비 씬이 들어 있다");
+            Check(inBuild.Contains(ChapterSelect.GameScene), "빌드 설정에 게임 씬이 들어 있다");
+            Check(inBuild.Count > 0 && inBuild[0] == ChapterSelect.LobbyScene, "로비 씬이 맨 앞 (처음 열리는 씬)");
+            Check(Progress.IsOpen(1) && Progress.IsOpen(5) && !Progress.IsOpen(3), "1 · 5챕터만 열려 있다");
         });
 
         // 1) 시작 화면
-        group = "title";
+        group = "start";
         // 모든 대사를 실제 대사 상자 크기로 줄을 나눠 봐요 : 상자를 넘치지 않고, 마지막 줄에 짧은 조각만 남지 않아야 해요
         Add(0.2f, "대사 줄바꿈", () =>
         {
@@ -417,55 +474,39 @@ static class MvpSelfTest
             Check(count > 50 && line.textInfo.lineCount >= 1, $"대사 {count}줄을 상자 크기로 나눠 봤다");
             Find("DialoguePanel").gameObject.SetActive(false);
         });
-        Add(0.2f, "시작 화면", () =>
+        Add(0.2f, "게임 시작", () =>
         {
             SetPrivate(Gm(), "roamLoopSeconds", 0.05f);     // 검사에서는 찾는 동작을 기다리지 않아요
-            Check(IsOn("TitlePanel") && !IsOn("HUD"), "시작 화면 (HUD 숨김)");
-            Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "시작 화면 배경은 StartBG");
-            Check(Find("TitlePanel/TitleLogo") != null && Find("TitlePanel/StartButton").GetComponent<Button>() != null, "시작 화면 물건은 따로 올려져 있다");
-            Check(Text("TitlePanel/StartButton/Label") == "게임 시작하기", "시작 버튼은 게임 시작하기");
-            Check(Find("TitlePanel").Find("TitleTagline") == null, "문구가 없다");
-            Check(IsOn("TitlePanel/SettingsButton") && Find("ChapterPanel/SettingsButton") != null, "시작 화면과 챕터 선택에도 오른쪽 위 톱니가 있다");
-            // 소리 설정 : 시작 화면에서 열고, 볼륨을 바꾸면 저장되고, 닫으면 그대로예요
+            Check(IsOn("DialoguePanel") && !IsOn("HUD"), "게임 씬이 열리면 1챕터 대화로 바로 시작한다 (HUD 숨김)");
+            Check(Find("Background").GetComponent<Image>().sprite != null, "배경이 있다");
+            Check(TryFind("TitlePanel") == null && TryFind("ChapterPanel") == null, "게임 씬에는 시작 · 챕터 선택 화면이 없다");
+            Check(Find("JudgePanel/DokkaebiEnter/Roam/Step/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
+            Check(TryFind("HUD/HeartGroup") != null && TryFind("ChoosePanel") != null && Find("CurseEndPanel") != null, "5챕터 화면(하트 · 고르기 · 엔딩)이 씬에 있다");
+            Check(!IsOn("HUD/HeartGroup") && !IsOn("ChoosePanel"), "1챕터에서는 하트와 고르기 화면이 안 보인다");
+            // 소리 설정 : 열고, 볼륨을 바꾸면 저장되고, 닫으면 그대로예요
             float bgmBefore = Sfx.BgmVolume, sfxBefore = Sfx.SfxVolume;
             Gm().ToggleSettings();
             Check(IsOn("SettingsPanel") && Time.timeScale == 0f, "톱니를 누르면 소리 설정 창이 열리고 게임이 멈춘다");
-            Check(Text("SettingsPanel/SettingsCard/BgmSliderLabel") == "배경음" && Text("SettingsPanel/SettingsCard/SfxSliderLabel") == "효과음", "배경음 · 효과음 두 줄");
-            var bgmSlider = Find("SettingsPanel/SettingsCard/BgmSlider").GetComponent<Slider>();
-            var sfxSlider = Find("SettingsPanel/SettingsCard/SfxSlider").GetComponent<Slider>();
+            Check(IsOn("SettingsPanel/SettingsCard/SettingsMain") && !IsOn("SettingsPanel/SettingsCard/SettingsConfirm"), "처음에는 볼륨 줄만 보인다");
+            var bgmSlider = Find("SettingsPanel/SettingsCard/SettingsMain/BgmSlider").GetComponent<Slider>();
+            var sfxSlider = Find("SettingsPanel/SettingsCard/SettingsMain/SfxSlider").GetComponent<Slider>();
             Check(Mathf.Approximately(bgmSlider.value, bgmBefore) && Mathf.Approximately(sfxSlider.value, sfxBefore), "슬라이더는 저장된 볼륨에서 시작한다");
             bgmSlider.value = 0.3f;
             sfxSlider.value = 0.6f;
             Check(Mathf.Approximately(Sfx.BgmVolume, 0.3f) && Mathf.Approximately(PlayerPrefs.GetFloat("volume_bgm"), 0.3f)
                   && Mathf.Approximately(PlayerPrefs.GetFloat("volume_sfx"), 0.6f), "볼륨을 바꾸면 PlayerPrefs 에 저장된다");
             LayoutOnly("settings");
+            // 나가기 : 누르면 [취소] [나가기] 로 바뀌고, 취소하면 돌아와요 (나가기 자체는 로비 씬을 불러서 누르지 않아요)
+            Gm().AskExit();
+            Check(!IsOn("SettingsPanel/SettingsCard/SettingsMain") && IsOn("SettingsPanel/SettingsCard/SettingsConfirm"), "나가기를 누르면 취소 · 나가기 확인으로 바뀐다");
+            LayoutOnly("settings_confirm");
+            Gm().CancelExit();
+            Check(IsOn("SettingsPanel/SettingsCard/SettingsMain") && !IsOn("SettingsPanel/SettingsCard/SettingsConfirm"), "취소하면 볼륨 설정으로 돌아온다");
             Gm().CloseSettings();
             Check(!IsOn("SettingsPanel") && Time.timeScale == 1f, "닫으면 다시 진행");
             Sfx.BgmVolume = bgmBefore;      // 사람이 정해 둔 볼륨으로 돌려놔요
             Sfx.SfxVolume = sfxBefore;
-            Check(Find("JudgePanel/DokkaebiEnter/Roam/Step/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Think", "판정 대기는 고민하는 도깨비");
-            Check(Find("TitlePanel/StartButton").GetComponent<Button>().onClick.GetPersistentMethodName(0) == "OpenChapters", "게임 시작하기는 챕터 선택으로 간다");
-            Shot("title");
-            Then(() =>
-            {
-                Gm().OpenChapters();
-                Check(IsOn("ChapterPanel") && !IsOn("TitlePanel") && !IsOn("HUD"), "게임 시작하기를 누르면 챕터 선택");
-                int locked = 0;
-                for (int k = 2; k <= 5; k++)
-                    if (IsOn($"ChapterPanel/Chapter_{k}/Lock") && Text($"ChapterPanel/Chapter_{k}/Label") == "준비 중") locked++;
-                Check(Text("ChapterPanel/Chapter_1/Label") == "소풍" && locked == 4, $"챕터 5개 : 소풍 + 자물쇠와 준비 중 {locked}개");
-                Gm().ChapterTap(2);
-                Check(IsOn("ChapterPanel") && !IsOn("DialoguePanel"), "준비 중인 챕터를 누르면 들어가지 않는다");
-            });
-        });
-        Add(1.0f, "챕터 선택", () =>
-        {
-            Shot("chapters");       // 화면이 다 나타난 뒤에 찍어요
-            Then(() =>
-            {
-                Gm().ChapterTap(0);
-                Check(IsOn("DialoguePanel") && !IsOn("ChapterPanel"), "소풍을 누르면 게임이 시작된다");
-            });
+            Shot("start");
         });
 
         StageData[] stages = Stages();
@@ -479,7 +520,7 @@ static class MvpSelfTest
             // 대화 → 떠올리기
             Add(1.2f, $"{st.Title} 대화", () =>
             {
-                Check(IsOn("DialoguePanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Room", $"{st.Title} 대화 화면 (배경은 BG_Room)");
+                Check(IsOn("DialoguePanel") && Find("Background").GetComponent<Image>().sprite != null, $"{st.Title} 대화 화면");
                 Check(!IsOn("HUD"), "대화 중에는 간식과 일시정지를 숨긴다");
                 Check(IsOn("DialoguePanel/Boy"), "주인공이 보인다");
                 Check(!IsOn("DialoguePanel/GiveNote"), "대화 중에는 쪽지가 없다");
@@ -489,7 +530,7 @@ static class MvpSelfTest
                     Check(IsOn("DialoguePanel/Opening/Bag") && !IsOn("DialogueDim"), "오프닝은 어둡게 하지 않고 준비물이 보인다");
                 }
                 else Check(!IsOn("DialoguePanel/Opening"), "오프닝 그림은 1단계에만 나온다");
-                if (s == 1) Check(Text("DialoguePanel/DialogueBox/Line").StartsWith("방망이도 찾았으니") || s != 1, "방망이를 찾았으면 2단계 첫 대사가 달라진다");
+                Check(!IsOn("DialoguePanel/Friend") && !IsOn("HUD/HeartGroup"), "1챕터에는 친구와 하트가 없다");
                 Shot($"s{s + 1}_dialogue");
                 Then(() =>
                 {
@@ -584,97 +625,9 @@ static class MvpSelfTest
                     });
                 }, () => !IsOn("DrawPanel/MagnifierPeek") && IsOn("DrawPanel/PeekGuide"));   // 렌즈가 닫힌 다음 프레임에 대사가 떠요
             }
-            if (s == 4)
-            {
-                // 5단계 첫 그리기 : 대사가 알려 주고 사라지면 아이가 직접 붓 · 물감을 눌러 보고, 해내면 다음 대사
-                float timeAtMix = 0f;
-                float bandY = 0f, paperScaleAtMix = 1f;
-                Add(3.0f, "5단계 색 섞기 안내 : 붓을 눌러 봐", () =>
-                {
-                    Check(IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette") && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixTapBrush,
-                          "5단계 첫 그리기에는 도깨비가 붓을 눌러 보라고 한다");
-                    timeAtMix = GetFloat("timeLeft");
-                    bandY = ((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y;
-                    paperScaleAtMix = Find("DrawPanel/Desk/Paper").localScale.x;
-                    Gm().Submit();
-                    Check(IsOn("DrawPanel"), "안내 중에는 제출되지 않는다");
-                    Check(Board().Locked, "안내 중에는 쪽지에 그려지지 않는다");
-                    Gm().MixGuideTap();     // 글자 다 보이기
-                    Gm().MixGuideTap();
-                    Check(!IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/BrushHighlight"), "대사를 넘기면 대사가 사라지고 도깨비불이 붓 둘레를 돈다");
-                    Gm().MixGuideTap();
-                    Check(!IsOn("DrawPanel/ToolBar/Palette"), "화면을 눌러도 넘어가지 않는다 (붓을 직접 눌러야 해요)");
-                }, () => IsOn("DrawPanel"));
-                Add(0.5f, "5단계 색 섞기 안내 : 도깨비불", () =>
-                {
-                    var fire = (RectTransform)Find("DrawPanel/ToolBar/BrushHighlight/Orbit/Fire_0");
-                    Check(fire.anchoredPosition.magnitude > 50f, "도깨비불이 붓 둘레에 있다");
-                    Shot("s5_mix_brush");       // 도깨비불이 화면 안에 다 보이는지 배치 검사
-                    Then(() =>
-                    {
-                        Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
-                        Check(!IsOn("DrawPanel/ToolBar/Palette") && !IsOn("DrawPanel/ToolBar/BrushHighlight") && IsOn("DrawPanel/MixGuide")
-                              && Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixShow,
-                              "붓을 누르면 빨강부터 넣어 보라고 한다 (팔레트는 대사 뒤에 열려요)");
-                        Check(Mathf.Abs(((RectTransform)Find("DrawPanel/ToolBar")).anchoredPosition.y - bandY) < 0.1f
-                              && Mathf.Abs(Find("DrawPanel/Desk/Paper").localScale.x - paperScaleAtMix) < 0.001f, "대사가 나와도 띠와 쪽지는 그대로");
-                    });
-                });
-                // 빨강 2 → 노랑 2 → 파랑 1 : 대사를 넘기면 도깨비불이 그 물감 둘레를 돌고, 그 물감만 넣을 수 있어요
-                string[] paintSlots = { "Color_빨강", "Color_노랑", "Color_파랑" };
-                for (int p = 0; p < 3; p++)
-                {
-                    int paint = p;
-                    Add(0.5f, $"5단계 색 섞기 안내 : {paintSlots[paint]} 넣기", () =>
-                    {
-                        Check(Plain("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixPaintSteps[paint] && !IsOn("DrawPanel/ToolBar/Palette"),
-                              $"{paintSlots[paint]} 차례 : 팔레트를 닫고 넣어 보라고 한다");
-                        Gm().MixGuideTap();     // 글자 다 보이기
-                        Gm().MixGuideTap();
-                        Check(!IsOn("DrawPanel/MixGuide") && IsOn("DrawPanel/ToolBar/Palette") && IsOn("DrawPanel/ToolBar/Palette/PaintHighlight"),
-                              "대사를 넘기면 팔레트가 열리고 도깨비불이 나온다");
-                        var orbit = (RectTransform)Find("DrawPanel/ToolBar/Palette/PaintHighlight/Orbit");
-                        var slot = (RectTransform)Find("DrawPanel/ToolBar/Palette/Card/" + paintSlots[paint]);
-                        Check(Vector3.Distance(orbit.position, slot.TransformPoint(slot.rect.center)) < 1f, "도깨비불이 넣을 물감 둘레를 돈다");
-                        var tb = Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
-                        var mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
-                        string Counts() => $"{mixer.CountOf(0)}{mixer.CountOf(1)}{mixer.CountOf(2)}";
-                        string before = Counts();
-                        tb.PaintTap((paint + 1) % 3);   // 다른 물감
-                        tb.BlackTap();
-                        tb.PaintUndo();
-                        Check(Counts() == before, "안내 중에는 다른 물감 · 검정 · 물감 빼기가 안 된다");
-                        for (int k = 0; k < 3; k++) tb.PaintTap(paint);     // 한 번 더 눌러도 정한 횟수까지만
-                        Check(mixer.CountOf(paint) == (paint == 2 ? 1 : 2), "정한 횟수만큼만 들어간다");
-                        Check(!IsOn("DrawPanel/MixGuide"), "넣는 동안은 대사가 나오지 않는다");
-                        if (paint == 0) Shot("s5_mix_paint");      // 도깨비불이 화면 안에 다 보이는지 배치 검사
-                    }, () => IsOn("DrawPanel/MixGuide"));
-                }
-                Add(0.2f, "5단계 색 섞기 안내 : 갈색", () =>
-                {
-                    var mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
-                    Check(!IsOn("DrawPanel/ToolBar/Palette"), "결과를 말할 때는 팔레트를 닫아 대사 상자에 가리지 않는다");
-                    Check(Text("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixHow && mixer.ResultColor == ColorMixer.Mix(2, 2, 1),
-                          "빨강 2 · 노랑 2 · 파랑 1 을 넣으면 갈색이 되고 도깨비가 많이 넣은 색 쪽으로 바뀐다고 한다");
-                    Check(Mathf.Abs(GetFloat("timeLeft") - timeAtMix) < 0.01f, "안내 동안 향이 타지 않는다");
-                    Shot("s5_mix_demo");
-                    Then(() =>
-                    {
-                        Gm().MixGuideTap();     // 글자 다 보이기
-                        Gm().MixGuideTap();
-                        Check(IsOn("DrawPanel/MixGuide") && Plain("DrawPanel/MixGuide/DialogueBox/Line") == GameScript.MixBlack, "검정 물감이 없으니 세 가지를 똑같이 넣으면 검정이라고 한다");
-                        Gm().MixGuideTap();     // 글자 다 보이기
-                        Gm().MixGuideTap();
-                        Check(!IsOn("DrawPanel/MixGuide") && !IsOn("DrawPanel/ToolBar/Palette"), "대사를 넘기면 팔레트가 닫히고 그리기 시작");
-                        Check(Find("DrawPanel/ToolBar").GetComponent<ColorMixer>().ResultColor == ColorMixer.Mix(2, 2, 1) && !Board().Locked,
-                              "직접 만든 갈색은 그대로, 다시 그릴 수 있다");
-                    });
-                }, () => IsOn("DrawPanel/MixGuide"));
-            }
-
             // 그리기 + 도구
             int candiesAtDraw = 0;      // 이번 단계 그리기를 시작할 때 남은 사탕
-            Add(s == 0 || s == 4 ? 0.3f : 3.0f, $"{st.Title} 그리기", () =>
+            Add(s == 0 ? 0.3f : 3.0f, $"{st.Title} 그리기", () =>
             {
                 Check(IsOn("DrawPanel") && !IsOn("ObservePanel"), "3초 뒤 그리기 화면");
                 Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 1단계 첫 그리기에서만");
@@ -682,8 +635,7 @@ static class MvpSelfTest
                 Check(candiesAtDraw == 3, $"{st.Title} 사탕 3개로 시작");
                 Check(Find("HUD/TimerGroup/TimerText").GetComponent<TMP_Text>().color.a > 0.5f, "남은 초 숫자가 보인다 (투명하지 않음)");
                 Check(((RectTransform)Find("HUD/TimerGroup/Incense")).rect.width >= 950f, "남은 시간 게이지는 화면 가로 가득");
-                bool primaries = st.colorMode != ColorMode.BlackOnly;
-                bool mixing = st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree;
+                bool primaries = true, mixing = true;      // 펜 도구는 늘 하나 (빨강 · 노랑 · 파랑 섞기)
                 Check(!IsOn("DrawPanel/ToolBar/Palette"), "팔레트는 닫힌 채로 시작");
                 Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
                 Check(IsOn("DrawPanel/ToolBar/Palette"), "붓을 누르면 팔레트가 열린다");
@@ -720,7 +672,7 @@ static class MvpSelfTest
                     view.ResetView();
                     Check(view.IsFull && paperT.localRotation == Quaternion.identity && Filled(), "다음 쪽지도 처음부터 전체 화면");
                 }
-                DrawStage(st);
+                DrawStage($"s{s + 1}", s >= 3);
             }, () => IsOn("DrawPanel"));
             if (s == 0)
             {
@@ -763,7 +715,7 @@ static class MvpSelfTest
                 Check(CandiesLit() == GetInt("candies"), $"위 줄에 남은 사탕 {GetInt("candies")}개");
                 Check(IsOn("HUD/MagnifierBadge") == (Gm().MagnifiersReady > 0), $"돋보기 숫자는 쓸 수 있을 때만 ({Gm().MagnifiersReady})");
                 Check(((RectTransform)Find("HUD/CandyRow/Candy_1")).anchoredPosition.x - ((RectTransform)Find("HUD/CandyRow/Candy_0")).anchoredPosition.x > 50f, "간식이 제자리로 들어왔다");
-                if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
+                if (s >= 3)
                     Check(BrushTip() == Find("DrawPanel/ToolBar").GetComponent<ColorMixer>().ResultColor, "붓 끝이 지금 색");
                 if (s == 0)
                 {
@@ -839,9 +791,9 @@ static class MvpSelfTest
             if (s == 1)
             {
                 // 2단계 : 하나도 못 맞혀서 사탕 3개를 다 씀. 두 번째로 틀리면 무료 돋보기를 받아요
-                Add(0.3f, "2단계 1번째 실패", () =>
+                Add(0.3f, "2번째 물건 1번째 실패", () =>
                 {
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "1번째 : 하나도 못 맞히면 완전히 다른 물건");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(1), "1번째 틀림 : 오답 그림 1번");
                     TapResult();
                     Gm().ResultTap();
                     Gm().ResultTap();
@@ -856,6 +808,7 @@ static class MvpSelfTest
                     TapResult();
                     Gm().ResultTap();
                     Gm().ResultTap();
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(2), "2번째 틀림 : 오답 그림 2번");
                     Check(Text("ResultPanel/DialogueBox/Line") == GameScript.MagnifierGift, "두 번째로 틀리면 도깨비가 돋보기를 빌려준다");
                     Check(IsOn("ResultPanel/GiftMagnifier") && !IsOn("ResultPanel/ChoiceRow"), "돋보기가 도깨비에게서 나타난다");
                     var gift = Find("ResultPanel/GiftMagnifier");
@@ -887,7 +840,7 @@ static class MvpSelfTest
                 {
                     Check(CandiesLit() == 0, "사탕 0개");
                     Check(!IsOn("ResultPanel/GiftMagnifier"), "무료 기회는 단계마다 한 번");
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[st.wrongSprites.Length - 1], "0개 맞히면 완전히 다른 물건");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(3), "3번째 틀림 : 오답 그림 3번");
                     TapResult();
                     Check(!IsOn("ResultPanel/ChoiceRow"), "사탕이 없으면 다시 · 포기 버튼이 없다");
                     Check(Text("ResultPanel/DialogueBox/Line").Contains("사탕이 다 떨어졌어"), "사탕이 다 떨어졌다고 주인공이 말한다");
@@ -903,10 +856,10 @@ static class MvpSelfTest
             }
             else
             {
-                // 마지막 특징만 빠뜨림 → 그 조합의 물건 (1단계는 기준이 하나라 곧 전부 틀림)
+                // 형태 하나를 빠뜨림 → 첫 번째 오답 물건
                 Add(0.3f, $"{st.Title} 부분 성공", () =>
                 {
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.wrongSprites[1], "판정 조합에 맞는 물건이 왔다");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(1), "틀린 물건이 왔다 (오답 그림 1번)");
                     if (s == 0) Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_NoBat", "1단계를 틀리면 도깨비는 빈손");
                     Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_DokkaebiFace_Tease", "틀리면 도깨비는 놀리는 얼굴");
                     if (s == 0 || s == 4) Shot($"s{s + 1}_result_partial");
@@ -977,14 +930,13 @@ static class MvpSelfTest
         Add(3.2f, "이야기 종료", () =>
         {
             Check(IsOn("EndingPanel") && !IsOn("HUD"), "이야기 종료 화면");
-            Check(Find("Background").GetComponent<Image>().sprite.name == "BG_Picnic", "소풍 배경");
-            Check(Find("EndingPanel/BagSlot").GetComponent<Image>().sprite == stages[1].wrongSprites[stages[1].wrongSprites.Length - 1], "포기한 2단계는 받은 엉뚱한 물건이 놓인다");
+            Check(Find("Background").GetComponent<Image>().sprite != null, "소풍 배경");
+            Check(Find("EndingPanel/BagSlot").GetComponent<Image>().sprite == stages[1].WrongSpriteFor(3), "포기한 2번째 물건은 받은 엉뚱한 물건이 놓인다");
             Check(Find("EndingPanel/MatSlot").GetComponent<Image>().sprite == stages[2].originalSprite, "찾은 물건은 진짜가 놓인다");
             Check(Find("EndingPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal" && !IsOn("EndingPanel/BatSlot"),
                   "방망이를 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비어 있다");
-            int candiesLeft = SumInts("candiesLeft");
-            Check(ShownCount("EndingPanel/CandyJar/Candy_") == candiesLeft, $"단계마다 남은 사탕 {candiesLeft}개가 사탕 통에 모여 있다");
-            Check(Find("EndingPanel").Find("Chocolate_1") == null, "초콜릿은 없다");
+            Check(TryFind("EndingPanel/CandyJar") == null, "사탕 통은 없다");
+            Check(Progress.IsCleared(1), "끝까지 하면 1챕터를 깬 것으로 저장된다");
             Shot("ending");
             Then(() =>
             {
@@ -993,16 +945,8 @@ static class MvpSelfTest
                 RectTransform box = (RectTransform)Find("EndingPanel/DialogueBox"), mat = (RectTransform)Find("EndingPanel/MatSlot");
                 Check(box.position.y > mat.position.y + 200f, "인사 대사 상자는 위쪽 하늘에 떠서 돗자리를 가리지 않는다");
                 Shot("ending_ask");
-                Then(() =>
-                {
-                    Gm().EndingTap();
-                    Gm().EndingTap();
-                });
+                // 인사 대사를 한 번 더 누르면 로비 씬을 불러서 검사가 끝나 버려요. 거기까지는 누르지 않아요
             });
-        });
-        Add(0.3f, "챕터 선택으로", () =>
-        {
-            Check(IsOn("ChapterPanel") && Find("Background").GetComponent<Image>().sprite.name == "BG_Start", "인사 뒤에는 챕터 선택으로 간다 (배경도 StartBG)");
         });
 
         // 1단계를 못 찾으면 이야기가 끝날 때까지 도깨비가 빈손이고, 소풍 장면에 대파가 놓여요
@@ -1016,7 +960,7 @@ static class MvpSelfTest
             Gm().NextStage();
             Check(IsOn("DialoguePanel"), "채점표 다음은 바로 2단계 대화");
             Check(Shown("DialoguePanel/Dokkaebi/Image").name == NoBat, "방망이를 못 찾으면 2단계 대화에서 빈손");
-            Invoke(Gm(), "ShowResult", new object[] { new[] { true, true }, null });
+            Invoke(Gm(), "ShowResult", new object[] { new[] { true }, null });
             Check(Shown("ResultPanel/Dokkaebi").name == NoBat, "다음 단계를 맞혀도 빈손");
             TapResult();
             Check(Shown("ResultPanel/Dokkaebi").name == NoBat, "주인공이 말할 때도 빈손");
@@ -1024,42 +968,179 @@ static class MvpSelfTest
             SetPrivate(Gm(), "stageIndex", stages.Length - 1);
             Gm().NextStage();
             Check(IsOn("EndingPanel") && Shown("EndingPanel/Dokkaebi").name == NoBat, "이야기 종료에서도 빈손");
-            Check(Shown("EndingPanel/BatSlot") == stages[0].wrongSprites[1], "소풍 장면에는 대파가 놓인다");
-            for (int k = 0; k < 3; k++) Gm().EndingTap();
-            Check(IsOn("ChapterPanel"), "빈손으로 끝나도 챕터 선택으로 간다");
+            Check(Shown("EndingPanel/BatSlot") == stages[0].WrongSpriteFor(1), "소풍 장면에는 대파가 놓인다");
+            Check(Progress.IsCleared(1) && Progress.BatKnown && !Progress.BatFound, "빈손으로 끝나도 1챕터는 깬 것으로, 방망이는 못 찾은 것으로 저장된다");
         });
+
+        // ───────────── 5챕터 : 도깨비의 저주 ─────────────
+        //   판정은 LocalJudge.TestOverride 로 미리 정해 넣어요 (5챕터 물건은 자동 판정 기준이 아직 자리표시라서)
+        //   엔딩 화면 뒤의 마지막 탭은 로비 씬을 불러서 검사가 끝나 버리니 누르지 않아요
+        group = "chapter5";
+        Add(0.5f, "5챕터 시작", () =>
+        {
+            StartChapter(5);
+            ChapterData c5 = ChapterOf(5);
+            Check(GetChapterNumber() == 5, "로비에서 5챕터를 고르면 5챕터가 시작된다");
+            Check(IsOn("DialoguePanel") && IsOn("DialoguePanel/Friend") && !IsOn("HUD"), "시작 대사 : 친구가 서 있고 위 줄은 숨는다");
+            Check(GetInt("hearts") == 3, "하트 3개로 시작");
+            Check(!GetBool("dark"), "처음에는 밝은 숲");
+            Shot("c5_dialogue");
+            Then(() =>
+            {
+                TapToChoose();
+                Check(GetBool("dark"), "간식 이야기를 꺼내면 숲이 어두워지고 도깨비가 흑화한다");
+                Check(IsOn("ChoosePanel") && !IsOn("DialoguePanel"), "대사가 끝나면 고르기 화면");
+            });
+        });
+        Add(0.3f, "5챕터 고르기", () =>
+        {
+            ChapterData c5 = ChapterOf(5);
+            bool leftCounter = GetBool("leftIsCounter");
+            Sprite left = Find("ChoosePanel/ChooseCard_0/Item").GetComponent<Image>().sprite;
+            Sprite right = Find("ChoosePanel/ChooseCard_1/Item").GetComponent<Image>().sprite;
+            Sprite request = c5.items[0].originalSprite, counter = c5.counterItems[0].originalSprite;
+            Check(left != null && right != null && left != right, "그림 2장이 나온다");
+            Check((left == counter && right == request) || (left == request && right == counter) , "두 그림은 요청 물건과 맞설 물건");
+            Check(left == (leftCounter ? counter : request), "왼쪽 그림이 맞설 물건인지는 leftIsCounter 와 같다");
+            Check(IsOn("ChoosePanel/ChooseCard_0") && IsOn("ChoosePanel/ChooseCard_1"), "그림 카드 두 장이 보인다");
+            Shot("c5_choose");
+            Then(() =>
+            {
+                Gm().ChooseItem(CounterSide());
+                Check(IsOn("ObservePanel") && !IsOn("ChoosePanel"), "고르면 떠올리기로 간다");
+                Check(GetBool("chosenCounter"), "맞설 물건을 골랐다");
+                Check(Find("ObservePanel/Card/TargetImage").GetComponent<Image>().sprite == c5.counterItems[0].originalSprite, "고른 물건을 보여 준다");
+            });
+        });
+        // 맞설 물건을 맞힘 : 하트 -1
+        Add(0.4f, "5챕터 맞설 물건 그리기", () =>
+        {
+            Check(IsOn("DrawPanel") && IsOn("HUD/HeartGroup") && LitHearts() == 3, "그리기 : 위 줄에 하트 3개");
+            Check(IsOn("DrawPanel/JamOverlay"), "맞설 물건을 그릴 때는 방해 연출이 덮인다");
+            Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 1챕터에서만");
+            Check(GetInt("magnifiers") == 1, "돋보기는 챕터마다 1번");
+            DrawStage("c5", false);
+            Expect(ChapterOf(5).counterItems[0], -2);       // 전부 그림
+            Shot("c5_draw");
+            Then(() => Gm().Submit());
+        }, () => IsOn("DrawPanel"));
+        Add(0.3f, "5챕터 맞설 물건 성공", () =>
+        {
+            Check(GetInt("hearts") == 2 && LitHearts() == 2, "맞설 물건을 맞히면 하트 -1 (2개)");
+            Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.CurseCounterHit, "도깨비가 싫어한다");
+            Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == ChapterOf(5).counterItems[0].originalSprite, "진짜 맞설 물건이 왔다");
+            Shot("c5_counter_hit");
+            Then(() =>
+            {
+                TapResult();
+                Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.CurseBoyHit, "주인공이 기뻐한다");
+                Gm().ResultTap();
+                Gm().ResultTap();
+                Check(IsOn("ComparePanel"), "채점표");
+                Gm().NextStage();
+                Check(IsOn("DialoguePanel") && GetInt("stageIndex") == 1, "하트가 남으면 다음 단계 대화");
+                Check(!GetBool("friendLost"), "친구는 아직 영혼을 빼앗기지 않았다");
+                TapToChoose();
+                Check(IsOn("ChoosePanel"), "2단계도 고르기");
+                Gm().ChooseItem(1 - CounterSide());       // 이번에는 요청 물건
+                Check(!GetBool("chosenCounter") && IsOn("ObservePanel"), "요청 물건을 골랐다");
+            });
+        }, () => ResultShown());
+        // 요청 물건을 두 번 틀림 : 점프스케어 + 친구 영혼 → 두 번째는 게임오버
+        Add(0.4f, "5챕터 요청 물건 그리기", () =>
+        {
+            Check(!IsOn("DrawPanel/JamOverlay"), "요청 물건에는 방해 연출이 없다");
+            Check(LitHearts() == 2, "하트는 그대로 2개");
+            DrawStage("c5r", false);
+            Expect(ChapterOf(5).items[1], -1);       // 전부 틀림
+            Then(() => Gm().Submit());
+        }, () => IsOn("DrawPanel"));
+        Add(0.3f, "5챕터 요청 물건 1번째 실패", () =>
+        {
+            Check(GetBool("friendLost"), "요청 물건을 틀리면 친구 영혼을 빼앗긴다");
+            Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.CurseRequestWrong, "도깨비가 영혼을 가져간다고 한다");
+            Check(!GetBool("gameOverPending") && GetInt("hearts") == 2, "한 번은 게임오버가 아니고 하트도 그대로");
+            Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == ChapterOf(5).items[1].WrongSpriteFor(1), "오답 그림 1번이 왔다");
+            Shot("c5_request_fail");
+            Then(() =>
+            {
+                TapResult();
+                for (int k = 0; k < 3 && !IsOn("ResultPanel/ChoiceRow"); k++) Gm().ResultTap();
+                Check(IsOn("ResultPanel/ChoiceRow"), "다시 · 포기 버튼");
+                Gm().Retry();
+                Expect(ChapterOf(5).items[1], -1);
+                Gm().Submit();
+            });
+        }, () => ResultShown());
+        Add(0.3f, "5챕터 게임오버", () =>
+        {
+            Check(GetBool("gameOverPending") && Plain("ResultPanel/DialogueBox/Line") == GameScript.CurseRequestWrong, "같은 물건을 두 번 틀리면 게임오버 예약 (대사는 게임오버 화면에서)");
+            Then(() =>
+            {
+                for (int k = 0; k < 4 && !IsOn("CurseEndPanel"); k++) Gm().ResultTap();
+                Check(IsOn("CurseEndPanel") && GetInt("curseEnd") == 1, "대사를 넘기면 게임오버 화면");
+                Check(IsOn("CurseEndPanel/Silhouette") && !IsOn("CurseEndPanel/Boy"), "게임오버는 실루엣만");
+                Check(Progress.IsCleared(5), "엔딩을 보면 5챕터를 깬 것으로 친다");
+                Shot("c5_gameover");
+            });
+        }, () => ResultShown());
+
+        // 하트를 다 깎음 → 해피 엔딩 (하트 1개에서 시작해서 맞설 물건을 한 번 맞힘)
+        Add(0.5f, "5챕터 해피 엔딩 준비", () =>
+        {
+            StartChapter(5);
+            SetPrivate(Gm(), "hearts", 1);
+            TapToChoose();
+            Gm().ChooseItem(CounterSide());
+        });
+        Add(0.4f, "5챕터 해피 엔딩 그리기", () =>
+        {
+            DrawStage("c5h", false);
+            Expect(ChapterOf(5).counterItems[0], -2);
+            Then(() => Gm().Submit());
+        }, () => IsOn("DrawPanel"));
+        Add(0.3f, "5챕터 해피 엔딩", () =>
+        {
+            Check(GetInt("hearts") == 0 && LitHearts() == 0, "마지막 하트를 깎았다");
+            Then(() =>
+            {
+                TapResult();
+                Gm().ResultTap();
+                Gm().ResultTap();
+                Check(IsOn("ComparePanel"), "채점표");
+                Gm().NextStage();
+                Check(IsOn("CurseEndPanel") && GetInt("curseEnd") == 2, "하트가 0이면 해피 엔딩");
+                Check(Plain("CurseEndPanel/DialogueBox/Line") == (GetBool("batLost") ? GameScript.CurseHappyNoBat : GameScript.CurseHappy), "해피 엔딩 대사");
+                Shot("c5_happy");
+                // 배드 엔딩 : 3단계를 다 마쳤는데 하트가 남음
+                Invoke(Gm(), "ShowCurseEnd", 3);
+                Check(GetInt("curseEnd") == 3 && Plain("CurseEndPanel/DialogueBox/Line") == GameScript.CurseBad, "하트가 남은 채 끝나면 배드 엔딩");
+                Shot("c5_bad");
+            });
+        }, () => ResultShown());
 
         return list;
     }
 
-    // 단계에 맞게 그리기 (색 단계면 색 바꿔가며, 혼색 단계면 팔레트로 색을 만들어서)
-    static void DrawStage(StageData st)
+    // 그리기 : 검정 테두리 + 빨강 · 노랑 · 파랑 선. mix 가 true 면 팔레트로 색도 섞어 봐요 (펜 도구는 늘 하나)
+    static void DrawStage(string tag, bool mix)
     {
         ToolBar tb = Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
         tb.SelectSize(1);
         tb.SelectColor(0);
         Stroke(new Vector2(0.2f, 0.2f), new Vector2(0.8f, 0.2f), new Vector2(0.8f, 0.8f), new Vector2(0.2f, 0.8f), new Vector2(0.2f, 0.2f));
 
-        if (st.colorMode != ColorMode.BlackOnly)
         {
             tb.SelectSize(2);
             tb.SelectColor(1); Stroke(new Vector2(0.3f, 0.7f), new Vector2(0.45f, 0.7f));
             tb.SelectColor(2); Stroke(new Vector2(0.55f, 0.7f), new Vector2(0.7f, 0.7f));
             tb.SelectColor(3); Stroke(new Vector2(0.3f, 0.35f), new Vector2(0.7f, 0.35f));
         }
-        if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
+        if (mix)
         {
             ColorMixer mixer = Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
             tb.OpenPanel();
             Check(IsOn("DrawPanel/ToolBar/Palette"), "붓을 누르면 팔레트가 열린다");
-            if (st.colorMode == ColorMode.MixTwo)
-            {
-                tb.PaintTap(1); tb.PaintTap(2);
-                tb.PaintTap(0); // 두 색 혼합 단계에서는 세 번째 물감이 안 들어가야 함
-                Check(mixer.ResultColor == ColorMixer.Mix(0, 1, 1), "두 색 혼합 : 세 번째 물감은 안 들어간다");
-                Check(mixer.CountOf(1) == 1 && mixer.CountOf(2) == 1 && Text("DrawPanel/ToolBar/Palette/Card/Color_노랑/Count/Text") == "1", "넣은 횟수가 물감 옆에 뜬다");
-            }
-            else
             {
                 tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(2);
                 Check(mixer.ResultColor == ColorMixer.Mix(1, 1, 1), "자유 혼합 : 세 색을 한 번씩 넣으면 검은색에 가깝다");
@@ -1081,7 +1162,7 @@ static class MvpSelfTest
             // 배치 문제로 잡지 않게, 간식 움직임을 끝낸(제자리에 둔) 뒤 검사해요.
             foreach (SimpleAnim a in (SimpleAnim[])typeof(GameManager).GetField("snackAnims", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm()))
                 a.enabled = false;
-            LayoutOnly($"s{st.stageNumber}_mixer");                     // 팔레트가 열린 화면도 배치 검사
+            LayoutOnly($"{tag}_mixer");                     // 팔레트가 열린 화면도 배치 검사
             Color mixed = mixer.ResultColor;
             Stroke(new Vector2(0.35f, 0.6f), new Vector2(0.65f, 0.6f));
             Check(!IsOn("DrawPanel/ToolBar/Palette"), "그리기 시작하면 팔레트가 닫힌다");
@@ -1090,18 +1171,11 @@ static class MvpSelfTest
             Check(mixer.ResultColor == ColorMixer.Mix(0, 0, 1) && mixer.CountOf(0) == 0, "섞은 색으로 그린 뒤 물감을 누르면 새로 섞기");
             tb.PaintUndo();
             Check(mixer.ResultColor == ToolBar.Palette[0] && mixer.PureIndex == 0, "물감을 다 빼면 검정");
-            if (st.colorMode == ColorMode.MixFree)
             {
                 Check(!IsOn("DrawPanel/ToolBar/Palette/Card/Color_검정") && !IsOn("DrawPanel/ToolBar/Palette/Card/Divider_1"), "세 가지 섞기 : 검정 물감이 없다");
                 tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(2);
                 Check(mixer.ResultColor == ToolBar.Palette[0], "세 가지 섞기 : 빨강 · 노랑 · 파랑을 똑같이 넣으면 검정");
                 tb.PaintUndo(); tb.PaintUndo(); tb.PaintUndo();
-            }
-            else
-            {
-                Check(IsOn("DrawPanel/ToolBar/Palette/Card/Color_검정"), "두 가지 섞기 : 검정 물감이 있다");
-                tb.BlackTap();
-                Check(mixer.PureIndex == 0 && mixer.CountOf(0) + mixer.CountOf(1) + mixer.CountOf(2) == 0, "두 가지 섞기 : 검정은 물감 숫자 없이 검정 하나");
             }
             mixer.SkipAnimation();
             tb.ClosePanel();
@@ -1109,7 +1183,7 @@ static class MvpSelfTest
             var gmPause = Object.FindFirstObjectByType<GameManager>();
             gmPause.ToggleSettings();                                       // 소리 설정 창도 배치 검사
             Check(IsOn("SettingsPanel") && Time.timeScale == 0f, "그리는 중 톱니를 누르면 소리 설정 창이 열리고 향이 멈춘다");
-            LayoutOnly($"s{st.stageNumber}_settings");
+            LayoutOnly($"{tag}_settings");
             gmPause.ToggleSettings();
             Check(!IsOn("SettingsPanel") && Time.timeScale == 1f, "톱니를 다시 누르면 닫히고 다시 진행");
             Stroke(new Vector2(0.35f, 0.5f), new Vector2(0.65f, 0.5f));
@@ -1130,14 +1204,21 @@ static class MvpSelfTest
         Gm().ResultTap();
     }
 
-    internal static StageData[] Stages()
+    // 에디터에서 GameManager 에 연결된 챕터 데이터 중 number 번 (Play 중 챕터 값에 기대지 않아요)
+    internal static ChapterData ChapterOf(int number)
     {
         var so = new SerializedObject(Gm());
-        SerializedProperty p = so.FindProperty("stages");
-        var arr = new StageData[p.arraySize];
-        for (int i = 0; i < arr.Length; i++) arr[i] = (StageData)p.GetArrayElementAtIndex(i).objectReferenceValue;
-        return arr;
+        SerializedProperty p = so.FindProperty("chapters");
+        for (int i = 0; i < p.arraySize; i++)
+        {
+            var c = p.GetArrayElementAtIndex(i).objectReferenceValue as ChapterData;
+            if (c != null && c.number == number) return c;
+        }
+        return null;
     }
+
+    // 1챕터의 물건 5개 (방망이, 가방, 돗자리, 김밥, 친구)
+    internal static StageData[] Stages() => ChapterOf(1).items;
 
     // Canvas 아래에서 이름 경로로 찾기 (꺼져 있는 오브젝트도 찾을 수 있어요)
     //   게임 화면들은 Canvas/Frame(시안 크기 화면) 안에, 시작·일시정지 화면은 Canvas 바로 아래에 있어요.
@@ -1149,11 +1230,40 @@ static class MvpSelfTest
         return t;
     }
 
+    // 없으면 null (예외 없이)
+    internal static Transform TryFind(string path)
+    {
+        Transform canvas = GameObject.Find("Canvas").transform;
+        return canvas.Find("Frame/" + path) ?? canvas.Find(path);
+    }
+
     internal static bool IsOn(string path) => Find(path).gameObject.activeInHierarchy;
     static string Text(string path) => Find(path).GetComponent<TMP_Text>().text;
     // 대사 상자 글 (줄바꿈용 <nobr> 같은 태그를 뺀 글)
     static string Plain(string path) => System.Text.RegularExpressions.Regex.Replace(Text(path), "<[^>]*>", "");
     static DrawingBoard Board() => Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>();
+
+
+    static bool GetBool(string field) =>
+        (bool)typeof(GameManager).GetField(field, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
+
+    static int GetChapterNumber()
+    {
+        var c = (ChapterData)typeof(GameManager).GetField("chapter", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
+        return c == null ? 0 : c.number;
+    }
+
+    // 고르기 화면이 나올 때까지 대사 넘기기
+    static void TapToChoose()
+    {
+        for (int k = 0; k < 80 && !IsOn("ChoosePanel"); k++) Gm().DialogueTap();
+    }
+
+    // 고르기 화면에서 맞설 물건이 있는 쪽 (0 왼쪽, 1 오른쪽)
+    static int CounterSide() => GetBool("leftIsCounter") ? 0 : 1;
+
+    // 또렷하게 보이는 하트 수
+    static int LitHearts() => Lit("HUD/HeartGroup");
 
     // 또렷하게 보이는 사탕 수 = 남은 수
     static int CandiesLit() => Lit("HUD/CandyRow");
@@ -1307,6 +1417,22 @@ static class MvpSelfTest
             .Scribble(C(3), 8, 280, 70, 340, 215, 9)                                       // 두 다리
             .Line(InkBlack, 5, 1.5f, V(240, 175), V(272, 175), V(272, 205), V(240, 205), V(240, 175))   // 천 조각
             .Tex();
+    }
+
+    // 1챕터 물건 (stageIndex 0 방망이 ~ 4 친구) 의 형태 판정용 손그림. shape 가 true 면 그 물건의 형태를 그리고,
+    // false 면 형태가 아닌 낙서를 그려요 (MvpJudgeCases 가 써요)
+    internal static Texture2D ShapeSketch(int stageIndex, bool shape)
+    {
+        if (!shape)
+            return new HandSketch().Line(InkBlack, 4, 3f, V(120, 300), V(200, 250), V(260, 310), V(330, 240), V(400, 290)).Tex();
+        switch (stageIndex)
+        {
+            case 0: return HandBat(spikes: true);
+            case 1: return HandBag();
+            case 2: return HandMat(bands: true);
+            case 3: return HandGimbap();
+            default: return HandFriend();
+        }
     }
 
     // Sprite 원본 PNG 를 픽셀을 읽을 수 있는 텍스처로 불러오기 (자동 판정 검사용)

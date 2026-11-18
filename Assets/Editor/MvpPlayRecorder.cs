@@ -19,9 +19,10 @@ using UnityEngine.UI;
 //   → 게임 소리는 Temp/Recording/audio.f32 (AudioRenderer, 녹화하는 동안 스피커로는 안 나와요)
 //   → python Tools/sound/make_play_video.py 로 묶어서 소리 있는 mp4 를 만들어요.
 // 판정은 진짜예요 : 그린 그림을 LocalJudge 가 실제로 판정해요. (AI 는 부르지 않음)
-// 써 보는 기능 : 소리 설정(시작 화면 · 게임 중), 잠긴 챕터, 돋보기 시범, 되돌리기 · 다시 하기,
+// 1챕터(소풍) 물건 5개를 차례로 해요 (Game 씬이 열리면 1챕터가 바로 시작돼요. 로비 · 챕터 선택은 Lobby 씬이라 녹화하지 않아요).
+// 써 보는 기능 : 소리 설정(게임 중), 돋보기 시범, 되돌리기 · 다시 하기,
 //   틀린 뒤 다시, 두 번 틀려 받은 무료 돋보기와 렌즈 끌기, 쪽지 키우기 · 돌리기와 맞춤, 포기,
-//   색 섞기 시범, 물감 빼기, 이야기 종료 인사
+//   색 섞기, 물감 빼기, 이야기 종료 인사 (마지막 터치는 로비 씬으로 넘어가요)
 [InitializeOnLoad]
 static class MvpPlayRecorder
 {
@@ -160,30 +161,9 @@ class PlayDirector : MonoBehaviour
 
     IEnumerator Script()
     {
-        // 시작 화면 : 둘러본 뒤 톱니로 소리 설정을 열어 배경음 · 효과음을 줄였다 되돌려요
-        yield return Wait(3.5f);
-        yield return Click("TitlePanel/SettingsButton");
-        yield return Wait(1.2f);
-        yield return Slide("SettingsPanel/SettingsCard/BgmSlider", 0.3f);
-        yield return Wait(1.5f);
-        yield return Slide("SettingsPanel/SettingsCard/BgmSlider", bgmBefore);
-        yield return Wait(0.6f);
-        yield return Slide("SettingsPanel/SettingsCard/SfxSlider", 0.4f);
-        yield return Slide("SettingsPanel/SettingsCard/SfxSlider", sfxBefore);
-        yield return Wait(0.8f);
-        yield return Click("SettingsPanel/SettingsCard/CloseButton");
-        yield return Wait(1.5f);
-        yield return Click("TitlePanel/StartButton");
-
-        // 챕터 선택 : 잠긴 챕터를 눌러 보면 자물쇠가 흔들려요 → 소풍
         yield return Wait(2.5f);
-        yield return Click("ChapterPanel/Chapter_3");
-        yield return Wait(1.5f);
-        yield return Click("ChapterPanel/Chapter_2");
-        yield return Wait(1.5f);
-        yield return Click("ChapterPanel/Chapter_1");
 
-        // ── 1단계 방망이 : 돋보기 시범 → 돌기를 빠뜨려 엉뚱한 방망이 → 다시 그리기 ──
+        // ── 물건 1 방망이 : 돋보기 시범 → 돌기를 빠뜨려 엉뚱한 방망이 → 다시 그리기 ──
         yield return IntroAndObserve();
         yield return Wait(1.0f);
         yield return ReadAndTap("DrawPanel/PeekGuide", "DrawPanel/PeekGuide/TapButton");   // 돋보기를 눌러 봐 → 도깨비불이 돌아요
@@ -216,19 +196,16 @@ class PlayDirector : MonoBehaviour
         yield return ResultUntilChoice();
         yield return Compare();
 
-        // ── 2단계 가방 : 줄무늬를 빠뜨려 두 번 틀림 → 무료 돋보기 → 쪽지를 키워 줄무늬 → 맞춤 ──
+        // ── 물건 2 가방 : 낙서로 두 번 틀림 → 무료 돋보기 → 쪽지를 키워 → 맞춤 ──
         yield return IntroAndObserve();
         yield return Tool("Size_1");
-        yield return Line(V(100, 60), V(412, 64), V(408, 330), V(104, 326), V(100, 60));       // 몸체
-        yield return Line(V(190, 328), V(200, 400), V(256, 440), V(312, 400), V(322, 328));     // 손잡이
-        yield return Line(V(170, 90), V(342, 92), V(340, 210), V(168, 206), V(170, 90));       // 주머니
+        yield return Line(V(120, 300), V(200, 250), V(260, 310), V(330, 240), V(400, 290));     // 낙서 : 가방 모양이 아니에요
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Wait(1.0f);
         yield return Click("ResultPanel/ChoiceRow/RetryButton");
         yield return Wait(1.5f);
-        yield return Tool("Size_0");
-        yield return Line(V(190, 180), V(322, 178));                                           // 줄무늬 한 줄만
+        yield return Line(V(130, 120), V(210, 90), V(300, 130), V(380, 100));                   // 또 낙서
         yield return Submit();
         yield return ResultUntilChoice();                                                      // 두 번째로 틀리면 도깨비가 돋보기를 건네줘요
         yield return Wait(1.0f);
@@ -239,25 +216,28 @@ class PlayDirector : MonoBehaviour
         yield return Wait(1.0f);
         yield return Pinch(1.45f, -10f, V(0, -150));                                           // 두 손가락으로 쪽지를 키우고 살짝 돌려요
         yield return Wait(0.8f);
-        yield return Line(V(190, 120), V(322, 124));
-        yield return Line(V(188, 150), V(320, 152));
-        yield return Wait(0.8f);
         yield return Click("DrawPanel/FitButton");                                            // 흐트러지면 뜨는 전체 화면 버튼 : 쪽지가 다시 똑바로 가득
         yield return Wait(1.2f);
+        yield return Line(V(100, 60), V(412, 64), V(408, 330), V(104, 326), V(100, 60));       // 몸체
+        yield return Line(V(190, 328), V(200, 400), V(256, 440), V(312, 400), V(322, 328));     // 손잡이
+        yield return Line(V(170, 90), V(342, 92), V(340, 210), V(168, 206), V(170, 90));       // 주머니
+        yield return Line(V(190, 120), V(322, 124));
+        yield return Line(V(188, 150), V(320, 152));                                           // 줄무늬
+        yield return Wait(0.8f);
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Compare();
 
-        // ── 3단계 돗자리 : 그리다가 소리 설정 (여는 동안 향이 멈춰요) ──
+        // ── 물건 3 돗자리 : 그리다가 소리 설정 (여는 동안 향이 멈춰요) ──
         yield return IntroAndObserve();
         yield return Tool("Size_1");
         yield return Line(V(70, 150), V(440, 145), V(445, 385), V(65, 390), V(70, 150));        // 외곽
         yield return Wait(0.8f);
         yield return Click("HUD/SettingsButton");
         yield return Wait(1.2f);
-        yield return Slide("SettingsPanel/SettingsCard/BgmSlider", 0.5f);
+        yield return Slide("SettingsPanel/SettingsCard/SettingsMain/BgmSlider", 0.5f);
         yield return Wait(1.2f);
-        yield return Slide("SettingsPanel/SettingsCard/BgmSlider", bgmBefore);
+        yield return Slide("SettingsPanel/SettingsCard/SettingsMain/BgmSlider", bgmBefore);
         yield return Wait(0.8f);
         yield return Click("SettingsPanel/SettingsCard/CloseButton");
         yield return Wait(1.0f);
@@ -274,42 +254,27 @@ class PlayDirector : MonoBehaviour
         yield return ResultUntilChoice();
         yield return Compare();
 
-        // ── 4단계 김밥 : 시금치를 깜빡 → 틀림 → 포기 ──
+        // ── 물건 4 김밥 : 낙서로 틀림 → 포기 ──
         yield return IntroAndObserve();
         yield return Tool("Size_2");
-        yield return Ellipse(V(256, 256), 200, 196, 6f);
+        yield return Line(V(120, 300), V(200, 250), V(260, 310), V(330, 240), V(400, 290));     // 낙서 : 둥근 김밥 모양이 아니에요
         yield return Tool("Color_빨강");
         yield return Scribble(165, 282, 240, 340, 14);
-        yield return Tool("Color_노랑");
-        yield return Scribble(280, 282, 355, 340, 14);
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Wait(1.5f);
         yield return Click("ResultPanel/ChoiceRow/GiveUpButton");                             // 포기 : 바로 채점표로
         yield return Compare();
 
-        // ── 5단계 친구 : 색 섞기 시범 → 물감 빼기 → 갈색 머리 · 주황 상의 · 파란 바지 ──
+        // ── 물건 5 친구 : 색 섞기 → 물감 빼기 → 갈색 머리 · 주황 상의 · 파란 바지 ──
         yield return IntroAndObserve();
         yield return Wait(1.0f);
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 붓을 눌러 봐 → 도깨비불이 붓 둘레를 돌아요
-        yield return Wait(1.8f);
-        yield return Click("DrawPanel/ToolBar/Brush/Button");                              // 빨강을 두 번 넣어 보라고 해요
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 넘기면 팔레트가 열리고 도깨비불이 빨강 둘레를 돌아요
-        yield return Wait(1.2f);
+        yield return Click("DrawPanel/ToolBar/Brush/Button");                              // 붓을 눌러 팔레트를 열어요
         yield return Mix("Color_빨강", "Color_빨강");
-        yield return Wait(1.2f);
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 노랑도 두 번
-        yield return Wait(1.0f);
         yield return Mix("Color_노랑", "Color_노랑");
-        yield return Wait(1.2f);
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 파랑은 한 번
-        yield return Wait(1.0f);
         yield return Mix("Color_파랑");                                                    // 붓 끝이 갈색
         yield return Wait(1.4f);
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 많이 넣은 색 쪽으로 바뀐다는 대사
-        yield return ReadAndTap("DrawPanel/MixGuide", "DrawPanel/MixGuide/TapButton");     // 세 가지를 똑같이 넣으면 검정
-        yield return Wait(0.8f);
-        // 5단계는 검정 물감이 없어요 : 안내에서 만든 갈색으로 머리카락부터 칠하고, 검정은 세 가지를 섞어서 만들어요
+        // 펜 도구는 검정 물감이 없어요 : 방금 만든 갈색으로 머리카락부터 칠하고, 검정은 세 가지를 섞어서 만들어요
         yield return Tool("Size_2");
         yield return Scribble(200, 405, 312, 458, 11);                                      // 머리카락 (안내에서 만든 갈색)
         yield return QuickMix("Color_빨강", "Color_노랑", "Color_파랑");                      // 검정은 섞어서
@@ -328,7 +293,7 @@ class PlayDirector : MonoBehaviour
         yield return Mix("Color_파랑");
         yield return Scribble(175, 70, 235, 215, 14);
         yield return Scribble(280, 70, 340, 215, 14);                                       // 두 다리
-        Debug.Log("[녹화] 5단계 제출 전 남은 향 : " + typeof(GameManager).GetField("timeLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm));
+        Debug.Log("[녹화] 마지막 물건 제출 전 남은 향 : " + typeof(GameManager).GetField("timeLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm));
         yield return Submit();
         yield return ResultUntilChoice();
         yield return Compare();

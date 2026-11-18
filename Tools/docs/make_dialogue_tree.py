@@ -1,70 +1,21 @@
-# Docs/기획/13_대사_트리.md 와 .pdf : 게임의 모든 대사와 화면 글자를 흐름 순서대로 트리로 정리해요.
-#   python Tools/docs/make_dialogue_tree.py
-#   대사는 Assets/Scripts/GameScript.cs 에서, 판정 기준은 Assets/Data 에서 바로 읽어요. 손으로 옮겨 적지 않아서 게임과 어긋나지 않아요.
+# Docs/기획/13_대사_트리.md 와 선택적 .pdf : 현재 챕터의 대사를 흐름대로 정리해요.
+#   python Tools/docs/make_dialogue_tree.py --no-pdf
+#   python Tools/docs/make_dialogue_tree.py          PDF 도 함께 만들어요
+# 대사와 번호는 수정표와 같은 read_lines() 에서 읽어요.
 import html as esc
-import json
 import os
-import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from doc_pdf import BASE_CSS, write_pdf
+from dialogue_lines import ROOT, STAGES, read_lines
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-src = open(os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs"), encoding="utf-8").read()
-FACE = {"BoySurprised": "주인공(놀람)", "BoyHappy": "주인공(기쁨)", "BoySad": "주인공(울음)", "BoyNormal": "주인공(보통)", "Dokkaebi": "도깨비"}
-
-
-def block(name):
-    m = re.search(r"\b" + name + r"\s*=\s*\{(.*?)\n    \};", src, re.S)
-    assert m, name
-    return m.group(1)
+sys.stdout.reconfigure(encoding="utf-8")
+rows = read_lines()
+by_id = {row["id"]: row for row in rows}
 
 
-def strings(text):
-    return re.findall(r'"((?:[^"\\]|\\.)*)"', text)
-
-
-def const(name):
-    m = re.search(r"const string " + name + r' = "(.*?)";', src)
-    assert m, name
-    return m.group(1)
-
-
-def groups(name):
-    """new[] { ... } 묶음을 단계 순서대로"""
-    return re.findall(r"new\[\]\s*\{(.*?)\}", block(name), re.S)
-
-
-intro = [re.findall(r'new Line\(Face\.(\w+), "(.*?)"\)', g) for g in re.findall(r"new\[\]\s*\{(.*?)\n        \}", block("Intro"), re.S)]
-note = strings(block("Note"))
-give_read = strings(block("GiveRead"))
-bat_found = re.search(r'BatFound = new Line\(Face\.Dokkaebi, "(.*?)"\)', src).group(1)
-bat_lost = re.search(r'BatLost = new Line\(Face\.Dokkaebi, "(.*?)"\)', src).group(1)
-success = [strings(g) for g in groups("DokkaebiSuccess")]
-partial = [strings(g) for g in groups("DokkaebiPartial")]
-allwrong = [strings(g) for g in groups("DokkaebiAllWrong")]
-assert len(intro) == len(note) == len(give_read) == len(success) == len(partial) == len(allwrong) == 5
-
-DATA = ["Stage1_Bat", "Stage2_Bag", "Stage3_Mat", "Stage4_Gimbap", "Stage5_Friend"]
-WRONG_ITEM = {0: "대파", 1: "항아리", 2: "파전", 3: "고무신", 4: "허수아비"}
-
-
-def stage_data(name):
-    text = open(os.path.join(ROOT, "Assets", "Data", name + ".asset"), encoding="utf-8").read()
-    decode = lambda raw: json.loads(raw) if raw.startswith('"') else raw
-    target = decode(re.search(r"targetName: (.*)", text).group(1).strip())
-    feats = [decode(v.strip()) for v in re.findall(r"^    name: (.*)$", text, re.M)]
-    return target, feats
-
-
-class Tree:
-    def __init__(self):
-        self.root = []
-
-    @staticmethod
-    def node(label, *children):
-        return (label, [c if isinstance(c, tuple) else (c, []) for c in children])
+def node(label, *children):
+    return label, [c if isinstance(c, tuple) else (c, []) for c in children]
 
 
 def render(nodes, prefix=""):
@@ -76,79 +27,119 @@ def render(nodes, prefix=""):
     return out
 
 
-N = Tree.node
+N = node
 
 
-def random_list(who, lines):
-    """무작위로 하나 고르는 대사"""
-    if len(lines) == 1:
-        return f"{who}: {lines[0]}"
-    return N(f"{who} (아래 {len(lines)}개 중 하나)", *lines)
+def say(num):
+    row = by_id[num]
+    return f"{num} · {row['who']}: {row['text']}"
 
 
-def stage_tree(i):
-    target, feats = stage_data(DATA[i])
-    boy_ok = const("BoyBatSuccess" if i == 0 else "BoyFriendSuccess" if i == 4 else "BoySuccess")
-    boy_wrong = const("BoyBatWrong" if i == 0 else "BoyFriendWrong" if i == 4 else "BoyWrong")
-    wrong = []
-    if i > 0:
-        wrong.append(N("일부 틀림", random_list("도깨비", partial[i]), f"주인공(울음): {boy_wrong}"))
-    wrong.append(N(f"전부 틀림 (물건: {WRONG_ITEM[i]})" if i else f"틀림 (기준이 하나라 곧 전부 틀림, 물건: {WRONG_ITEM[i]})",
-                   random_list("도깨비", allwrong[i]), f"주인공(울음): {boy_wrong}"))
-    start = [f"{FACE[f]}: {t}" for f, t in intro[i]]
+def matching(prefix):
+    return [say(r["id"]) for r in rows if r["id"].startswith(prefix)]
+
+
+def stage_tree(i, target):
+    code = f"S{i + 1}"
+    boy_ok = "주인공-맞음-방망이" if i == 0 else "주인공-맞음-친구" if i == 4 else "주인공-맞음-1"
+    boy_wrong = "주인공-틀림-방망이" if i == 0 else "주인공-틀림-친구" if i == 4 else "주인공-틀림-1"
+    start = matching(f"{code}-시작-")
     if i == 1:
-        start = [N("맨 앞 (1단계 결과에 따라)", f"방망이를 찾음 — 도깨비: {bat_found}", f"못 찾음 — 도깨비: {bat_lost}")] + start
-    return N(f"{i + 1}단계 {target}",
+        start = [N("1챕터에서 방망이를 찾았는지에 따라 맨 앞에 하나",
+                   say("S2-시작-찾음"), say("S2-시작-못찾음"))] + [
+                       say(r["id"]) for r in rows
+                       if r["id"].startswith(f"{code}-시작-") and r["id"].rsplit("-", 1)[-1].isdigit()]
+    return N(f"1챕터 · {target}",
              N("시작 대화 (순서대로)", *start),
-             "떠올리기 3초 — 대사 없음" + (" (도깨비가 떠올려요)" if i == 0 else " (주인공이 떠올려요)"),
-             N("쪽지 쓰기 — 쪽지에 적힌 글", note[i]),
-             N("건네기 (순서대로)", f"주인공(기쁨): {const('GiveBoy')}", f"도깨비: {const('GiveEat')}", f"도깨비: {give_read[i]}"),
+             "떠올리기 3초 — 대사 없음" + (" (도깨비)" if i == 0 else " (주인공)"),
+             N("쪽지 글", say(f"{code}-쪽지글")),
+             N("쪽지와 간식을 건넴 (순서대로)", *matching(f"{code}-건네기-")),
              N("결과",
-               N("전부 맞음 (물건: 진짜)", random_list("도깨비", success[i]), f"주인공(기쁨): {boy_ok}"),
-               *wrong))
+               N("형태 기준 통과", N("도깨비 (아래 2개 중 하나)", *matching(f"{code}-맞음-")), say(boy_ok)),
+               N("형태 기준 실패 — 틀린 횟수에 맞는 오답 그림",
+                 N("도깨비 (아래 2개 중 하나)", *matching(f"{code}-틀림-")), say(boy_wrong))))
+
+
+def curse_step(i, requested, counter):
+    return N(f"{i}단계 · {requested} / {counter}",
+             N("시작 대화 (순서대로)", *matching(f"C5-단계{i}-")),
+             f"글 없는 그림 두 장 중 하나를 고름 (좌우는 무작위): {requested} / {counter}",
+             "떠올리기 → 그리기 → 쪽지와 간식 건네기 (건네기 앞 두 대사는 1챕터와 공통)",
+             N("결과",
+               N("맞설 물건 성공 — 도깨비가 아파하고 하트 하나를 잃음",
+                 say("C5-맞섬-성공"), say("C5-주인공-맞섬")),
+               N("요청 물건 성공 — 도깨비가 얻은 힘을 자랑함",
+                 say(f"C5-자랑-{i}"), say("C5-주인공-자랑")),
+               N("맞설 물건 실패", say("C5-맞섬-실패"), say("C5-주인공-실패")),
+               N("같은 요청 물건 첫 실패 — 무서운 얼굴이 나타나고 친구 영혼을 빼앗김",
+                 say("C5-요청-실패"), say("C5-주인공-실패")),
+               N("같은 요청 물건 두 번째 실패 — 바로 게임오버",
+                 say("C5-게임오버"), "도깨비 뒤에 의식을 잃은 사람들의 실루엣")),
+             "사탕을 다 쓰고 틀렸다면 주인공 반응은 공통 간식 없음 대사로 바뀜 (게임오버는 제외)",
+             "다시 또는 포기 → 채점표 → 다음 단계나 엔딩")
 
 
 tree = [
-    N("시작 화면", "버튼: 게임 시작하기 → 챕터 선택 (소풍만 열림, 나머지 4개는 준비 중)"),
-    N("1단계 첫 그리기 : 돋보기 시범 (순서대로)", f"도깨비: {const('MagnifierShow')}", "→ 대사가 사라지고 도깨비불이 돋보기 둘레를 돌아요. 돋보기를 누르면",
-      f"도깨비: {const('MagnifierHow')}", "→ 넘기면 둘러보고, 렌즈가 닫히면", f"도깨비: {const('MagnifierRule')}"),
-    *[stage_tree(i) for i in range(5)],
-    N("5단계 첫 그리기 : 색 섞기 안내 (직접 눌러 보며)", f"도깨비: {const('MixTapBrush')}", "→ 대사가 사라지고 도깨비불이 붓 둘레를 돌아요. 붓을 직접 눌러야 해요", f"도깨비: {const('MixShow')}", "→ 팔레트가 열리고 도깨비불이 빨강 둘레를 돌아요. 빨강을 두 번 누르면",
-      f"도깨비: {const('MixYellow')}", "→ 도깨비불이 노랑 둘레를 돌아요. 노랑을 두 번 누르면",
-      f"도깨비: {const('MixBlue')}", "→ 도깨비불이 파랑 둘레를 돌아요. 파랑을 누르면 붓 끝이 갈색이 돼요", f"도깨비: {const('MixHow')}", f"도깨비: {const('MixBlack')}", "→ 넘기면 만든 갈색으로 그리기 시작"),
-    N("어느 단계든 나오는 대사",
-      N("사탕을 다 쓰고 틀렸을 때", f"주인공(울음): {const('BoyOutOfSnacks')}", "이때는 위 주인공 결과 대사 대신 이 대사가 나와요."),
-      N("판정 서버 오류 (간식을 돌려줘요)", f"도깨비: {const('JudgeError')}"),
-      N("한 단계에서 두 번째로 틀렸을 때 (사탕이 남았으면, 단계마다 한 번)", f"도깨비: {const('MagnifierGift')}", "→ 돋보기가 맨 위 돋보기로 날아가요")),
-    N("이야기 종료", "글자 없이 소풍 장면, 남은 사탕은 사탕 통에", f"화면을 누르면 도깨비: {const('EndingBye')}", "→ 넘기면 챕터 선택"),
+    N("로비",
+      "시작 화면을 누르면 챕터 선택",
+      "끈에 매달린 사진 5장: 1챕터 소풍 준비, 5챕터 도깨비의 저주가 열림",
+      "2·3·4챕터는 자물쇠",
+      "사진을 누르면 큰 사진과 챕터 이름 → 큰 사진을 누르면 게임 시작"),
+    N("1챕터 · 소풍 준비",
+      N("첫 물건 첫 그리기 · 돋보기 시범 (순서대로)",
+        say("도깨비-돋보기-1"), "도깨비불이 돋보기를 강조함 → 돋보기를 누르면",
+        say("도깨비-돋보기-2"), "둘러본 뒤", say("도깨비-돋보기-3")),
+      *[stage_tree(i, target) for i, target in enumerate(STAGES)],
+      N("마무리", "글자 없는 소풍 장면", say("도깨비-마무리"), "다음 터치 → 챕터 선택")),
+    N("5챕터 · 도깨비의 저주",
+      "주인공의 친구가 화면에 함께 서 있음",
+      N("시작 대화 (순서대로)", *[
+          N(r["scene"], say(r["id"])) for r in rows if r["id"].startswith("C5-시작-")]),
+      curse_step(1, "짚신", "부적"),
+      curse_step(2, "도깨비 부채", "닭피 그릇"),
+      curse_step(3, "도깨비 감투", "팥주머니"),
+      N("엔딩",
+        N("하트 3개가 모두 사라짐 — 도깨비가 정화되어 도망감",
+          N("1챕터에서 방망이를 찾음 — 마법 방망이를 남김", say("C5-해피-방망이")),
+          N("1챕터에서 방망이를 못 찾음 — 남기는 방망이 없음", say("C5-해피-방망이없음"))),
+        N("3단계 뒤 하트가 남음 — 감투를 쓰고 사라지는 불안한 끝", say("C5-배드")),
+        N("같은 요청 물건을 두 번 틀림", say("C5-게임오버"),
+          "도깨비 뒤에 의식을 잃은 사람들의 실루엣"),
+        "엔딩 대사 뒤 터치 → 챕터 선택")),
+    N("챕터 공통 대사",
+      N("사탕을 다 쓰고 틀렸을 때 (게임오버는 제외)", say("주인공-간식없음")),
+      N("판정 서버 오류 — 간식을 돌려줌", say("도깨비-오류")),
+      N("한 물건에서 두 번째 실패 — 사탕이 남고 게임오버가 아닐 때",
+        say("도깨비-무료돋보기"), "무료 돋보기는 그 물건에서만 쓸 수 있음")),
 ]
 
 screen = [
-    N("대사 상자 바깥의 글자",
+    N("대사 상자 바깥의 글자와 그림",
       N("떠올리기", "숫자: 3, 2, 1"),
-      N("그리기", "남은 초 숫자 (향 옆)", "버튼: 다 그렸어!"),
-      N("색 섞기 (4·5단계)", "버튼: 섞어서 칠하기"),
+      N("그리기", "남은 초 숫자 (향 옆)", "버튼: 다 그렸어!", "모든 물건에서 같은 팔레트 사용"),
       N("판정 대기", "도깨비 머리 위: ?"),
       N("결과 버튼", "다시", "포기"),
-      N("소리 설정 (오른쪽 위 톱니)", "배경음 (슬라이더)", "효과음 (슬라이더)", "닫기: X 또는 창 바깥")),
+      N("5챕터", "사탕과 돋보기 사이에 도깨비 하트 3개", "고르기 화면에는 글 없이 물건 그림 두 장"),
+      N("설정", "배경음", "효과음", "게임 씬: 나가기 → 취소 / 나가기 → 챕터 선택", "로비: 나가기 없음")),
 ]
 
 text = f"""# 대사 트리
 
-게임에 나오는 모든 대사를 흐름 순서대로 정리했어요. 기획 수정은 [대사 수정표](../전달/14_대사_수정표.xlsx)로 받아요. 코드에서 고칠 때는 `Assets/Scripts/GameScript.cs`만 고치면 돼요.
+게임에 나오는 대사를 챕터와 분기별로 정리했어요. [대사 수정표](../전달/14_대사_수정표.xlsx)와 같은 `GameScript.cs`의 대사를 읽어요. 번호와 대사는 수정표와 같아요.
 
-이 문서는 코드에서 자동으로 만들어요. 코드를 고친 뒤 아래 명령을 다시 실행하세요.
+이 문서는 코드에서 자동으로 만들어요. Markdown만 갱신하려면:
 
 ```bash
-python Tools/docs/make_dialogue_tree.py
+python Tools/docs/make_dialogue_tree.py --no-pdf
 ```
 
 ## 읽는 법
 
 - **순서대로:** 위에서 아래로 차례로 나와요.
-- **N개 중 하나:** 그 상황이 올 때마다 무작위로 하나를 골라요.
-- **얼굴:** 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨, 울음(틀렸을 때) 세 가지이고, 도깨비는 한 가지예요.
-- **색 조합:** 색을 어떻게 섞는지는 대사에서 알려 주지 않아요.
+- **N개 중 하나:** 그 상황에서 무작위로 하나를 골라요.
+- **괄호 안 대사:** 주인공의 속마음이에요.
+- **번호:** S1~S5는 1챕터의 물건, C5는 5챕터예요. 같은 번호는 같은 대사를 다시 사용해요.
+- **표정:** 주인공은 놀람·기쁨·울음·보통, 도깨비는 도깨비 표정으로 표시해요.
 
 ## 대사
 
@@ -157,7 +148,7 @@ python Tools/docs/make_dialogue_tree.py
 {chr(10).join(render(tree))}
 ```
 
-## 화면 글자
+## 화면 글자와 연출
 
 ```text
 찾아라! 도깨비
@@ -166,34 +157,39 @@ python Tools/docs/make_dialogue_tree.py
 
 ## 참고
 
-- **1단계의 일부 틀림:** 기준이 하나라 나오지 않아요. `GameScript.cs`에 대사가 있지만 쓰이지 않아서 트리에서 뺐어요.
-- **판정 기준 글:** 대사가 아니라 단계 데이터에 있어요. `Assets/Editor/MvpSceneBuilder.cs`의 `CreateStageDataFiles`에서 고쳐요.
-- **기획서 줄거리 글:** 단계 데이터에 남아 있지만 지금 게임 화면에는 나오지 않아요.
+- 1챕터의 다섯 물건은 형태 기준 하나로 통과 또는 실패를 결정해요.
+- 5챕터는 요청 물건과 맞설 물건을 고르는 세 단계예요. 판정 기준은 물건마다 세 개예요.
+- 5챕터 시작 대사 C5-시작-3에서 간식 이야기를 꺼내며 숲이 어두워져요. 코드의 `CurseDarkFrom = 2`는 0부터 세는 위치예요.
+- 5챕터의 쪽지 글과 건네기 마지막 대사는 `ItemNote(name)`, `ItemRead(name)`으로 고른 물건 이름에 맞춰 만들어요.
+- 돋보기 기본 기회는 챕터마다 한 번이고, 시범은 1챕터 첫 물건에서만 나와요.
+- 색 섞기 시범, 소풍 뒤 사탕 통, 쿠키 영상은 없어요.
 """
 out = os.path.join(ROOT, "Docs", "기획", "13_대사_트리.md")
 os.makedirs(os.path.dirname(out), exist_ok=True)
-open(out, "w", encoding="utf-8", newline="\n").write(text)
+with open(out, "w", encoding="utf-8", newline="\n") as f:
+    f.write(text)
 print("13_대사_트리.md", len(text))
 
+if "--no-pdf" in sys.argv:
+    print("PDF 생략 (--no-pdf)")
+else:
+    from doc_pdf import BASE_CSS, EDGE, write_pdf
 
-# PDF : 큰 가지마다 제목을 두고 한 묶음으로 보여 줘요
-def branch(label, kids):
-    return f"<section><h2>{esc.escape(label)}</h2><pre>{esc.escape(chr(10).join(render(kids)))}</pre></section>"
+    if not os.path.isfile(EDGE):
+        print("PDF 생략: Edge 실행 파일이 없어요.")
+    else:
+        def branch(label, kids):
+            return f"<section><h2>{esc.escape(label)}</h2><pre>{esc.escape(chr(10).join(render(kids)))}</pre></section>"
 
-
-CSS = BASE_CSS + """
-section { break-inside: avoid; }
-pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px 12px; margin: 0; white-space: pre-wrap;
+        css = BASE_CSS + """
+section { break-inside: auto; }
+pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px 12px; white-space: pre-wrap;
       font-family: Consolas, 'Malgun Gothic', monospace; font-size: 11px; line-height: 1.55; }
-ul { margin: 6px 0 12px; padding-left: 18px; }
 """
-html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>대사 트리</title><style>{CSS}</style></head><body>
-<h1>찾아라! 도깨비 대사 트리</h1><p class='sub'>게임에 나오는 모든 대사를 흐름 순서대로 정리했어요. 코드에서 자동으로 만든 문서예요.</p>
-<ul><li><b>순서대로:</b> 위에서 아래로 차례로 나와요.</li>
-<li><b>N개 중 하나:</b> 그 상황이 올 때마다 무작위로 하나를 골라요.</li>
-<li><b>얼굴:</b> 말하는 사람의 얼굴이 대사 상자에 나와요. 주인공은 놀람, 기쁨, 울음(틀렸을 때) 세 가지이고, 도깨비는 한 가지예요.</li>
-<li><b>색 조합:</b> 색을 어떻게 섞는지는 대사에서 알려 주지 않아요.</li></ul>
+        html = f"""<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>대사 트리</title>
+<style>{css}</style></head><body><h1>찾아라! 도깨비 대사 트리</h1>
+<p class="sub">1챕터 소풍 준비 · 5챕터 도깨비의 저주. 괄호 안은 주인공 속마음이에요.</p>
 {"".join(branch(label, kids) for label, kids in tree)}
 {"".join(branch(label, kids) for label, kids in screen)}
 </body></html>"""
-print("13_대사_트리.pdf", write_pdf(html, os.path.splitext(out)[0] + ".pdf"))
+        print("13_대사_트리.pdf", write_pdf(html, os.path.splitext(out)[0] + ".pdf"))

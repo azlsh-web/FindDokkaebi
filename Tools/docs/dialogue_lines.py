@@ -71,10 +71,10 @@ def read_lines(path=SOURCE):
     def add(num, stage, scene, who, text, a, b):
         rows.append({"id": num, "stage": stage, "scene": scene, "who": who, "text": unescape(text), "start": a, "end": b})
 
-    intro, success, partial, wrong = (_groups(src, n) for n in ("Intro", "DokkaebiSuccess", "DokkaebiPartial", "DokkaebiAllWrong"))
+    intro, success, wrong = (_groups(src, n) for n in ("Intro", "DokkaebiSuccess", "DokkaebiAllWrong"))
     note = _strings(src, *_block(src, "Note"))
     read = _strings(src, *_block(src, "GiveRead"))
-    assert len(intro) == len(note) == len(read) == len(success) == len(partial) == len(wrong) == len(STAGES)
+    assert len(intro) == len(note) == len(read) == len(success) == len(wrong) == len(STAGES)
 
     def const(name):
         m = re.search(r"const string " + name + r' = "((?:[^"\\]|\\.)*)"', src)
@@ -87,7 +87,7 @@ def read_lines(path=SOURCE):
         return m.group(1), m.start(1), m.end(1)
 
     for i, stage in enumerate(STAGES):
-        label, code = f"{i + 1}단계 {stage}", f"S{i + 1}"
+        label, code = f"1챕터 · {stage}", f"S{i + 1}"
         a, b = intro[i]
         if i == 1:
             add(f"{code}-시작-찾음", label, "방망이를 찾았을 때 (시작 대화 맨 앞)", "도깨비", *lead("BatFound"))
@@ -98,37 +98,68 @@ def read_lines(path=SOURCE):
         add(f"{code}-건네기-1", label, "쪽지와 간식을 건넬 때 (순서대로)", FACE["BoyHappy"], *const("GiveBoy"))
         add(f"{code}-건네기-2", label, "쪽지와 간식을 건넬 때 (순서대로)", "도깨비", *const("GiveEat"))
         add(f"{code}-건네기-3", label, "쪽지와 간식을 건넬 때 (순서대로)", "도깨비", *read[i])
-        for key, title, ranges in (("맞음", "전부 맞음 (무작위)", success), ("일부", "일부 틀림 (무작위)", partial), ("틀림", "전부 틀림 (무작위)", wrong)):
-            if key == "일부" and i == 0:
-                continue    # 1단계는 기준이 하나라 일부 틀림이 없어요
+        for key, title, ranges in (("맞음", "형태 기준 통과 (무작위)", success), ("틀림", "형태 기준 실패 (무작위)", wrong)):
             for k, s in enumerate(_strings(src, *ranges[i])):
                 add(f"{code}-{key}-{k + 1}", label, title, "도깨비", *s)
 
-    for num, stage, title, who, name in (("주인공-맞음-방망이", "1단계 방망이", "전부 맞음", FACE["BoyHappy"], "BoyBatSuccess"),
-                                         ("주인공-맞음-1", "2~4단계", "전부 맞음", FACE["BoyHappy"], "BoySuccess"),
-                                         ("주인공-일부-1", "2~4단계", "일부 틀림", FACE["BoySad"], "BoyWrong"),
-                                         ("주인공-틀림-1", "2~4단계", "전부 틀림", FACE["BoySad"], "BoyWrong"),
-                                         ("주인공-맞음-친구", "5단계 친구", "전부 맞음", FACE["BoyHappy"], "BoyFriendSuccess"),
-                                         ("주인공-틀림-친구", "5단계 친구", "일부 틀림 · 전부 틀림", FACE["BoySad"], "BoyFriendWrong"),
-                                         ("주인공-틀림-방망이", "1단계 방망이", "전부 틀림", FACE["BoySad"], "BoyBatWrong")):
+    for num, stage, title, who, name in (("주인공-맞음-방망이", "1챕터 · 방망이", "형태 기준 통과", FACE["BoyHappy"], "BoyBatSuccess"),
+                                         ("주인공-맞음-1", "1챕터 · 가방·돗자리·김밥", "형태 기준 통과", FACE["BoyHappy"], "BoySuccess"),
+                                         ("주인공-틀림-1", "1챕터 · 가방·돗자리·김밥", "형태 기준 실패", FACE["BoySad"], "BoyWrong"),
+                                         ("주인공-맞음-친구", "1챕터 · 친구", "형태 기준 통과", FACE["BoyHappy"], "BoyFriendSuccess"),
+                                         ("주인공-틀림-친구", "1챕터 · 친구", "형태 기준 실패", FACE["BoySad"], "BoyFriendWrong"),
+                                         ("주인공-틀림-방망이", "1챕터 · 방망이", "형태 기준 실패", FACE["BoySad"], "BoyBatWrong")):
         add(num, stage, title, who, *const(name))
 
-    for num, stage, scene, who, const in (("주인공-간식없음", "모든 단계", "사탕을 다 쓰고 틀렸을 때", FACE["BoySad"], "BoyOutOfSnacks"),
-                                          ("도깨비-오류", "모든 단계", "판정 서버 오류", "도깨비", "JudgeError"),
-                                          ("도깨비-돋보기-1", "1단계 방망이", "첫 그리기 : 돋보기 시범 (넘기면 돋보기가 도깨비불로 강조돼요)", "도깨비", "MagnifierShow"),
-                                          ("도깨비-돋보기-2", "1단계 방망이", "돋보기를 누른 뒤 (넘기면 둘러봐요)", "도깨비", "MagnifierHow"),
-                                          ("도깨비-돋보기-3", "1단계 방망이", "시범으로 둘러본 뒤", "도깨비", "MagnifierRule"),
-                                          ("도깨비-무료돋보기", "모든 단계", "한 단계에서 두 번째로 틀렸을 때 (사탕이 남았으면)", "도깨비", "MagnifierGift"),
-                                          ("도깨비-색섞기-1", "5단계 친구", "첫 그리기 : 붓을 눌러 보라고 함 (넘기면 도깨비불이 붓 둘레를 돌고, 붓을 직접 눌러야 해요)", "도깨비", "MixTapBrush"),
-                                          ("도깨비-색섞기-2", "5단계 친구", "붓을 누르면 (넘기면 팔레트가 열리고 도깨비불이 빨강 둘레를 돌아요. 빨강만 누를 수 있어요)", "도깨비", "MixShow"),
-                                          ("도깨비-색섞기-4", "5단계 친구", "빨강을 두 번 넣은 뒤 (넘기면 도깨비불이 노랑 둘레를 돌아요)", "도깨비", "MixYellow"),
-                                          ("도깨비-색섞기-5", "5단계 친구", "노랑을 두 번 넣은 뒤 (넘기면 도깨비불이 파랑 둘레를 돌아요)", "도깨비", "MixBlue"),
-                                          ("도깨비-색섞기-3", "5단계 친구", "파랑까지 넣어 붓 끝이 갈색이 된 뒤 (팔레트는 닫혀 있어요)", "도깨비", "MixHow"),
-                                          ("도깨비-색섞기-6", "5단계 친구", "갈색 대사를 넘기면 (5단계에는 검정 물감이 없어요. 넘기면 만든 갈색으로 그리기)", "도깨비", "MixBlack"),
-                                          ("도깨비-마무리", "이야기 종료", "화면을 누른 뒤 (넘기면 챕터 선택)", "도깨비", "EndingBye")):
-        m = re.search(r"const string " + const + r' = "((?:[^"\\]|\\.)*)"', src)
-        assert m, const
-        add(num, stage, scene, who, m.group(1), m.start(1), m.end(1))
+    for num, stage, scene, who, name in (("주인공-간식없음", "모든 챕터", "사탕을 다 쓰고 틀렸을 때 (게임오버는 제외)", FACE["BoySad"], "BoyOutOfSnacks"),
+                                         ("도깨비-오류", "모든 챕터", "판정 서버 오류", "도깨비", "JudgeError"),
+                                         ("도깨비-돋보기-1", "1챕터 · 방망이", "첫 그리기 : 돋보기 시범 (넘기면 돋보기가 도깨비불로 강조돼요)", "도깨비", "MagnifierShow"),
+                                         ("도깨비-돋보기-2", "1챕터 · 방망이", "돋보기를 누른 뒤 (넘기면 둘러봐요)", "도깨비", "MagnifierHow"),
+                                         ("도깨비-돋보기-3", "1챕터 · 방망이", "시범으로 둘러본 뒤", "도깨비", "MagnifierRule"),
+                                         ("도깨비-무료돋보기", "모든 챕터", "한 물건에서 두 번째로 틀렸을 때 (사탕이 남았으면, 게임오버는 제외)", "도깨비", "MagnifierGift"),
+                                         ("도깨비-마무리", "1챕터 · 마무리", "화면을 누른 뒤 (넘기면 챕터 선택)", "도깨비", "EndingBye")):
+        add(num, stage, scene, who, *const(name))
+
+    def line_array(name, code, label, scenes):
+        a, b = _block(src, name)
+        matches = list(re.finditer(r'new Line\(Face\.(\w+),\s*"((?:[^"\\]|\\.)*)"\)', src[a:b]))
+        assert len(matches) == len(scenes), name
+        for k, (m, scene) in enumerate(zip(matches, scenes), 1):
+            add(f"{code}-{k}", label, scene, FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
+
+    line_array("CurseIntro", "C5-시작", "5챕터 · 시작", [
+        "밝은 숲 : 주인공과 친구가 도깨비를 찾아옴",
+        "밝은 숲 : 도깨비가 웃으며 맞이함",
+        "숨겨 둔 간식 이야기 : 숲이 어두워지고 도깨비가 흑화함",
+        "어두운 숲 : 도깨비가 저주를 걸며 그림을 요구함",
+        "주인공 속마음 : 도깨비가 무서워하는 것을 떠올림",
+    ])
+    steps = _groups(src, "CurseStep")
+    assert len(steps) == 3
+    for i, ((a, b), requested, counter) in enumerate(zip(steps, ["짚신", "도깨비 부채", "도깨비 감투"], ["부적", "닭피 그릇", "팥주머니"]), 1):
+        matches = list(re.finditer(r'new Line\(Face\.(\w+),\s*"((?:[^"\\]|\\.)*)"\)', src[a:b]))
+        assert len(matches) == 2
+        for k, m in enumerate(matches, 1):
+            scene = f"요청 물건 {requested} : 그림을 요구함" if k == 1 else f"주인공 속마음 : 맞설 물건 {counter} 떠올림"
+            add(f"C5-단계{i}-{k}", f"5챕터 · {i}단계", scene, FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
+
+    boasts = _strings(src, *_block(src, "CurseBoast"))
+    assert len(boasts) == 3
+    for i, (s, power) in enumerate(zip(boasts, ["짚신 : 한 걸음에 어디든 쫓아감", "도깨비 부채 : 숲에 가둠", "도깨비 감투 : 모습이 보이지 않음"]), 1):
+        add(f"C5-자랑-{i}", f"5챕터 · {i}단계", f"요청 물건 성공 : {power}", "도깨비", *s)
+
+    for num, scene, who, name in (
+        ("C5-맞섬-성공", "맞설 물건 성공 : 도깨비가 아파하고 하트 하나를 잃음", "도깨비", "CurseCounterHit"),
+        ("C5-맞섬-실패", "맞설 물건 실패 : 도깨비가 비웃음", "도깨비", "CurseCounterWrong"),
+        ("C5-요청-실패", "같은 요청 물건 첫 실패 : 무서운 얼굴이 나타나고 친구 영혼을 빼앗김", "도깨비", "CurseRequestWrong"),
+        ("C5-주인공-맞섬", "맞설 물건 성공 뒤 주인공 속마음", FACE["BoyHappy"], "CurseBoyHit"),
+        ("C5-주인공-자랑", "요청 물건 성공 뒤 주인공 속마음", FACE["BoyHappy"], "CurseBoyBoast"),
+        ("C5-주인공-실패", "그림 실패 뒤 주인공 반응 (사탕이 남았고 게임오버가 아닐 때)", FACE["BoySad"], "CurseBoyWrong"),
+        ("C5-게임오버", "같은 요청 물건 두 번째 실패 : 도깨비 뒤로 의식을 잃은 사람들의 실루엣", "도깨비", "CurseGameOver"),
+        ("C5-해피-방망이", "하트가 모두 사라짐 : 정화된 도깨비가 도망감. 1챕터에서 찾은 방망이를 남김", FACE["BoyHappy"], "CurseHappy"),
+        ("C5-해피-방망이없음", "하트가 모두 사라짐 : 정화된 도깨비가 도망감. 1챕터에서 방망이를 못 찾음", FACE["BoyHappy"], "CurseHappyNoBat"),
+        ("C5-배드", "3단계 뒤 하트가 남음 : 도깨비가 감투를 쓰고 사라지는 불안한 끝", "도깨비", "CurseBad"),
+    ):
+        add(num, "5챕터 · 결과", scene, who, *const(name))
     return rows
 
 

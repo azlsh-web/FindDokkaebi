@@ -44,7 +44,7 @@ public static class GameScript
             new Line(Face.Dokkaebi, "가방이라… 어떤 가방인데?"),
             new Line(Face.BoyNormal, "내가 제일 아끼는 가방이야. 네모난 몸체에 위쪽 손잡이, 앞주머니가 달렸어."),
             new Line(Face.BoyNormal, "주머니 안에는 가로 줄무늬도 있어!"),
-            new Line(Face.Dokkaebi, "줄무늬까지 있구나! 그럼 모양에 무늬도 잘 그려야겠네."),
+            new Line(Face.Dokkaebi, "네모난 몸체에 손잡이랑 앞주머니. 그 모양을 기억해 둘게!"),
             new Line(Face.Dokkaebi, "좋아! 네가 떠올린 그대로 쪽지에 그려 줘."),
         },
         new[]
@@ -52,8 +52,8 @@ public static class GameScript
             new Line(Face.BoyNormal, "돗자리도 분명히 챙겼는데… 또 어디 뒀더라?"),
             new Line(Face.Dokkaebi, "너는 어쩜 그렇게 다 잃어버리니? 어떤 돗자리인데?"),
             new Line(Face.BoyNormal, "네모난 모양에, 띠가 네 줄 있어."),
-            new Line(Face.BoyNormal, "띠 색 순서가 중요해!"),
-            new Line(Face.Dokkaebi, "색 순서까지? 그럼 이번엔 색도 잘 칠해야겠네!"),
+            new Line(Face.BoyNormal, "펼치면 모서리가 네 개야."),
+            new Line(Face.Dokkaebi, "네모난 바깥 모양이 보이면 찾을 수 있겠어!"),
             new Line(Face.Dokkaebi, "좋아! 떠올린 그대로 쪽지에 그려 줘."),
         },
         new[]
@@ -62,7 +62,7 @@ public static class GameScript
             new Line(Face.Dokkaebi, "김밥? 그건 나도 먹고 싶은데! 어떻게 생겼어?"),
             new Line(Face.BoyNormal, "까만 김이 둥글게 말려 있고, 안에 재료가 위에 둘, 아래에 하나 있어."),
             new Line(Face.BoyNormal, "노란 단무지랑 초록 시금치도 들어 있어!"),
-            new Line(Face.Dokkaebi, "초록 물감은 없는데… 그럼 두 가지 색을 섞어서 만들어야겠네!"),
+            new Line(Face.Dokkaebi, "동그랗게 말린 김 테두리를 그려 주면 찾을 수 있겠어!"),
             new Line(Face.Dokkaebi, "좋아, 쪽지에 그려 줘."),
         },
         new[]
@@ -73,7 +73,7 @@ public static class GameScript
             new Line(Face.Dokkaebi, "어떻게 생긴 친구야?"),
             new Line(Face.BoyNormal, "양 갈래로 묶은 갈색 머리야."),
             new Line(Face.BoyNormal, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
-            new Line(Face.Dokkaebi, "갈색 머리라… 그럼 이번엔 세 가지 색을 섞어야겠네!"),
+            new Line(Face.Dokkaebi, "머리 양쪽에 한 갈래씩! 그 모양을 기억해 둘게."),
             new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 데려올게."),
         },
     };
@@ -114,7 +114,7 @@ public static class GameScript
         new[] { "네 친구 찾았다! 저쪽에서 울고 있더라고.", "데려왔어! 너를 한참 찾고 있었대." },
     };
 
-    // 방망이는 기준이 하나라 일부 틀림이 없어요
+    // 소풍은 기준이 하나라 일부 틀림이 없어요
     static readonly string[][] DokkaebiPartial =
     {
         new[] { "이게 내 방망이라고? 내 방망이는 이렇게 안 생겼어!", "내 방망이를 이렇게 그리면 어떡해! 나 좀 서운해." },
@@ -148,21 +148,58 @@ public static class GameScript
     // 한 단계에서 두 번째로 틀렸을 때 (단계마다 한 번, 그 단계에서만)
     public const string MagnifierGift = "자꾸 틀리니까 딱하다. 돋보기 한 번 빌려줄게! 이번 물건 찾을 때만 쓸 수 있어.";
 
-    // 5단계 첫 그리기 : 색 섞기 안내. 대사가 알려 주고 사라지면 도깨비불이 눌러야 할 곳을 돌고, 아이가 직접 누르면 다음 대사가 나와요
-    //   붓을 눌러 봐 → (붓) → 빨강 두 번 → (빨강) → 노랑 두 번 → (노랑) → 파랑 한 번 → (파랑, 붓 끝이 갈색) → 많이 넣은 색 쪽으로
-    public const string MixTapBrush = "갈색은 세 가지 색을 섞어야 나와. 아래에 있는 붓을 눌러 봐!";
-    public const string MixShow = "같은 물감을 여러 번 넣을 수도 있어. 먼저 빨강을 두 번 넣어 봐!";
-    public const string MixYellow = "잘했어! 이번엔 노랑도 두 번 넣어 봐.";
-    public const string MixBlue = "마지막으로 파랑은 한 번만 넣어 봐!";
-    public const string MixHow = "갈색이 됐지? 많이 넣은 색 쪽으로 바뀌어.";
-    public const string MixBlack = "이번엔 검정 물감이 없어. 세 가지를 똑같이 넣으면 검정이 돼!";
-    // 물감 차례대로 하는 말 (빨강 · 노랑 · 파랑)
-    public static readonly string[] MixPaintSteps = { MixShow, MixYellow, MixBlue };
-
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
     // 이야기 종료 : 도깨비 인사. 대사를 누르면 챕터 선택으로 가요
     public const string EndingBye = "오늘 소풍 즐거웠지? 다음에 또 뭐 잃어버리면 불러. 또 올게!";
+
+
+    // ───────────── 5챕터 · 도깨비의 저주 (임시 대사, 구현 뒤 다시 정해요) ─────────────
+    // 시작 장면 : 밝은 숲에서 웃던 도깨비가 간식 이야기를 꺼내면 숲이 어두워지고 흑화해요 (CurseDarkFrom 번째 대사부터)
+    public static readonly Line[] CurseIntro =
+    {
+        new Line(Face.BoySurprised, "도깨비야! 우리를 이 숲으로 왜 불렀어?"),
+        new Line(Face.Dokkaebi, "히히, 너희 얼굴이 보고 싶어서 불렀지."),
+        new Line(Face.Dokkaebi, "그런데 숨겨 둔 간식은 왜 나한테 안 줬어?"),
+        new Line(Face.Dokkaebi, "괘씸하구나! 널 저주하겠어. 내가 시키는 건 다 그려 와!"),
+        new Line(Face.BoyNormal, "(도깨비가 무서워하는 걸 그리면 저주가 풀릴까…?)"),
+    };
+    public const int CurseDarkFrom = 2;
+
+    // 단계 대화 : [단계] 도깨비가 요청 물건 이름을 말하고, 주인공은 혼잣말로 맞설 물건을 떠올려요
+    static readonly Line[][] CurseStep =
+    {
+        new[] { new Line(Face.Dokkaebi, "짚신을 그려 와! 한 걸음에 어디든 널 쫓아가게!"),
+                new Line(Face.BoyNormal, "(부적을 무서워한댔어. 노란 종이에 빨간 글씨였지…)") },
+        new[] { new Line(Face.Dokkaebi, "도깨비 부채를 그려 와! 한 번 부치면 널 이 숲에 가둘 거야!"),
+                new Line(Face.BoyNormal, "(닭피 그릇을 보면 도망간댔어. 친구를 지켜야 해…!)") },
+        new[] { new Line(Face.Dokkaebi, "도깨비 감투를 그려 와! 아무도 날 못 보게 말이야!"),
+                new Line(Face.BoyNormal, "(팥주머니라면… 도깨비도 꼼짝 못 할 거야!)") },
+    };
+
+    // 요청 물건을 받았을 때 도깨비가 힘 자랑 : [단계]
+    static readonly string[] CurseBoast =
+    {
+        "히히! 이 짚신이면 네가 어디 있든 한 걸음에 따라가지!",
+        "부채질 한 번에 숲길이 싹 막혔지? 이제 못 나간다!",
+        "감투를 쓰면 내 모습이 싹 사라지지! 날 찾을 수 있겠어?",
+    };
+    public const string CurseCounterHit = "으악! 따가워! 내 힘이 빠져나가잖아!";
+    public const string CurseCounterWrong = "히히, 그런 건 하나도 안 무섭지!";
+    public const string CurseRequestWrong = "틀렸어! 네 친구 영혼은 내가 데려간다!";
+    public const string CurseBoyHit = "(됐다! 도깨비가 힘을 잃고 있어!)";
+    public const string CurseBoyBoast = "(큰일이야… 도깨비가 점점 강해져.)";
+    public const string CurseBoyWrong = "안 돼! 내 친구한테 손대지 마!";
+    public const string CurseGameOver = "내 뒤에 잠든 사람들 보이지? 너희도 함께 있어라!";
+    public const string CurseHappy = "착해져서 도망갔네… 이 방망이로 잃어버린 걸 찾아야지!";
+    public const string CurseHappyNoBat = "착해져서 도망갔네… 이제 잃어버린 건 내가 직접 찾아야지!";
+    public const string CurseBad = "감투를 쓰니 내 모습이 싹 사라졌지? 히히…";
+
+    public static Line[] CurseStepLines(int step) => CurseStep[Mathf.Clamp(step, 0, CurseStep.Length - 1)];
+    public static string CurseBoastLine(int step) => CurseBoast[Mathf.Clamp(step, 0, CurseBoast.Length - 1)];
+    /// <summary>쪽지 글 : "도깨비야, 이 OO 찾아 줘!" (쪽지 가운데 정렬)</summary>
+    public static string ItemNote(string name) => $"도깨비야, 이 {name} 찾아 줘!";
+    public static string ItemRead(string name) => $"음, {name}{GameManager.Josa(name, "이구나", "구나")}. 좋아, 찾아올게!";
 
     static string Pick(string[] list) => list[Random.Range(0, list.Length)];
 
@@ -178,7 +215,13 @@ public static class GameScript
         foreach (string[][] table in new[] { DokkaebiSuccess, DokkaebiPartial, DokkaebiAllWrong })
             foreach (string[] stage in table) foreach (string l in stage) yield return l;
         foreach (string l in new[] { BoyBatSuccess, BoyBatWrong, BoySuccess, BoyWrong, BoyFriendSuccess, BoyFriendWrong,
-                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, MixTapBrush, MixShow, MixYellow, MixBlue, MixHow, MixBlack, BoyOutOfSnacks, JudgeError, EndingBye })
+                                     MagnifierShow, MagnifierHow, MagnifierRule, MagnifierGift, BoyOutOfSnacks, JudgeError, EndingBye })
+            yield return l;
+        foreach (Line l in CurseIntro) yield return l.text;
+        foreach (Line[] step in CurseStep) foreach (Line l in step) yield return l.text;
+        foreach (string l in CurseBoast) yield return l;
+        foreach (string l in new[] { CurseCounterHit, CurseCounterWrong, CurseRequestWrong, CurseBoyHit, CurseBoyBoast, CurseBoyWrong,
+                                     CurseGameOver, CurseHappy, CurseHappyNoBat, CurseBad })
             yield return l;
     }
 
