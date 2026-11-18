@@ -17,12 +17,13 @@ TREE = [
         ("SettingsButton (소리 설정, 시작 · 챕터 화면에도)", "UI/HUD_SettingsButton", "기획 단계에 받은 톱니 그림 (Title_Gear)"),
         ("SettingsPanel/SettingsCard/CloseButton (소리 설정 닫기)", "UI/Mix_CloseIcon", CODE),
     ]),
-    ("남은 시간 게이지 (그리는 동안, 위 줄과 쪽지 사이에 화면 가로 가득)", "Frame/HUD/TimerGroup", [
-        ("GaugeSlot (게이지 자리를 보여 주는 옅은 틀, 바가 다 줄어도 남음)", "(그림 없음)", CODE),
-        ("Incense (게이지 바, 오른쪽 끝부터 줄어듦)", "UI/HUD_CandleGauge", TEMP + ", 자리만 보이는 그냥 직사각형 바 (11/15, make_gauge_placeholder.py). 아트팀 그림을 받으면 같은 이름으로 바꿔요"),
+    ("남은 시간 게이지 (그리는 동안, 위 줄과 쪽지 사이에 화면 가로 가득, 숫자 없음)", "Frame/HUD/TimerGroup", [
+        ("GaugeSlot (막대 그림을 옅게 칠한 트랙, 막대가 줄어든 자리가 보임)", "UI/HUD_CandleGauge", TEAM + ", 막대와 같은 그림"),
+        ("Incense (촛대 막대, 오른쪽 끝부터 줄어듦)", "UI/HUD_CandleGauge", TEAM + ", 11/18 촛대 그림 한 장을 막대 · 불꽃으로 나눔 (cut_candle_gauge.py)"),
+        ("Incense/IncenseFx_Tip/IncenseFx_Flame (막대 끝을 따라가는 불꽃 핸들)", "UI/HUD_CandleFlame", TEAM + ", 같은 촛대 그림에서 오린 불꽃"),
         ("(지금은 안 씀) 전에 쓰던 향 줄기", "UI/Incense_Stick", TEAM + ", 11/14 게이지로 바꾸며 뺐어요. 파일은 남겨 둬요"),
         ("(숨김) IncenseFx_Tip/Ember", "UI/Incense_Ember", TEAM + ", 가로 게이지에서는 쓰지 않아요"),
-        ("(숨김) IncenseFx_Tip/Flame", "UI/Incense_Flame", TEAM + ", 11/15 그냥 바로 바꾸며 숨겼어요"),
+        ("(지금은 안 씀) 전에 쓰던 향 불꽃", "UI/Incense_Flame", TEAM + ", 11/18 촛대 불꽃으로 바꿨어요. 파일은 남겨 둬요"),
         ("(숨김) IncenseFx_Tip/Glow", "UI/Common_SoftPuff", CODE + ", 11/15 그냥 바로 바꾸며 숨겼어요"),
         ("(지금은 안 씀) IncenseFx_Tip/Ash, FallingAsh", "UI/Incense_Ash", TEAM + ", 가로 게이지에서는 쓰지 않아요"),
     ]),

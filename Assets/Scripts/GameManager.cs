@@ -72,9 +72,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject magnifierSparkles;  // 무료 기회를 받으면 돋보기가 반짝여요
     [SerializeField] Image[] candyIcons;            // 오른쪽 사탕 (쓴 것은 왼쪽부터 흐리게)
     [SerializeField] SimpleAnim[] snackAnims;       // 단계 첫 그리기 때 들어오는 움직임
-    [SerializeField] GameObject timerGroup;         // 향 (그리는 동안만 보임)
-    [SerializeField] TMP_Text timerText;            // 남은 초 숫자 "58"
-    [SerializeField] IncenseBurn incense;           // 타들어 가는 향
+    [SerializeField] GameObject timerGroup;         // 촛대 게이지 (그리는 동안만 보임, 숫자 없음)
+    [SerializeField] IncenseBurn incense;           // 막대가 줄고 불꽃이 따라가는 게이지
     [SerializeField] GameObject settingsPanel;      // 소리 설정 창 (오른쪽 위 톱니). 여는 동안 게임이 멈춰요
     [SerializeField] Slider bgmSlider;              // 배경음 볼륨
     [SerializeField] Slider sfxSlider;              // 효과음 볼륨
@@ -312,7 +311,6 @@ public class GameManager : MonoBehaviour
             }
             if (jamOverlay.activeSelf) SpinFires(jamFires, 300f, 380f);    // 방해 연출 : 도깨비불이 쪽지 위를 맴돌아요
             timeLeft -= Time.deltaTime;
-            timerText.text = Mathf.CeilToInt(Mathf.Max(0f, timeLeft)).ToString();
             incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
             submitButton.interactable = board.HasDrawn;             // 빈 쪽지면 제출 불가
             if (timeLeft <= 0f) Submit();                           // 향이 다 타면 자동 제출
@@ -580,8 +578,7 @@ public class GameManager : MonoBehaviour
             board.ResetBoard();
             paperView.ResetView();      // 새 쪽지는 책상 위에 똑바로
         }
-        // 향과 남은 초를 바로 맞춰 둬요 (시범 동안은 향이 멈춰 있어서, 안 맞추면 불꽃이 왼쪽 끝에 남아 있어요)
-        timerText.text = Mathf.CeilToInt(timeLeft).ToString();
+        // 게이지를 바로 맞춰 둬요 (시범 동안은 게이지가 멈춰 있어서, 안 맞추면 불꽃이 왼쪽 끝에 남아 있어요)
         incense.Show(timeLeft / drawSeconds, timeLeft);
         // 쪽지 글은 주인공이 적어 둔 것처럼 한 글자씩 나타나요. 다시 그릴 때는 이미 적혀 있어요.
         drawTitle.text = NoteText();
@@ -589,7 +586,6 @@ public class GameManager : MonoBehaviour
         drawTitle.maxVisibleCharacters = keepDrawing ? int.MaxValue : 0;
         hud.SetActive(true);
         timerGroup.SetActive(true);
-        timerText.gameObject.SetActive(!IsCurse);   // 5챕터는 하트가 그 자리에 있어서 남은 초 숫자 없이 게이지만
         Sfx.Bgm(Sfx.BgmDraw);
         ShowPanel(drawPanel);
         magnifierPeek.Stop();

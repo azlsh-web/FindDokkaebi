@@ -633,8 +633,15 @@ static class MvpSelfTest
                 Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 1단계 첫 그리기에서만");
                 candiesAtDraw = GetInt("candies");
                 Check(candiesAtDraw == 3, $"{st.Title} 사탕 3개로 시작");
-                Check(Find("HUD/TimerGroup/TimerText").GetComponent<TMP_Text>().color.a > 0.5f, "남은 초 숫자가 보인다 (투명하지 않음)");
-                Check(((RectTransform)Find("HUD/TimerGroup/Incense")).rect.width >= 950f, "남은 시간 게이지는 화면 가로 가득");
+                Check(Find("HUD/TimerGroup").GetComponentInChildren<TMP_Text>(true) == null, "남은 초 숫자는 없다 (게이지만)");
+                {
+                    var flame = Find("HUD/TimerGroup/Incense/IncenseFx_Tip/IncenseFx_Flame").GetComponent<Image>();
+                    var stick = (RectTransform)Find("HUD/TimerGroup/Incense");
+                    Check(stick.rect.width >= 880f && flame.enabled && flame.sprite != null && flame.sprite.name == "HUD_CandleFlame",
+                          "촛대 게이지 : 막대는 화면 가로 거의 가득, 끝에 불꽃 그림");
+                    var tip = (RectTransform)Find("HUD/TimerGroup/Incense/IncenseFx_Tip");
+                    Check(tip.anchoredPosition.x > stick.rect.width * 0.9f, "그리기를 시작하면 불꽃이 막대 오른쪽 끝에 있다");
+                }
                 bool primaries = true, mixing = true;      // 펜 도구는 늘 하나 (빨강 · 노랑 · 파랑 섞기)
                 Check(!IsOn("DrawPanel/ToolBar/Palette"), "팔레트는 닫힌 채로 시작");
                 Find("DrawPanel/ToolBar").GetComponent<ToolBar>().BrushTap();
