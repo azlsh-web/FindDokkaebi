@@ -19,10 +19,21 @@ def load_manifest():
 
 
 def find(section, caption):
-    """구역과 설명 일부로 사진 한 장을 찾아요. 없으면 멈춰요 (문서가 없는 화면을 가리키지 않게)."""
-    for row in load_manifest():
+    """구역과 설명 일부로 사진 한 장을 찾아요. 없으면 멈춰요 (문서가 없는 화면을 가리키지 않게).
+    챕터 구조(11/18) 뒤로 구역 이름이 "1챕터 N번째 물건 …" 이 됐어요. 예전 이름 "N단계" 도 그대로 찾아요.
+    시작 화면 · 챕터 선택은 로비 씬으로 옮겨서 사진이 없어요. 그때는 1챕터 첫 사진으로 대신하고 알려 줘요."""
+    import re
+    import sys
+    m = re.fullmatch(r"(\d)단계", section)
+    if m:
+        section = f"1챕터 {m.group(1)}번째 물건"
+    rows = load_manifest()
+    for row in rows:
         if row["section"].startswith(section) and caption in row["caption"]:
             return os.path.join(PHOTOS, row["file"])
+    if section == "시작" and rows:
+        print(f"[문서] 로비 화면 사진이 아직 없어서 '{caption}' 자리에 1챕터 첫 사진을 넣었어요.", file=sys.stderr)
+        return os.path.join(PHOTOS, rows[0]["file"])
     raise KeyError((section, caption))
 
 

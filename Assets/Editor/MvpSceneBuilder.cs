@@ -1269,7 +1269,7 @@ public static class MvpSceneBuilder
 
         // ── 저장 + Build Settings 의 첫 번째 씬으로 등록 ──
         EditorSceneManager.SaveScene(scene, ScenePath);
-        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Lobby.unity", true), new EditorBuildSettingsScene(ScenePath, true) };   // 로비가 맨 앞 (처음 열리는 씬)
         AssetDatabase.SaveAssets(); // Build Settings 변경도 디스크에 저장
         Debug.Log("[찾아라도깨비] MVP 씬을 만들었어요: " + ScenePath);
     }

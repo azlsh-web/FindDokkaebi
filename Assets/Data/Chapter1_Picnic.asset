@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9176eb6d1308b0f4e8ae40ef15657fa1, type: 3}
+  m_Name: Chapter1_Picnic
+  m_EditorClassIdentifier: Assembly-CSharp::ChapterData
+  number: 1
+  title: "\uC18C\uD48D \uC900\uBE44"
+  rule: 0
+  criteriaLevel: 1
+  photo: {fileID: 21300000, guid: 045499e3c27a6634e9c1c183e7e25fae, type: 3}
+  playBackground: {fileID: 21300000, guid: d062d11f70312dd4ebed5fd8c3b6a522, type: 3}
+  endBackground: {fileID: 21300000, guid: 530d522e1930029498c77fe56474b403, type: 3}
+  darkBackground: {fileID: 0}
+  items:
+  - {fileID: 11400000, guid: 785c9bacb8f450d40be095fe77a76630, type: 2}
+  - {fileID: 11400000, guid: 3b919354e978ed740bc5ac3dc33fdda7, type: 2}
+  - {fileID: 11400000, guid: 92fc37c963325ba478cc21087e66ed7d, type: 2}
+  - {fileID: 11400000, guid: f08a78b1f754b0340848e184adc59714, type: 2}
+  - {fileID: 11400000, guid: 209e715a8bf530a4aad156efd76a0f4d, type: 2}
+  counterItems: []

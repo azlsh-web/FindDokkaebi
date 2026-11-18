@@ -14,23 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 1
   targetName: "\uBC29\uB9DD\uC774"
-  introStory: "\uC18C\uD48D \uC900\uBE44\uBB3C\uC774 \uBAA8\uB450 \uC0AC\uB77C\uC84C\uC5B4\uC694!\n\uCABD\uC9C0\uC5D0
-    \uADF8\uB9BC\uC744 \uADF8\uB824 \uAC04\uC2DD\uACFC \uD568\uAED8 \uB450\uBA74\n\uB3C4\uAE68\uBE44\uAC00
-    \uBB3C\uAC74\uC744 \uCC3E\uC544\uC900\uB300\uC694.\n\uADF8\uB7F0\uB370 \uB3C4\uAE68\uBE44\uAC00
-    \uBA3C\uC800 \uBD80\uD0C1\uD574\uC694.\n\"\uB0B4 \uBC29\uB9DD\uC774\uBD80\uD130
-    \uCC3E\uC544 \uC918!\""
-  newRule: "\uAC80\uC740 \uD39C\uC73C\uB85C \uBAA8\uC591(\uD615\uD0DC)\uC744 \uADF8\uB824\uC694.\n\uC9C0\uC6B0\uAC1C
-    \xB7 \uC120 \uAD75\uAE30 \xB7 \uB418\uB3CC\uB9AC\uAE30 \xB7 \uBAA8\uB450 \uC9C0\uC6B0\uAE30\uB97C
-    \uC4F8 \uC218 \uC788\uC5B4\uC694."
-  learnedRules: 
-  colorMode: 0
+  colorMode: 3
   originalSprite: {fileID: 21300000, guid: c105f48813aed8d4597fa47555f0be9d, type: 3}
+  shapeOnly: 1
+  serverKey: 
   targetDescription: "\uAD75\uC740 \uBA38\uB9AC\uC5D0 \uC190\uC7A1\uC774\uAC00 \uC774\uC5B4\uC9C4
     \uB3C4\uAE68\uBE44\uBC29\uB9DD\uC774\uC785\uB2C8\uB2E4. \uBA38\uB9AC\uC5D0\uB294
     \uC9E7\uAC8C \uD280\uC5B4\uB098\uC628 \uB3CC\uAE30\uAC00 \uC5EC\uB7EC \uAC1C
     \uC788\uACE0, \uC190\uC7A1\uC774\uC5D0\uB294 \uB9AC\uBCF8\uC774 \uBB36\uC5EC
-    \uC788\uC2B5\uB2C8\uB2E4. \uAC80\uC740\uC0C9\uC73C\uB85C \uD615\uD0DC\uB9CC \uD45C\uD604\uD558\uB294
-    \uB2E8\uACC4\uC774\uBA70, \uC0C9\uC740 \uD310\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    \uC788\uC2B5\uB2C8\uB2E4."
   features:
   - id: F1
     name: "\uAD75\uC740 \uBA38\uB9AC + \uB3CC\uAE30"
@@ -47,5 +39,6 @@ MonoBehaviour:
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 0}
   - {fileID: 21300000, guid: a9fef7359f71d054a8aa1987448894f9, type: 3}
+  - {fileID: 21300000, guid: ea66ba08102e9b04b8ce66668c12cddc, type: 3}
+  - {fileID: 21300000, guid: 6c583de5a10796d41baa2f1d52a4ed1a, type: 3}

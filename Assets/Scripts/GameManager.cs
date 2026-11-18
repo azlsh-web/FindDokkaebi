@@ -589,6 +589,7 @@ public class GameManager : MonoBehaviour
         drawTitle.maxVisibleCharacters = keepDrawing ? int.MaxValue : 0;
         hud.SetActive(true);
         timerGroup.SetActive(true);
+        timerText.gameObject.SetActive(!IsCurse);   // 5챕터는 하트가 그 자리에 있어서 남은 초 숫자 없이 게이지만
         Sfx.Bgm(Sfx.BgmDraw);
         ShowPanel(drawPanel);
         magnifierPeek.Stop();

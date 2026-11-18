@@ -14,22 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 3
   targetName: "\uB3D7\uC790\uB9AC"
-  introStory: "\uB2E4\uC74C\uC740 \uC18C\uD48D\uC5D0 \uAE54\uACE0 \uC549\uC744 \uB3D7\uC790\uB9AC\uC608\uC694.\n\uC774\uBC88\uC5D0\uB294
-    \uC0C9\uB3C4 \uAE30\uC5B5\uD574\uC57C \uD574\uC694!\n\uC5B4\uB5A4 \uC0C9 \uB760\uAC00
-    \uC5B4\uB5A4 \uC21C\uC11C\uC600\uB294\uC9C0 \uC798 \uBCF4\uC138\uC694."
-  newRule: "\uBE68\uAC15 \xB7 \uB178\uB791 \xB7 \uD30C\uB791 \uBC84\uD2BC\uC73C\uB85C
-    \uC0C9\uC744 \uACE8\uB77C \uCE60\uD574\uC694.\n\uC0C9\uC774 \uB4E4\uC5B4\uAC04
-    \uC704\uCE58\uB3C4 \uAE30\uC5B5\uD574\uC57C \uD574\uC694."
-  learnedRules: "\uBAA8\uC591 \uADF8\uB9AC\uAE30 \xB7 \uBB34\uB2AC \uB123\uAE30"
-  colorMode: 1
+  colorMode: 3
   originalSprite: {fileID: 21300000, guid: 4d614857685b6f44eb340629db6b4db9, type: 3}
-  targetDescription: "\uB124\uBAA8\uB09C \uB3D7\uC790\uB9AC\uC785\uB2C8\uB2E4. \uC548\uCABD\uC740
-    \uB098\uB780\uD55C \uC0C9 \uB760 \uB124 \uC904\uB85C \uB098\uB258\uC5B4 \uC788\uACE0,
-    \uD654\uBA74\uC5D0\uC11C \uBCF4\uC774\uB294 \uC704\uC5D0\uC11C\uBD80\uD130 \uD30C\uB791,
-    \uBE68\uAC15, \uB178\uB791, \uD30C\uB791 \uC21C\uC11C\uC785\uB2C8\uB2E4. \uB3D7\uC790\uB9AC\uB294
-    \uC870\uAE08 \uBE44\uC2A4\uB4EC\uD788 \uB193\uC5EC \uC788\uC2B5\uB2C8\uB2E4.
-    \uBE68\uAC15\xB7\uB178\uB791\xB7\uD30C\uB791\uC758 \uC0BC\uC6D0\uC0C9\uC744 \uC0AC\uC6A9\uD558\uBA70
-    \uD63C\uC0C9 \uACFC\uC815\uC740 \uD310\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+  shapeOnly: 1
+  serverKey: 
+  targetDescription: "\uC870\uAE08 \uBE44\uC2A4\uB4EC\uD788 \uB193\uC778 \uB124\uBAA8\uB09C
+    \uB3D7\uC790\uB9AC\uC785\uB2C8\uB2E4."
   features:
   - id: F1
     name: "\uC0AC\uAC01\uD615 \uC678\uACFD"
@@ -41,34 +31,7 @@ MonoBehaviour:
     check: 3
     color: 0
     area: 0
-  - id: F2
-    name: "\uB760 \uB124 \uC904"
-    criteria: "\uC678\uACFD \uC548\uC774 \uB098\uB780\uD55C \uB760 \uB124 \uC904\uB85C
-      \uB098\uB258\uC5B4 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uB760\uB294 \uAC00\uB85C\uB098
-      \uBE44\uC2A4\uB4EC\uD55C \uBC29\uD5A5 \uBAA8\uB450 \uC778\uC815\uD569\uB2C8\uB2E4.
-      \uD55C \uAC00\uC9C0 \uC0C9\uC73C\uB85C\uB9CC \uCE60\uD588\uAC70\uB098 \uB760\uAC00
-      \uB124 \uC904\uC774 \uC544\uB2C8\uBA74 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
-    check: 16
-    color: 0
-    area: 0
-  - id: F3
-    name: "\uB760 \uC0C9 \uC21C\uC11C"
-    criteria: "\uB9E8 \uC704 \uB760\uC640 \uB9E8 \uC544\uB798 \uB760\uC758 \uC8FC\uB41C
-      \uCC44\uC0C9\uC774 \uD30C\uB780\uC0C9 \uACC4\uC5F4\uC774\uACE0, \uADF8 \uC0AC\uC774\uC5D0
-      \uC704\uC5D0\uC11C\uBD80\uD130 \uBE68\uAC04\uC0C9 \uACC4\uC5F4\uACFC \uB178\uB780\uC0C9
-      \uACC4\uC5F4\uC774 \uCC28\uB840\uB85C \uB098\uD0C0\uB098\uC57C \uD569\uB2C8\uB2E4.
-      \uB760\uC758 \uAC1C\uC218\uB294 \uC774 \uD56D\uBAA9\uC5D0\uC11C \uBCF4\uC9C0
-      \uC54A\uC2B5\uB2C8\uB2E4. \uAC70\uCE5C \uCC44\uC0C9\uACFC \uC57D\uAC04\uC758
-      \uBE48\uD2C8\uC740 \uC778\uC815\uD569\uB2C8\uB2E4."
-    check: 20
-    color: 0
-    area: 0
   wrongSprites:
-  - {fileID: 0}
-  - {fileID: 21300000, guid: cdbf1e9aa17e552428e5809f043f3f72, type: 3}
-  - {fileID: 21300000, guid: 32082ba665fd5d844871684bc582bbdf, type: 3}
-  - {fileID: 21300000, guid: cbbcc3fa64368844ebd284186083475d, type: 3}
   - {fileID: 21300000, guid: 0a4895703b39b2045b468071026d3157, type: 3}
-  - {fileID: 21300000, guid: 1e694c75f8c5342468003768da2b3d5f, type: 3}
   - {fileID: 21300000, guid: 3c9ee5178f5a5dc48bd16a74eee3d7be, type: 3}
   - {fileID: 21300000, guid: 82bf55b8f920c6a419b1188aa55cc192, type: 3}

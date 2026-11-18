@@ -472,7 +472,7 @@ static class MvpSelfTest
             Check(shortTail.Count == 0, $"대사 {count}줄 : 마지막 줄에 짧은 조각만 남지 않는다" + (shortTail.Count > 0 ? " / " + string.Join(" | ", shortTail) : ""));
             Check(overflow.Count == 0, $"대사 {count}줄 : 대사 상자를 넘치지 않는다" + (overflow.Count > 0 ? " / " + string.Join(" | ", overflow) : ""));
             Check(count > 50 && line.textInfo.lineCount >= 1, $"대사 {count}줄을 상자 크기로 나눠 봤다");
-            Find("DialoguePanel").gameObject.SetActive(false);
+            Gm().StartGame();      // 줄 재기에 쓴 대사 상자를 챕터 첫 대사로 되돌려요 (게임 씬은 대화로 바로 시작해요)
         });
         Add(0.2f, "게임 시작", () =>
         {
@@ -1142,9 +1142,10 @@ static class MvpSelfTest
             tb.OpenPanel();
             Check(IsOn("DrawPanel/ToolBar/Palette"), "붓을 누르면 팔레트가 열린다");
             {
-                tb.PaintTap(0); tb.PaintTap(1); tb.PaintTap(2);
+                tb.PaintTap(0);
+                Check(BrushTip() != mixer.ResultColor, "물감을 넣어도 붓 끝 색이 한 번에 바뀌지 않는다");     // 붓 끝은 검정, 넣은 색은 빨강
+                tb.PaintTap(1); tb.PaintTap(2);
                 Check(mixer.ResultColor == ColorMixer.Mix(1, 1, 1), "자유 혼합 : 세 색을 한 번씩 넣으면 검은색에 가깝다");
-                Check(BrushTip() != mixer.ResultColor, "물감을 넣어도 붓 끝 색이 한 번에 바뀌지 않는다");
                 Check(Find("DrawPanel/ToolBar/PaintDrop") != null, "물감을 누르면 물방울이 붓 끝으로 날아간다");
                 tb.PaintTap(0); tb.PaintTap(1);
                 Check(mixer.ResultColor == ColorMixer.Mix(2, 2, 1), "자유 혼합 : 2:2:1 로 넣으면 갈색");

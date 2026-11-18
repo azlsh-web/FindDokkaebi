@@ -46,6 +46,8 @@ static class MvpLayoutCheck
         new[] { "ResultPanel/GiftMagnifier", "ResultPanel/" },   // 무료 돋보기가 도깨비 손에서 날아가요
         new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
+        new[] { "DrawPanel/JamOverlay/", "DrawPanel/JamOverlay/" },   // 5챕터 방해 연출 : 도깨비불과 낙서가 쪽지 위에서 겹쳐요
+        new[] { "CurseEndPanel/Silhouette", "CurseEndPanel/Dokkaebi" },   // 게임오버 : 쓰러진 사람들 실루엣 앞에 도깨비 (규격표 겹침 예외 7)
     };
 
     class Item
@@ -147,7 +149,8 @@ static class MvpLayoutCheck
         foreach (Item it in items)
         {
             if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("SettingsPanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
-            if (it.path.StartsWith("HUD/CandyRow")) continue;   // 단계 첫 그리기 때 오른쪽 화면 밖에서 들어오는 중일 수 있어요
+            if (it.path.StartsWith("HUD/CandyRow")) continue;
+            if (it.path.StartsWith("DialoguePanel/Dokkaebi")) continue;   // 대화가 시작되면 도깨비가 오른쪽 화면 밖에서 걸어 들어와요   // 단계 첫 그리기 때 오른쪽 화면 밖에서 들어오는 중일 수 있어요
             if (it.path == "DrawPanel/ToolBar" || it.path == "DrawPanel/ToolBar/Line") continue;   // 아래 띠는 긴 폰에서도 끝까지 덮게 화면보다 넓게 깔아요
             Rect o = Opaque(it);
             if (o.width <= 0) continue;
