@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,10 +6,10 @@ using UnityEngine.UI;
 // ─────────────────────────────
 //   - 줄기가 위에서부터 짧아지고, 불씨 · 불꽃이 끝을 따라 내려와요.
 //   - 타고 남은 재가 끝에 쌓이다가 뚝 떨어지고, 연기가 흔들리며 올라가요.
-//   - 10초 남으면 불꽃이 커지고 남은 초가 빨갛게 두근거려요.
+//   - 10초 남으면 불꽃이 커져요. 남은 초 숫자는 없어요 (게이지만).
 // GameManager 가 매 프레임 Show 로 남은 비율을 알려 줘요.
-// horizontal : 맨 위 가로 막대 (그리기 화면 개편 뒤). 오른쪽 끝이 타들어 가며 왼쪽으로 줄어들고, 불꽃 · 연기가 끝을 따라가요.
-//   재는 쌓지 않아요. (나중에 도깨비불 게이지 그림이 오면 이 자리를 바꿔요)
+// horizontal : 맨 위 촛대 게이지 (지금 게임). 슬라이더처럼 막대가 오른쪽 끝부터 줄어들고,
+//   불꽃 그림이 핸들처럼 막대 끝을 따라 왼쪽으로 가요. 핸들이라 흔들림 · 커짐은 작게 해요. 재는 쌓지 않아요.
 public class IncenseBurn : MonoBehaviour
 {
     [SerializeField] Image stick;              // 타는 줄기 (아래 기준 Filled)
@@ -20,7 +19,6 @@ public class IncenseBurn : MonoBehaviour
     [SerializeField] RectTransform ash;        // 끝에 쌓이는 재
     [SerializeField] Image fallingAsh;         // 떨어지는 재
     [SerializeField] Image[] smoke;            // 연기 조각들
-    [SerializeField] TMP_Text secondsText;     // 남은 초
     [SerializeField] bool horizontal;          // 가로 막대 (연기는 tip 의 자식)
 
     [Tooltip("다 타도 잔 위에 남는 줄기의 비율")]
@@ -37,7 +35,6 @@ public class IncenseBurn : MonoBehaviour
     const float AshFallTime = 0.7f;
     const float AshFallDistance = 150f;
 
-    Color normalTextColor;
     bool ready;
     float flameBaseY;
     float fallTime = -1f;
@@ -46,13 +43,11 @@ public class IncenseBurn : MonoBehaviour
 
     void Awake() => Init();
 
-    // GameManager 가 묶음을 켜기 전에 Show 를 먼저 부르면 Awake 보다 앞서요.
-    //   그때 비어 있는 색(투명)을 숫자에 칠하지 않게, 처음 한 번 원래 색을 먼저 기억해요.
+    // GameManager 가 묶음을 켜기 전에 Show 를 먼저 부르면 Awake 보다 앞서요. 그래서 처음 한 번 여기서 기억해요.
     void Init()
     {
         if (ready) return;
         ready = true;
-        normalTextColor = secondsText.color;
         flameBaseY = flame.anchoredPosition.y;
     }
 
@@ -78,18 +73,18 @@ public class IncenseBurn : MonoBehaviour
             ShowAsh(1f - remaining, tipY);
             ShowSmoke(new Vector2(0f, tipY), 70f, SmokeRise, 1f, urgent);
         }
-
-        float beat = urgent ? 1f + 0.12f * Mathf.Abs(Mathf.Sin(Time.time * 5f)) : 1f;
-        secondsText.color = urgent ? new Color(0.78f, 0.16f, 0.13f) : normalTextColor;
-        secondsText.transform.localScale = Vector3.one * beat;
     }
 
     void ShowFlame(bool urgent)
     {
-        float size = urgent ? 1.35f : 1f;
+        // 가로 게이지의 불꽃은 핸들이라 위 줄에 닿지 않게 작게 흔들려요
+        float size = urgent ? (horizontal ? 1.08f : 1.35f) : 1f;
         float flicker = Mathf.PerlinNoise(Time.time * 7f, 0.3f);
-        flame.localScale = new Vector3(size * Mathf.Lerp(0.92f, 1.08f, flicker), size * Mathf.Lerp(0.9f, 1.2f, flicker), 1f);
-        flame.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-5f, 5f, Mathf.PerlinNoise(Time.time * 4f, 1.7f)));
+        float sx = horizontal ? Mathf.Lerp(0.97f, 1.03f, flicker) : Mathf.Lerp(0.92f, 1.08f, flicker);
+        float sy = horizontal ? Mathf.Lerp(0.96f, 1.06f, flicker) : Mathf.Lerp(0.9f, 1.2f, flicker);
+        float tilt = horizontal ? 3f : 5f;
+        flame.localScale = new Vector3(size * sx, size * sy, 1f);
+        flame.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-tilt, tilt, Mathf.PerlinNoise(Time.time * 4f, 1.7f)));
 
         Color c = urgent ? new Color(1f, 0.28f, 0.1f) : new Color(1f, 0.55f, 0.15f);
         c.a = Mathf.Lerp(0.45f, 0.85f, flicker);

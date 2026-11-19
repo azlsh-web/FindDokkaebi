@@ -88,7 +88,7 @@ static class MvpFontBake
         foreach (string guid in AssetDatabase.FindAssets("t:StageData"))
         {
             var s = AssetDatabase.LoadAssetAtPath<StageData>(AssetDatabase.GUIDToAssetPath(guid));
-            AddText(s.targetName); AddText(s.introStory); AddText(s.newRule); AddText(s.learnedRules); AddText(s.targetDescription);
+            AddText(s.targetName); AddText(s.targetDescription);
             foreach (Feature f in s.features) { AddText(f.name); AddText(f.criteria); }
         }
         // 한글 음절(가~힣) · 영문 · 숫자 · 기호만 (글자가 아닌 제어 문자 등은 빼요)

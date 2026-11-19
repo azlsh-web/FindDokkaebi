@@ -50,7 +50,7 @@ static class MvpJudgeServer
         var sb = new StringBuilder("{\n");
         for (int i = 0; i < stages.Length; i++)
         {
-            sb.Append("  \"").Append(stages[i].stageNumber).Append("\": ").Append(Json(OpenAIJudge.BuildPrompt(stages[i])));
+            sb.Append("  ").Append(Json(stages[i].ServerStageKey)).Append(": ").Append(Json(OpenAIJudge.BuildPrompt(stages[i])));
             sb.Append(i < stages.Length - 1 ? ",\n" : "\n");
         }
         sb.Append("}\n");

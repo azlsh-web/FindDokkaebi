@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9176eb6d1308b0f4e8ae40ef15657fa1, type: 3}
+  m_Name: Chapter5_Curse
+  m_EditorClassIdentifier: Assembly-CSharp::ChapterData
+  number: 5
+  title: "\uB3C4\uAE68\uBE44\uC758 \uC800\uC8FC"
+  rule: 1
+  criteriaLevel: 5
+  penMode: 3
+  hasMagnifier: 1
+  candies: 3
+  guide: 0
+  aloneLines: 2
+  windowFire: 0
+  dokkaebiMood: 0
+  endEyes: 0
+  photo: {fileID: 21300000, guid: 76a94576b1c641646855e642632d8452, type: 3}
+  playBackground: {fileID: 21300000, guid: 5fe039312c90f2a489c921cc953ace25, type: 3}
+  endBackground: {fileID: 21300000, guid: 5fe039312c90f2a489c921cc953ace25, type: 3}
+  darkBackground: {fileID: 21300000, guid: 676aff30212856a47bfc7c05be40ce25, type: 3}
+  items:
+  - {fileID: 11400000, guid: 13d2b42d19465e2499bbd036fb9f6caf, type: 2}
+  - {fileID: 11400000, guid: 3b31e0747ab5cf141a8c2d6305bb98dc, type: 2}
+  - {fileID: 11400000, guid: 6fc81b5a57fff1b429a2eb8ce00d5def, type: 2}
+  counterItems:
+  - {fileID: 11400000, guid: 39593d544d7f09243b56e4e2ee149eab, type: 2}
+  - {fileID: 11400000, guid: 174a822b32124a54e9ba1ef8af33909e, type: 2}
+  - {fileID: 11400000, guid: 9cd5f57b23ca19e44ba9e73efd9e88cf, type: 2}

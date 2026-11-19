@@ -154,7 +154,7 @@ public class OpenAIJudge : MonoBehaviour
 
     IEnumerator JudgeByServer(StageData stage, string imageUrl, Action<Verdict> onDone, Action<string> onError)
     {
-        string body = "{\"stage\":" + stage.stageNumber + ",\"image\":" + Quote(imageUrl) + "}";
+        string body = "{\"stage\":" + Quote(stage.ServerStageKey) + ",\"image\":" + Quote(imageUrl) + "}";
         using (var request = new UnityWebRequest(serverUrl, "POST"))
         {
             request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(body));
@@ -191,14 +191,19 @@ public class OpenAIJudge : MonoBehaviour
 
     public static string BuildPrompt(StageData stage)
     {
-        bool usesColor = stage.colorMode != ColorMode.BlackOnly;
+        bool usesColor = !stage.shapeOnly && stage.colorMode != ColorMode.BlackOnly;
         string t = stage.targetName;
         string ids = string.Join(", ", Array.ConvertAll(stage.features, f => f.id));
         string idRange = stage.features[0].id + "부터 " + stage.features[stage.features.Length - 1].id + "까지";
         var sb = new StringBuilder();
 
         sb.AppendLine("당신은 Unity로 개발하는 관찰·기억·드로잉 퍼즐 게임「찾아라! 도깨비」의 그림 특징 판정기입니다.");
-        if (usesColor)
+        if (stage.shapeOnly)
+        {
+            sb.AppendLine("플레이어는 목표 대상을 3초 동안 관찰한 뒤, 원본을 보지 않고 1분 동안 기억한 모양을 그림으로 표현했습니다.");
+            sb.AppendLine("아래에 정한 형태적 특징이 그림에 표현되어 있는지 판정하십시오.");
+        }
+        else if (usesColor)
         {
             sb.AppendLine("플레이어는 목표 대상을 3초 동안 관찰한 뒤, 원본을 보지 않고 1분 동안 기억한 특징을 그림으로 표현했습니다.");
             sb.AppendLine("당신의 역할은 그림 실력을 평가하는 것이 아니라, 아래에 정한 형태·패턴·색 특징이 그림에 표현되어 있는지 판정하는 것입니다.");
@@ -230,7 +235,7 @@ public class OpenAIJudge : MonoBehaviour
         {
             // 방망이 검증에 사용한 프롬프트의 판정 원칙 1~11
             // 방망이 원문은 "색, 패턴, 장식, …" 이에요. 무늬를 판정하는 가방 단계에서만 "패턴" 을 빼요.
-            bool judgesPattern = stage.targetDescription.Contains("무늬");
+            bool judgesPattern = !stage.shapeOnly && stage.targetDescription.Contains("무늬");
             Rule(ids + "만 평가하십시오. 일반적인 " + t + " 지식으로 추가 조건을 만들지 마십시오. 색, " + (judgesPattern ? "" : "패턴, ") + "장식, 방향, 그림 크기는 평가하지 마십시오.");
             Rule("각 특징을 독립적으로 판정하십시오. 한 특징이 빠졌다는 이유로 다른 특징까지 미충족으로 처리하지 마십시오. 다만 각 항목에 명시된 연결 관계와 위치 조건은 그대로 적용하십시오.");
             Rule("선이 삐뚤거나 비율이 부정확하더라도 특징이 식별되면 인정하십시오. 그림의 완성도, 사실성, 아름다움은 평가하지 마십시오. " + Josa(t, "을", "를") + " 가로, 세로, 대각선 중 어느 방향으로 그려도 인정합니다.");

@@ -35,21 +35,20 @@ static class MvpLayoutCheck
         new[] { "DrawPanel/MagnifierPeek/Lens/Hole", "DrawPanel/MagnifierPeek/Lens/Frame" },
         new[] { "JudgePanel/MyDrawingBack", "JudgePanel/DokkaebiEnter" },   // 간식이 내 그림 앞을 지나 빠져나가요
         new[] { "ResultPanel/ItemShadow", "ResultPanel/ReturnedItem" },   // 물건 아래 그림자
-        new[] { "EndingPanel/CandyJar", "EndingPanel/" },   // 사탕 통은 돗자리 모서리에 걸쳐 놓이고, 사탕은 통 안에 쌓여요
-        new[] { "ChapterPanel/Chapter_1/Picture", "ChapterPanel/Chapter_1/Picture" },   // 소풍 카드 그림 : 배경 위에 캐릭터와 돗자리
         new[] { "HUD/MagnifierBadge", "HUD/MagnifierButton" },
-        new[] { "DrawPanel/MixGuide/DialogueBox", "DrawPanel/ToolBar" },   // 시범 대사는 다른 대사처럼 아래 자리 (돋보기 시범과 같아요)
-        new[] { "DrawPanel/MixGuide/DialogueBox", "DrawPanel/Desk/Paper" },   // 전체 화면 쪽지의 아래 끝을 시범 대사가 잠깐 덮어요 (그동안은 그리기가 잠겨요)
-        new[] { "SettingsPanel/SettingsCard/BgmSlider/Fill Area", "SettingsPanel/SettingsCard/BgmSlider/Handle Slide Area" },   // 볼륨 손잡이는 채워진 막대 끝에 올라가요
-        new[] { "SettingsPanel/SettingsCard/SfxSlider/Fill Area", "SettingsPanel/SettingsCard/SfxSlider/Handle Slide Area" },
+        new[] { "SettingsPanel/SettingsCard/SettingsMain/BgmSlider/Fill Area", "SettingsPanel/SettingsCard/SettingsMain/BgmSlider/Handle Slide Area" },   // 볼륨 손잡이는 채워진 막대 끝에 올라가요
+        new[] { "SettingsPanel/SettingsCard/SettingsMain/SfxSlider/Fill Area", "SettingsPanel/SettingsCard/SettingsMain/SfxSlider/Handle Slide Area" },
         new[] { "HUD/MagnifierHighlight", "HUD/" },   // 시범 때 돋보기 둘레를 도는 도깨비불
         new[] { "HUD/MagnifierHighlight", "DrawPanel/" },   // 쓸 수 있는 횟수는 돋보기 오른쪽 아래에 겹쳐 붙여요
+        new[] { "DrawPanel/GuideHighlight", "DrawPanel/" },   // 챕터 안내(펜 · 색) : 도깨비불이 쪽지 · 버튼 · 붓 둘레를 돌아요
         new[] { "HUD/MagnifierSparkles", "HUD/" },   // 무료 돋보기를 받으면 돋보기 둘레가 반짝여요
         new[] { "DrawPanel/MagnifierPeek/Lens/TimeRing", "DrawPanel/MagnifierPeek/Lens/" },   // 남은 시간 띠는 렌즈 테두리 위에 겹쳐요
         new[] { "DrawPanel/PeekGuide", "DrawPanel/" },   // 돋보기 시범 : 그리기 화면을 살짝 덮고 대사가 나와요
         new[] { "ResultPanel/GiftMagnifier", "ResultPanel/" },   // 무료 돋보기가 도깨비 손에서 날아가요
         new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
+        new[] { "DrawPanel/JamOverlay/", "DrawPanel/JamOverlay/" },   // 5챕터 방해 연출 : 도깨비불과 낙서가 쪽지 위에서 겹쳐요
+        new[] { "CurseEndPanel/Silhouette", "CurseEndPanel/Dokkaebi" },   // 게임오버 : 쓰러진 사람들 실루엣 앞에 도깨비 (규격표 겹침 예외 7)
     };
 
     class Item
@@ -151,7 +150,8 @@ static class MvpLayoutCheck
         foreach (Item it in items)
         {
             if (it.path.StartsWith("TitlePanel") || it.path.StartsWith("SettingsPanel") || it.path.Contains("Confetti")) continue;   // 꽃가루는 화면 위에서 떨어져요
-            if (it.path.StartsWith("HUD/CandyRow")) continue;   // 단계 첫 그리기 때 오른쪽 화면 밖에서 들어오는 중일 수 있어요
+            if (it.path.StartsWith("HUD/CandyRow")) continue;
+            if (it.path.StartsWith("DialoguePanel/Dokkaebi")) continue;   // 대화가 시작되면 도깨비가 오른쪽 화면 밖에서 걸어 들어와요   // 단계 첫 그리기 때 오른쪽 화면 밖에서 들어오는 중일 수 있어요
             if (it.path == "DrawPanel/ToolBar" || it.path == "DrawPanel/ToolBar/Line") continue;   // 아래 띠는 긴 폰에서도 끝까지 덮게 화면보다 넓게 깔아요
             Rect o = Opaque(it);
             if (o.width <= 0) continue;

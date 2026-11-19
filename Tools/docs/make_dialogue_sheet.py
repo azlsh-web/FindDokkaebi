@@ -31,7 +31,7 @@ def text(size=11, bold=False, color="2B2622"):
 wb = Workbook()
 ws = wb.active
 ws.title = "대사"
-COLS = [("번호", 17), ("단계", 13), ("상황", 22), ("말하는 사람", 14), ("지금 대사", 52), ("바꿀 대사", 52), ("글자 수", 8), ("메모", 30)]
+COLS = [("번호", 25), ("단계", 24), ("상황", 38), ("말하는 사람", 14), ("지금 대사", 52), ("바꿀 대사", 52), ("글자 수", 8), ("메모", 30)]
 
 ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(COLS))
 ws["A1"] = "바꾸고 싶은 대사의 노란 칸만 채워 주세요. 나머지 칸은 그대로 두세요. 자세한 방법은 `사용법` 탭에 있어요."
@@ -63,7 +63,7 @@ for r, row in enumerate(rows, 3):
             cell.fill = INPUT
         elif band:
             cell.fill = BAND
-    ws.row_dimensions[r].height = 36
+    ws.row_dimensions[r].height = 60
 
 end = len(rows) + 2
 ws.freeze_panes = "A3"
@@ -81,7 +81,7 @@ content = [
     ("줄 추가 · 삭제", "`메모` 칸에 적어 주세요. 예) 이 대사 삭제, 이 뒤에 도깨비 대사 하나 추가. 말하는 사람을 바꿀 때도 메모에 적어 주세요."),
     ("(무작위)", "그 상황이 올 때마다 여러 대사 중 하나가 무작위로 나와요. 같은 상황의 대사는 어느 것이 나와도 자연스러워야 해요."),
     ("길이", f"대사 상자에 세 줄까지 들어가요. 글자 수가 {LIMIT}자를 넘으면 빨갛게 표시돼요. {LIMIT}자는 어림값이고, 반영할 때 실제 줄 수를 다시 재요."),
-    ("내용 규칙", "정답을 알려 주면 안 돼요. 색을 어떻게 섞는지는 쓰지 말아 주세요. 결과 대사에는 판정 기준(예: 줄무늬, 시금치)을 쓰지 말아 주세요."),
+    ("내용 규칙", "쉬운 말로 써 주세요. 결과 대사에 판정 기준이나 색 섞는 법을 쓰지 말아 주세요. 5챕터 도깨비는 요청 물건 이름을 말하고, 주인공은 괄호 안 속마음으로 맞설 물건을 떠올려요."),
     ("이 표에 없는 글자", "버튼 글자(게임 시작하기, 다시, 포기 등)와 판정 기준은 대사가 아니라서 빠져 있어요. 바꾸고 싶으면 따로 알려 주세요."),
     ("", None),
     ("쓴 예시", "`대사` 탭의 한 줄을 이렇게 채워요. 실제 게임에 반영되는 내용은 아니에요."),
@@ -89,6 +89,8 @@ content = [
     ("지금 대사", "짠! 가방... 맞지? 히히."),
     ("바꿀 대사", "짠! 이게 네가 그린 가방이지? 히히."),
     ("메모", "조금 더 놀리는 느낌으로"),
+    ("챕터와 번호", "S1~S5는 1챕터 소풍 준비의 물건 번호예요. C5로 시작하는 번호는 5챕터 도깨비의 저주예요. 번호와 줄 수는 바꾸지 말아 주세요."),
+    ("5챕터 분기", "해피 엔딩의 방망이는 1챕터에서 찾았을 때만 남아요. 방망이를 못 찾았을 때 대사도 따로 있어요. 주인공 속마음은 괄호를 유지해 주세요."),
 ]
 for r, (a, b) in enumerate(content, 1):
     ca, cb = guide.cell(row=r, column=1, value=a), guide.cell(row=r, column=2, value=b)
@@ -97,7 +99,7 @@ for r, (a, b) in enumerate(content, 1):
     ca.alignment = Alignment(vertical="top", wrap_text=True)
     cb.alignment = Alignment(vertical="top", wrap_text=True)
     if b and len(b) > 45:
-        guide.row_dimensions[r].height = 36
+        guide.row_dimensions[r].height = 48
 guide.cell(row=13, column=2).fill = INPUT
 guide.cell(row=14, column=2).fill = INPUT
 

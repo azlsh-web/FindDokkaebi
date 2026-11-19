@@ -242,11 +242,10 @@ static class MvpFlowShots
             MvpSelfTest.SetPrivate(gm, "roamLoopSeconds", 0.05f);
             MvpSelfTest.SetPrivate(gm, "thinkSeconds", 2.5f);   // 판정 대기 사진을 찍을 시간
 
+            // 로비(시작 · 챕터 선택)는 Lobby 씬이라 여기서는 찍지 않아요. Game 씬은 1챕터로 바로 시작해요
             section = "시작";
-            yield return Snap("시작 화면");
-            gm.OpenChapters();
-            yield return Snap("게임 시작하기 → 챕터 선택 : 소풍만 열려 있고 나머지는 준비 중", 0.6f);
-            gm.ChapterTap(0);
+            ChapterSelect.Current = 1;
+            gm.StartGame();
 
             for (int s = 0; s < stages.Length; s++) yield return PlayStage(s);
 
@@ -257,7 +256,7 @@ static class MvpFlowShots
         IEnumerator PlayStage(int s)
         {
             StageData st = stages[s];
-            section = $"{st.stageNumber}단계 {st.targetName}";
+            section = $"1챕터 {s + 1}번째 물건 {st.targetName}";
 
             // 대화 (모든 대사는 터치로 넘겨요)
             bool batLost = (bool)typeof(GameManager).GetField("batLost", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm);
@@ -277,61 +276,24 @@ static class MvpFlowShots
             yield return Until(() => IsOn("DrawPanel"));
             if (s == 0)
             {
-                // 1단계 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요 (공짜, 향이 타지 않아요)
-                yield return Snap("사탕 3개가 오른쪽에서 들어오고, 도깨비가 돋보기를 눌러 보라고 함", 0.2f);
+                // 1챕터 첫 그리기 : 도깨비가 펜 쓰는 법을 알려 줘요 (그려 보기 → 되돌리기 → 다 그렸어!, 그동안 시간이 멈춰요)
+                yield return Snap("사탕 3개가 오른쪽에서 들어오고, 도깨비가 쪽지에 그려 보라고 함", 0.2f);
                 FinishBoxes();
                 gm.PeekGuideTap();
-                yield return Snap("대사를 넘기면 : 대사가 사라지고 도깨비불이 돋보기 둘레를 돎", 0.6f);
-                gm.MagnifierTap();
+                yield return Snap("대사를 넘기면 : 도깨비불이 쪽지 둘레를 돎", 0.6f);
+                MvpSelfTest.LoadSketch(Scribble());
                 yield return Wait(0.3f);
                 FinishBoxes();
-                yield return Snap("돋보기를 누르면 : 5초 동안, 렌즈를 끌어 보는 법을 알려 줌", 0.4f);
+                yield return Snap("쪽지에 그리면 : 되돌리기를 알려 줌", 0.4f);
                 gm.PeekGuideTap();
-                yield return Snap("대사를 넘기면 : 렌즈로 둘러봄 (둘레 띠가 가득)", 0.3f);
-                yield return Snap("남은 시간만큼 띠가 줄어듦 (마지막 1초는 코랄색으로 바뀜)", 1.9f);
-                yield return Until(() => IsOn("DrawPanel/PeekGuide"));
+                yield return Snap("대사를 넘기면 : 도깨비불이 되돌리기 둘레를 돎", 0.6f);
+                MvpSelfTest.Find("DrawPanel/Desk/Paper/Board").GetComponent<DrawingBoard>().Undo();
                 yield return Wait(0.3f);
                 FinishBoxes();
-                yield return Snap("돋보기 시범 끝 : 한 번만 더 빌려준다고 알려 줌", 0.4f);
+                yield return Snap("되돌리면 : 다 그렸어! 를 알려 줌", 0.4f);
                 gm.PeekGuideTap();
+                yield return Snap("대사를 넘기면 : 도깨비불이 다 그렸어! 둘레를 돎 (화면을 누르면 끝)", 0.6f);
                 gm.PeekGuideTap();
-            }
-            if (s == 4)
-            {
-                // 5단계 첫 그리기 : 대사가 알려 주고 사라지면 직접 눌러 봐요
-                var guideBar = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
-                yield return Snap("5단계 첫 그리기 : 도깨비가 붓을 눌러 보라고 함", 1.4f);
-                FinishBoxes();
-                gm.MixGuideTap();
-                yield return Snap("대사를 넘기면 : 대사가 사라지고 도깨비불이 붓 둘레를 돎", 0.6f);
-                guideBar.BrushTap();
-                yield return Wait(0.3f);
-                FinishBoxes();
-                yield return Snap("붓을 누르면 : 빨강을 두 번 넣어 보라고 함", 0.2f);
-                gm.MixGuideTap();       // 대사가 사라지고 팔레트가 열려요
-                yield return Snap("대사를 넘기면 : 팔레트가 열리고 도깨비불이 빨강 둘레를 돎", 0.4f);
-                guideBar.PaintTap(0);
-                yield return Snap("빨강을 누르면 : 물방울이 붓 끝으로", 0.16f);
-                guideBar.PaintTap(0);
-                yield return Wait(1.6f);
-                FinishBoxes();
-                yield return Snap("빨강 두 번 : 노랑도 두 번 넣어 보라고 함", 0.2f);
-                gm.MixGuideTap();
-                guideBar.PaintTap(1); guideBar.PaintTap(1);
-                yield return Wait(1.6f);
-                FinishBoxes();
-                yield return Snap("노랑 두 번 : 파랑은 한 번만 넣어 보라고 함", 0.2f);
-                gm.MixGuideTap();
-                yield return Snap("대사를 넘기면 : 도깨비불이 파랑 둘레를 돎", 0.4f);
-                guideBar.PaintTap(2);
-                yield return Wait(2.2f);
-                FinishBoxes();
-                yield return Snap("빨강 2 · 노랑 2 · 파랑 1 = 갈색 : 많이 넣은 색 쪽으로 바뀐다고 알려 줌", 0.2f);
-                gm.MixGuideTap();
-                yield return Wait(0.3f);
-                FinishBoxes();
-                yield return Snap("검정 물감이 없으니 세 가지를 똑같이 넣으면 검정이라고 알려 줌", 0.2f);
-                gm.MixGuideTap();
             }
             yield return Snap("그리기 시작 : 빈 쪽지", 1.2f);
 
@@ -344,32 +306,6 @@ static class MvpFlowShots
                 yield return Snap("향이 10초 아래로 남았을 때", 0.8f);
                 MvpSelfTest.SetPrivate(gm, "timeLeft", 60f);
 
-                // 돋보기 : 게임 전체에서 1번. 렌즈를 끌어서 원본의 다른 곳을 봐요
-                gm.MagnifierTap();
-                MvpSelfTest.Find("DrawPanel/MagnifierPeek/Lens").position += new Vector3(-120f, 160f, 0f);
-                yield return Snap("돋보기 : 렌즈를 끌어 원본을 둘러봄 (게임 전체 1번을 씀)", 0.5f);
-                MvpSelfTest.Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>().Stop();
-                yield return Snap("돋보기를 다 쓰면 숫자가 사라지고 흐려짐", 0.3f);
-            }
-
-            if (st.colorMode == ColorMode.MixTwo || st.colorMode == ColorMode.MixFree)
-            {
-                var toolBar = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
-                var mixer = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
-                toolBar.OpenPanel();
-                if (st.colorMode == ColorMode.MixFree)
-                {
-                    toolBar.PaintTap(0);
-                    yield return Snap("색 섞기 : 물감이 붓 끝으로 날아가는 중", 0.16f);
-                    yield return Snap("색 섞기 : 붓 끝에서 첨벙하고 색이 바뀌는 중", 0.22f);
-                    toolBar.PaintUndo();
-                    mixer.SkipAnimation();
-                }
-                if (st.colorMode == ColorMode.MixTwo) { toolBar.PaintTap(1); toolBar.PaintTap(2); }
-                else { toolBar.PaintTap(0); toolBar.PaintTap(0); toolBar.PaintTap(1); toolBar.PaintTap(1); toolBar.PaintTap(2); }
-                mixer.SkipAnimation();
-                yield return Snap("색 섞기 팔레트 : 넣은 횟수와 섞인 붓 끝 색");
-                toolBar.ClosePanel();
             }
 
             // ① 전부 틀림 → 다시
@@ -446,7 +382,7 @@ static class MvpFlowShots
             if (s == 0)
             {
                 // 1단계를 못 찾은 경우 : 채점표 → 2단계부터 끝까지 빈손
-                section = "1단계를 못 찾았을 때";
+                section = "1번째 물건을 못 찾았을 때";
                 var hidden = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
                 ((bool[])typeof(GameManager).GetField("cleared", hidden).GetValue(gm))[0] = false;
                 MvpSelfTest.SetPrivate(gm, "lastPresent", new[] { false });
@@ -456,7 +392,7 @@ static class MvpFlowShots
                 yield return Wait(0.5f);
                 FinishBoxes();
                 yield return Snap("2단계 대화 : 도깨비가 빈손", 0.8f);
-                MvpSelfTest.Invoke(gm, "ShowResult", new object[] { new[] { true, true }, null });
+                MvpSelfTest.Invoke(gm, "ShowResult", new object[] { new[] { true }, null });
                 yield return Until(ResultShown);
                 yield return Wait(0.3f);
                 FinishBoxes();
@@ -474,33 +410,201 @@ static class MvpFlowShots
             section = "이야기 종료";
             var flags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
             var items = (Sprite[])typeof(GameManager).GetField("itemsFound", flags).GetValue(gm);
-            var candiesLeft = (int[])typeof(GameManager).GetField("candiesLeft", flags).GetValue(gm);
 
-            // 전부 찾았을 때 : 단계마다 남은 사탕이 돗자리에 모여요
-            int[] candy = { 2, 0, 1, 2, 1 };
-            for (int i = 0; i < stages.Length; i++) { items[i] = stages[i].originalSprite; candiesLeft[i] = candy[i]; }
+            // 전부 찾았을 때 : 소풍 장면
+            for (int i = 0; i < stages.Length; i++) items[i] = stages[i].originalSprite;
             gm.NextStage();
-            yield return Snap("전부 찾았을 때 : 소풍 장면, 남은 사탕은 사탕 통에", 3.8f);
+            yield return Snap("전부 찾았을 때 : 소풍 장면", 3.8f);
             gm.EndingTap();
             yield return Wait(0.3f);
             FinishBoxes();
-            yield return Snap("화면을 누르면 도깨비가 다음에 또 온다고 인사함", 0.4f);
-            FinishBoxes();
-            gm.EndingTap();
-            yield return Snap("인사를 넘기면 챕터 선택으로", 0.6f);
+            yield return Snap("화면을 누르면 도깨비가 다음에 또 온다고 인사함 (한 번 더 누르면 로비로 가서 여기서 멈춰요)", 0.4f);
 
-            // 포기한 단계가 있을 때 : 받은 엉뚱한 물건이 그대로 놓여요
+            // 포기한 물건이 있을 때 : 받은 엉뚱한 물건이 그대로 놓여요
             yield return Wait(0.5f);
             MvpSelfTest.SetPrivate(gm, "batLost", true);
             for (int i = 0; i < stages.Length; i++)
-            {
-                candiesLeft[i] = i == 2 ? 1 : 0;
-                Sprite[] wrong = stages[i].wrongSprites;
-                items[i] = i == 2 ? stages[2].originalSprite : wrong[wrong.Length - 1];
-            }
+                items[i] = i == 2 ? stages[2].originalSprite : stages[i].WrongSpriteFor(3);
             MvpSelfTest.Invoke(gm, "ShowEnding");
-            yield return Snap("포기한 단계가 있을 때 : 엉뚱한 물건이 놓이고 도깨비는 빈손", 3.5f);
+            yield return Snap("포기한 물건이 있을 때 : 엉뚱한 물건이 놓이고 도깨비는 빈손", 3.5f);
 
+            for (int n = 2; n <= 4; n++) yield return PlayRoomChapter(n);
+            yield return PlayChapter5();
+        }
+
+        // 2 · 3 · 4챕터 : 방 시작 장면 → 물건 3개 → 방 끝 장면 (판정은 미리 정해 넣어요)
+        IEnumerator PlayRoomChapter(int number)
+        {
+            section = $"{number}챕터";
+            ChapterSelect.Current = number;
+            gm.StartGame();
+            ChapterData c = MvpSelfTest.ChapterOf(number);
+            var toolBar = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ToolBar>();
+
+            for (int s = 0; s < c.ItemCount; s++)
+            {
+                StageData st = c.items[s];
+                section = $"{number}챕터 {s + 1}번째 물건 {st.targetName}";
+                GameScript.Line[] lines = GameScript.RoomIntroLines(number, s);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    yield return Wait(0.5f);
+                    FinishBoxes();
+                    yield return Snap(s == 0 && i < GameScript.RoomOpeningLength(number) ? $"시작 장면 {i + 1}" : $"물건 대화 {i + 1 - (s == 0 ? GameScript.RoomOpeningLength(number) : 0)}");
+                    FinishBoxes();
+                    gm.DialogueTap();
+                }
+                yield return Snap("떠올리기 3초", 0.7f);
+                yield return Until(() => IsOn("DrawPanel"));
+
+                if (s == 0 && c.guide == ChapterGuide.Magnifier)
+                {
+                    // 2챕터 첫 그리기 : 도깨비가 돋보기 쓰는 법을 보여 줘요 (공짜, 그동안 시간이 멈춰요)
+                    yield return Snap("사탕 3개가 들어오고, 도깨비가 돋보기를 눌러 보라고 함", 0.2f);
+                    FinishBoxes();
+                    gm.PeekGuideTap();
+                    yield return Snap("대사를 넘기면 : 대사가 사라지고 도깨비불이 돋보기 둘레를 돎", 0.6f);
+                    gm.MagnifierTap();
+                    yield return Wait(0.3f);
+                    FinishBoxes();
+                    yield return Snap("돋보기를 누르면 : 5초 동안, 렌즈를 끌어 보는 법을 알려 줌", 0.4f);
+                    gm.PeekGuideTap();
+                    yield return Snap("대사를 넘기면 : 렌즈로 둘러봄 (둘레 띠가 가득)", 0.3f);
+                    yield return Snap("남은 시간만큼 띠가 줄어듦", 1.9f);
+                    yield return Until(() => IsOn("DrawPanel/PeekGuide"));
+                    yield return Wait(0.3f);
+                    FinishBoxes();
+                    yield return Snap("돋보기 시범 끝 : 이번 챕터에서 한 번만 더 빌려준다고 알려 줌", 0.4f);
+                    gm.PeekGuideTap();
+                    gm.PeekGuideTap();
+                    yield return Snap("그리기 시작 : 빈 쪽지 (검정 펜, 돋보기 1번)", 0.8f);
+                    gm.MagnifierTap();
+                    MvpSelfTest.Find("DrawPanel/MagnifierPeek/Lens").position += new Vector3(-120f, 160f, 0f);
+                    yield return Snap("돋보기 : 렌즈를 끌어 원본을 둘러봄 (챕터 1번을 씀)", 0.5f);
+                    MvpSelfTest.Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>().Stop();
+                }
+                else if (s == 0 && c.guide == ChapterGuide.Mix)
+                {
+                    // 3챕터 첫 그리기 : 색 안내 (붓 → 팔레트)
+                    yield return Snap("도깨비가 붓을 눌러 보라고 함", 0.4f);
+                    FinishBoxes();
+                    gm.PeekGuideTap();
+                    yield return Snap("대사를 넘기면 : 도깨비불이 붓 둘레를 돎", 0.6f);
+                    toolBar.BrushTap();
+                    yield return Wait(0.4f);
+                    FinishBoxes();
+                    yield return Snap("붓을 누르면 : 팔레트가 열리고, 하나만 써도 섞어도 된다고 알려 줌 (대사는 위쪽)", 0.4f);
+                    gm.PeekGuideTap();
+                    toolBar.PaintTap(0);
+                    yield return Snap("색 섞기 : 물감이 붓 끝으로 날아가는 중", 0.16f);
+                    var mixer = MvpSelfTest.Find("DrawPanel/ToolBar").GetComponent<ColorMixer>();
+                    toolBar.PaintTap(0); toolBar.PaintTap(1); toolBar.PaintTap(1); toolBar.PaintTap(2);
+                    mixer.SkipAnimation();
+                    yield return Snap("색 섞기 팔레트 : 넣은 횟수와 섞인 붓 끝 색");
+                    toolBar.ClosePanel();
+                }
+                else if (s == 0)
+                {
+                    yield return Snap("그리기 시작 : 안내 없음" + (c.candies == 0 ? " (사탕 0개 : 바구니가 비었어요)" : ""), 1.2f);
+                }
+
+                MvpSelfTest.LoadSketch(Scribble());
+                if (s == 0 && c.candies == 0)
+                {
+                    // 4챕터 : 사탕 없이 쪽지만 건네고, 한 번만 그려요. 틀리면 바로 채점표
+                    MvpSelfTest.Expect(st, -1);
+                    gm.Submit();
+                    string[] names = { "건네기 : 사탕 없이 쪽지만", "건네기 : 도깨비가 바로 쪽지를 읽음" };
+                    foreach (string n in names)
+                    {
+                        yield return Wait(0.5f);
+                        FinishBoxes();
+                        yield return Snap(n);
+                        FinishBoxes();
+                        gm.DialogueTap();
+                    }
+                    yield return Until(ResultShown);
+                    yield return ResultLines("틀림 (다시 그릴 수 없음)");
+                    yield return Snap("사탕이 없어서 다시 · 포기 없이 바로 채점표", 2.8f);
+                }
+                else if (s == 0)
+                {
+                    yield return SubmitAndWait(st, -1, "판정 대기 : 도깨비가 찾으러 다님");
+                    yield return ResultLines("틀림");
+                    yield return Snap("다시 · 포기 버튼", 0.5f);
+                    gm.Retry();
+                    if (c.guide == ChapterGuide.Magnifier)
+                    {
+                        yield return SubmitAndWait(st, -1, null);
+                        yield return ResultLines("두 번째 틀림");
+                        yield return Wait(0.5f);
+                        FinishBoxes();
+                        yield return Snap("두 번째로 틀리면 : 도깨비가 손에 쥔 돋보기를 빌려줌", 0.3f);
+                        yield return Snap("도착하면 숫자가 늘고 반짝임", 1.9f);
+                        FinishBoxes();
+                        gm.ResultTap();
+                        gm.Retry();
+                    }
+                    MvpSelfTest.LoadSketch(Scribble());
+                    yield return SubmitAndWait(st, -2, null);
+                    yield return ResultLines("맞음");
+                    yield return Snap("채점표 : 전부 동그라미", 2.8f);
+                }
+                else
+                {
+                    yield return SubmitAndWait(st, -2, null);
+                    yield return ResultLines("맞음");
+                    yield return Snap("채점표", 2.8f);
+                }
+                gm.NextStage();
+            }
+
+            section = $"{number}챕터 끝 장면";
+            yield return Snap("찾은 물건 3개가 방에 놓임", 3.0f);
+            GameScript.Line[] endLines = GameScript.RoomEndLines(number);
+            for (int i = 0; i < endLines.Length; i++)
+            {
+                gm.EndingTap();
+                yield return Wait(0.4f);
+                FinishBoxes();
+                yield return Snap(endLines.Length > 1 && i == endLines.Length - 1
+                    ? "주인공 속마음 : 도깨비가 떠나고 창 안에 빨간 눈 (한 번 더 누르면 로비로 가서 여기서 멈춰요)"
+                    : "화면을 누르면 도깨비 인사" + (endLines.Length == 1 ? " (한 번 더 누르면 로비로 가서 여기서 멈춰요)" : ""), 1.2f);
+                FinishBoxes();
+            }
+        }
+
+        // 5챕터 : 고르기 · 맞설 물건 성공 · 게임오버 · 해피 / 배드 엔딩 화면 (판정은 미리 정해 넣어요)
+        IEnumerator PlayChapter5()
+        {
+            section = "5챕터";
+            ChapterSelect.Current = 5;
+            gm.StartGame();
+            ChapterData c5 = MvpSelfTest.ChapterOf(5);
+            yield return Wait(0.5f);
+            FinishBoxes();
+            yield return Snap("5챕터 시작 대화 : 친구와 도깨비");
+            for (int k = 0; k < 80 && !IsOn("ChoosePanel"); k++) gm.DialogueTap();
+            yield return Wait(0.4f);
+            yield return Snap("고르기 : 그림 두 장 (좌우는 섞여요)", 0.3f);
+            bool left = (bool)typeof(GameManager).GetField("leftIsCounter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm);
+            gm.ChooseItem(left ? 0 : 1);
+            yield return Until(() => IsOn("DrawPanel"));
+            yield return Snap("맞설 물건 그리기 : 방해 연출과 하트 3개", 0.8f);
+            MvpSelfTest.LoadSketch(Scribble());
+            yield return SubmitAndWait(c5.counterItems[0], -2, "판정 대기");
+            yield return ResultLines("맞설 물건 성공 : 하트 -1");
+            yield return Snap("하트가 2개로 줄어듦", 0.3f);
+
+            // 엔딩 화면 3가지 (대사는 CurseEndTap 이 보여 줘요)
+            foreach (int kind in new[] { 1, 2, 3 })
+            {
+                MvpSelfTest.Invoke(gm, "ShowCurseEnd", kind);
+                yield return Wait(0.4f);
+                FinishBoxes();
+                yield return Snap(kind == 1 ? "게임오버" : kind == 2 ? "해피 엔딩" : "배드 엔딩", 0.5f);
+            }
+            ChapterSelect.Current = 1;
         }
     }
 }

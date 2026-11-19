@@ -61,6 +61,7 @@ public static class MvpSceneBuilder
         talkFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FallbackFontPath);   // 대사는 얇고 작은 글꼴로
         MakeAllSprites();
         CreateStageDataFiles();
+        CreateChapterFiles();
         CreateOpenAISettingsFile();
 
         // ── 새 빈 씬 ──
@@ -73,15 +74,13 @@ public static class MvpSceneBuilder
         pillCoral = T("Common_ButtonCoral");
         pillCream = T("Common_ButtonCream");
         circleSprite = LoadSprite("UI/Common_Circle.png");
-        StageData[] stages =
-        {
-            LoadStage("Stage1_Bat"), LoadStage("Stage2_Bag"), LoadStage("Stage3_Mat"),
-            LoadStage("Stage4_Gimbap"), LoadStage("Stage5_Friend"),
-        };
+        ChapterData[] chapters = { LoadChapter("Chapter1_Picnic"), LoadChapter("Chapter2_Rain"), LoadChapter("Chapter3_Birthday"), LoadChapter("Chapter4_Snack"), LoadChapter("Chapter5_Curse") };
+        StageData[] stages = chapters[0].items;     // 1챕터 물건 (방망이 · 가방 · 돗자리 · 김밥 · 친구)
         Sprite boyNormal = LoadSprite("Characters/Char_Boy_Normal.png");
         Sprite boyHappy = LoadSprite("Characters/Char_Boy_Happy.png");
         Sprite faceHappy = LoadSprite("Characters/Char_BoyFace_Happy.png");
         Sprite faceSurprised = LoadSprite("Characters/Char_BoyFace_Surprised.png");
+        Sprite faceNormal = LoadSprite("Characters/Char_BoyFace_Normal.png");           // 물건 생김새를 차분히 설명할 때
         Sprite faceSad = LoadSprite("Characters/Char_BoyFace_Sad.png");                 // 틀렸을 때 · 간식이 떨어졌을 때
         Sprite dokkaebi = LoadSprite("Characters/Char_Dokkaebi_Normal.png");
         Sprite dokkaebiThink = LoadSprite("Characters/Char_Dokkaebi_Think.png");    // 판정 대기 : 쪽지를 들여다봐요
@@ -230,14 +229,21 @@ public static class MvpSceneBuilder
         magSparkles.SetAsLastSibling();
         pauseImg.transform.SetAsLastSibling();  // 사탕은 톱니 버튼 뒤를 지나 나와요
 
-        // 남은 시간 : 위 줄(돋보기 · 사탕 · 톱니)과 전체 화면 쪽지 사이에 화면 가로 가득 놓인 게이지 바 (HUD_CandleGauge).
-        //   오른쪽 끝부터 줄어들어요 (IncenseBurn horizontal). 지금 그림은 자리만 보이는 임시 직사각형 바예요
-        //   (make_gauge_placeholder.py). 아트팀 그림(2000 x 200)이 오면 같은 이름 파일만 바꿔 넣으면 돼요.
-        //   뒤에 같은 크기의 옅은 틀(GaugeSlot)이 깔려 있어서 바가 다 줄어도 게이지 자리가 보여요.
+        // 남은 시간 : 위 줄(돋보기 · 사탕 · 톱니)과 전체 화면 쪽지 사이의 촛대 게이지. 숫자 없이 게이지만.
+        //   슬라이더처럼 막대(HUD_CandleGauge)가 왼쪽부터 채워져 있다가 오른쪽 끝부터 줄어들고,
+        //   불꽃(HUD_CandleFlame)이 핸들처럼 막대 끝을 따라 왼쪽으로 가요 (IncenseBurn horizontal).
+        //   아트팀 그림 한 장을 cut_candle_gauge.py 로 막대 · 불꽃 두 장으로 나눴어요.
+        //   막대 뒤에는 같은 그림을 옅게 칠한 트랙(GaugeSlot)이 깔려 있어서 줄어든 자리가 보여요.
+        //   원본 px : 막대 1915 x 78 (x 29 ~ 1944, 가운데 y 393) · 불꽃 218 x 269 (왼쪽 위 1937, 208), 불꽃 몸통 가운데 x 2048
+        //   원본 전체 폭(막대 왼쪽 끝 29 ~ 불꽃 오른쪽 끝 2149)을 화면 x 50 ~ 1030 에 맞춰요.
+        float gs = GaugeWidth / (2149f - 29f);
+        var stickSize = new Vector2(1915f, 78f) * gs;
+        var stickPos = new Vector2(50f + stickSize.x / 2f - 540f, GaugeMid - stickSize.y / 2f);
         var timerGroup = NewEmpty("TimerGroup", hud);
-        var gaugeSlot = NewImage("GaugeSlot", timerGroup, new Color(OutlineColor.r, OutlineColor.g, OutlineColor.b, 0.15f));
+        var gaugeSlot = NewImage("GaugeSlot", timerGroup, new Color(OutlineColor.r, OutlineColor.g, OutlineColor.b, 0.18f));
+        gaugeSlot.sprite = T("HUD_CandleGauge");
         gaugeSlot.raycastTarget = false;
-        Place(gaugeSlot.rectTransform, new Vector2(0f, GaugeTop), new Vector2(GaugeWidth, GaugeWidth / 10f));
+        Place(gaugeSlot.rectTransform, stickPos, stickSize);
         var incenseBar = NewImage("Incense", timerGroup, Color.white);
         incenseBar.sprite = T("HUD_CandleGauge");
         incenseBar.raycastTarget = false;
@@ -245,7 +251,7 @@ public static class MvpSceneBuilder
         incenseBar.fillMethod = Image.FillMethod.Horizontal;
         incenseBar.fillOrigin = (int)Image.OriginHorizontal.Left;
         var stickRt = incenseBar.rectTransform;
-        Place(stickRt, new Vector2(0f, GaugeTop), new Vector2(GaugeWidth, GaugeWidth / 10f));   // 화면 x 50 ~ 1030 (좌우 여백 50), 그림 2000 x 200 비율
+        Place(stickRt, stickPos, stickSize);
         Image IncenseFx(string name, Transform parent, Sprite sprite, Vector2 pos, Vector2 size, Color color)
         {
             var img = NewImage(name, parent, color);
@@ -262,89 +268,27 @@ public static class MvpSceneBuilder
         var incenseGlow = IncenseFx("IncenseFx_Glow", incenseTip, T("Common_SoftPuff"), new Vector2(0, -35), new Vector2(150, 150), Color.clear);
         incenseGlow.enabled = false;                                    // 그냥 바라서 불꽃 · 빛은 없어요
         IncenseFx("IncenseFx_Ember", incenseTip, T("Incense_Ember"), new Vector2(0, -8), new Vector2(70, 38), Color.white).enabled = false;   // 향 불씨는 초에 안 어울려요
-        var incenseFlame = IncenseFx("IncenseFx_Flame", incenseTip, T("Incense_Flame"), new Vector2(0, -14), new Vector2(66, 88), Color.white);
-        incenseFlame.enabled = false;
+        // 불꽃 : 둥근 몸통 가운데가 막대 끝(가운데 줄)에서 오른쪽으로 떨어진 자리. 흔들림 · 커짐은 그 점을 중심으로 해요
+        var incenseFlame = NewImage("IncenseFx_Flame", incenseTip, Color.white);
+        incenseFlame.sprite = T("HUD_CandleFlame");
+        incenseFlame.raycastTarget = false;
+        var flameRt = incenseFlame.rectTransform;
+        flameRt.anchorMin = flameRt.anchorMax = new Vector2(0.5f, 0.5f);
+        flameRt.pivot = new Vector2((2048f - 1937f) / 218f, (208f + 269f - 393f) / 269f);
+        flameRt.sizeDelta = new Vector2(218f, 269f) * gs;
+        flameRt.anchoredPosition = new Vector2((2048f - 1944f) * gs, 0f);
         var incenseFallingAsh = IncenseFx("IncenseFx_FallingAsh", incenseTip, T("Incense_Ash"), Vector2.zero, new Vector2(34, 42), Color.white);
         incenseFallingAsh.enabled = false;
         var incenseSmoke = new Image[0];                                // 연기 없이
-        var timerText = NewText("TimerText", timerGroup, "60", 48, Vector2.zero, Vector2.zero, bold: true);
-        Place(timerText.rectTransform, new Vector2(412f - 540f, 78f), new Vector2(140f, 64f));   // 위 줄 빈 가운데 (돋보기와 사탕 사이). 초가 화면 폭을 다 써서 옆에 둘 곳이 없어요
-        timerText.textWrappingMode = TextWrappingModes.NoWrap;
 
-        // ── 1. 시작 화면 : 로고 · 캐릭터 · 시작 버튼만 ──
-        var title = NewPanel("TitlePanel", canvas);
-        var titleBoy = MImage("TitleBoy", title, boyNormal, 44, 250, 150, 228);
-        Anim(titleBoy.gameObject, SimpleAnim.Kind.Gentle, 1.2f, 0f, 15f);
-        var titleDok = MImage("TitleDokkaebi", title, dokkaebi, 158, 318, 176, 172);
-        Anim(titleDok.gameObject, SimpleAnim.Kind.Gentle, 1.2f, 0.5f, 15f);
-        MImage("TitleLogo", title, T("Title_Logo"), 48, 30, 264, 192);
-        var startGameButton = NewButton("StartButton", title, "게임 시작하기", Vector2.zero, new Vector2(780, 210));
-        M((RectTransform)startGameButton.transform, 50, 516, 260, 70);
-        startGameButton.GetComponentInChildren<TMP_Text>().fontSize = 96;
-        startGameButton.GetComponentInChildren<TMP_Text>().color = Color.white;
-        var titleSettingsButton = SettingsButton(title);
-
-        // ── 1-2. 챕터 선택 : 큰 소풍 카드 하나 + 준비 중인 카드 4개 (자물쇠). 화면 제목 없이 카드만 ──
-        //   그림은 아트팀에 요청할 예정이라, 지금은 있는 그림(소풍 배경 · 캐릭터 · 돗자리)으로 임시로 꾸며요
-        var chapter = NewPanel("ChapterPanel", canvas);
-        var chapterButtons = new Button[5];
-        var chapterSettingsButton = SettingsButton(chapter);
-        var chapterLockedAnims = new SimpleAnim[4];
-        var picnicCard = NewCard("Chapter_1", chapter, Vector2.zero, Vector2.zero);
-        M((RectTransform)picnicCard, 30, 70, 300, 268);
-        Anim(picnicCard.gameObject, SimpleAnim.Kind.CardIn, 0.45f, 0f, 0f);
-        var picnicView = new GameObject("Picture", typeof(RectTransform), typeof(RawImage), typeof(Mask)).GetComponent<RawImage>();
-        picnicView.transform.SetParent(picnicCard, false);
-        PIn(picnicView.rectTransform, 9, 9, 282, 206);
-        picnicView.raycastTarget = false;
-        var chapterArt = AssetDatabase.LoadAssetAtPath<Sprite>(SpriteFolder + "/UI/Chapter_Picnic.png");     // 아트팀 그림이 오면 그대로 써요
-        if (chapterArt != null) picnicView.texture = chapterArt.texture;
-        else
-        {
-            picnicView.texture = picnic.texture;
-            picnicView.uvRect = new Rect(0f, 0.28f, 1f, 0.5f * (206f / 282f) * (2248f / 3952f) * 2f);     // 언덕 · 나무 · 울타리 부분
-        }
-        Image PicnicThing(string name, Sprite sprite, float x, float y, float w, float h)
-        {
-            var img = NewImage(name, picnicView.transform, Color.white);
-            img.sprite = sprite;
-            img.preserveAspect = true;
-            img.raycastTarget = false;
-            PIn(img.rectTransform, x, y, w, h);
-            return img;
-        }
-        if (chapterArt == null)
-        {
-            PicnicThing("Mat", stages[2].originalSprite, 70, 128, 150, 80);
-            PicnicThing("Boy", boyHappy, 22, 60, 80, 130);
-            PicnicThing("Dokkaebi", dokkaebi, 192, 92, 84, 84);
-        }
-        var picnicLabel = NewText("Label", picnicCard, "소풍", 96, Vector2.zero, Vector2.zero, bold: true);
-        PIn(picnicLabel.rectTransform, 0, 214, 300, 50);
-        chapterButtons[0] = picnicCard.gameObject.AddComponent<Button>();
-        for (int i = 0; i < 4; i++)
-        {
-            var card = NewCard($"Chapter_{i + 2}", chapter, Vector2.zero, Vector2.zero);
-            M((RectTransform)card, 30 + (i % 2) * 156, 352 + (i / 2) * 136, 144, 124);
-            card.GetComponent<Image>().color = new Color(0.86f, 0.84f, 0.8f);       // 아직 못 들어가는 칸은 살짝 어둡게
-            Anim(card.gameObject, SimpleAnim.Kind.CardIn, 0.45f, 0.1f + i * 0.06f, 0f);
-            var lockImg = NewImage("Lock", card, Color.white);
-            lockImg.sprite = T("Chapter_Lock");
-            lockImg.preserveAspect = true;
-            lockImg.raycastTarget = false;
-            PIn(lockImg.rectTransform, 47, 16, 50, 60);
-            var soon = NewText("Label", card, "준비 중", 60, Vector2.zero, Vector2.zero);
-            PIn(soon.rectTransform, 0, 82, 144, 30);
-            soon.color = SubTextColor;
-            chapterButtons[i + 1] = card.gameObject.AddComponent<Button>();
-            chapterLockedAnims[i] = lockImg.gameObject.AddComponent<SimpleAnim>();
-            chapterLockedAnims[i].kind = SimpleAnim.Kind.None;
-            chapterLockedAnims[i].popTime = 0.4f;
-            chapterLockedAnims[i].distance = 14f;
-        }
+        // 시작 화면 · 챕터 선택은 로비 씬에 있어요 (LobbySceneBuilder)
 
         // ── 2. 대화 화면 : 캐릭터 + 대사 상자. 오프닝 그림과 건네기 쪽지도 여기에 있어요 ──
         var dialogue = NewPanel("DialoguePanel", canvas);
+        // 2챕터 복선 : 시작 첫 대사 때 비 오는 창밖에 도깨비불이 잠깐 (방 배경 창 x 620~1080, y 280~826 안)
+        var windowFire = MImage("WindowFire", dialogue, T("Magnifier_DokkaebiFire"), 296, 150, 26, 35);
+        windowFire.color = new Color(1f, 1f, 1f, 0.85f);
+        Anim(windowFire.gameObject, SimpleAnim.Kind.Float, 2.4f, 0f, 18f);
         // 오프닝 : 물건 그림은 GameManager 가 단계 데이터에서 넣어요
         var openingGroup = NewEmpty("Opening", dialogue);
         var openingBag = MImage("Bag", openingGroup, null, 12, 300, 84, 84);
@@ -364,8 +308,8 @@ public static class MvpSceneBuilder
         }
         // 쪽지 위에 사탕을 겹쳐 놓아요 (쪽지 + 간식을 같이 두면 도깨비가 와요)
         var openingIdea = NewEmpty("Idea", openingGroup);
-        var ideaNote = NewCard("Note", openingIdea, Vector2.zero, Vector2.zero);
-        M((RectTransform)ideaNote, 128, 100, 96, 112);
+        var ideaNote = NewPaper("Note", openingIdea, "Draw_Paper").transform;    // 그림판 종이를 줄여서
+        M((RectTransform)ideaNote, 128, 100, 96, 113);
         Anim(ideaNote.gameObject, SimpleAnim.Kind.Pop, 0.45f, 0f, 0f);
         for (int i = 0; i < 2; i++)                                         // 쪽지에 적힌 줄
         {
@@ -407,16 +351,17 @@ public static class MvpSceneBuilder
         var dokImageAnim = Anim(dokImage.gameObject, SimpleAnim.Kind.None, 0.8f, 0f, 15f);
 
         // 건네기 : 그림과 글이 적힌 쪽지. 간식은 위쪽 간식 자리에서 도깨비에게 날아가요.
-        var giveNote = NewCard("GiveNote", dialogue, Vector2.zero, Vector2.zero);
-        M((RectTransform)giveNote, 82, 58, 190, 192);
+        //   쪽지는 그림판 종이(Draw_Paper)를 줄인 것. 판정 대기 화면의 쪽지와 같은 모양이에요
+        var giveNote = NewPaper("GiveNote", dialogue, "Draw_Paper").transform;
+        M((RectTransform)giveNote, 95, 58, 163, 192);
         giveNote.gameObject.AddComponent<CanvasGroup>();
         var giveNoteAnim = Anim(giveNote.gameObject, SimpleAnim.Kind.Float, 3f, 0f, 30f, 2f);
         var giveNoteText = NewText("Text", giveNote, "", 42, Vector2.zero, Vector2.zero);
-        PIn(giveNoteText.rectTransform, 12, 8, 166, 40);
-        giveNoteText.enableAutoSizing = true; giveNoteText.fontSizeMin = 30; giveNoteText.fontSizeMax = 42;
+        PIn(giveNoteText.rectTransform, 7, 5, 149, 27);
+        giveNoteText.enableAutoSizing = true; giveNoteText.fontSizeMin = 24; giveNoteText.fontSizeMax = 33;
         var giveNoteDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         giveNoteDrawing.transform.SetParent(giveNote, false);
-        PIn(giveNoteDrawing.rectTransform, 22, 46, 146, 138);
+        PIn(giveNoteDrawing.rectTransform, 9, 30, 145, 154);
         giveNoteDrawing.raycastTarget = false;
         var giveSnack = MImage("SnackOut", dialogue, snack, 191, 20, 30, 33);
         Anim(giveSnack.gameObject, SimpleAnim.Kind.SnackOut, 0.7f, 0f, 0f);
@@ -458,11 +403,8 @@ public static class MvpSceneBuilder
         var desk = NewEmpty("Desk", draw);                                  // 쪽지가 움직이는 자리 (화면보다 넓게)
         Stretch((RectTransform)desk, -700f);
         var paperView = desk.gameObject.AddComponent<PaperView>();
-        // 쪽지 : 화면 폭의 4분의 3쯤, 똑바로. 쪽지 질감 그림(Draw_Paper)이 오면 이 카드 자리에 깔아요
-        var paperImg = NewImage("Paper", desk, Color.white);
-        paperImg.sprite = cardSprite;
-        paperImg.type = Image.Type.Sliced;
-        paperImg.pixelsPerUnitMultiplier = 1f / K;
+        // 쪽지 : 화면 폭의 4분의 3쯤, 똑바로. 쪽지 질감 그림(Draw_Paper) 위에 그린 선만 투명한 층(Board)으로 올려요
+        var paperImg = NewPaper("Paper", desk, "Draw_Paper");
         paperImg.raycastTarget = false;
         var paperRt = paperImg.rectTransform;
         paperRt.anchorMin = paperRt.anchorMax = new Vector2(0.5f, 0.5f);
@@ -710,6 +652,16 @@ public static class MvpSceneBuilder
         Stretch(peekGuideDim.rectTransform);
         var peekGuideBox = NewDialogueBox(peekGuide, faceDokkaebi);
         var peekGuideTap = NewTap("TapButton", peekGuide);
+        // 챕터 안내 (1챕터 펜 · 3챕터 색) : 도깨비불 셋이 누를 곳(쪽지 · 되돌리기 · 다 그렸어! · 붓) 둘레를 돌아요.
+        //   GameManager 가 대상 자리로 옮기고 크기에 맞춰 돌려요. 누르기는 통과시켜요
+        var guideHighlight = (RectTransform)NewEmpty("GuideHighlight", draw);
+        guideHighlight.anchorMin = guideHighlight.anchorMax = guideHighlight.pivot = new Vector2(0.5f, 0.5f);
+        guideHighlight.sizeDelta = Vector2.zero;
+        var guideOrbit = new GameObject("Orbit", typeof(RectTransform)).GetComponent<RectTransform>();
+        guideOrbit.SetParent(guideHighlight, false);
+        guideOrbit.anchorMin = guideOrbit.anchorMax = guideOrbit.pivot = new Vector2(0.5f, 0.5f);
+        guideOrbit.sizeDelta = Vector2.zero;
+        var guideFires = DokkaebiFires(guideOrbit, 84f);
 
         // 둘러보기 : 화면을 어둡게 덮고, 렌즈 안에만 그림판 자리에 놓인 원본이 보여요 (MagnifierPeek)
         var peekGo = NewImage("MagnifierPeek", draw, new Color(0f, 0f, 0f, 0.4f));    // 덮개가 누르기를 모두 받아서 그릴 수 없어요
@@ -730,7 +682,7 @@ public static class MvpSceneBuilder
         lensMask.rectTransform.anchoredPosition = Vector2.zero;
         lensMask.rectTransform.sizeDelta = Vector2.one * (lensHole + 12f);      // 테두리 밑까지
         lensMask.gameObject.AddComponent<Mask>().showMaskGraphic = false;
-        var peekView = NewImage("View", lensMask.transform, new Color32(253, 252, 245, 255));   // 쪽지 종이 색
+        var peekView = NewImage("View", lensMask.transform, new Color32(250, 237, 219, 255));   // 쪽지 종이(Draw_Paper) 색
         peekView.raycastTarget = false;
         peekView.rectTransform.sizeDelta = new Vector2(796f, 939f);
         var peekOriginal = NewImage("Original", peekView.transform, Color.white);
@@ -765,16 +717,10 @@ public static class MvpSceneBuilder
 
         // 색 섞기 시범 (5단계 첫 그리기) : 대사 상자는 다른 대사와 같은 자리(아래). 시범 동안만 팔레트를 줄여 그림판과 대사 상자 사이에 넣어서
         //   아무것도 가리지 않아요 (GameManager.StartMixDemo). 화면 전체를 덮는 터치로 시범 중에 팔레트를 못 누르게 해요
-        var mixGuide = NewEmpty("MixGuide", draw);
-        var mixGuideBox = NewDialogueBox(mixGuide, faceDokkaebi);
-        var mixGuideTap = NewTap("TapButton", mixGuide);
 
         // ── 5. 판정 대기 : 내 그림은 떠 있고, 도깨비는 가운데서 좁게 오가요 ──
         var judgeP = NewPanel("JudgePanel", canvas);
-        var judgeDrawingBack = MImage("MyDrawingBack", judgeP, cardSprite, 105, 90, 150, 177);
-        judgeDrawingBack.type = Image.Type.Sliced;
-        judgeDrawingBack.preserveAspect = false;
-        judgeDrawingBack.pixelsPerUnitMultiplier = 1f / K;
+        var judgeDrawingBack = MImage("MyDrawingBack", judgeP, T("Draw_Paper"), 105, 90, 150, 177);   // 그림판 종이를 줄여서
         Anim(judgeDrawingBack.gameObject, SimpleAnim.Kind.Float, 3f, 0f, 30f, 2f);
         var judgeDrawing = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         judgeDrawing.transform.SetParent(judgeDrawingBack.transform, false);
@@ -863,18 +809,19 @@ public static class MvpSceneBuilder
 
         // ── 7. 채점표 : 시험지처럼 번호 위에 동그라미 · 빗금 ──
         var compare = NewPanel("ComparePanel", canvas);
-        var paper = NewCard("Paper", compare, Vector2.zero, Vector2.zero);
+        //   바깥 판은 아트팀 그림(Paper_Score). 위 두 그림은 둘 다 칸 없이 쪽지 위에 누끼로 (왼쪽 내 그림, 오른쪽 원본)
+        var paper = NewPaper("Paper", compare, "Paper_Score").transform;
         M((RectTransform)paper, 18, 62, 324, 520);
-        var mineCard = NewCard("MyCard", paper, Vector2.zero, Vector2.zero);
+        var mineCard = NewEmpty("MyCard", paper);
         PIn((RectTransform)mineCard, 14, 14, 138, 150);
         var compareMine = new GameObject("MyDrawing", typeof(RectTransform), typeof(RawImage)).GetComponent<RawImage>();
         compareMine.transform.SetParent(mineCard, false);
         Stretch(compareMine.rectTransform, 12);
         compareMine.raycastTarget = false;
-        var origCard = NewCard("OriginalCard", paper, Vector2.zero, Vector2.zero);
+        var origCard = NewEmpty("OriginalCard", paper);     // 흰 카드 · 테두리 없이 (원본 그림은 이미 배경이 투명해요)
         PIn((RectTransform)origCard, 164, 14, 138, 150);
         var compareOriginal = NewImage("Original", origCard, Color.white);
-        Stretch(compareOriginal.rectTransform, 24);
+        Stretch(compareOriginal.rectTransform, 12);         // 내 그림과 같은 여백
         compareOriginal.preserveAspect = true;
         compareOriginal.raycastTarget = false;
         var scoreRows = new GameObject[5];
@@ -934,32 +881,6 @@ public static class MvpSceneBuilder
         var endBag = Item("BagSlot", 50, 418, 74, 66, 0.7f);
         var endGimbap = Item("GimbapSlot", 150, 468, 62, 62, 1.2f);
         var endBat = Item("BatSlot", 246, 416, 66, 90, 1.7f);
-        // 사탕 통 : 돗자리 오른쪽 아래. 단계마다 남은 사탕을 모두 더해 통 아래부터 쌓여요 (한 줄에 3개, 5줄)
-        //   통 그림은 임시 (make_candy_jar.py). 유리 뒤쪽 → 사탕 → 테두리 · 뚜껑 순서로 겹쳐요
-        var jarGo = new GameObject("CandyJar", typeof(RectTransform));
-        jarGo.transform.SetParent(ending, false);
-        M((RectTransform)jarGo.transform, 288, 500, 62, 80);
-        Anim(jarGo, SimpleAnim.Kind.Pop, 0.45f, 1.9f, 0f);
-        var jarBack = NewImage("Back", jarGo.transform, Color.white);
-        jarBack.sprite = T("Ending_CandyJarBack");
-        jarBack.raycastTarget = false;
-        Stretch(jarBack.rectTransform);
-        var endingCandies = new GameObject[SnackCount];
-        for (int k = 0; k < SnackCount; k++)
-        {
-            int row = k / 3, col = k % 3;
-            var c = NewImage($"Candy_{k + 1}", jarGo.transform, Color.white);
-            c.sprite = snack;
-            c.preserveAspect = true;
-            c.raycastTarget = false;
-            PIn(c.rectTransform, 6 + col * 16 + (row % 2) * 2, 61 - row * 9, 17, 12);
-            Anim(c.gameObject, SimpleAnim.Kind.Pop, 0.3f, 2.4f + k * 0.08f, 0f);
-            endingCandies[k] = c.gameObject;
-        }
-        var jarFront = NewImage("Front", jarGo.transform, Color.white);
-        jarFront.sprite = T("Ending_CandyJarFront");
-        jarFront.raycastTarget = false;
-        Stretch(jarFront.rectTransform);
         Color32[] confettiColors = { new Color32(242, 119, 107, 255), new Color32(245, 201, 107, 255), new Color32(90, 167, 217, 255) };
         float[][] confetti = { new float[] { 40, 3.2f, 0f }, new float[] { 110, 2.6f, 0.5f }, new float[] { 190, 3.5f, 1f }, new float[] { 260, 2.9f, 0.2f }, new float[] { 325, 3.3f, 1.4f } };
         for (int i = 0; i < confetti.Length; i++)
@@ -973,6 +894,133 @@ public static class MvpSceneBuilder
         M((RectTransform)endingBoxComp.transform, 12, 24, 336, 104);     // 하늘 쪽 위에 : 돗자리 · 김밥 · 사탕 통을 가리지 않게
         var endingTapButton = NewTap("TapButton", ending);
 
+        // ── 8-2. 2~4챕터 끝 장면 : 방에 찾은 물건 3개가 놓이고, 화면을 누르면 도깨비 인사 (4챕터는 도깨비가 떠나고 주인공 독백) ──
+        //   자리 (게임 좌표) : 주인공 18, 700, 300, 458 · 도깨비 726, 826, 340, 332 · 물건 240 x 240 (120 · 420 · 720, 1250) · 대사 상자 위
+        var roomEnd = NewPanel("RoomEndPanel", canvas);
+        var roomEndBoyImg = MImage("Boy", roomEnd, boyHappy, 6, 233.3f, 100, 152.7f);
+        PivotBottom(roomEndBoyImg.rectTransform);
+        Anim(roomEndBoyImg.gameObject, SimpleAnim.Kind.FootSway, 2.6f, 0f, 0f, 1.5f);
+        var roomEndDokImg = MImage("Dokkaebi", roomEnd, dokkaebi, 242, 275.3f, 113.3f, 110.7f);
+        var roomEndDokAnim = Anim(roomEndDokImg.gameObject, SimpleAnim.Kind.Gentle, 0.8f, 0f, 15f);
+        var roomEndItems = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            roomEndItems[i] = MImage("Item_" + i, roomEnd, null, 40 + 100 * i, 416.7f, 80, 80);
+            Anim(roomEndItems[i].gameObject, SimpleAnim.Kind.Land, 0.7f, 0.2f + 0.5f * i, 1080f);
+        }
+        // 4챕터 독백 : 밤 창 안에서 빨간 눈이 지켜봐요 (방 배경 창 x 620~1080, y 280~826 안)
+        var roomEndEyes = MImage("RedEyes", roomEnd, LoadSprite("Chapter4/Room_RedEyes.png"), 263, 200, 70, 24);     // 위 대사 상자(아래 끝 y 504) 밑
+        Anim(roomEndEyes.gameObject, SimpleAnim.Kind.FadeIn, 1.2f, 0.3f, 0f);
+        var roomEndBoxComp = NewDialogueBox(roomEnd, faceSurprised);
+        M((RectTransform)roomEndBoxComp.transform, 12, 64, 336, 104);          // 위쪽 (36, 192) : 인물 · 물건을 가리지 않게
+        var roomEndTapButton = NewTap("TapButton", roomEnd);
+        UnityEventTools.AddPersistentListener(roomEndTapButton.onClick, gm.RoomEndTap);
+
+        // ── 5챕터 (도깨비의 저주) 화면들 ──
+        //   그림은 Sprites/Chapter5 에 있어요. 아직 없는 그림은 있는 그림이나 단색으로 대신해요.
+        //   아래 좌표는 1080 x 1899 화면 기준 (왼쪽 위 x, y, 폭, 높이) → M() 은 3으로 나눈 단위라서 Img3 가 나눠 줘요.
+        Sprite Chap5(string file, Sprite fallback)
+        {
+            Sprite s = LoadSprite("Chapter5/" + file);
+            return s != null ? s : fallback;
+        }
+        Image Img3(string name, Transform parent, Sprite sprite, float x, float y, float w, float h)
+            => MImage(name, parent, sprite, x / 3f, y / 3f, w / 3f, h / 3f);
+        void Put3(RectTransform rt, float x, float y, float w, float h) => M(rt, x / 3f, y / 3f, w / 3f, h / 3f);
+
+        Sprite friendSpirit = Chap5("Char_Friend_Spirit.png", friend);
+        Sprite dokkaebiDark = Chap5("Char_Dokkaebi_Dark.png", dokkaebiNoBat);
+        Sprite dokkaebiDarkBat = Chap5("Char_Dokkaebi_DarkBat.png", dokkaebi);
+        Sprite forestBright = Chap5("BG_ForestBright.png", room);
+        Sprite forestDark = Chap5("BG_ForestDark.png", room);
+
+        // 위 줄 하트 3개 (목숨) : 돋보기와 사탕 사이. 5챕터에서만 켜요
+        var heartGroup = NewEmpty("HeartGroup", hud);
+        Sprite heartSprite = LoadSprite("Chapter5/HUD_Heart.png");
+        var heartIcons = new Image[3];
+        for (int i = 0; i < 3; i++)
+        {
+            heartIcons[i] = Img3("Heart_" + i, heartGroup, heartSprite != null ? heartSprite : circleSprite, 260 + i * 100, 68, 88, 88);
+            if (heartSprite == null) heartIcons[i].color = new Color32(224, 64, 64, 255);   // 그림이 없으면 빨간 동그라미
+        }
+
+        // 물건 고르기 화면 : 카드 두 장 (왼쪽 0 · 오른쪽 1) + 아래에 소년 · 친구 · 어두운 도깨비 (글자 없이)
+        var choose = NewPanel("ChoosePanel", canvas);
+        var chooseImages = new Image[2];
+        float[] chooseX = { 54, 558 };
+        for (int i = 0; i < 2; i++)
+        {
+            var chooseCard = NewCard("ChooseCard_" + i, choose, Vector2.zero, Vector2.zero);
+            Put3((RectTransform)chooseCard, chooseX[i], 240, 468, 460);
+            var chooseButton = chooseCard.gameObject.AddComponent<Button>();
+            var chooseItem = NewImage("Item", chooseCard, Color.white);
+            chooseItem.preserveAspect = true;
+            chooseItem.raycastTarget = false;
+            Stretch(chooseItem.rectTransform, 30f);
+            chooseImages[i] = chooseItem;
+            UnityEventTools.AddIntPersistentListener(chooseButton.onClick, gm.ChooseItem, i);
+        }
+        Img3("Boy", choose, boyNormal, 24, 838, 360, 548);
+        Img3("Friend", choose, friend, 408, 1086, 300, 300);
+        Img3("Dokkaebi", choose, dokkaebiDark, 732, 1070, 324, 316);
+
+        // 대사 화면의 친구 (5챕터에서 켜요)
+        var dialogueFriend = Img3("Friend", dialogue, friend, 408, 1086, 300, 300);
+        dialogueFriend.gameObject.SetActive(false);
+
+        // 놀래키기 : 화면을 어둡게 덮고 무서운 얼굴. 위 줄(HUD) 아래, 눌러도 아무 일 없어요
+        var scareOverlay = NewEmpty("ScareOverlay", canvas);
+        var scareDim = NewImage("Dim", scareOverlay, new Color(0f, 0f, 0f, 0.85f));
+        scareDim.raycastTarget = false;
+        Stretch(scareDim.rectTransform);
+        scareDim.rectTransform.offsetMin = new Vector2(-2000f, 0f);          // 넓은 화면에서도 옆까지 덮게
+        scareDim.rectTransform.offsetMax = new Vector2(2000f, 0f);
+        Sprite scareSprite = LoadSprite("Chapter5/Scare_Face.png");
+        var scareFace = Img3("Face", scareOverlay, scareSprite, 0, 400, 1080, 1080);
+        if (scareSprite == null) scareFace.enabled = false;
+
+        // 그리기 방해 : 쪽지 위에 붉은 막 + 도깨비불 + 낙서. 전부 클릭을 통과시켜서 그리는 데 방해가 안 돼요
+        var jamOverlay = NewEmpty("JamOverlay", draw);
+        Put3((RectTransform)jamOverlay, 20, 370, 1040, 1222);
+        var jamTint = NewImage("Tint", jamOverlay, new Color(0.55f, 0.08f, 0.08f, 0.25f));
+        jamTint.raycastTarget = false;
+        Stretch(jamTint.rectTransform);
+        var jamFires = new RectTransform[3];
+        float[][] jamFirePos = { new float[] { 120, 160 }, new float[] { 640, 520 }, new float[] { 300, 880 } };   // 영역 안 좌표 (1080 기준)
+        for (int i = 0; i < 3; i++)
+        {
+            var jamFire = NewImage("Fire_" + i, jamOverlay, new Color32(255, 90, 80, 230));
+            jamFire.sprite = T("Magnifier_DokkaebiFire");
+            jamFire.preserveAspect = true;
+            jamFire.raycastTarget = false;
+            PIn(jamFire.rectTransform, jamFirePos[i][0] / 3f, jamFirePos[i][1] / 3f, 100f / 3f, 133f / 3f);
+            jamFires[i] = jamFire.rectTransform;
+        }
+        float[][] scribbles = { new float[] { 60, 300, 520, 14, -12 }, new float[] { 420, 700, 480, 12, 9 }, new float[] { 100, 1020, 560, 14, -6 }, new float[] { 520, 240, 380, 12, 18 } };    // 마지막 낙서는 쪽지 글 아래
+        foreach (float[] sc in scribbles)
+        {
+            var scribble = NewImage("Scribble", jamOverlay, new Color32(200, 40, 40, 200));
+            scribble.raycastTarget = false;
+            PIn(scribble.rectTransform, sc[0] / 3f, sc[1] / 3f, sc[2] / 3f, sc[3] / 3f);
+            scribble.rectTransform.localEulerAngles = new Vector3(0f, 0f, sc[4]);
+        }
+
+        // 5챕터 끝 화면 : 소년 · 친구 · 도깨비, 어두운 그림자와 방망이, 위쪽 대사 상자. 아무 데나 누르면 넘어가요
+        var curseEnd = NewPanel("CurseEndPanel", canvas);
+        var curseSilhouetteImg = NewImage("Silhouette", curseEnd, new Color32(10, 8, 16, 230));
+        curseSilhouetteImg.raycastTarget = false;
+        Sprite silhouetteSprite = LoadSprite("Chapter5/GameOver_Silhouette.png");
+        if (silhouetteSprite != null) { curseSilhouetteImg.sprite = silhouetteSprite; curseSilhouetteImg.color = Color.white; curseSilhouetteImg.preserveAspect = true; }
+        Put3(curseSilhouetteImg.rectTransform, 0, 560, 1080, 700);
+        var curseEndBoy = Img3("Boy", curseEnd, boyNormal, 24, 838, 360, 548);
+        var curseEndFriend = Img3("Friend", curseEnd, friend, 408, 1086, 300, 300);
+        var curseEndDokkaebi = Img3("Dokkaebi", curseEnd, dokkaebiDark, 732, 1070, 324, 316);
+        var curseEndBat = Img3("Bat", curseEnd, LoadSprite("Stage1_Bat/Bat_Original.png"), 600, 1300, 198, 270);
+        var curseEndBoxComp = NewDialogueBox(curseEnd, faceSurprised);
+        M((RectTransform)curseEndBoxComp.transform, 12, 64, 336, 104);          // 위쪽 (36, 192) : 인물을 가리지 않게
+        var curseEndTapButton = NewTap("TapButton", curseEnd);
+        UnityEventTools.AddPersistentListener(curseEndTapButton.onClick, gm.CurseEndTap);
+
         // ── 소리 설정 창 (오른쪽 위 톱니) : 어둡게 덮고 배경음 · 효과음 볼륨. 창 바깥을 누르거나 X 로 닫아요 ──
         //   제목 글 없이 줄마다 이름과 슬라이더만 있어요. 여는 동안 게임은 멈춰요 (GameManager.SetPaused)
         var pause = NewEmpty("SettingsPanel", root);
@@ -984,11 +1032,21 @@ public static class MvpSceneBuilder
         var settingsClose = NewRoundTool("CloseButton", pauseCard, iconClose, Color.white, 110, out GameObject settingsCloseFrame);
         Object.DestroyImmediate(settingsCloseFrame);
         Place((RectTransform)settingsClose.transform.parent, new Vector2(370, 26), new Vector2(110, 110));
+        // 왼쪽 위 나가기 버튼 (닫기 X 와 좌우 대칭) : 누르면 "나갈까요?" 확인으로 바뀌어요
+        var settingsExit = NewRoundTool("ExitButton", pauseCard, T("Result_IconGiveUp"), Color.white, 110, out GameObject settingsExitFrame);
+        Object.DestroyImmediate(settingsExitFrame);
+        Place((RectTransform)settingsExit.transform.parent, new Vector2(-370, 26), new Vector2(110, 110));
+        // 평소 모습 : 볼륨 줄 두 개 (카드와 같은 크기의 묶음 안에 넣어서, 숨기고 보이기 쉽게)
+        var settingsMain = NewEmpty("SettingsMain", pauseCard);
+        // 나가기 확인 : 취소 / 나가기 두 버튼 (처음엔 꺼져 있어요)
+        var settingsConfirm = NewEmpty("SettingsConfirm", pauseCard);
+        var confirmCancel = NewButton("CancelButton", settingsConfirm, "취소", new Vector2(-200, 290), new Vector2(330, 120), primary: false);
+        var confirmExit = NewButton("ExitConfirmButton", settingsConfirm, "나가기", new Vector2(200, 290), new Vector2(330, 120), primary: true);
         Slider VolumeRow(string name, string label, float y)
         {
-            var text = NewText(name + "Label", pauseCard, label, 60, new Vector2(-250, y), new Vector2(260, 110), bold: true);
+            var text = NewText(name + "Label", settingsMain, label, 60, new Vector2(-250, y), new Vector2(260, 110), bold: true);
             var go = new GameObject(name, typeof(RectTransform), typeof(Slider));
-            go.transform.SetParent(pauseCard, false);
+            go.transform.SetParent(settingsMain, false);
             Place((RectTransform)go.transform, new Vector2(110, y + 15), new Vector2(520, 80));
             var track = NewImage("Background", go.transform, Color.white);
             track.sprite = pillCream; track.type = Image.Type.Sliced; track.pixelsPerUnitMultiplier = 2f / K;
@@ -1025,26 +1083,25 @@ public static class MvpSceneBuilder
 
         // HUD 가 패널보다 위에 그려지도록 맨 뒤로 보내기 (Hierarchy 아래쪽일수록 앞에 그려짐). 일시정지 화면은 그보다 위
         peekGo.transform.SetAsLastSibling();    // 둘러보는 동안은 색 섞기 판까지 덮어요
-        mixGuide.SetAsLastSibling();            // 색 섞기 시범의 대사와 터치는 팔레트보다 위
         hud.SetAsLastSibling();
         pause.SetAsLastSibling();
 
         // ── 버튼 OnClick 연결 (Inspector 의 On Click() 목록에 보여요) ──
-        UnityEventTools.AddPersistentListener(startGameButton.onClick, gm.OpenChapters);
-        for (int i = 0; i < chapterButtons.Length; i++) UnityEventTools.AddIntPersistentListener(chapterButtons[i].onClick, gm.ChapterTap, i);
         UnityEventTools.AddPersistentListener(dialogueTapButton.onClick, gm.DialogueTap);
         UnityEventTools.AddPersistentListener(submitButton.onClick, gm.Submit);
         UnityEventTools.AddPersistentListener(magnifierButton.onClick, gm.MagnifierTap);
         UnityEventTools.AddPersistentListener(peekGuideTap.onClick, gm.PeekGuideTap);
-        UnityEventTools.AddPersistentListener(mixGuideTap.onClick, gm.MixGuideTap);
         UnityEventTools.AddPersistentListener(retryButton.onClick, gm.Retry);
         UnityEventTools.AddPersistentListener(giveUpButton.onClick, gm.ShowCompare);
         UnityEventTools.AddPersistentListener(resultTapButton.onClick, gm.ResultTap);
         UnityEventTools.AddPersistentListener(compareTapButton.onClick, gm.NextStage);
         UnityEventTools.AddPersistentListener(endingTapButton.onClick, gm.EndingTap);
-        foreach (Button b in new[] { pauseButton, titleSettingsButton, chapterSettingsButton })
+        foreach (Button b in new[] { pauseButton })
             UnityEventTools.AddPersistentListener(b.onClick, gm.ToggleSettings);
         UnityEventTools.AddPersistentListener(settingsClose.onClick, gm.CloseSettings);
+        UnityEventTools.AddPersistentListener(settingsExit.onClick, gm.AskExit);
+        UnityEventTools.AddPersistentListener(confirmCancel.onClick, gm.CancelExit);
+        UnityEventTools.AddPersistentListener(confirmExit.onClick, gm.ExitToChapters);
         UnityEventTools.AddPersistentListener(settingsDimButton.onClick, gm.CloseSettings);
         UnityEventTools.AddPersistentListener(bgmSlider.onValueChanged, gm.SetBgmVolume);
         UnityEventTools.AddPersistentListener(sfxSlider.onValueChanged, gm.SetSfxVolume);
@@ -1061,7 +1118,7 @@ public static class MvpSceneBuilder
         // ── Inspector 칸 채우기 ──
         // (private [SerializeField] 칸은 SerializedObject 로 이름을 찾아서 넣어요. 이름이 틀리면 바로 에러)
         var so = new SerializedObject(gm);
-        SetArray(so, "stages", stages);
+        SetArray(so, "chapters", chapters);
         Set(so, "board", board);
         Set(so, "toolBar", toolBar);
         Set(so, "paperView", paperView);
@@ -1072,22 +1129,13 @@ public static class MvpSceneBuilder
         Set(so, "magnifierSparkles", magSparkles.gameObject);
         Set(so, "peekGuide", peekGuide.gameObject);
         Set(so, "peekGuideBox", peekGuideBox);
-        Set(so, "mixGuide", mixGuide.gameObject);
-        Set(so, "mixGuideBox", mixGuideBox);
         Set(so, "mixer", mixer);
         Set(so, "magnifierHighlight", magHighlight.gameObject);
         SetArray(so, "magnifierFires", magFires);
-        Set(so, "brushHighlight", brushHighlight.gameObject);
-        SetArray(so, "brushFires", brushFires);
-        Set(so, "paintHighlight", paintHighlight.gameObject);
-        Set(so, "paintOrbit", paintOrbit);
-        SetArray(so, "paintFires", paintFires);
-        Set(so, "brushHolder", brushHolder);
         Set(so, "giftMagnifier", giftMagnifier.rectTransform);
         SetArray(so, "candyIcons", candyIcons);
         SetArray(so, "snackAnims", snackAnims);
         Set(so, "timerGroup", timerGroup.gameObject);
-        Set(so, "timerText", timerText);
         var burn = timerGroup.gameObject.AddComponent<IncenseBurn>();
         var burnSo = new SerializedObject(burn);
         Set(burnSo, "stick", incenseBar);
@@ -1097,7 +1145,6 @@ public static class MvpSceneBuilder
         Set(burnSo, "ash", incenseAsh.rectTransform);
         Set(burnSo, "fallingAsh", incenseFallingAsh);
         SetArray(burnSo, "smoke", incenseSmoke);
-        Set(burnSo, "secondsText", timerText);
         burnSo.FindProperty("horizontal").boolValue = true;
         burnSo.FindProperty("baseRatio").floatValue = 0f;                 // 바는 끝까지 다 줄어요
         burnSo.FindProperty("maxAshHeight").floatValue = 0f;
@@ -1110,9 +1157,6 @@ public static class MvpSceneBuilder
         Set(so, "backgroundImage", bg);
         Set(so, "startBackground", startBackground);
         Set(so, "gameBackground", room);
-        Set(so, "titlePanel", title.gameObject);
-        Set(so, "chapterPanel", chapter.gameObject);
-        SetArray(so, "chapterLockedAnims", chapterLockedAnims);
         Set(so, "observePanel", observe.gameObject);
         Set(so, "drawPanel", draw.gameObject);
         Set(so, "judgePanel", judgeP.gameObject);
@@ -1124,6 +1168,7 @@ public static class MvpSceneBuilder
         Set(so, "dialogueDim", dialogueDim.gameObject);
         Set(so, "faceBoySurprised", faceSurprised);
         Set(so, "faceBoyHappy", faceHappy);
+        Set(so, "faceBoyNormal", faceNormal);
         Set(so, "faceBoySad", faceSad);
         Set(so, "magnifierButton", magnifierButton);
         Set(so, "magnifierPeek", peek);
@@ -1133,6 +1178,31 @@ public static class MvpSceneBuilder
         Set(so, "dokkaebiNormal", dokkaebi);
         Set(so, "dokkaebiNoBat", dokkaebiNoBat);
         Set(so, "dokkaebiSwing", dokkaebiSwing);
+        // 5챕터 (도깨비의 저주)
+        Set(so, "heartGroup", heartGroup.gameObject);
+        SetArray(so, "heartIcons", heartIcons);
+        Set(so, "choosePanel", choose.gameObject);
+        SetArray(so, "chooseImages", chooseImages);
+        Set(so, "dialogueFriend", dialogueFriend);
+        Set(so, "friendSprite", friend);
+        Set(so, "friendSpiritSprite", friendSpirit);
+        Set(so, "dokkaebiDark", dokkaebiDark);
+        Set(so, "dokkaebiDarkBat", dokkaebiDarkBat);
+        Set(so, "forestBright", forestBright);
+        Set(so, "forestDark", forestDark);
+        Set(so, "scareOverlay", scareOverlay.gameObject);
+        Set(so, "jamOverlay", jamOverlay.gameObject);
+        SetArray(so, "jamFires", jamFires);
+        Set(so, "curseEndPanel", curseEnd.gameObject);
+        Set(so, "curseEndBoy", curseEndBoy);
+        Set(so, "curseEndFriend", curseEndFriend);
+        Set(so, "curseEndDokkaebi", curseEndDokkaebi);
+        Set(so, "curseEndSilhouette", curseSilhouetteImg.gameObject);
+        Set(so, "curseEndBat", curseEndBat.gameObject);
+        Set(so, "curseEndBox", curseEndBoxComp);
+        Set(so, "settingsMain", settingsMain.gameObject);
+        Set(so, "settingsConfirm", settingsConfirm.gameObject);
+        Set(so, "settingsExitButton", settingsExit.transform.parent.gameObject);
         Set(so, "dialogueBox", dialogueBoxComp);
         Set(so, "dialogueBoy", boyHolder);
         Set(so, "dialogueBoyAnim", boyImageAnim);
@@ -1167,8 +1237,31 @@ public static class MvpSceneBuilder
         SetArray(so, "scoreSlashes", scoreSlashes);
         Set(so, "endingDokkaebi", endDokkaebi);
         Set(so, "endingBox", endingBoxComp);
+        Set(so, "windowFire", windowFire.gameObject);
+        Set(so, "roomEndPanel", roomEnd.gameObject);
+        Set(so, "roomEndDokkaebi", roomEndDokImg);
+        Set(so, "roomEndDokkaebiAnim", roomEndDokAnim);
+        SetArray(so, "roomEndItems", roomEndItems);
+        Set(so, "roomEndBox", roomEndBoxComp);
+        Set(so, "roomEndEyes", roomEndEyes.gameObject);
+        Set(so, "judgeDokkaebi", judgeDokkaebi);
+        // 도깨비 기분 : 3챕터 주황, 4챕터 붉은 머리 불 (Tools/art_temp/make_dokkaebi_mood.py 로 만든 임시 그림)
+        Sprite Mood(string name, int mood, Sprite normal) => mood == 0 ? normal : LoadSprite($"Characters/Mood/{name}_M{mood}.png") ?? normal;
+        Sprite[] Moods(string name, Sprite normal) => new[] { normal, Mood(name, 1, normal), Mood(name, 2, normal) };
+        SetArray(so, "moodNormal", Moods("Char_Dokkaebi_Normal", dokkaebi));
+        SetArray(so, "moodNoBat", Moods("Char_Dokkaebi_NoBat", dokkaebiNoBat));
+        SetArray(so, "moodSwing", Moods("Char_Dokkaebi_Swing", dokkaebiSwing));
+        SetArray(so, "moodThink", Moods("Char_Dokkaebi_Think", dokkaebiThink));
+        SetArray(so, "moodFace", Moods("Char_DokkaebiFace_Normal", faceDokkaebi));
+        SetArray(so, "moodFaceProud", Moods("Char_DokkaebiFace_Proud", faceDokkaebiProud));
+        SetArray(so, "moodFaceTease", Moods("Char_DokkaebiFace_Tease", faceDokkaebiTease));
+        Set(so, "guideHighlight", guideHighlight);
+        SetArray(so, "guideFires", guideFires);
+        Set(so, "guidePaper", paperImg.rectTransform);
+        Set(so, "guideUndo", (RectTransform)undoButton.transform);
+        Set(so, "guideSubmit", (RectTransform)submitButton.transform);
+        Set(so, "guideBrush", brushHolder);
         SetArray(so, "endingItems", new[] { endBat, endBag, endMat, endGimbap, endFriend });
-        SetArray(so, "endingCandies", endingCandies);
         Set(so, "observeImage", observeImage);
         Set(so, "drawTitle", drawTitle);
         Set(so, "submitButton", submitButton);
@@ -1218,7 +1311,14 @@ public static class MvpSceneBuilder
         mso.ApplyModifiedPropertiesWithoutUndo();
 
         // 처음에는 시작 화면만 보이게 (게임 시작 시 GameManager 도 같은 처리를 해요)
-        foreach (Transform p in new[] { chapter, dialogue, dialogueDim, observe, draw, judgeP, result, compare, ending }) p.gameObject.SetActive(false);
+        foreach (Transform p in new[] { dialogue, dialogueDim, observe, draw, judgeP, result, compare, ending, choose, curseEnd }) p.gameObject.SetActive(false);
+        heartGroup.gameObject.SetActive(false);
+        dialogueFriend.gameObject.SetActive(false);
+        scareOverlay.gameObject.SetActive(false);
+        jamOverlay.gameObject.SetActive(false);
+        curseSilhouetteImg.gameObject.SetActive(false);
+        curseEndBat.gameObject.SetActive(false);
+        settingsConfirm.gameObject.SetActive(false);
         giveNote.gameObject.SetActive(false);
         giveSnack.gameObject.SetActive(false);
         openingGroup.gameObject.SetActive(false);
@@ -1228,7 +1328,10 @@ public static class MvpSceneBuilder
         fitImg.gameObject.SetActive(false);
         peekGo.gameObject.SetActive(false);
         peekGuide.gameObject.SetActive(false);
-        mixGuide.gameObject.SetActive(false);
+        guideHighlight.gameObject.SetActive(false);
+        windowFire.gameObject.SetActive(false);
+        roomEnd.gameObject.SetActive(false);
+        roomEndEyes.gameObject.SetActive(false);
         magHighlight.gameObject.SetActive(false);
         giftMagnifier.gameObject.SetActive(false);
         magSparkles.gameObject.SetActive(false);
@@ -1239,7 +1342,7 @@ public static class MvpSceneBuilder
 
         // ── 저장 + Build Settings 의 첫 번째 씬으로 등록 ──
         EditorSceneManager.SaveScene(scene, ScenePath);
-        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(ScenePath, true) };
+        EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene("Assets/Scenes/Lobby.unity", true), new EditorBuildSettingsScene(ScenePath, true) };   // 로비가 맨 앞 (처음 열리는 씬)
         AssetDatabase.SaveAssets(); // Build Settings 변경도 디스크에 저장
         Debug.Log("[찾아라도깨비] MVP 씬을 만들었어요: " + ScenePath);
     }
@@ -1248,80 +1351,122 @@ public static class MvpSceneBuilder
     // 기획서 3장 레벨 디자인 + 부록 B 판정 기준을 그대로 옮겼어요.
     // 이미 파일이 있으면 건드리지 않아요. (Inspector 에서 고친 내용 보존)
 
+    // 물건 데이터. 1챕터는 형태 기준 하나, 5챕터는 기획서 판정 포인트대로 (형태 · 무늬 · 색)
+    //   오답 그림은 물건마다 3장 : n번째로 틀리면 n번째 그림. 없으면 앞의 오답으로 채워요
     static void CreateStageDataFiles()
     {
         if (!AssetDatabase.IsValidFolder(DataFolder)) AssetDatabase.CreateFolder("Assets", "Data");
+        ItemWrongs.Clear();
 
-        CreateStage("Stage1_Bat", 1, "방망이", ColorMode.BlackOnly,
-            "소풍 준비물이 모두 사라졌어요!\n쪽지에 그림을 그려 간식과 함께 두면\n도깨비가 물건을 찾아준대요.\n그런데 도깨비가 먼저 부탁해요.\n\"내 방망이부터 찾아 줘!\"",
-            "검은 펜으로 모양(형태)을 그려요.\n지우개 · 선 굵기 · 되돌리기 · 모두 지우기를 쓸 수 있어요.",
-            "",
-            "굵은 머리에 손잡이가 이어진 도깨비방망이입니다. 머리에는 짧게 튀어나온 돌기가 여러 개 있고, 손잡이에는 리본이 묶여 있습니다. 검은색으로 형태만 표현하는 단계이며, 색은 판정하지 않습니다.",
-            ("굵은 머리 + 돌기", "굵은 머리가 표현되어 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다. 손잡이의 유무와 길이는 판정하지 않습니다."));
+        CreateItem("Stage1_Bat", 1, "방망이",
+            "굵은 머리에 손잡이가 이어진 도깨비방망이입니다. 머리에는 짧게 튀어나온 돌기가 여러 개 있고, 손잡이에는 리본이 묶여 있습니다.",
+            "Stage1_Bat/Bat_Original.png", new[] { "Stage1_Bat/Bat_Wrong_X.png", "Chapter5/Ch1_Bat_Wrong2.png", "Chapter5/Ch1_Bat_Wrong3.png" },
+            ("굵은 머리 + 돌기", "굵은 머리가 표현되어 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다. 손잡이의 유무와 길이는 판정하지 않습니다.", AutoCheck.BatShape, InkColor.Black, Area.TopLeft));
 
-        CreateStage("Stage2_Bag", 2, "가방", ColorMode.BlackOnly,
-            "방망이를 찾은 도깨비가 신이 났어요.\n\"이제 네 물건을 찾아 줄게!\"\n먼저 소풍 가방을 찾아요.\n주머니 안의 줄무늬를 잘 보세요.",
-            "모양 안에 무늬(패턴)를 넣어요.\n무늬의 모양과 위치도 기억해야 해요.",
-            "검은 펜으로 모양 그리기",
-            "정면에서 본 배낭입니다. 몸체는 모서리가 둥근 네모이고, 위쪽에 고리 모양 손잡이가 하나 있습니다. 몸체 앞쪽 아래에 네모난 주머니가 있으며, 주머니 안에는 가로 줄무늬가 세 줄 있습니다. 검은색으로 형태와 무늬만 표현하는 단계이며, 색은 판정하지 않습니다.",
-            ("네모 몸체 + 위쪽 손잡이 + 앞주머니", "네 변을 가진 사각형에 가까운 몸체 외곽, 몸체 위쪽에 이어진 고리나 아치 모양 손잡이, 몸체 안쪽의 작은 사각형 주머니가 모두 식별되어야 합니다. 모서리가 둥글거나 선이 삐뚤어도 인정합니다. 원형이나 삼각형 몸체, 옆이나 아래에만 있는 손잡이는 인정하지 않습니다."),
-            ("주머니 안 가로 줄무늬", "주머니로 보이는 영역 안에 가로 방향 줄이 두 줄 이상 반복되어야 합니다. 세로줄이나 점, 주머니 밖에만 있는 줄은 인정하지 않습니다."));
+        CreateItem("Stage2_Bag", 2, "가방",
+            "정면에서 본 배낭입니다. 몸체는 모서리가 둥근 네모이고, 위쪽에 고리 모양 손잡이, 앞쪽에 네모난 주머니가 있습니다.",
+            "Stage2_Bag/Bag_Original.png", new[] { "Stage2_Bag/Bag_Wrong_XO.png", "Stage2_Bag/Bag_Wrong_XX.png", "Stage2_Bag/Bag_Wrong_OX.png" },
+            ("네모 몸체 + 위쪽 손잡이 + 앞주머니", "네 변을 가진 사각형에 가까운 몸체 외곽, 몸체 위쪽에 이어진 고리나 아치 모양 손잡이, 몸체 안쪽의 작은 사각형 주머니가 모두 식별되어야 합니다. 모서리가 둥글거나 선이 삐뚤어도 인정합니다. 원형이나 삼각형 몸체, 옆이나 아래에만 있는 손잡이는 인정하지 않습니다.", AutoCheck.BagShape, InkColor.Black, Area.TopLeft));
 
-        CreateStage("Stage3_Mat", 3, "돗자리", ColorMode.Primaries,
-            "다음은 소풍에 깔고 앉을 돗자리예요.\n이번에는 색도 기억해야 해요!\n어떤 색 띠가 어떤 순서였는지 잘 보세요.",
-            "빨강 · 노랑 · 파랑 버튼으로 색을 골라 칠해요.\n색이 들어간 위치도 기억해야 해요.",
-            "모양 그리기 · 무늬 넣기",
-            "네모난 돗자리입니다. 안쪽은 나란한 색 띠 네 줄로 나뉘어 있고, 화면에서 보이는 위에서부터 파랑, 빨강, 노랑, 파랑 순서입니다. 돗자리는 조금 비스듬히 놓여 있습니다. 빨강·노랑·파랑의 삼원색을 사용하며 혼색 과정은 판정하지 않습니다.",
-            ("사각형 외곽", "네 변을 가진 사각형에 가까운 외곽이 식별되어야 합니다. 비스듬하거나 선이 삐뚤고 비율이 달라도 인정합니다. 원형이나 삼각형처럼 명확히 다른 외곽이면 인정하지 않습니다."),
-            ("띠 네 줄", "외곽 안이 나란한 띠 네 줄로 나뉘어 있어야 합니다. 띠는 가로나 비스듬한 방향 모두 인정합니다. 한 가지 색으로만 칠했거나 띠가 네 줄이 아니면 인정하지 않습니다."),
-            ("띠 색 순서", "맨 위 띠와 맨 아래 띠의 주된 채색이 파란색 계열이고, 그 사이에 위에서부터 빨간색 계열과 노란색 계열이 차례로 나타나야 합니다. 띠의 개수는 이 항목에서 보지 않습니다. 거친 채색과 약간의 빈틈은 인정합니다."));
+        CreateItem("Stage3_Mat", 3, "돗자리",
+            "조금 비스듬히 놓인 네모난 돗자리입니다.",
+            "Stage3_Mat/Mat_Original.png", new[] { "Stage3_Mat/Mat_Wrong_XOO.png", "Stage3_Mat/Mat_Wrong_XXO.png", "Stage3_Mat/Mat_Wrong_XXX.png" },
+            ("사각형 외곽", "네 변을 가진 사각형에 가까운 외곽이 식별되어야 합니다. 비스듬하거나 선이 삐뚤고 비율이 달라도 인정합니다. 원형이나 삼각형처럼 명확히 다른 외곽이면 인정하지 않습니다.", AutoCheck.RectOutline, InkColor.Black, Area.TopLeft));
 
-        CreateStage("Stage4_Gimbap", 4, "김밥", ColorMode.MixTwo,
-            "맛있는 김밥도 사라졌어요!\n김밥 속 재료의 색을 잘 보세요.\n없는 색은 팔레트에서 섞어서 만들어요.",
-            "[색 섞기]로 두 가지 색을 섞어 새 색을 만들어요.\n예) 노랑 + 파랑 = 초록",
-            "모양 · 무늬 · 빨강 노랑 파랑 칠하기",
-            "단면에서 본 동그란 김밥입니다. 가장 바깥은 두꺼운 검은 김 테두리이고, 그 안쪽 넓은 부분은 흰 밥입니다. 밥 안쪽 위에 붉은 재료와 노란 단무지가 나란히 있고, 그 아래에 초록 시금치가 있습니다. 초록은 노랑과 파랑을 섞어 만든 혼합색입니다.",
-            ("검은 김 테두리", "가장 바깥에 검은색 둥근 테두리가 둘러져 있어야 합니다. 선이 굵지 않아도 둥근 검은 외곽이 식별되면 인정합니다. 다른 색 테두리나 사각형 외곽은 인정하지 않습니다."),
-            ("재료 배치", "테두리 안쪽에 재료 조각이 위쪽에 두 개 나란히, 그 아래쪽에 한 개 있어야 합니다. 재료의 색은 이 항목에서 보지 않습니다."),
-            ("노란 단무지", "밥 안쪽에 노란색 계열로 칠한 재료 조각이 있어야 합니다. 테두리 밖의 노랑은 인정하지 않습니다."),
-            ("초록 시금치", "밥 안쪽에 초록색 계열로 칠한 재료 조각이 있어야 합니다. 파랑이나 노랑만 있으면 인정하지 않습니다."));
+        CreateItem("Stage4_Gimbap", 4, "김밥",
+            "단면에서 본 김밥입니다. 바깥에 둥근 김 테두리가 둘러져 있습니다.",
+            "Stage4_Gimbap/Gimbap_Original.png", new[] { "Stage4_Gimbap/Gimbap_Wrong_XOOO.png", "Stage4_Gimbap/Gimbap_Wrong_XXOO.png", "Stage4_Gimbap/Gimbap_Wrong_XXXX.png" },
+            ("둥근 테두리", "둥근 바깥 테두리가 둘러져 있어야 합니다. 살짝 찌그러지거나 선이 조금 끊겨도 전체적으로 둥근 외곽이 식별되면 인정합니다. 사각형 외곽이나 크게 열린 곡선은 인정하지 않습니다. 선의 색과 굵기, 안쪽 재료의 유무와 배치는 판정하지 않습니다.", AutoCheck.RoundOutline, InkColor.Black, Area.TopLeft));
 
-        CreateStage("Stage5_Friend", 5, "친구", ColorMode.MixFree,
-            "소풍 준비물을 다 찾았어요!\n그런데 이번엔 옆에 있던 친구를 잃어버렸어요.\n도깨비가 친구도 찾아 준대요.\n친구의 머리와 옷 색을 잘 보세요.",
-            "두 가지 이상 색을 자유롭게 섞어요.\n많이 넣은 색에 따라 섞인 색이 달라져요.",
-            "모양 · 무늬 · 삼원색 · 두 색 혼합",
-            "정면에서 본 친구입니다. 양 갈래로 묶은 갈색 머리, 살구색(주황 계열) 반팔 상의, 앞주머니에 천 조각을 덧댄 파란 멜빵 반바지를 입고 노란 신발을 신었습니다. 갈색은 세 색 혼합, 주황은 두 색 혼합으로 만드는 색입니다.",
-            ("양 갈래 머리", "머리 양옆으로 묶은 머리 두 갈래가 구분되어야 합니다. 단발이나 한 갈래 머리는 인정하지 않습니다."),
-            ("주머니 천 조각", "하의 앞쪽 주머니 자리에 덧댄 작은 천 조각이 표현되어 있어야 합니다. 천 조각이 없는 주머니는 인정하지 않습니다."),
-            ("파란 바지", "하의(멜빵바지)의 주된 채색이 파란색 계열이어야 합니다. 빨강이나 보라처럼 명확히 다른 색이면 인정하지 않습니다."),
-            ("주황 상의", "상의(몸통 윗부분)에 주황·살구색 계열이 칠해져 있어야 합니다. 빨강이나 초록처럼 명확히 다른 색이면 인정하지 않습니다."),
-            ("갈색 머리", "머리카락 부분의 주된 채색이 갈색 계열이어야 합니다. 검정, 주황, 노랑처럼 명확히 다른 색이면 인정하지 않습니다."));
+        CreateItem("Stage5_Friend", 5, "친구",
+            "정면에서 본 친구입니다. 머리를 양쪽으로 한 갈래씩 묶었습니다.",
+            "Stage5_Friend/Friend_Original.png", new[] { "Stage5_Friend/Friend_Wrong_XOOOO.png", "Stage5_Friend/Friend_Wrong_XXOOO.png", "Stage5_Friend/Friend_Wrong_XXXXX.png" },
+            ("양 갈래 머리", "머리 양옆으로 묶은 머리 두 갈래가 구분되어야 합니다. 단발이나 한 갈래 머리는 인정하지 않습니다.", AutoCheck.PigTails, InkColor.Black, Area.TopLeft));
+
+        // 5챕터 : 도깨비가 요청한 물건 3개 + 맞설 물건 3개 (기획서 표). 판정 포인트는 기획서 표대로 임시 (기획자 확정 전)
+        Ch5Item("Ch5_Jipsin", 1, "짚신", "앞이 둥글고 길쭉한 짚신입니다. 바닥은 짚을 엮은 무늬이고 색은 갈색(세 색 섞기)입니다.",
+            ("짚신 모양", "앞이 둥글고 길쭉한 신발 바닥 모양이 식별되어야 합니다. 원이나 네모는 인정하지 않습니다."),
+            ("엮은 무늬", "신발 안쪽에 짚을 엮은 줄이나 격자가 여러 줄 반복되어야 합니다."),
+            ("갈색", "신발의 주된 채색이 갈색 계열이어야 합니다. 노랑, 주황, 검정처럼 명확히 다른 색이면 인정하지 않습니다."));
+        Ch5Item("Ch5_Bujeok", 2, "부적", "세로로 긴 노란 종이에 빨간 글씨가 적힌 부적입니다.",
+            ("긴 네모 종이", "세로로 긴 사각형 종이 모양이 식별되어야 합니다."),
+            ("노란 종이", "종이 바탕의 주된 채색이 노란색 계열이어야 합니다."),
+            ("빨간 글씨", "종이 안에 빨간색 선이나 글씨 모양이 있어야 합니다."));
+        Ch5Item("Ch5_Buchae", 3, "도깨비 부채", "부챗살이 펼쳐진 도깨비 부채입니다. 부챗살은 갈색(세 색 섞기)이고 부채 면에 무늬가 있습니다.",
+            ("펼친 부채 모양", "한 점에서 퍼져 나가는 부챗살과 넓게 펼친 부채 면이 식별되어야 합니다."),
+            ("부채 무늬", "부채 면 안에 줄이나 점 같은 무늬가 있어야 합니다."),
+            ("갈색 부챗살", "부챗살의 주된 채색이 갈색 계열이어야 합니다."));
+        Ch5Item("Ch5_DakpiBowl", 4, "닭피 그릇", "빨간 닭피가 담긴 둥근 그릇입니다. 그릇 옆면에 띠 무늬가 있습니다.",
+            ("둥근 그릇 모양", "위가 넓고 아래가 둥근 그릇 모양이 식별되어야 합니다."),
+            ("그릇 무늬", "그릇 옆면에 띠나 줄 무늬가 있어야 합니다."),
+            ("빨간 피", "그릇 위쪽 안에 빨간색 계열로 칠한 부분이 있어야 합니다."));
+        Ch5Item("Ch5_Gamtu", 5, "도깨비 감투", "뒤가 솟은 검은 감투입니다. 검정은 세 색을 섞어 만들어요.",
+            ("감투 모양", "머리에 쓰는 작은 모자 모양이고 뒤쪽이 위로 솟아 있어야 합니다."),
+            ("띠 무늬", "모자 아래쪽에 가로 띠가 있어야 합니다."),
+            ("검정", "모자의 주된 채색이 검정에 가까운 어두운 색이어야 합니다."));
+        Ch5Item("Ch5_PatBag", 6, "팥주머니", "위를 매듭으로 묶은 팥색(세 색 섞기) 주머니입니다.",
+            ("주머니 모양", "아래가 둥글고 위가 오므라든 주머니 모양이 식별되어야 합니다."),
+            ("매듭", "주머니 위쪽에 묶은 매듭이나 끈이 있어야 합니다."),
+            ("팥색", "주머니의 주된 채색이 어두운 붉은 갈색(팥색) 계열이어야 합니다."));
+
+        // 2~4챕터 (기획서 표 : 2 형태 + 무늬, 3 + 삼원색, 4 + 두 색 섞기). 그림은 codex 임시 그림, 판정 기준은 기획자 확인 전
+        RoomItem("Ch2_Socks", 2, 1, "줄무늬 양말", 3, "발목이 길고 발끝이 옆으로 굽은 양말입니다. 양말에 가로 줄무늬가 있습니다.",
+            ("양말 모양", "발목 부분과 옆으로 굽은 발끝이 이어진 L자 양말 모양이 식별되어야 합니다. 네모나 원만 그린 것은 인정하지 않습니다."),
+            ("가로 줄무늬", "양말 안에 가로 방향 줄이 두 줄 이상 반복되어야 합니다. 세로줄이나 점무늬는 인정하지 않습니다."));
+        RoomItem("Ch2_Umbrella", 2, 2, "물방울무늬 우산", 3, "펼친 우산입니다. 둥근 지붕 아래에 손잡이가 있고, 지붕에 물방울(점)무늬가 있습니다.",
+            ("우산 모양", "위가 둥근 지붕 모양과 그 아래로 이어진 손잡이 대가 식별되어야 합니다."),
+            ("물방울무늬", "우산 지붕 안에 작은 점이나 동그라미가 세 개 이상 있어야 합니다. 줄무늬는 인정하지 않습니다."));
+        RoomItem("Ch2_Pillow", 2, 3, "체크무늬 베개", 3, "네모난 베개입니다. 가로줄과 세로줄이 엇갈린 체크무늬가 있습니다.",
+            ("베개 모양", "모서리가 둥글거나 살짝 부푼 네모 모양이 식별되어야 합니다."),
+            ("체크무늬", "베개 안에 가로줄과 세로줄이 엇갈려 작은 네모 칸이 여러 개 생겨야 합니다. 한 방향 줄만 있으면 인정하지 않습니다."));
+        RoomItem("Ch3_PartyHat", 3, 1, "고깔모자", 3, "끝이 뾰족한 고깔모자입니다. 비스듬한 띠가 위에서부터 빨강, 노랑, 파랑 순서입니다.",
+            ("고깔 모양", "위가 뾰족하고 아래가 넓은 삼각뿔 모자 모양이 식별되어야 합니다."),
+            ("띠 무늬", "모자 안에 띠가 두 줄 이상 있어야 합니다."),
+            ("빨강 · 노랑 · 파랑 띠", "띠의 색이 위에서부터 빨강, 노랑, 파랑 순서로 칠해져 있어야 합니다."));
+        RoomItem("Ch3_Balloons", 3, 2, "풍선", 3, "둥근 풍선 세 개가 아래에서 한데 묶여 있습니다. 풍선은 빨강, 노랑, 파랑입니다.",
+            ("풍선 세 개", "둥근 풍선 모양이 세 개 식별되어야 합니다."),
+            ("묶은 끈", "풍선마다 아래로 줄이 있고, 줄이 아래에서 한 점으로 모여야 합니다."),
+            ("빨강 · 노랑 · 파랑 풍선", "풍선이 빨강, 노랑, 파랑으로 하나씩 칠해져 있어야 합니다."));
+        RoomItem("Ch3_GiftBox", 3, 3, "선물 상자", 3, "네모난 선물 상자입니다. 파란 상자에 빨간 리본이 묶여 있고, 노란 별무늬가 있습니다.",
+            ("상자 모양", "네모난 상자와 위의 리본 매듭이 식별되어야 합니다."),
+            ("별무늬", "상자 안에 별 모양이 하나 이상 있어야 합니다."),
+            ("파랑 · 빨강 · 노랑", "상자는 파랑, 리본은 빨강, 별은 노랑으로 칠해져 있어야 합니다."));
+        RoomItem("Ch4_Tangerine", 4, 1, "귤", 1, "동그란 주황색 귤입니다. 꼭대기에 초록색 잎이 하나 있습니다.",
+            ("둥근 모양", "둥근 귤 몸통이 식별되어야 합니다."),
+            ("잎", "몸통 위쪽에 잎 모양이 붙어 있어야 합니다."),
+            ("주황 몸통 · 초록 잎", "몸통은 주황색(빨강 + 노랑), 잎은 초록색(노랑 + 파랑) 계열로 칠해져 있어야 합니다."));
+        RoomItem("Ch4_Grapes", 4, 2, "포도", 1, "보라색 알이 위는 넓고 아래는 좁게 모인 포도송이입니다. 위에 초록색 줄기가 있습니다.",
+            ("송이 모양", "알들이 모여 위가 넓고 아래가 좁은 송이 모양이 식별되어야 합니다."),
+            ("알 배열", "둥근 알이 여러 개 다닥다닥 붙어 있어야 합니다."),
+            ("보라 알 · 초록 줄기", "알은 보라색(빨강 + 파랑), 줄기는 초록색(노랑 + 파랑) 계열로 칠해져 있어야 합니다."));
+        RoomItem("Ch4_Candy", 4, 3, "줄무늬 사탕", 1, "양 끝을 꼬아 싼 둥근 사탕입니다. 가운데에 주황색과 초록색 줄이 번갈아 있습니다.",
+            ("사탕 모양", "둥근 사탕과 양 끝에 꼬인 포장이 식별되어야 합니다."),
+            ("줄무늬", "사탕 가운데에 줄이 두 줄 이상 번갈아 있어야 합니다."),
+            ("주황 · 초록 줄", "줄 색이 주황색(빨강 + 노랑)과 초록색(노랑 + 파랑) 계열이어야 합니다."));
 
         AssetDatabase.SaveAssets();
     }
 
-    // 자동 판정(LocalJudge)이 특징마다 할 계산 : [단계 번호 - 1][특징 번호 - 1]
-    static readonly (AutoCheck check, InkColor color, Area area)[][] AutoChecks =
+    // 2~4챕터 물건 : 그림은 Sprites/Chapter{n}/{file}_Original · _Wrong1~3 (4챕터는 오답 1장, 나머지 칸은 같은 그림으로 채워요)
+    static void RoomItem(string file, int chapter, int number, string target, int wrongCount, string description, params (string name, string criteria)[] features)
     {
-        new[] { (AutoCheck.BatShape, InkColor.Black, Area.TopLeft) },            // 1 방망이 : 형태
-        new[] { (AutoCheck.BagShape, InkColor.Black, Area.TopLeft),              // 2 가방 : 형태 · 패턴
-                (AutoCheck.PocketStripes, InkColor.Black, Area.TopLeft) },
-        new[] { (AutoCheck.RectOutline, InkColor.Black, Area.TopLeft),           // 3 돗자리 : 형태 · 패턴 · 삼원색
-                (AutoCheck.ColorBands, InkColor.Black, Area.TopLeft),
-                (AutoCheck.BandOrder, InkColor.Black, Area.TopLeft) },
-        new[] { (AutoCheck.RoundBlackRing, InkColor.Black, Area.TopLeft),        // 4 김밥 : 형태 · 패턴 · 삼원색 · 2색 혼합
-                (AutoCheck.IngredientLayout, InkColor.Black, Area.TopLeft),
-                (AutoCheck.ColorInside, InkColor.Yellow, Area.TopLeft),
-                (AutoCheck.ColorInside, InkColor.Green, Area.TopLeft) },
-        new[] { (AutoCheck.PigTails, InkColor.Black, Area.TopLeft),              // 5 친구 : 형태 · 패턴 · 삼원색 · 2색 혼합 · 3색 혼합
-                (AutoCheck.PocketPatch, InkColor.Black, Area.TopLeft),
-                (AutoCheck.ColorInZone, InkColor.Blue, Area.Legs),
-                (AutoCheck.ColorInZone, InkColor.Orange, Area.Body),
-                (AutoCheck.ColorInZone, InkColor.Brown, Area.Head) },
-    };
+        var full = new (string, string, AutoCheck, InkColor, Area)[features.Length];
+        for (int i = 0; i < features.Length; i++) full[i] = (features[i].name, features[i].criteria, AutoCheck.LongHandle, InkColor.Black, Area.TopLeft);
+        var wrongs = new string[wrongCount];
+        for (int i = 0; i < wrongCount; i++) wrongs[i] = $"Chapter{chapter}/{file}_Wrong{i + 1}.png";
+        CreateItem(file, number, target, description, $"Chapter{chapter}/{file}_Original.png", wrongs, full);
+    }
 
-    static void CreateStage(string file, int number, string target, ColorMode mode, string story, string newRule,
-                            string learned, string description, params (string name, string criteria)[] features)
+    static void Ch5Item(string file, int number, string target, string description, params (string name, string criteria)[] features)
+    {
+        var full = new (string, string, AutoCheck, InkColor, Area)[features.Length];
+        for (int i = 0; i < features.Length; i++) full[i] = (features[i].name, features[i].criteria, AutoCheck.LongHandle, InkColor.Black, Area.TopLeft);
+        CreateItem(file, number, target, description, $"Chapter5/{file}_Original.png",
+            new[] { $"Chapter5/{file}_Wrong1.png", $"Chapter5/{file}_Wrong2.png", $"Chapter5/{file}_Wrong3.png" }, full);
+    }
+
+    static void CreateItem(string file, int number, string target, string description, string original, string[] wrongs,
+                           params (string name, string criteria, AutoCheck check, InkColor color, Area area)[] features)
     {
         string path = $"{DataFolder}/{file}.asset";
         var stage = AssetDatabase.LoadAssetAtPath<StageData>(path);       // 있으면 내용을 새로 덮어써요
@@ -1329,43 +1474,102 @@ public static class MvpSceneBuilder
         if (isNew) stage = ScriptableObject.CreateInstance<StageData>();
         stage.stageNumber = number;
         stage.targetName = target;
-        stage.colorMode = mode;
-        stage.introStory = story;
-        stage.newRule = newRule;
-        stage.learnedRules = learned;
+        stage.colorMode = ToolBar.GameplayColorMode;    // (참고용) 실제 펜 도구는 챕터 데이터의 penMode 를 써요
+        stage.shapeOnly = file.StartsWith("Stage");     // 1챕터 소풍 : 형태 하나만 (서버 이름 picnic-shape-N)
+        // 서버 프롬프트 이름 : 5챕터 curse-N, 2~4챕터 room-{챕터}-{N} (서버에 아직 없어요. 배포는 사용자 허락 뒤)
+        stage.serverKey = file.StartsWith("Ch5_") ? "curse-" + number
+                        : file.StartsWith("Ch") ? $"room-{file[2]}-{number}" : "";
         stage.targetDescription = description;
-        stage.originalSprite = LoadSprite($"{file}/{file.Substring(file.IndexOf('_') + 1)}_Original.png");
+        stage.originalSprite = LoadSprite(original);
         stage.features = new Feature[features.Length];
         for (int i = 0; i < features.Length; i++)
-        {
             stage.features[i] = new Feature
             {
-                id = "F" + (i + 1),
-                name = features[i].name,
-                criteria = features[i].criteria,
-                check = AutoChecks[number - 1][i].check,
-                color = AutoChecks[number - 1][i].color,
-                area = AutoChecks[number - 1][i].area,
+                id = "F" + (i + 1), name = features[i].name, criteria = features[i].criteria,
+                check = features[i].check, color = features[i].color, area = features[i].area,
             };
-        }
-        stage.wrongSprites = LoadWrongSprites(file, features.Length);
+        ItemWrongs[file] = wrongs;
+        stage.wrongSprites = LoadWrongSprites(file);
         if (isNew) AssetDatabase.CreateAsset(stage, path);
         else EditorUtility.SetDirty(stage);
     }
 
-    // 판정 조합마다 돌려줄 그림 : Bag_Wrong_XO.png (O 맞음, X 틀림)
-    static Sprite[] LoadWrongSprites(string file, int featureCount)
+    static readonly System.Collections.Generic.Dictionary<string, string[]> ItemWrongs = new System.Collections.Generic.Dictionary<string, string[]>();
+
+    // 오답 3장. 없는 그림은 앞의 오답으로 채워요 (ConnectWrongArt 처럼 이름표가 없으면 지금 그림을 그대로 둬요)
+    static Sprite[] LoadWrongSprites(string file)
     {
-        string key = file.Substring(file.IndexOf('_') + 1);
-        var sprites = new Sprite[1 << featureCount];
-        for (int mask = 1; mask < sprites.Length; mask++)
+        var sprites = new Sprite[3];
+        if (!ItemWrongs.TryGetValue(file, out string[] names))
         {
-            var code = new char[featureCount];
-            for (int i = 0; i < featureCount; i++) code[i] = (mask & (1 << (featureCount - 1 - i))) != 0 ? 'X' : 'O';
-            sprites[mask] = LoadSprite($"{file}/{key}_Wrong_{new string(code)}.png");
+            var old = AssetDatabase.LoadAssetAtPath<StageData>($"{DataFolder}/{file}.asset");
+            return old != null && old.wrongSprites != null ? old.wrongSprites : sprites;
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            sprites[i] = i < names.Length ? LoadSprite(names[i]) : null;
+            if (sprites[i] == null && i > 0) sprites[i] = sprites[i - 1];
         }
         return sprites;
     }
+
+    // 챕터 데이터 : 1챕터 소풍 준비 (물건 5개), 2~4챕터 방 (물건 3개), 5챕터 도깨비의 저주 (요청 물건 · 맞설 물건 3쌍)
+    //   챕터마다 규칙 : 펜(1 · 2 검정, 3~ 섞기), 돋보기(1챕터 없음), 사탕(4챕터 0개), 첫 그리기 안내(1 펜, 2 돋보기, 3 색), 복선
+    static void CreateChapterFiles()
+    {
+        Chapter("Chapter1_Picnic", 1, "소풍 준비", ChapterRule.Normal, 1, "UI/Chapter_Picnic.png", "Background/BG_Room.png", "Background/BG_Picnic.png", null,
+            new[] { "Stage1_Bat", "Stage2_Bag", "Stage3_Mat", "Stage4_Gimbap", "Stage5_Friend" }, null);
+        Rules("Chapter1_Picnic", ColorMode.BlackOnly, magnifier: false, candies: 3, ChapterGuide.Pen);
+        Chapter("Chapter2_Rain", 2, "비 오는 날 방 정리", ChapterRule.Normal, 2, "Chapter2/Chapter_Rain.png", "Background/BG_RoomRain.png", "Background/BG_RoomRain.png", null,
+            new[] { "Ch2_Socks", "Ch2_Umbrella", "Ch2_Pillow" }, null);
+        Rules("Chapter2_Rain", ColorMode.BlackOnly, magnifier: true, candies: 3, ChapterGuide.Magnifier, windowFire: true);
+        Chapter("Chapter3_Birthday", 3, "동생 생일 파티 준비", ChapterRule.Normal, 3, "Chapter3/Chapter_Birthday.png", "Background/BG_RoomEvening.png", "Background/BG_RoomEvening.png", null,
+            new[] { "Ch3_PartyHat", "Ch3_Balloons", "Ch3_GiftBox" }, null);
+        Rules("Chapter3_Birthday", ColorMode.MixFree, magnifier: true, candies: 3, ChapterGuide.Mix, mood: 1);
+        Chapter("Chapter4_Snack", 4, "도깨비 간식 바구니", ChapterRule.Normal, 4, "Chapter4/Chapter_Snack.png", "Background/BG_RoomNight.png", "Background/BG_RoomNight.png", null,
+            new[] { "Ch4_Tangerine", "Ch4_Grapes", "Ch4_Candy" }, null);
+        Rules("Chapter4_Snack", ColorMode.MixFree, magnifier: true, candies: 0, ChapterGuide.None, mood: 2, endEyes: true);
+        Chapter("Chapter5_Curse", 5, "도깨비의 저주", ChapterRule.Curse, 5, "Chapter5/Chapter_Forest.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestDark.png",
+            new[] { "Ch5_Jipsin", "Ch5_Buchae", "Ch5_Gamtu" }, new[] { "Ch5_Bujeok", "Ch5_DakpiBowl", "Ch5_PatBag" });
+        Rules("Chapter5_Curse", ColorMode.MixFree, magnifier: true, candies: 3, ChapterGuide.None);
+        AssetDatabase.SaveAssets();
+    }
+
+    static void Rules(string file, ColorMode pen, bool magnifier, int candies, ChapterGuide guide, bool windowFire = false, int mood = 0, bool endEyes = false)
+    {
+        var c = LoadChapter(file);
+        c.penMode = pen;
+        c.hasMagnifier = magnifier;
+        c.candies = candies;
+        c.guide = guide;
+        c.aloneLines = 2;
+        c.windowFire = windowFire;
+        c.dokkaebiMood = mood;
+        c.endEyes = endEyes;
+        EditorUtility.SetDirty(c);
+    }
+
+    static void Chapter(string file, int number, string title, ChapterRule rule, int level, string photo, string play, string end, string dark, string[] items, string[] counters)
+    {
+        string path = $"{DataFolder}/{file}.asset";
+        var c = AssetDatabase.LoadAssetAtPath<ChapterData>(path);
+        bool isNew = c == null;
+        if (isNew) c = ScriptableObject.CreateInstance<ChapterData>();
+        c.number = number;
+        c.title = title;
+        c.rule = rule;
+        c.criteriaLevel = level;
+        c.photo = LoadSprite(photo) ?? LoadSprite("UI/Chapter_Picnic.png");
+        c.playBackground = LoadSprite(play) ?? LoadSprite("Background/BG_Room.png");
+        c.endBackground = LoadSprite(end) ?? c.playBackground;
+        c.darkBackground = dark == null ? null : LoadSprite(dark) ?? c.playBackground;
+        c.items = System.Array.ConvertAll(items, LoadStage);
+        c.counterItems = counters == null ? new StageData[0] : System.Array.ConvertAll(counters, LoadStage);
+        if (isNew) AssetDatabase.CreateAsset(c, path);
+        else EditorUtility.SetDirty(c);
+    }
+
+    static ChapterData LoadChapter(string file) => AssetDatabase.LoadAssetAtPath<ChapterData>($"{DataFolder}/{file}.asset");
 
     /// <summary>새로 넣은 조합 그림을 단계 데이터에 연결 (씬은 그대로). Temp/mvp_wrongart.flag 로도 실행돼요.</summary>
     public static void ConnectWrongArt()
@@ -1377,7 +1581,7 @@ public static class MvpSceneBuilder
         {
             string path = AssetDatabase.GUIDToAssetPath(guid);
             var stage = AssetDatabase.LoadAssetAtPath<StageData>(path);
-            stage.wrongSprites = LoadWrongSprites(System.IO.Path.GetFileNameWithoutExtension(path), stage.features.Length);
+            stage.wrongSprites = LoadWrongSprites(System.IO.Path.GetFileNameWithoutExtension(path));
             foreach (Sprite s in stage.wrongSprites)
                 if (s != null) connected++;
             EditorUtility.SetDirty(stage);
@@ -1410,9 +1614,24 @@ public static class MvpSceneBuilder
             //   모든 그림에 밉맵(미리 줄여 둔 그림)을 켜서 작은 화면에서 크게 줄어들어도 선이 끊기지 않게
             bool crisp = path.Contains("/UI/") || path.EndsWith("Background/BG_Start.png");
             var compression = crisp ? TextureImporterCompression.Uncompressed : TextureImporterCompression.CompressedHQ;
+            int maxSize = 4096;                                  // 기본 2048 이면 긴 그림이 줄어들어 흐려져요
+            //   쪽지 질감 3장은 아주 커서(그림판 종이 3230 x 3814) 그대로 두면 메모리를 많이 먹어요.
+            //   웹(WebGL)에서는 크기가 2의 거듭제곱이 아니고 밉맵이 켜진 그림은 압축이 풀려 무압축으로 들어가요.
+            //   종이 결(잡티) 때문에 gzip 도 잘 안 돼서, 2048 이면 세 장이 웹 용량 약 12MB 를 차지했어요.
+            //   1024 로 줄이면 약 3MB : 화면(폭 1080)에서 그림판 종이 820 x 963 · 대사 상자 1008 x 312 는 거의 1:1,
+            //   채점표 972 x 1560 만 1.5 배 늘어나요 (테두리가 굵어서 티가 거의 안 나요)
+            if (path.EndsWith("UI/Draw_Paper.png") || path.EndsWith("UI/Paper_Score.png") || path.EndsWith("UI/Dialogue_Box.png"))
+            {
+                compression = TextureImporterCompression.CompressedHQ;
+                maxSize = 1024;
+            }
+            //   소풍 카드 그림은 화면에서 846 x 618 로만 보여서, 1024 로 줄여 넣어요 (선이 또렷하게 압축은 안 해요. 웹 용량 약 12MB → 4MB)
+            if (path.EndsWith("UI/Chapter_Picnic.png") || path.Contains("/Chapter_")) maxSize = 1024;       // 챕터 사진은 모두 작게
+            //   2~4챕터 방 배경 3장은 방 그림에 색을 덮은 임시 그림이라, 웹 용량을 아끼려고 2048 로 줄여요
+            if (path.Contains("Background/BG_Room") && !path.EndsWith("BG_Room.png")) maxSize = 2048;
             if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single
                 || importer.spriteBorder != border || importer.textureCompression != compression
-                || !importer.mipmapEnabled || importer.maxTextureSize < 4096)
+                || !importer.mipmapEnabled || importer.maxTextureSize != maxSize || !importer.alphaIsTransparency)
             {
                 importer.textureType = TextureImporterType.Sprite;
                 importer.spriteImportMode = SpriteImportMode.Single;
@@ -1420,7 +1639,8 @@ public static class MvpSceneBuilder
                 importer.textureCompression = compression;
                 importer.mipmapEnabled = true;
                 importer.filterMode = FilterMode.Trilinear;
-                importer.maxTextureSize = 4096;                  // 기본 2048 이면 긴 그림이 줄어들어 흐려져요
+                importer.maxTextureSize = maxSize;
+                importer.alphaIsTransparency = true;             // 투명한 곳의 색이 가장자리에 번지지 않게
                 importer.SaveAndReimport();
             }
         }
@@ -1520,6 +1740,14 @@ public static class MvpSceneBuilder
     }
 
     // 크림(또는 흰) 카드 : 진갈색 굵은 테두리가 있는 둥근 네모
+    // 쪽지 질감 그림 한 장 (늘리지 않고 그대로 깔아요. 크기는 그림 비율에 맞춰 놓아요). 카드처럼 클릭은 막아요
+    static Image NewPaper(string name, Transform parent, string sprite)
+    {
+        var img = NewImage(name, parent, Color.white);
+        img.sprite = T(sprite);
+        return img;
+    }
+
     static Transform NewCard(string name, Transform parent, Vector2 pos, Vector2 size)
     {
         var img = NewImage(name, parent, Color.white);
@@ -1595,7 +1823,8 @@ public static class MvpSceneBuilder
     static Sprite T(string name) => LoadSprite("UI/" + name + ".png");
 
     // 남은 시간 초 게이지의 위 끝 (화면 1080 폭 기준). 위 줄 아래 ~ 전체 화면 쪽지(FullArea 위 300 + 여백) 사이
-    const float GaugeTop = 200f;
+    //   막대 가운데 줄. 불꽃 꼭대기가 위 줄(돋보기 아래 끝 176)에 닿지 않게 규격표 칸(200 ~ 298)보다 조금 내렸어요
+    const float GaugeMid = 272f;
     const float GaugeWidth = 980f;   // 화면 1080 - 좌우 여백 50 x 2
 
     // 시안의 상자 (x0,y0)-(x1,y1) 자리에 놓기 (부모 = 화면 크기 패널)
@@ -1678,11 +1907,12 @@ public static class MvpSceneBuilder
     //   Frame 높이만큼 꽉 찬 묶음(패널 등) 안으로 들어가며 바꿔요. 크기가 정해진 부모 안의 것은 부모를 따라가요.
     const float TopZone = 320f, BottomZone = 1450f;
     // 한 장면으로 모여 있어야 하는 화면 : 아래쪽 것도 가운데에 붙여요 (챕터 카드 묶음, 소풍 그림의 돗자리와 사탕 통)
-    static readonly string[] KeepTogether = { "ChapterPanel", "EndingPanel" };
+    static readonly string[] KeepTogether = { "ChapterPanel", "EndingPanel", "RoomEndPanel" };
     // 구역과 다르게 붙일 것 (경로 → 0 아래, 0.5 가운데, 1 위)
     static readonly Dictionary<string, float> PinOverride = new Dictionary<string, float>
     {
         { "EndingPanel/DialogueBox", 1f },     // 소풍 장면 대사는 하늘 쪽 맨 위에
+        { "RoomEndPanel/DialogueBox", 1f },    // 방 끝 장면 대사도 맨 위에
     };
     static void PinToScreenEdges(RectTransform parent, string path = "", bool together = false)
     {
@@ -1793,7 +2023,7 @@ public static class MvpSceneBuilder
     // 대사 상자 : 모든 대사가 같은 크기 · 같은 자리예요
     static DialogueBox NewDialogueBox(Transform parent, Sprite face)
     {
-        var card = NewCard("DialogueBox", parent, Vector2.zero, Vector2.zero);
+        var card = NewPaper("DialogueBox", parent, "Dialogue_Box").transform;   // 아트팀 그림 (2098 x 649), 늘리지 않아요
         M((RectTransform)card, 12, 513, 336, 104);
         var faceImg = NewImage("Face", card, Color.white);
         faceImg.sprite = face;

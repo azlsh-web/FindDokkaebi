@@ -65,6 +65,7 @@ public static class LocalJudge
             case AutoCheck.CrossLines: return CrossLines(p, out note);
             case AutoCheck.ColorAt: return ColorAt(p, f.area, f.color, out note);
             case AutoCheck.RoundBlackRing: return RoundBlackRing(p, out note);
+            case AutoCheck.RoundOutline: return RoundOutline(p, out note);
             case AutoCheck.WhiteInside: return WhiteInside(p, out note);
             case AutoCheck.ColorInside: return ColorInside(p, f.color, out note);
             case AutoCheck.PersonShape: return PersonShape(p, out note);
@@ -935,13 +936,23 @@ public static class LocalJudge
     // ── 김밥 : 둥근 검은 테두리와 그 안쪽 ──
     static bool BlackRing(Picture p, out Blob inside)
     {
-        List<Blob> holes = Holes(CloseGaps(p.black), out bool[] filled);   // 끊긴 테두리도 닫힌 걸로
-        Box blackBox = Box.Of(p.black);
-        inside = holes.Count > 0 && blackBox.valid && holes[0].Count >= blackBox.Area * 0.15f ? holes[0] : null;
+        return RoundedHole(Holes(CloseGaps(p.black), out _), Box.Of(p.black), out inside);
+    }
+
+    static bool RoundedHole(List<Blob> holes, Box box, out Blob inside)
+    {
+        inside = holes.Count > 0 && box.valid && holes[0].Count >= box.Area * 0.15f ? holes[0] : null;
         if (inside == null) return false;
         var insideMask = new bool[N * N];
         foreach (int i in inside.cells) insideMask[i] = true;
         return FilledCorners(insideMask, inside.box) <= 1;   // 안쪽 영역의 모서리가 비어 있으면 둥근 모양
+    }
+
+    static bool RoundOutline(Picture p, out string note)
+    {
+        if (RoundedHole(p.inkHoles, p.inkBox, out Blob inside)) { note = "가장 바깥에 둥근 테두리가 있어요."; return true; }
+        note = inside == null ? "테두리가 닫혀 있지 않거나 없어요." : "테두리가 둥글지 않아요.";
+        return false;
     }
 
     static bool RoundBlackRing(Picture p, out string note)

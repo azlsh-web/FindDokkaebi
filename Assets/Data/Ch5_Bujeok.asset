@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76559bebd3ca412438493db7848d8f3b, type: 3}
+  m_Name: Ch5_Bujeok
+  m_EditorClassIdentifier: Assembly-CSharp::StageData
+  stageNumber: 2
+  targetName: "\uBD80\uC801"
+  colorMode: 3
+  originalSprite: {fileID: 21300000, guid: c20d81d33633e534bb92b2165e727cf0, type: 3}
+  shapeOnly: 0
+  serverKey: curse-2
+  targetDescription: "\uC138\uB85C\uB85C \uAE34 \uB178\uB780 \uC885\uC774\uC5D0 \uBE68\uAC04
+    \uAE00\uC528\uAC00 \uC801\uD78C \uBD80\uC801\uC785\uB2C8\uB2E4."
+  features:
+  - id: F1
+    name: "\uAE34 \uB124\uBAA8 \uC885\uC774"
+    criteria: "\uC138\uB85C\uB85C \uAE34 \uC0AC\uAC01\uD615 \uC885\uC774 \uBAA8\uC591\uC774
+      \uC2DD\uBCC4\uB418\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  - id: F2
+    name: "\uB178\uB780 \uC885\uC774"
+    criteria: "\uC885\uC774 \uBC14\uD0D5\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774 \uB178\uB780\uC0C9
+      \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  - id: F3
+    name: "\uBE68\uAC04 \uAE00\uC528"
+    criteria: "\uC885\uC774 \uC548\uC5D0 \uBE68\uAC04\uC0C9 \uC120\uC774\uB098 \uAE00\uC528
+      \uBAA8\uC591\uC774 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  wrongSprites:
+  - {fileID: 21300000, guid: 5751be8e648e2c1419dce341fc974a8f, type: 3}
+  - {fileID: 21300000, guid: 586d14e814ef7804597fa01a4ea4af75, type: 3}
+  - {fileID: 21300000, guid: 05b094a09dc2f02429f992a34f9e4c70, type: 3}

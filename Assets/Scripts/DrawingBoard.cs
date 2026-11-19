@@ -8,9 +8,10 @@ using UnityEngine.UI;
 // DrawingBoard : 쪽지(그림판). 마우스/터치로 선을 긋는 기능만 담당해요.
 // ─────────────────────────────────────────────────────────────
 // 원리
-//   1) 흰색으로 꽉 찬 "텍스처(Texture2D)" = 픽셀 그림 한 장을 만든다.
+//   1) 투명한 "텍스처(Texture2D)" = 픽셀 그림 한 장을 만든다. 종이 그림(Draw_Paper)은 그 뒤에 따로 깔려 있어요.
 //   2) 그 텍스처를 화면의 RawImage(이미지 칸)에 붙여서 보여준다.
-//   3) 마우스를 누르거나 끌 때마다, 그 위치의 픽셀들을 지금 고른 색(또는 흰색=지우개)으로 바꾼다.
+//   3) 마우스를 누르거나 끌 때마다, 그 위치의 픽셀들을 지금 고른 색(또는 투명=지우개)으로 바꾼다.
+//   4) 판정 AI 에 보내거나 저장할 때는 흰 바탕에 합친 그림(FlatTexture)을 써요.
 //
 // 되돌리기 원리
 //   - 선을 긋기 "직전"의 픽셀 배열을 통째로 복사해 목록(undoStack)에 쌓아둬요.
@@ -59,8 +60,27 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     /// <summary>되돌린 것을 다시 할 수 있는지 (새로 그리면 사라져요)</summary>
     public bool CanRedo => redoStack.Count > 0;
 
-    /// <summary>지금까지 그린 그림. 판정·비교 화면에서 그대로 다시 써요.</summary>
+    /// <summary>지금까지 그린 선만 (바탕은 투명). 건네는 쪽지 · 판정 · 채점표 화면에서 종이 그림 위에 그대로 다시 써요.</summary>
     public Texture2D Texture { get; private set; }
+
+    /// <summary>그린 선을 흰 바탕에 합친 그림. 판정 AI 에 보내거나 파일로 저장할 때 써요. 부를 때마다 새로 합쳐요.</summary>
+    public Texture2D FlatTexture()
+    {
+        Init();
+        if (flat == null) flat = new Texture2D(TextureWidth, TextureHeight, TextureFormat.RGBA32, false);
+        var outPx = new Color32[pixels.Length];
+        for (int i = 0; i < pixels.Length; i++)
+        {
+            Color32 c = pixels[i];
+            int a = c.a;
+            outPx[i] = new Color32((byte)((c.r * a + 255 * (255 - a)) / 255), (byte)((c.g * a + 255 * (255 - a)) / 255),
+                                   (byte)((c.b * a + 255 * (255 - a)) / 255), 255);
+        }
+        flat.SetPixels32(outPx);
+        flat.Apply();
+        return flat;
+    }
+    Texture2D flat;
 
     // ── 이 스크립트 안에서만 쓰는 값들 ──
     RawImage rawImage;      // 텍스처를 보여줄 화면 칸
@@ -75,7 +95,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     bool stroking;          // 선을 긋는 중인지
     int strokePointer;      // 그 선을 긋는 손가락 번호 (다른 손가락은 무시)
 
-    static readonly Color32 Paper = new Color32(253, 252, 245, 255); // 쪽지 색 (시안 클립보드 종이 색)
+    static readonly Color32 Blank = new Color32(255, 255, 255, 0);   // 빈 곳 = 투명 (색은 흰색이라 선 가장자리가 어둡게 번지지 않아요)
 
     // Awake : 이 오브젝트가 "처음 켜질 때" 한 번 실행돼요.
     // ※ 그림판은 꺼져 있는 DrawPanel 안에 있어서, 게임 시작 때는 Awake 가 아직 안 불려요.
@@ -104,11 +124,11 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
 
     // ───────────── GameManager / ToolBar 에서 부르는 함수들 ─────────────
 
-    /// <summary>새 쪽지 : 흰색으로 비우고 되돌리기 기록도 지워요. (새 도전마다)</summary>
+    /// <summary>새 쪽지 : 투명하게 비우고 되돌리기 기록도 지워요. (새 도전마다)</summary>
     public void ResetBoard()
     {
         Init();
-        for (int i = 0; i < pixels.Length; i++) pixels[i] = Paper;
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = Blank;
         undoStack.Clear();
         redoStack.Clear();
         ApplyPixels();
@@ -126,19 +146,19 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         Init();
         if (source.Length != TextureWidth * TextureWidth) return;
         SaveUndo();
-        for (int i = 0; i < pixels.Length; i++) pixels[i] = Paper;
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = Blank;
         Array.Copy(source, 0, pixels, (TextureHeight - TextureWidth) / 2 * TextureWidth, source.Length);
         ApplyPixels();
         HasDrawn = ScanForInk();
     }
 
-    /// <summary>[버튼] 모두 지우기 : 흰색으로 비우지만, 되돌리기로 다시 살릴 수 있어요.</summary>
+    /// <summary>[버튼] 모두 지우기 : 투명하게 비우지만, 되돌리기로 다시 살릴 수 있어요.</summary>
     public void Clear()
     {
         Init();
         if (!HasDrawn) return;
         SaveUndo();
-        for (int i = 0; i < pixels.Length; i++) pixels[i] = Paper;
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = Blank;
         ApplyPixels();
         HasDrawn = false;
     }
@@ -244,14 +264,13 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         if (undoStack.Count > maxUndo) undoStack.RemoveAt(0);     // 너무 많으면 가장 오래된 것 버림
     }
 
-    // 쪽지에 종이 색(또는 흰색)이 아닌 픽셀이 하나라도 있는지
+    // 쪽지에 투명(또는 흰색)이 아닌 픽셀이 하나라도 있는지
     bool ScanForInk()
     {
         foreach (Color32 c in pixels)
         {
-            bool paper = c.r == Paper.r && c.g == Paper.g && c.b == Paper.b;
             bool white = c.r == 255 && c.g == 255 && c.b == 255;   // 검사용으로 불러온 그림은 흰 바탕일 수 있어요
-            if (!paper && !white) return true;
+            if (c.a >= 128 && !white) return true;
         }
         return false;
     }
@@ -314,7 +333,7 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     void DrawDot(Vector2 center)
     {
         int radius = isEraser ? eraserRadius : penRadius;
-        Color32 color = isEraser ? Paper : inkColor;
+        Color32 color = isEraser ? Blank : inkColor;
         int cx = Mathf.RoundToInt(center.x);
         int cy = Mathf.RoundToInt(center.y);
 

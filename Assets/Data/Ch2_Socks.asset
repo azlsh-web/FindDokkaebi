@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76559bebd3ca412438493db7848d8f3b, type: 3}
+  m_Name: Ch2_Socks
+  m_EditorClassIdentifier: Assembly-CSharp::StageData
+  stageNumber: 1
+  targetName: "\uC904\uBB34\uB2AC \uC591\uB9D0"
+  colorMode: 3
+  originalSprite: {fileID: 21300000, guid: 4e65fcec8ac2c2c46ab99db15eeaf433, type: 3}
+  shapeOnly: 0
+  serverKey: room-2-1
+  targetDescription: "\uBC1C\uBAA9\uC774 \uAE38\uACE0 \uBC1C\uB05D\uC774 \uC606\uC73C\uB85C
+    \uAD7D\uC740 \uC591\uB9D0\uC785\uB2C8\uB2E4. \uC591\uB9D0\uC5D0 \uAC00\uB85C
+    \uC904\uBB34\uB2AC\uAC00 \uC788\uC2B5\uB2C8\uB2E4."
+  features:
+  - id: F1
+    name: "\uC591\uB9D0 \uBAA8\uC591"
+    criteria: "\uBC1C\uBAA9 \uBD80\uBD84\uACFC \uC606\uC73C\uB85C \uAD7D\uC740 \uBC1C\uB05D\uC774
+      \uC774\uC5B4\uC9C4 L\uC790 \uC591\uB9D0 \uBAA8\uC591\uC774 \uC2DD\uBCC4\uB418\uC5B4\uC57C
+      \uD569\uB2C8\uB2E4. \uB124\uBAA8\uB098 \uC6D0\uB9CC \uADF8\uB9B0 \uAC83\uC740
+      \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  - id: F2
+    name: "\uAC00\uB85C \uC904\uBB34\uB2AC"
+    criteria: "\uC591\uB9D0 \uC548\uC5D0 \uAC00\uB85C \uBC29\uD5A5 \uC904\uC774 \uB450
+      \uC904 \uC774\uC0C1 \uBC18\uBCF5\uB418\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uC138\uB85C\uC904\uC774\uB098
+      \uC810\uBB34\uB2AC\uB294 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
+    check: 0
+    color: 0
+    area: 0
+  wrongSprites:
+  - {fileID: 21300000, guid: 7819dfa49958f344fb0fd12cab709650, type: 3}
+  - {fileID: 21300000, guid: 804c7d56ac6fc8c4c9537d6c222f3b9e, type: 3}
+  - {fileID: 21300000, guid: 7ad6fabcda4db1441aa28dfe3eaddf47, type: 3}

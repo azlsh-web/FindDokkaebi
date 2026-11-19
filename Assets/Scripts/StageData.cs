@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // ─────────────────────────────────────────────────────────────
-// StageData : "한 단계(스테이지)에 필요한 데이터"만 담는 파일
+// StageData : "물건 하나"에 필요한 데이터 (챕터 구조에서는 물건 = ItemData 역할)
 // ─────────────────────────────────────────────────────────────
 // - ScriptableObject 는 "씬에 올리지 않는 데이터 파일"이에요.
 //   Project 창에서 우클릭 → Create → 찾아라도깨비 → Stage Data 로 만들 수 있어요.
@@ -54,6 +54,7 @@ public enum AutoCheck
     IngredientLayout,   // 재료가 위에 둘, 아래에 하나 (김밥 배치)
     PigTails,           // 머리 양옆으로 튀어나온 양 갈래 (친구 형태)
     PocketPatch,        // 멜빵바지 주머니 자리의 검은 천 조각 (친구 패턴)
+    RoundOutline,       // 색과 관계없이 둥글게 둘러진 외곽 (김밥 형태)
 }
 
 /// <summary>자동 판정에서 쓰는 색 이름 (HSV 로 구분)</summary>
@@ -98,18 +99,6 @@ public class StageData : ScriptableObject
     [Tooltip("그려야 할 대상 이름. 예) 방망이")]
     public string targetName = "방망이";
 
-    [Tooltip("단계 도입 화면에 나오는 이야기")]
-    [TextArea(3, 6)]
-    public string introStory;
-
-    [Tooltip("이번 단계에서 새로 배우는 규칙")]
-    [TextArea(2, 4)]
-    public string newRule;
-
-    [Tooltip("앞 단계에서 배운 규칙 (1단계는 비워 둬요)")]
-    [TextArea(2, 4)]
-    public string learnedRules;
-
     [Header("도구")]
     public ColorMode colorMode = ColorMode.BlackOnly;
 
@@ -118,6 +107,12 @@ public class StageData : ScriptableObject
     public Sprite originalSprite;
 
     [Header("판정")]
+    [Tooltip("색과 무늬를 제외하고 형태만 평가해요 (1챕터).")]
+    public bool shapeOnly;
+
+    [Tooltip("판정 서버에서 이 물건의 프롬프트를 찾는 이름. 비워 두면 1챕터 규칙대로 (picnic-shape-N)")]
+    public string serverKey;
+
     [Tooltip("AI 에게 알려줄 목표 대상 설명 (기획서 부록 B 의 '목표 대상')")]
     [TextArea(3, 6)]
     public string targetDescription;
@@ -125,15 +120,17 @@ public class StageData : ScriptableObject
     [Tooltip("그림에 들어 있어야 할 특징들 (순서대로 F1, F2 …)")]
     public Feature[] features;
 
-    [Tooltip("판정 조합마다 도깨비가 가져오는 물건. 칸 번호 = F1 부터 차례로 틀림을 1 로 쓴 이진수 (0 번은 원본이라 비워 둬요)")]
-    public Sprite[] wrongSprites;
+    [Tooltip("틀렸을 때 도깨비가 가져오는 엉뚱한 물건 3장. n번째로 틀리면 n번째 그림 (사탕이 3개라 3번까지 틀려요)")]
+    public Sprite[] wrongSprites = new Sprite[3];
 
-    /// <summary>판정 결과(특징마다 맞음/틀림)에 맞는 물건. 전부 틀리면 완전히 다른 물건이에요.</summary>
-    public Sprite WrongSpriteFor(bool[] present)
+    // 배포된 판정 서버(Server/judge/stages.json)의 이름. 예전 소풍 게임의 단계 번호(1~5)와 겹치지 않게 나눠요.
+    public string ServerStageKey => !string.IsNullOrEmpty(serverKey) ? serverKey : shapeOnly ? $"picnic-shape-{stageNumber}" : stageNumber.ToString();
+
+    /// <summary>이 물건에서 wrongCount 번째로 틀렸을 때 가져오는 물건 (1부터)</summary>
+    public Sprite WrongSpriteFor(int wrongCount)
     {
-        int index = 0;
-        foreach (bool ok in present) index = index * 2 + (ok ? 0 : 1);
-        return wrongSprites[index];
+        if (wrongSprites == null || wrongSprites.Length == 0) return null;
+        return wrongSprites[Mathf.Clamp(wrongCount - 1, 0, wrongSprites.Length - 1)];
     }
 
     /// <summary>화면에 보일 단계 제목. 예) 1단계 방망이</summary>
