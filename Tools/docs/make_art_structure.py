@@ -6,7 +6,8 @@ import base64, io, itertools, os, re, sys
 from PIL import Image
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from art_tree_data import REQUEST, STAGES, TREE
+from art_tree_data import STAGES, TREE
+from request_data import inventory
 from doc_pdf import BASE_CSS, write_pdf
 import paths
 
@@ -86,39 +87,31 @@ pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px; font-size: 
 p = [f"<h1>찾아라! 도깨비 아트 구조</h1><p class='sub'>게임에 들어간 그림 파일이 화면과 오브젝트에 어떻게 연결돼 있는지 정리한 문서예요. {date.today()} 기준이며, 씬과 단계 데이터의 실제 참조와 대조해 만들었어요.</p>"]
 counts = {k: len([e for e in existing if e.split("/")[0] == k]) for k in ("Background", "Characters", "UI")}
 stage_total = sum(len([e for e in existing if e.startswith(s[1] + "/")]) for s in STAGES)
-p.append(f"<h2>한눈에</h2><p><b>게임 그림은 전부 <code>Assets/Sprites</code> 안에 있어요.</b> 파일 {len(existing)}장을 모두 게임에서 써요.</p>")
-p.append(f"""<pre>Assets/Sprites/
-├─ Background/      배경 {counts['Background']}장          BG_대상
-├─ Characters/      캐릭터 {counts['Characters']}장        Char_대상_상태
-├─ Stage1_Bat/      방망이 2장         Bat_Original, Bat_Wrong_OX조합
-├─ Stage2_Bag/      가방 4장           Bag_Original, Bag_Wrong_OX조합
-├─ Stage3_Mat/      돗자리 8장         Mat_Original, Mat_Wrong_OX조합
-├─ Stage4_Gimbap/   김밥 16장          Gimbap_Original, Gimbap_Wrong_OX조합
-├─ Stage5_Friend/   친구 32장          Friend_Original, Friend_Wrong_OX조합
-└─ UI/              화면 부품 {counts['UI']}장     Common · HUD · Incense · Title · Draw · Mix · Result · Score</pre>""")
+current = [r for r in inventory() if r.team == "아트" and r.status != "없음"]
+p.append(f"<h2>한눈에</h2><p><b>그림은 <code>Assets/Sprites</code> 안에 있어요.</b> 보관 파일까지 {len(existing)}장이고, 현재 요청 현황에는 {len(current)}개 파일을 관리해요. 아래 트리에는 미사용 표시가 있는 옛 부품도 남아 있어요. 새 요청과 수령 상태의 기준은 요청 현황이에요.</p>")
+p.append("<table><tr><th>폴더</th><th>보관 포함 파일 수</th></tr>" + "".join(
+    f"<tr><td>{folder}</td><td>{sum(e.startswith(folder + '/') for e in existing)}</td></tr>"
+    for folder in sorted({e.split('/')[0] for e in existing})) + "</table>")
 p.append("<table><tr><th>출처</th><th>뜻</th></tr><tr><td>아트팀</td><td>아트 담당자에게 받은 그림</td></tr><tr><td>Codex</td><td>원본을 바탕으로 Codex가 만든 그림</td></tr><tr><td>기획서 그림 N</td><td>기획서 시안에서 오린 부품</td></tr><tr><td>코드로 그림</td><td>개발 쪽에서 코드로 만든 그림</td></tr><tr><td>개발 임시 그림</td><td>아트팀 그림이 오기 전까지 쓰는 그림. <b>아트팀 요청</b>이라고 적힌 것은 받으면 같은 이름으로 바뀌어요 (4번 문서)</td></tr></table>")
 
-requested = {r[0] for r in REQUEST}
+requested = {r.file.removeprefix("Sprites/")[:-4] for r in current if r.action == "교체"}
 p.append("<h2>화면별 트리</h2><ul class='tree'>")
 for screen, path, rows in TREE:
     p.append(f"<li><div class='screen'>{screen}<span class='path'>{path}</span></div><ul>")
     for obj, f, src in rows:
         if "/" in f and "아래" not in f:
-            p.append(f"<li><div class='node'><img src='{thumb(f)}'><span class='obj'>{obj}</span><span class='file'>{norm(f)}.png</span><span class='src'>{src}{' · 아트팀 요청' if os.path.basename(norm(f)) in requested else ''}</span></div></li>")
+            p.append(f"<li><div class='node'><img src='{thumb(f)}'><span class='obj'>{obj}</span><span class='file'>{norm(f)}.png</span><span class='src'>{src}{' · 교체 요청' if norm(f) in requested else ''}</span></div></li>")
         else:
             p.append(f"<li><div class='node'><span class='obj'>{obj}</span><span class='src'>{f}</span></div></li>")
     p.append("</ul></li>")
 p.append("</ul>")
 
-p.append("<h2>물건별 그림</h2><p>게임은 판정 결과를 O(맞음)·X(틀림) 조합으로 만들어 그 조합의 파일을 보여 줘요. 전부 맞으면 원본, 전부 틀리면 완전히 다른 물건이에요. 조합 순서는 형태 → 패턴 → 삼원색 → 2색 혼합 → 3색 혼합이에요.</p>")
-for name, folder, key, n, other, origin in STAGES:
-    p.append(f"<h3>{name} <span class='path'>Assets/Sprites/{folder}</span></h3><div class='node'><img src='{thumb(f'{folder}/{key}_Original')}'><span class='file'>{key}_Original.png</span><span class='src'>{origin}, 전부 맞을 때</span></div>")
-    p.append("<div class='grid'>")
-    for marks in itertools.product("OX", repeat=n):
-        if "X" in marks:
-            code = "".join(marks)
-            p.append(f"<div class='cell'><img src='{thumb(f'{folder}/{key}_Wrong_{code}', 26)}'><span>{key}_Wrong_{code}</span></div>")
-    p.append(f"</div><p class='src'>모두 Codex. <code>{key}_Wrong_{'X' * n}</code>은 완전히 다른 물건 {other}이에요.</p>")
+p.append("<h2>현재 물건 그림</h2><p>원본은 성공할 때, 오답은 틀린 횟수에 따라 보여요. 4챕터는 물건마다 오답 한 장이에요. 옛 O/X 조합 파일 중 지금 쓰지 않는 것은 요청에서 뺐어요. 판정 기준은 게임 플로우의 챕터별 물건 표를 보세요.</p><div class='grid'>")
+for r in current:
+    if r.group == "1챕터 물건" or re.search(r"Ch[2345]_.*_(Original|Wrong\d)", r.file):
+        rel = r.file.removeprefix("Sprites/")[:-4]
+        p.append(f"<div class='cell'><img src='{thumb(rel, 26)}'><span>{rel}<br>{r.status}</span></div>")
+p.append("</div>")
 
 html = f"<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아트 구조</title><style>{CSS}</style></head><body>{''.join(p)}</body></html>"
 print(paths.ART_STRUCTURE, write_pdf(html, paths.doc(paths.ART_STRUCTURE)))

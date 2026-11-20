@@ -10,7 +10,6 @@
 #   - Docs 밖 문서(paths.EXTERNAL_PAGES)도 사이트 페이지로 만들고, 옛 주소(paths.LEGACY)도 남겨요.
 #   - 모양은 site_style.css 예요.
 #   시작 문서가 없는 파일을 가리키면 경고하고 1 로 끝나요.
-import csv
 import html
 import os
 import re
@@ -25,6 +24,7 @@ from markdown.extensions.toc import slugify_unicode
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import paths
+from pdf_redirect import write_redirect
 
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = paths.ROOT
@@ -103,13 +103,12 @@ class Guide:
 
 
 class Site:
-    """Docs 폴더 하나 → 사이트 하나. 순서 : 복사 → 글 페이지 → 사진 페이지 → 옛 주소 → 홈"""
+    """Docs 폴더 하나 → 사이트 하나. 순서 : 복사 → 글 페이지 → 옛 주소 → 홈"""
 
     def __init__(self, out):
         self.out = out
         self.titles = {}       # 사이트 기준 .md 경로 → 제목
         self.states = {}       # 사이트 기준 .md 경로 → 상태
-        self.photo_count = 0
         # Docs 밖 문서로 가는 링크 → 그 문서의 사이트 페이지 (예: BACKLOG.md → 2_제작/백로그.md)
         self.external = {src: site for site, src in paths.EXTERNAL_PAGES.items()}
 
@@ -159,30 +158,6 @@ class Site:
         for site_rel, src in paths.EXTERNAL_PAGES.items():
             self.render_md(os.path.join(ROOT, src), site_rel)
 
-    # ---- 플로우 사진 ----
-    def photo_page(self):
-        """플로우 사진 모음 : 화면 흐름 순서대로 구역별 사진과 설명"""
-        rows = list(csv.reader(open(paths.doc(paths.PHOTOS + "/manifest.tsv"), encoding="utf-8", newline=""), delimiter="\t", quotechar=None))
-        depth = paths.PHOTOS.count("/") + 1
-        body = [f"<a class='back' href='{'../' * depth}index.html'>← 문서 목록</a>",
-                "<header class='top'><h1>플로우 사진</h1></header>",
-                f"<p class='meta'>자동 플레이로 찍은 화면 {len(rows)}장이에요. 사진을 누르면 크게 보여요.</p><div class='shots'>"]
-        current = None
-        for row in rows:
-            file, section, caption = row[0], row[1], row[2]
-            line = row[3] if len(row) > 3 else ""
-            if section != current:
-                if current is not None:
-                    body.append("</div>")
-                body.append(f"<h2>{html.escape(section)}</h2><div class='row'>")
-                current = section
-            l = f"<span class='l'>{html.escape(line)}</span>" if line else ""
-            body.append(f"<figure><a href='{quote(file)}'><img loading='lazy' src='{quote(file)}' alt='{html.escape(caption)}'></a>"
-                        f"<figcaption>{html.escape(caption)}{l}</figcaption></figure>")
-        body.append("</div></div>")
-        self.write(paths.PHOTOS + "/index.html", page("플로우 사진", "".join(body), depth))
-        self.photo_count = len(rows)
-
     # ---- 옛 주소 ----
     def legacy(self):
         """폴더를 바꾸기 전 주소로 들어와도 열리게 : 글은 넘어가는 페이지, 파일은 같은 파일을 옛 자리에"""
@@ -197,6 +172,9 @@ class Site:
                 dst = os.path.join(self.out, *old.split("/"))
                 os.makedirs(os.path.dirname(dst), exist_ok=True)
                 shutil.copyfile(paths.doc(new), dst)
+        for old, new in paths.PDF_REDIRECTS.items():
+            write_redirect(os.path.join(self.out, *old.split("/")),
+                           "https://azlsh-web.github.io/FindDokkaebi/docs/" + quote(new[:-3] + ".html"))
 
     # ---- 홈 ----
     def card(self, label, target, desc, chips=(), extra=()):
@@ -226,10 +204,7 @@ class Site:
             how = row.get("만드는 법", "")
             chips = [chip(how) if how == "자동" else "", chip(row.get("받는 곳", ""))]
             cards.append(self.card(label, target, row.get("내용", "").replace("`", ""), chips, extra))
-        if paths.PHOTOS.startswith(folder + "/"):
-            cards.insert(1, f"<a class='card' href='{quote(paths.PHOTOS)}/index.html'><div class='t'>플로우 사진 {chip('사진 %d장' % self.photo_count)}{chip('자동')}</div>"
-                            f"<div class='d'>자동 플레이로 찍은 화면을 흐름 순서대로</div></a>")
-        # 표에 없는 파일도 빠짐없이 (하위 폴더 포함, 사진 폴더는 빼요)
+        # 표에 없는 파일도 빠짐없이 (하위 폴더 포함, 사진 폴더는 게임 플로우 문서가 보여 줘서 빼요)
         others = []
         for sub, dirs, files in os.walk(paths.doc(folder)):
             dirs[:] = sorted(d for d in dirs if rel_to_docs(os.path.join(sub, d)) != paths.PHOTOS)
@@ -274,10 +249,9 @@ class Site:
         shutil.copytree(DOCS, self.out, dirs_exist_ok=True)
         shutil.copyfile(STYLE, os.path.join(self.out, "style.css"))
         self.render_all_md()
-        self.photo_page()
         self.legacy()
         missing = self.home()
-        print(f"문서 사이트 {self.out} (글 {len(self.titles)}개, 사진 {self.photo_count}장, 옛 주소 {len(paths.LEGACY)}개)")
+        print(f"문서 사이트 {self.out} (글 {len(self.titles)}개, 옛 주소 {len(paths.LEGACY)}개)")
         return 1 if missing else 0
 
 

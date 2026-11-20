@@ -1,5 +1,6 @@
-# 대사 트리 (paths.DIALOGUE_TREE) 와 선택적 .pdf : 현재 챕터의 대사를 흐름대로 정리해요.
-#   python Tools/docs/make_dialogue_tree.py --no-pdf
+# 대사 트리 (paths.DIALOGUE_TREE) : 현재 챕터의 대사를 흐름대로 정리해요.
+#   python Tools/docs/make_dialogue_tree.py         글 문서만 (2026-11-20 부터 기본, PDF 는 같은 내용이라 뺐어요)
+#   python Tools/docs/make_dialogue_tree.py --pdf   PDF 도 Temp 에 따로 만들어요
 #   python Tools/docs/make_dialogue_tree.py          PDF 도 함께 만들어요
 # 대사와 번호는 수정표와 같은 read_lines() 에서 읽어요.
 import html as esc
@@ -130,10 +131,10 @@ text = f"""# 대사 트리
 
 게임에 나오는 대사를 챕터와 분기별로 정리했어요. [대사 수정표](../3_전달/대사_수정표.xlsx)와 같은 `GameScript.cs`의 대사를 읽어요. 번호와 대사는 수정표와 같아요.
 
-이 문서는 코드에서 자동으로 만들어요. Markdown만 갱신하려면:
+이 문서는 코드에서 자동으로 만들어요. 이 문서만 다시 만들려면:
 
 ```bash
-python Tools/docs/make_dialogue_tree.py --no-pdf
+python Tools/docs/make_dialogue_tree.py
 ```
 
 ## 읽는 법
@@ -173,8 +174,8 @@ with open(out, "w", encoding="utf-8", newline="\n") as f:
     f.write(text)
 print(paths.DIALOGUE_TREE, len(text))
 
-if "--no-pdf" in sys.argv:
-    print("PDF 생략 (--no-pdf)")
+if "--pdf" not in sys.argv:
+    print("PDF 는 만들지 않아요 (사이트에서 글 문서로 봐요). 필요하면 --pdf")
 else:
     from doc_pdf import BASE_CSS, EDGE, write_pdf
 
@@ -195,4 +196,4 @@ pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px 12px; white-
 {"".join(branch(label, kids) for label, kids in tree)}
 {"".join(branch(label, kids) for label, kids in screen)}
 </body></html>"""
-        print(paths.DIALOGUE_TREE[:-3] + ".pdf", write_pdf(html, os.path.splitext(out)[0] + ".pdf"))
+        print(paths.DIALOGUE_TREE[:-3] + ".pdf", write_pdf(html, os.path.join(ROOT, "Temp", "대사_트리.pdf")))

@@ -58,7 +58,7 @@ arch = [
     "  Assets/Fonts/      Jua(시안 글꼴, 구운 SDF) · Noto Sans KR(없는 기호 대신)\n"
     "  ArtSource/          기획서 그림 · 첨부 사진 원본 (게임에서 안 씀)\n"
     "  Server/judge/       판정 중계 서버 (worker.js · stages.json 게임 프롬프트 · appendix_b.json 부록 B 원문 · wrangler.toml)\n"
-    "  Docs/               읽는 문서 : 기획 · 제작 · 전달 · 기술 · QA와 기록 (안내는 0_시작하기.md)\n"
+    "  Docs/               읽는 문서 : 기획 · 제작 · 전달 · 기술 (안내는 0_시작하기.md)\n"
     "  Tools/docs/         문서를 만드는 스크립트, 받은 아트 ZIP 넣기(apply_art_zip.py), 그림 도구(art_pipeline)\n"
     "  Builds/WebGL/       웹 빌드 결과 (git 에 안 올림)\n"
     "  UserSettings/OpenAI.json   (선택) 판정 서버 주소가 비어 있을 때만 쓰는 OpenAI 키 — git 에 안 올림</pre>",
@@ -95,7 +95,7 @@ arch = [
     "<div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 판정 서버 프롬프트 내보내기(<code>Server/judge/stages.json</code>) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. 프롬프트는 서버에 있어서 웹 게임은 다시 빌드하지 않아도 돼요. "
     "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 한도는 모델 · 프로젝트마다 달라요 (미국 태평양 시간 자정에 다시 채워짐 : 한국 시간 오후 5시, 서머타임 때는 오후 4시). 모델을 바꾸려면 <code>Server/judge/wrangler.toml</code> 의 <code>GEMINI_MODEL</code> → <code>npx wrangler deploy</code>. 서버는 503 은 다시 시도하고, 429 는 바로 멈춰 Google 의 제한 내용을 보여 줘요. Gemini 가 45초 안에 답하지 않으면 끊어요.</div>"
     "<h3>판정 검증 (기획서 8장 다시 하기)</h3><p>부록 A 그림 4장 + 부록 B 프롬프트 원문(<code>Server/judge/appendix_b.json</code>)으로 그림마다 한 번씩 판정 → 2026-10-27 Gemini 로 4장 모두 기획서 표와 같은 결과. "
-    "입력 그림과 결과 : <code>Docs/5_QA와_기록/보관/기획서8장_판정_재검증.pdf</code>. "
+    "입력 그림과 결과 : 기획서 8장 판정 재검증 보고서 (2026-11-20 지움, git 기록에 있어요). "
     "※ 기획서 8장 돗자리는 십자 네 칸, 게임 3단계 돗자리는 최종 아트대로 위에서부터 색 띠 네 줄이라 프롬프트가 달라요. 게임 1단계 방망이도 최종 아트대로 돌기가 있는 머리 기준이에요.</p>"
     "<div class='note'>자동 플레이 테스트(MvpSelfTest)는 AI 를 부르지 않아요. 화면 흐름을 보려고 판정 결과를 미리 정해서 넣고, 그 결과에 맞는 손그림(HandSketch)을 제출해요.</div>",
     "<h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table>"
