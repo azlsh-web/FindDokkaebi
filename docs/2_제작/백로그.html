@@ -1,6 +1,6 @@
 <!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>나중에 할 일 (BACKLOG) · 찾아라! 도깨비</title><link rel='stylesheet' href='../style.css'></head><body><div class='wrap'><a class='back' href='../index.html'>← 문서 목록</a><article class='doc'><h1 id="나중에-할-일-backlog">나중에 할 일 (BACKLOG)</h1>
 <blockquote>
-<p><strong>상태</strong> 최신 · <strong>담당</strong> 개발 · <strong>마지막 갱신</strong> 2026-11-18</p>
+<p><strong>상태</strong> 최신 · <strong>담당</strong> 개발 · <strong>마지막 갱신</strong> 2026-11-20</p>
 </blockquote>
 <p>지금 작업이 끝난 뒤에 할 일을 적어 둬요. 시작할 때 사용자와 다시 정해요.</p>
 <h2 id="5챕터-흐름-재정비-2026-11-18-점검-24챕터를-먼저-하기로-해서-미룸">5챕터 흐름 재정비 (2026-11-18 점검, 2~4챕터를 먼저 하기로 해서 미룸)</h2>
@@ -31,4 +31,12 @@
 <p><strong>D. 소리</strong>
 - D1. 5챕터에서도 1챕터의 밝은 배경음이 나와요 (할 일 목록의 "마지막 챕터 배경음악"과 같은 일).</p>
 <h2 id="개발자-모드-2026-11-18-사용자-제안-24챕터-구현-뒤">개발자 모드 (2026-11-18 사용자 제안, 2~4챕터 구현 뒤)</h2>
-<p>테스트 · 시연용으로 챕터 · 물건 바로 가기, 판정 결과 고르기 같은 기능을 생각 중이에요. 구체적인 기획은 다음 세션에서 정해요.</p></article></div></body></html>
+<p>테스트 · 시연용으로 챕터 · 물건 바로 가기, 판정 결과 고르기 같은 기능을 생각 중이에요. 구체적인 기획은 다음 세션에서 정해요.</p>
+<h2 id="코드-정리-2026-11-20-마감-뒤에">코드 정리 (2026-11-20, 마감 뒤에)</h2>
+<p>파일 나누기(partial class)는 끝났어요. 아래는 데이터 파일 · 씬 · 메뉴 · 문서 도구가 함께 바뀌어서 마감 뒤로 미뤘어요.</p>
+<ul>
+<li><code>Stage</code>/<code>Ch</code> 이름 섞임 정리 : 물건 데이터는 <code>StageData</code>인데 챕터 구조에서는 "물건"이에요. <code>ItemData</code>로 바꾸려면 <code>.cs</code> 파일 이름과 <code>.meta</code>를 같이 옮기고, 필드는 <code>[FormerlySerializedAs]</code>로 이어 줘야 데이터가 안 날아가요. 데이터 파일 이름(<code>Stage1_Bat</code> 등)과 테스트 그룹 이름(<code>stage1</code>~<code>stage5</code>)도 같이 정해요.</li>
+<li><code>Mvp</code> 접두어 빼기 : 에디터 도구 이름 · 메뉴 · flag 파일 이름 · 문서가 함께 바뀌어요.</li>
+<li><code>MvpSceneBuilder.Build()</code> 쪼개기 : 1,300줄 함수 하나에 지역 변수 274개가 얽혀 있어요. 화면별 함수로 나눌 때는 "다시 조립한 씬이 ID만 빼고 같은지" 비교로 확인해요.</li>
+<li>테스트 : <code>chapter5</code> 그룹만 따로 돌리면 <code>방망이는 한 화면에 하나만 : c5_happy</code>가 실패해요 (전체 실행에서는 PASS). 나누기 전 코드에서도 같아요. 앞 그룹이 남긴 상태에 기대는 것 같아요.</li>
+</ul></article></div></body></html>
