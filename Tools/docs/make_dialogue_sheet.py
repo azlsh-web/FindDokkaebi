@@ -1,4 +1,4 @@
-# Docs/전달/14_대사_수정표.xlsx : 기획자가 바꿀 대사만 적어 돌려주는 표
+# 대사 수정표 (paths.DIALOGUE_SHEET) : 기획자가 바꿀 대사만 적어 돌려주는 표
 #   python Tools/docs/make_dialogue_sheet.py [저장할 곳]
 #   돌려받으면 : python Tools/docs/apply_dialogue_edits.py 받은파일.xlsx
 import os
@@ -10,8 +10,9 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from dialogue_lines import ROOT, read_lines
+import paths
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "Docs", "전달", "14_대사_수정표.xlsx")
+OUT = sys.argv[1] if len(sys.argv) > 1 else paths.doc(paths.DIALOGUE_SHEET)
 FONT = "Malgun Gothic"
 LIMIT = 40      # 대사 상자 세 줄 안에 대개 들어가는 글자 수 (반영 도구가 정확한 줄 수를 다시 재요)
 

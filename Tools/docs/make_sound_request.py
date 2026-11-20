@@ -9,9 +9,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from doc_pdf import BASE_CSS, write_pdf
 from flow_shots import ROOT, data_url, find
+import paths
 
-OUT = os.path.join(ROOT, "Docs", "전달")
-os.makedirs(OUT, exist_ok=True)
 
 # (파일, 우선, 나오는 곳, 느낌, 권장 길이)
 BGM = [
@@ -150,4 +149,4 @@ html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>사
 
 os.makedirs(os.path.join(ROOT, "Temp", "DocsHtml"), exist_ok=True)
 open(os.path.join(ROOT, "Temp", "DocsHtml", "사운드.html"), "w", encoding="utf-8").write(html)
-print("사운드.pdf", write_pdf(html, os.path.join(OUT, "사운드.pdf")))
+print("사운드.pdf", write_pdf(html, paths.doc(paths.SOUND_REQUEST)))

@@ -1,4 +1,4 @@
-# Docs/기획/13_대사_트리.md 와 선택적 .pdf : 현재 챕터의 대사를 흐름대로 정리해요.
+# 대사 트리 (paths.DIALOGUE_TREE) 와 선택적 .pdf : 현재 챕터의 대사를 흐름대로 정리해요.
 #   python Tools/docs/make_dialogue_tree.py --no-pdf
 #   python Tools/docs/make_dialogue_tree.py          PDF 도 함께 만들어요
 # 대사와 번호는 수정표와 같은 read_lines() 에서 읽어요.
@@ -8,6 +8,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from dialogue_lines import ROOT, STAGES, read_lines
+import paths
 
 sys.stdout.reconfigure(encoding="utf-8")
 rows = read_lines()
@@ -125,7 +126,9 @@ screen = [
 
 text = f"""# 대사 트리
 
-게임에 나오는 대사를 챕터와 분기별로 정리했어요. [대사 수정표](../전달/14_대사_수정표.xlsx)와 같은 `GameScript.cs`의 대사를 읽어요. 번호와 대사는 수정표와 같아요.
+> **상태** 자동 · **담당** 코드에서 만들어요 (`GameScript.cs`) · 게임을 고칠 때마다 다시 만들어서 늘 최신이에요
+
+게임에 나오는 대사를 챕터와 분기별로 정리했어요. [대사 수정표](../3_전달/대사_수정표.xlsx)와 같은 `GameScript.cs`의 대사를 읽어요. 번호와 대사는 수정표와 같아요.
 
 이 문서는 코드에서 자동으로 만들어요. Markdown만 갱신하려면:
 
@@ -164,11 +167,11 @@ python Tools/docs/make_dialogue_tree.py --no-pdf
 - 돋보기 기본 기회는 챕터마다 한 번이고, 시범은 1챕터 첫 물건에서만 나와요.
 - 색 섞기 시범, 소풍 뒤 사탕 통, 쿠키 영상은 없어요.
 """
-out = os.path.join(ROOT, "Docs", "기획", "13_대사_트리.md")
+out = paths.doc(paths.DIALOGUE_TREE)
 os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, "w", encoding="utf-8", newline="\n") as f:
     f.write(text)
-print("13_대사_트리.md", len(text))
+print(paths.DIALOGUE_TREE, len(text))
 
 if "--no-pdf" in sys.argv:
     print("PDF 생략 (--no-pdf)")
@@ -192,4 +195,4 @@ pre { background: #f7f4ef; border: 1px solid #e3dcd2; padding: 10px 12px; white-
 {"".join(branch(label, kids) for label, kids in tree)}
 {"".join(branch(label, kids) for label, kids in screen)}
 </body></html>"""
-        print("13_대사_트리.pdf", write_pdf(html, os.path.splitext(out)[0] + ".pdf"))
+        print(paths.DIALOGUE_TREE[:-3] + ".pdf", write_pdf(html, os.path.splitext(out)[0] + ".pdf"))

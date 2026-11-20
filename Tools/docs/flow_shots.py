@@ -1,6 +1,6 @@
 # 게임 플로우 사진 찾기. 문서 스크립트들이 같이 써요.
 #   사진은 Unity 메뉴 "게임 플로우 사진 찍기"(MvpFlowShots)가 Temp/FlowShots 에 찍고,
-#   make_flow_doc.py 가 줄여서 Docs/기획/플로우_사진 으로 옮겨요.
+#   make_flow_doc.py 가 줄여서 문서 폴더(paths.PHOTOS)로 옮겨요.
 import base64
 import csv
 import io
@@ -8,8 +8,10 @@ import os
 
 from PIL import Image
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-PHOTOS = os.path.join(ROOT, "Docs", "기획", "플로우_사진")
+import paths
+
+ROOT = paths.ROOT
+PHOTOS = paths.doc(paths.PHOTOS)
 
 
 def load_manifest():
