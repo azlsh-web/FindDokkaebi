@@ -19,7 +19,7 @@ TEMP = os.path.join(ROOT, "Temp")
 sys.stdout.reconfigure(encoding="utf-8")
 
 # 플레이 화면이 달라질 수 있는 파일 : 사진까지 다시 찍어요
-SCREEN = ("Assets/Scripts/", "Assets/Scenes/", "Assets/Sprites/", "Assets/Data/", "Assets/Resources/", "Assets/Editor/MvpSceneBuilder.cs", "Assets/Fonts/")
+SCREEN = ("Assets/Scripts/", "Assets/Scenes/", "Assets/Sprites/", "Assets/Data/", "Assets/Resources/", "Assets/Editor/MvpSceneBuilder", "Assets/Fonts/")
 # 문서를 만드는 데이터 : 사진 없이 문서만 다시 만들어요
 DOC_DATA = ("Tools/docs/art_tree_data.py", "Tools/docs/make_", "Tools/docs/dialogue_lines.py", "Tools/docs/flow_shots.py", "Tools/docs/doc_pdf.py", "Tools/docs/paths.py")
 
