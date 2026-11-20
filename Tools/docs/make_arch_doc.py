@@ -1,13 +1,12 @@
-# 2_MVP_아키텍처.pdf 만들기 (HTML → Edge 로 PDF)
+# 아키텍처 PDF (paths.ARCH) 만들기 (HTML → Edge 로 PDF)
 #   python Tools/docs/make_arch_doc.py
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from doc_pdf import write_pdf
+import paths
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
-DOCS = os.path.join(ROOT, "Docs", "개발")
-os.makedirs(DOCS, exist_ok=True)
+ROOT = paths.ROOT
 
 
 CSS = """
@@ -46,25 +45,25 @@ arch = [
     "<tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr>"
     "<tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr>"
     "<tr><td class='k'>화면</td><td>패널 8개 (시작 · 대화 · 관찰 · 그리기 · 판정 · 결과 · 채점표 · 종료) 중 하나만 켜고, 그리기부터 채점표까지 위에 HUD. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
-    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/기획/5_기획_변경_기록.md</code>). 실패하면 사탕을 돌려주고 다시 제출</td></tr>"
+    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/2_제작/결정_기록.md</code>). 실패하면 사탕을 돌려주고 다시 제출</td></tr>"
     "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>main</code> (보호 브랜치, PR 로 합침)</td></tr></table>",
     "<h2>2. 폴더</h2><pre>"
     "FindDokkaebi/\n"
     "  Assets/Scripts/     게임 코드 (아래 3장)\n"
     "  Assets/Editor/      에디터 도구 : 씬 만들기 · 자동 테스트 · 판정 검사 · 웹 빌드 · 글꼴 굽기\n"
     "  Assets/Data/        단계 데이터 Stage1~5 (.asset, 씬 만들 때 MvpSceneBuilder 가 채움)\n"
-    "  Assets/Sprites/     게임 그림 전부 : Background · Characters · Stage1~5(물건 원본 · 조합 그림) · UI(화면 부품). 파일별 연결은 Docs/개발/3_아트_구조.pdf\n"
+    "  Assets/Sprites/     게임 그림 전부 : Background · Characters · Stage1~5(물건 원본 · 조합 그림) · UI(화면 부품). 파일별 연결은 Docs/4_기술/아트_구조.pdf\n"
     "  (배경)              맨 뒤 Background 한 장 : 시작 BG_Start, 게임 중 BG_Room, 이야기 종료 BG_Picnic. 물건은 그 위에 따로 올려요\n"
         "  Assets/Resources/Sound/   소리 파일. 이름이 맞으면 코드 없이 바로 나요 (Sfx)\n"
     "  Assets/Fonts/      Jua(시안 글꼴, 구운 SDF) · Noto Sans KR(없는 기호 대신)\n"
     "  ArtSource/          기획서 그림 · 첨부 사진 원본 (게임에서 안 씀)\n"
     "  Server/judge/       판정 중계 서버 (worker.js · stages.json 게임 프롬프트 · appendix_b.json 부록 B 원문 · wrangler.toml)\n"
-    "  Docs/               읽는 문서 : 기획 · 전달 · 개발 · 기록 (안내는 0_문서_안내.md)\n"
+    "  Docs/               읽는 문서 : 기획 · 제작 · 전달 · 기술 · QA와 기록 (안내는 0_시작하기.md)\n"
     "  Tools/docs/         문서를 만드는 스크립트, 받은 아트 ZIP 넣기(apply_art_zip.py), 그림 도구(art_pipeline)\n"
     "  Builds/WebGL/       웹 빌드 결과 (git 에 안 올림)\n"
     "  UserSettings/OpenAI.json   (선택) 판정 서버 주소가 비어 있을 때만 쓰는 OpenAI 키 — git 에 안 올림</pre>",
     "<h2 class='pb'>3. 게임 코드 (Assets/Scripts)</h2><table><tr><th>파일</th><th>하는 일</th><th>주로 고칠 때</th></tr>"
-    "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식(단계마다 사탕 3) · 돋보기(전체 1번 · 1단계 시범 · 두 번째 실패 때 무료 기회) · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 소리 설정 창(여는 동안 멈춤)</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/기획/13_대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요. 배경음 · 효과음 볼륨은 PlayerPrefs(<code>volume_bgm</code> · <code>volume_sfx</code>)에 저장</td><td>소리 연결</td></tr>"
+    "<tr><td><code>GameManager</code></td><td>화면 흐름(상태 머신) · 간식(단계마다 사탕 3) · 돋보기(전체 1번 · 1단계 시범 · 두 번째 실패 때 무료 기회) · 타이머 · 판정 요청 · 결과 규칙 · 기록 · 소리 설정 창(여는 동안 멈춤)</td><td>흐름 · 규칙</td></tr><tr><td><code>GameScript</code></td><td>게임의 모든 대사 (<code>Docs/1_기획/대사_트리.md</code>는 이 파일에서 자동으로 만들어요)</td><td>대사</td></tr><tr><td><code>DialogueBox</code></td><td>같은 크기의 대사 상자 : 얼굴, 한 글자씩 나오는 글자, 넘기기 화살표</td><td>대사 표시</td></tr><tr><td><code>Sfx</code></td><td>효과음 · 배경음. <code>Resources/Sound</code>에 파일이 없으면 조용히 넘어가요. 배경음 · 효과음 볼륨은 PlayerPrefs(<code>volume_bgm</code> · <code>volume_sfx</code>)에 저장</td><td>소리 연결</td></tr>"
     "<tr><td><code>StageData</code></td><td>단계 하나의 데이터 (이름 · 색 모드 · 원본 그림 · 특징 목록 · O·X 조합별 그림 <code>wrongSprites</code>). <code>Feature</code> = 특징 하나 (id · 이름 · 판정 기준 글 · 테스트용 계산 종류)</td><td>단계 · 특징 추가</td></tr>"
     "<tr><td><code>DrawingBoard</code></td><td>512×604 쪽지 : 붓 · 굵기 · 되돌리기(20번) · 다시 하기. 종이 그림(Draw_Paper) 위의 투명한 층에 선만 그리고, 판정 AI 에 보내거나 저장할 때는 흰 바탕에 합쳐요 (FlatTexture). 한 손가락만 그리고, 두 번째 손가락이 닿으면 긋던 선을 취소해요. 그리다가 밖으로 나갔다 들어오면 쪽지 안에 걸친 부분만 그려요 (ClipToBoard)</td><td>그리기 느낌</td></tr>"
     "<tr><td><code>PaperView</code></td><td>방 위의 쪽지를 두 손가락(에디터는 휠 · 오른쪽 끌기)으로 키우기 · 돌리기 · 옮기기. 오른쪽 위 전체 화면 버튼은 쪽지를 똑바로 세워 위 줄과 아래 띠 사이를 채우고, 다시 누르면 전 보기로. 팔레트가 뜨거나 시범 때 띠가 올라오면 쪽지를 비켜요 (Squeeze)</td><td>쪽지 보기</td></tr>"
@@ -96,7 +95,7 @@ arch = [
     "<div class='note'>프롬프트를 바꾸면 : 특징 글은 <code>MvpSceneBuilder.CreateStageDataFiles</code>, 프롬프트 틀은 <code>OpenAIJudge.BuildPrompt</code> → 씬 만들기 → 판정 서버 프롬프트 내보내기(<code>Server/judge/stages.json</code>) → <code>Server/judge</code> 에서 <code>npx wrangler deploy</code>. 프롬프트는 서버에 있어서 웹 게임은 다시 빌드하지 않아도 돼요. "
     "서버 키 : 키를 복사한 뒤 <code>Get-Clipboard | npx wrangler secret put GEMINI_API_KEY</code>. 무료 한도는 모델 · 프로젝트마다 달라요 (미국 태평양 시간 자정에 다시 채워짐 : 한국 시간 오후 5시, 서머타임 때는 오후 4시). 모델을 바꾸려면 <code>Server/judge/wrangler.toml</code> 의 <code>GEMINI_MODEL</code> → <code>npx wrangler deploy</code>. 서버는 503 은 다시 시도하고, 429 는 바로 멈춰 Google 의 제한 내용을 보여 줘요. Gemini 가 45초 안에 답하지 않으면 끊어요.</div>"
     "<h3>판정 검증 (기획서 8장 다시 하기)</h3><p>부록 A 그림 4장 + 부록 B 프롬프트 원문(<code>Server/judge/appendix_b.json</code>)으로 그림마다 한 번씩 판정 → 2026-10-27 Gemini 로 4장 모두 기획서 표와 같은 결과. "
-    "입력 그림과 결과 : <code>Docs/기록/9_기획서8장_판정_재검증.pdf</code>. "
+    "입력 그림과 결과 : <code>Docs/5_QA와_기록/보관/기획서8장_판정_재검증.pdf</code>. "
     "※ 기획서 8장 돗자리는 십자 네 칸, 게임 3단계 돗자리는 최종 아트대로 위에서부터 색 띠 네 줄이라 프롬프트가 달라요. 게임 1단계 방망이도 최종 아트대로 돌기가 있는 머리 기준이에요.</p>"
     "<div class='note'>자동 플레이 테스트(MvpSelfTest)는 AI 를 부르지 않아요. 화면 흐름을 보려고 판정 결과를 미리 정해서 넣고, 그 결과에 맞는 손그림(HandSketch)을 제출해요.</div>",
     "<h2 class='pb'>5. 화면 만들기 (MvpSceneBuilder)</h2><table>"
@@ -117,12 +116,12 @@ arch = [
     "<tr><td>플레이 영상</td><td>MvpPlayRecorder</td><td>사람 속도로 거의 모든 기능을 써 보며 자동 플레이 (mvp_record.flag). 화면 프레임과 게임 소리를 저장하고 <code>python Tools/sound/make_play_video.py</code> 로 소리 있는 <code>Recordings/플레이영상_날짜.mp4</code> 를 만들어요 (git 에 안 올림)</td></tr></table>",
     "<h2>7. 자주 하는 수정</h2><table><tr><th>하고 싶은 것</th><th>방법</th></tr>"
     "<tr><td>엉뚱한 물건 · 캐릭터를 바꿔요</td><td><code>Assets/Sprites/Stage*/물건_Wrong_*.png</code> 저장 → mvp_wrongart.flag → 웹 빌드. 캐릭터는 <code>Assets/Sprites/Characters</code> 의 같은 이름으로 덮어쓰기 → 웹 빌드</td></tr>"
-    "<tr><td>아트팀 그림 ZIP 이 왔어요</td><td><code>python Tools/docs/apply_art_zip.py 받은파일.zip --apply</code> → 자동 테스트 → 웹 빌드 (<code>Docs/전달/아트.pdf</code>)</td></tr>"
-    "<tr><td>소리 파일이 왔어요</td><td><code>Assets/Resources/Sound</code>에 넣기 (<code>Docs/전달/사운드.pdf</code>)</td></tr><tr><td>대사를 고치고 싶어요</td><td><code>GameScript.cs</code> → 새 글자가 있으면 글꼴 굽기 → <code>python Tools/docs/make_dialogue_tree.py</code></td></tr><tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr>"
+    "<tr><td>아트팀 그림 ZIP 이 왔어요</td><td><code>python Tools/docs/apply_art_zip.py 받은파일.zip --apply</code> → 자동 테스트 → 웹 빌드 (<code>Docs/3_전달/아트.pdf</code>)</td></tr>"
+    "<tr><td>소리 파일이 왔어요</td><td><code>Assets/Resources/Sound</code>에 넣기 (<code>Docs/3_전달/사운드.pdf</code>)</td></tr><tr><td>대사를 고치고 싶어요</td><td><code>GameScript.cs</code> → 새 글자가 있으면 글꼴 굽기 → <code>python Tools/docs/make_dialogue_tree.py</code></td></tr><tr><td>배치를 옮기고 싶어요</td><td>MvpSceneBuilder 의 PlaceM 좌표(시안 픽셀) → 씬 만들기 → 자동 테스트의 배치 검사가 0 인지</td></tr>"
     "<tr><td>특징 · 판정 기준</td><td>CreateStageDataFiles 의 특징 글 → 씬 만들기 → 판정 서버 프롬프트 내보내기 → wrangler deploy (결과 화면의 특징 이름도 바뀌었으면 웹 빌드도)</td></tr>"
     "<tr><td>판정 기준을 바꿨어요</td><td>판정 서버 배포와 웹 빌드를 함께 (기준 수가 달라지면 예전 웹 게임과 서버가 맞지 않아요)</td></tr>"
     "<tr><td>웹에 올리기</td><td>웹 빌드 → Builds/WebGL/Build 를 gh-pages 브랜치에 커밋 · 푸시 (GitHub Pages)</td></tr></table>",
 ]
 arch_html = page("MVP 아키텍처", "".join(arch))
 
-print("2_MVP_아키텍처.pdf", write_pdf(arch_html, os.path.join(DOCS, "2_MVP_아키텍처.pdf")))
+print(paths.ARCH, write_pdf(arch_html, paths.doc(paths.ARCH)))

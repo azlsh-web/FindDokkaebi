@@ -10,24 +10,25 @@ import subprocess
 import sys
 import time
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import paths
+
+ROOT = paths.ROOT
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 TEMP = os.path.join(ROOT, "Temp")
 sys.stdout.reconfigure(encoding="utf-8")
 
 # 플레이 화면이 달라질 수 있는 파일 : 사진까지 다시 찍어요
-SCREEN = ("Assets/Scripts/", "Assets/Scenes/", "Assets/Sprites/", "Assets/Data/", "Assets/Resources/", "Assets/Editor/MvpSceneBuilder.cs", "Assets/Fonts/")
+SCREEN = ("Assets/Scripts/", "Assets/Scenes/", "Assets/Sprites/", "Assets/Data/", "Assets/Resources/", "Assets/Editor/MvpSceneBuilder", "Assets/Fonts/")
 # 문서를 만드는 데이터 : 사진 없이 문서만 다시 만들어요
-DOC_DATA = ("Tools/docs/art_tree_data.py", "Tools/docs/make_", "Tools/docs/dialogue_lines.py", "Tools/docs/flow_shots.py", "Tools/docs/doc_pdf.py")
+DOC_DATA = ("Tools/docs/art_tree_data.py", "Tools/docs/make_", "Tools/docs/dialogue_lines.py", "Tools/docs/flow_shots.py", "Tools/docs/doc_pdf.py", "Tools/docs/paths.py")
 
 SCRIPTS = ["make_dialogue_tree.py", "make_dialogue_sheet.py", "make_art_structure.py", "make_flow_doc.py",
            "make_art_request.py", "make_sound_request.py", "make_arch_doc.py"]
-GENERATED = ["Docs/기획/13_대사_트리.md", "Docs/기획/13_대사_트리.pdf", "Docs/기획/1_게임_플로우.pdf", "Docs/기획/플로우_사진",
-             "Docs/전달/14_대사_수정표.xlsx", "Docs/전달/아트.pdf", "Docs/전달/사운드.pdf",
-             "Docs/개발/2_MVP_아키텍처.pdf", "Docs/개발/3_아트_구조.pdf"]
+GENERATED = [paths.repo(p) for p in paths.GENERATED]
 REMINDER = """
 [문서] 사람이 판단해야 하는 내용은 자동으로 바뀌지 않아요. 달라졌다면 함께 고쳐 주세요.
-  - Docs/기획 : 11_연출_개편_기획, 5_기획_변경_기록, 10_할_일_목록
+""" + "\n".join(f"  - Docs/{p}" for p in paths.HAND_WRITTEN) + """
   - 아키텍처 설명 글 : Tools/docs/make_arch_doc.py
   - 팀에 공유한 링크 페이지 : 전달 문서를 다시 올려야 해요"""
 

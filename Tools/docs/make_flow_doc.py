@@ -1,6 +1,6 @@
-# 1_게임_플로우.pdf : 게임 흐름도와 화면 사진 전체
+# 게임 플로우 PDF (paths.FLOW_PDF) : 게임 흐름도와 화면 사진 전체
 #   python Tools/docs/make_flow_doc.py
-#   먼저 Unity 메뉴 "게임 플로우 사진 찍기"를 실행하세요 (AI 를 부르지 않아요). 사진을 줄여서 Docs/기획/플로우_사진 으로 옮기고 PDF 를 만들어요.
+#   먼저 Unity 메뉴 "게임 플로우 사진 찍기"를 실행하세요 (AI 를 부르지 않아요). 사진을 줄여서 문서 폴더(paths.PHOTOS)로 옮기고 PDF 를 만들어요.
 import csv
 import html as esc
 from datetime import date
@@ -14,9 +14,9 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from doc_pdf import BASE_CSS, write_pdf
 from flow_shots import PHOTOS, ROOT, data_url, load_manifest
+import paths
 
 SRC = os.path.join(ROOT, "Temp", "FlowShots")
-DOCS = os.path.join(ROOT, "Docs", "기획")
 
 # 1) 찍은 사진을 문서 폴더로 (Temp 는 Unity 를 닫으면 지워져요)
 if os.path.exists(os.path.join(SRC, "manifest.tsv")):
@@ -108,10 +108,10 @@ figcaption { font-size: 8.6px; line-height: 1.3; margin-top: 3px; } figcaption b
 
 html = f"""<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>게임 플로우</title><style>{CSS}</style></head><body>
 <h1>찾아라! 도깨비 게임 플로우</h1><p class='sub'>{date.today()} 기준 · <code>feature/chapter-core</code> 브랜치 · 사진 {len(rows)}장</p>
-<div class='note'><b>사진을 찍을 때 AI 판정을 보내지 않았어요.</b> 판정 결과를 미리 정해 넣고 손그림을 제출했어요. 도깨비 대사는 상황마다 무작위로 나오므로 사진은 그중 하나예요. 모든 대사는 <code>13_대사_트리.md</code>에 있어요.</div>
+<div class='note'><b>사진을 찍을 때 AI 판정을 보내지 않았어요.</b> 판정 결과를 미리 정해 넣고 손그림을 제출했어요. 도깨비 대사는 상황마다 무작위로 나오므로 사진은 그중 하나예요. 모든 대사는 <code>대사_트리.md</code>에 있어요.</div>
 <h2>흐름</h2><pre>{FLOW}</pre>
 <h2>단계마다 다른 것</h2>{STAGE_TABLE}
 <div class='note'><b>사진을 만든 방법:</b> 경우마다 사진을 남기려고 같은 단계를 이어서 진행했어요. 그래서 간식 수나 그림이 실제 한 번의 플레이와 다를 수 있어요. 움직임은 사진으로 다 보이지 않으니 게임에서 확인해 주세요.</div>
 {gallery}
 </body></html>"""
-print("1_게임_플로우.pdf", write_pdf(html, os.path.join(DOCS, "1_게임_플로우.pdf")))
+print(paths.FLOW_PDF, write_pdf(html, paths.doc(paths.FLOW_PDF)))

@@ -17,10 +17,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from art_tree_data import GROUPS, OPAQUE, REQUEST, ZIP_FOLDER
 from doc_pdf import BASE_CSS, write_pdf
 from flow_shots import ROOT, data_url, find
+import paths
 
 SP = os.path.join(ROOT, "Assets", "Sprites")
-OUT = os.path.join(ROOT, "Docs", "전달")
-os.makedirs(OUT, exist_ok=True)
 
 # 새 그림이 들어갈 자리에 지금 쓰는 그림 (표의 "지금 그림" 칸)
 NOW = {"Dialogue_Box": ("UI", "Common_Card", "흰 카드"), "Paper_Score": ("UI", "Common_Card", "흰 카드"),
@@ -179,4 +178,4 @@ python Tools/docs/apply_art_zip.py 받은파일.zip --apply  (검사 후 넣기)
 print("요청", len(REQUEST), "장")
 os.makedirs(os.path.join(ROOT, "Temp", "DocsHtml"), exist_ok=True)
 open(os.path.join(ROOT, "Temp", "DocsHtml", "아트.html"), "w", encoding="utf-8").write(html)
-print("아트.pdf", write_pdf(html, os.path.join(OUT, "아트.pdf")))
+print("아트.pdf", write_pdf(html, paths.doc(paths.ART_REQUEST)))

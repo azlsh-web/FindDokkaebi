@@ -46,3 +46,6 @@ __pycache__/
 
 # 인수인계용 기억 사본 (이 컴퓨터에만 둬요)
 /인수인계/기억/
+
+# 테스트 도구가 만드는 파일
+/Assets/Resources/PerformanceTestRun*

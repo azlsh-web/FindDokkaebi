@@ -1,4 +1,4 @@
-# 3_아트_구조.pdf : 게임 그림이 화면마다 어떻게 들어가 있는지 트리로 정리해요.
+# 아트 구조 PDF (paths.ART_STRUCTURE) : 게임 그림이 화면마다 어떻게 들어가 있는지 트리로 정리해요.
 #   python Tools/docs/make_art_structure.py
 #   트리에 없는 그림이 씬에서 쓰이거나, 없는 파일을 적으면 멈춰요. 문서가 실제 게임과 어긋나지 않게 하려고요.
 from datetime import date
@@ -8,8 +8,9 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from art_tree_data import REQUEST, STAGES, TREE
 from doc_pdf import BASE_CSS, write_pdf
+import paths
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
+ROOT = paths.ROOT
 SP = os.path.join(ROOT, "Assets", "Sprites")
 
 def norm(p):
@@ -120,4 +121,4 @@ for name, folder, key, n, other, origin in STAGES:
     p.append(f"</div><p class='src'>모두 Codex. <code>{key}_Wrong_{'X' * n}</code>은 완전히 다른 물건 {other}이에요.</p>")
 
 html = f"<!doctype html><html lang='ko'><head><meta charset='utf-8'><title>아트 구조</title><style>{CSS}</style></head><body>{''.join(p)}</body></html>"
-print("3_아트_구조.pdf", write_pdf(html, os.path.join(ROOT, "Docs", "개발", "3_아트_구조.pdf")))
+print(paths.ART_STRUCTURE, write_pdf(html, paths.doc(paths.ART_STRUCTURE)))

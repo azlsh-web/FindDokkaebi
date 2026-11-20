@@ -10,6 +10,9 @@ on:
     paths:
       - "Docs/**"
       - "Tools/docs/make_docs_site.py"
+      - "Tools/docs/paths.py"
+      - "Tools/docs/site_style.css"
+      - "BACKLOG.md"
       - ".github/workflows/docs-site.yml"
   workflow_dispatch:
 
