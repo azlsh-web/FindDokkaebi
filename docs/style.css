@@ -1,4 +1,4 @@
-
+/* 문서 사이트 모양 : make_docs_site.py 가 style.css 로 복사해요 */
 :root { --bg:#fbf6ec; --card:#fffdf8; --ink:#4a2b16; --sub:#7a604a; --line:#e8dcc8; --accent:#e9776b; --accent-ink:#fff;
         --chip:#f3e7d3; --code:#f5ecdc; }
 @media (prefers-color-scheme: dark) {
@@ -40,3 +40,13 @@ p.note { color:var(--sub); margin:0 0 12px; font-size:14px; }
 .shots figcaption { padding:6px 8px 8px; font-size:13px; }
 .shots figcaption .l { color:var(--sub); display:block; margin-top:2px; }
 @media (max-width:520px) { .doc { padding:4px 14px 16px; } header.top h1 { font-size:22px; } }
+/* 문서 상태 표시 (시작하기 문서의 규칙과 같아요) */
+.chip.state-latest { background:#dcefd8; color:#2f6b2a; }
+.chip.state-review { background:#fbe3c8; color:#8a4b12; }
+.chip.state-archive { opacity:.75; }
+@media (prefers-color-scheme: dark) {
+  .chip.state-latest { background:#24402a; color:#bfe3b8; }
+  .chip.state-review { background:#4a3420; color:#f6cf9e; }
+}
+.roles { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-top:12px; }
+.roles .card .d a { color:var(--accent); }

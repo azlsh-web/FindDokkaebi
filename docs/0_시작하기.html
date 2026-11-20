@@ -1,0 +1,206 @@
+<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>시작하기 · 찾아라! 도깨비</title><link rel='stylesheet' href='style.css'></head><body><div class='wrap'><a class='back' href='index.html'>← 문서 목록</a><article class='doc'><h1 id="시작하기">시작하기</h1>
+<blockquote>
+<p><strong>상태</strong> 최신 · <strong>담당</strong> 개발 · <strong>마지막 갱신</strong> 2026-11-20</p>
+</blockquote>
+<p>찾아라 도깨비의 모든 문서를 모은 곳이에요. 지금 게임의 기준은 <code>feature/game-feel</code> 브랜치예요.</p>
+<p><strong>웹에서 보기:</strong> <a href="https://azlsh-web.github.io/FindDokkaebi/docs/">https://azlsh-web.github.io/FindDokkaebi/docs/</a> (공개). 웹 게임은 <a href="https://azlsh-web.github.io/FindDokkaebi/">https://azlsh-web.github.io/FindDokkaebi/</a>에 있어요.</p>
+<h2 id="역할별로-먼저-볼-문서">역할별로 먼저 볼 문서</h2>
+<table>
+<thead>
+<tr>
+<th>나는</th>
+<th>먼저 볼 문서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기획자</td>
+<td><a href="2_제작/결정_기록.html">결정 기록</a> → <a href="1_기획/대사_트리.html">대사 트리</a> → <a href="3_전달/대사_수정표.xlsx">대사 수정표</a></td>
+</tr>
+<tr>
+<td>아트팀</td>
+<td><a href="3_전달/아트.pdf">아트팀 전달사항</a> → <a href="4_기술/아트_구조.pdf">아트 구조</a></td>
+</tr>
+<tr>
+<td>사운드팀</td>
+<td><a href="3_전달/사운드.pdf">사운드팀 전달사항</a> → <a href="1_기획/게임_플로우.pdf">게임 플로우</a></td>
+</tr>
+<tr>
+<td>개발 (처음 온 사람)</td>
+<td><a href="4_기술/아키텍처.pdf">아키텍처</a> → <a href="4_기술/문서_도구.html">문서 도구</a> → <a href="2_제작/마일스톤.html">마일스톤</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="폴더-구조">폴더 구조</h2>
+<pre><code class="language-text">Docs
+├─ 0_시작하기.md     이 문서
+├─ 1_기획            게임이 어떻게 동작하는가 (GDD)
+├─ 2_제작            언제 무엇을 하는가, 왜 그렇게 정했는가
+├─ 3_전달            다른 팀에 보내는 문서
+├─ 4_기술            코드와 그림의 구조, 문서 도구 (TDD)
+└─ 5_QA와_기록       검증 결과, 지난 기록 (보관)
+</code></pre>
+<p>모든 글 문서는 맨 위에 <strong>상태 · 담당 · 마지막 갱신</strong>을 적어요. 상태는 세 가지예요.
+- <strong>최신:</strong> 지금 게임과 맞아요.
+- <strong>검토 필요:</strong> 게임이 바뀌어서 다시 봐야 해요.
+- <strong>보관:</strong> 지난 시점의 기록이에요.</p>
+<p><code>자동</code>이라고 적힌 문서는 코드에서 다시 만들어서 늘 최신이에요.</p>
+<h2 id="기획">기획</h2>
+<p>게임이 어떻게 동작하는지 적은 문서예요.</p>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>만드는 법</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="1_기획/게임_플로우.pdf">게임 플로우</a></td>
+<td>자동</td>
+<td>흐름도와 경우별 화면 사진 전체</td>
+</tr>
+<tr>
+<td><a href="1_기획/대사_트리.html">대사 트리</a> · <a href="1_기획/대사_트리.pdf">PDF</a></td>
+<td>자동</td>
+<td>모든 대사와 화면 글자를 흐름 순서대로</td>
+</tr>
+<tr>
+<td><a href="1_기획/연출_기획.html">연출 기획</a></td>
+<td>사람</td>
+<td>화면별 연출과 그렇게 정한 이유</td>
+</tr>
+</tbody>
+</table>
+<h2 id="제작">제작</h2>
+<p>일정, 할 일, 결정과 그 이유를 적은 문서예요.</p>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>만드는 법</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="2_제작/마일스톤.html">마일스톤</a></td>
+<td>사람</td>
+<td>지금 구현 상태와 앞으로 할 일</td>
+</tr>
+<tr>
+<td><a href="2_제작/결정_기록.html">결정 기록</a></td>
+<td>사람</td>
+<td>기획서와 달라진 점(C-01~), 협의할 것</td>
+</tr>
+<tr>
+<td><a href="2_제작/백로그.html">백로그</a></td>
+<td>사람</td>
+<td>지금 작업 뒤에 할 일 (저장소의 <code>BACKLOG.md</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="전달">전달</h2>
+<p>다른 팀에 보내는 문서예요. 받은 사람이 바로 쓸 수 있게 써요.</p>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>만드는 법</th>
+<th>받는 곳</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="3_전달/아트.pdf">아트팀 전달사항</a></td>
+<td>자동</td>
+<td>아트팀</td>
+<td>필요한 그림, 크기, 파일 이름</td>
+</tr>
+<tr>
+<td><a href="3_전달/사운드.pdf">사운드팀 전달사항</a></td>
+<td>자동</td>
+<td>사운드팀</td>
+<td>화면별 소리, 파일 이름과 느낌, 우선순위, 파일 규칙</td>
+</tr>
+<tr>
+<td><a href="3_전달/대사_수정표.xlsx">대사 수정표</a></td>
+<td>자동</td>
+<td>기획자</td>
+<td>모든 대사에 번호를 붙인 표. 바꿀 대사만 적어 돌려줘요</td>
+</tr>
+</tbody>
+</table>
+<h2 id="기술">기술</h2>
+<p>코드와 그림이 어떻게 짜여 있는지, 문서를 어떻게 만드는지 적은 문서예요.</p>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>만드는 법</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="4_기술/아키텍처.pdf">아키텍처</a></td>
+<td>자동</td>
+<td>코드 구조, 판정 흐름, 도구, 자주 하는 수정</td>
+</tr>
+<tr>
+<td><a href="4_기술/아트_구조.pdf">아트 구조</a></td>
+<td>자동</td>
+<td>게임 그림 전체를 화면 → 오브젝트 → 파일 트리로</td>
+</tr>
+<tr>
+<td><a href="4_기술/문서_도구.html">문서 도구</a></td>
+<td>사람</td>
+<td>문서 갱신, 대사 수정 받기, 자동 테스트, 문서 사이트</td>
+</tr>
+</tbody>
+</table>
+<h2 id="qa와-기록">QA와 기록</h2>
+<p>검증 결과와 지난 기록이에요. 보관 문서는 지난 시점의 결과라서 지금 화면과 다를 수 있어요.</p>
+<table>
+<thead>
+<tr>
+<th>문서</th>
+<th>만드는 법</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="5_QA와_기록/보관/엉뚱한_물건_제작.html">엉뚱한 물건 제작</a></td>
+<td>보관</td>
+<td>판정 조합별 그림 57장의 목록과 프롬프트 (2026-11-04)</td>
+</tr>
+<tr>
+<td><a href="5_QA와_기록/보관/엉뚱한_물건_검수_보고서.pdf">엉뚱한 물건 검수 보고서</a></td>
+<td>보관</td>
+<td>57장을 조합별로 원본과 비교한 결과</td>
+</tr>
+<tr>
+<td><a href="5_QA와_기록/보관/경우의_수_테스트_보고서.pdf">경우의 수 테스트 보고서</a></td>
+<td>보관</td>
+<td>연출 개편 전 화면으로 확인한 조합별 결과</td>
+</tr>
+<tr>
+<td><a href="5_QA와_기록/보관/기획서8장_판정_재검증.pdf">기획서 8장 판정 재검증</a></td>
+<td>보관</td>
+<td>2026-10-27 기획서 부록 기준 재검증</td>
+</tr>
+<tr>
+<td><a href="5_QA와_기록/보관/대사_수정표_바뀐내용.xlsx">대사 수정 내용</a></td>
+<td>보관</td>
+<td>그 전에 드린 대사 수정표와 비교한 기록</td>
+</tr>
+<tr>
+<td><a href="5_QA와_기록/보관/1104_발표자료.pptx">11월 4일 발표자료</a></td>
+<td>보관</td>
+<td>첫 발표 자료</td>
+</tr>
+</tbody>
+</table></article></div></body></html>
