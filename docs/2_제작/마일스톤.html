@@ -1,6 +1,6 @@
 <!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>마일스톤 · 찾아라! 도깨비</title><link rel='stylesheet' href='../style.css'></head><body><div class='wrap'><a class='back' href='../index.html'>← 문서 목록</a><article class='doc'><h1 id="마일스톤">마일스톤</h1>
 <blockquote>
-<p><strong>상태</strong> 검토 필요 · <strong>담당</strong> 개발 · <strong>마지막 갱신</strong> 2026-11-18</p>
+<p><strong>상태</strong> 검토 필요 · <strong>담당</strong> 개발 · <strong>마지막 갱신</strong> 2026-11-21</p>
 </blockquote>
 <p>지금 구현 상태를 기준으로, <strong>2026-11-25(수) 작품 출품까지</strong> 끝내야 할 일을 정리했어요. 팀에 받을 그림·소리는 <a href="../3_전달/요청_현황.html">요청 현황</a>에서 관리해요.</p>
 <p><a href="../1_기획/연출_기획.html">연출 개편</a>은 <code>feature/game-feel</code> 브랜치에 구현했고, 2026-11-05에 웹 게임에 먼저 배포했어요. 메인 머지는 팀원들이 동의한 뒤에 해요. 돋보기는 2026-11-11에 규칙을 정하고 구현했고, 2026-11-12에 규칙을 다시 바꿨어요 (<a href="#돋보기-규칙">돋보기 규칙</a>, C-23).</p>
@@ -99,8 +99,9 @@
 </li>
 <li>[ ] 2~4챕터 임시 대사를 기획자에게 확인받기 (대사 수정표의 C2 · C3 · C4 줄)</li>
 <li>[ ] 2~4챕터 임시 그림 중 아트팀에 요청할 것 정하기 (목록은 <a href="../3_전달/아트.pdf">아트팀 전달사항</a>의 임시 그림)</li>
-<li>[ ] 판정 서버에 2~5챕터 프롬프트(<code>room-*</code> · <code>curse-*</code>) 배포 (<code>Server/judge/stages.json</code>에 써 둠, 배포는 사용자 허락 뒤)</li>
-<li>[ ] 5챕터 흐름 재정비 (<a href="백로그.html">BACKLOG.md</a>), 그 뒤 개발자 모드 기획</li>
+<li>[ ] 판정 서버의 2~5챕터 프롬프트 실제 판정 검증. 11/21 운영 <code>/health</code>는 정상이며 로컬과 같은 20개 단계가 등록돼 있어요. 이 개수만으로 프롬프트 내용과 실제 판정까지 검증한 것은 아니에요. 실제 AI 호출 횟수는 별도 합의해요.</li>
+<li>[x] 5챕터 C-56 흐름과 하트 · 방해 · 친구 영혼 · 판정 대기 연출 구현 (11/21)</li>
+<li>[ ] 5챕터 남은 이야기 · 그림 · 연출 · 전용 배경음 재정비 (<a href="백로그.html">BACKLOG.md</a>), 그 뒤 개발자 모드 기획</li>
 <li>[ ] 정하기로 한 단계별 새 규칙</li>
 <li>[ ] 판정이 막혔을 때의 동작. 지금은 오류 대사를 보여 주고 간식을 돌려줘서, 사용량이 다 떨어지면 다음 단계로 갈 수 없어요.</li>
 </ul>

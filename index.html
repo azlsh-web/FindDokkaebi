@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<!-- Source build: d351577e73340a64944d82f95108d708a6da88de -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>찾아라! 도깨비</title>
@@ -37,12 +38,12 @@ body {
     <p id="status">게임 불러오는 중… 0% (처음 한 번 약 76MB)</p>
   </div>
 </div>
-<script src="Build/WebGL.loader.js"></script>
+<script src="Build/WebGL.loader.js?v=d351577e7334"></script>
 <script>
 // 페이지를 열면 바로 Unity 웹 빌드를 불러와요
 var fill = document.getElementById('fill'), status = document.getElementById('status');
 createUnityInstance(document.getElementById('game'), {
-  dataUrl: 'Build/WebGL.data.unityweb', frameworkUrl: 'Build/WebGL.framework.js.unityweb', codeUrl: 'Build/WebGL.wasm.unityweb',
+  dataUrl: 'Build/WebGL.data.unityweb?v=d351577e7334', frameworkUrl: 'Build/WebGL.framework.js.unityweb?v=d351577e7334', codeUrl: 'Build/WebGL.wasm.unityweb?v=d351577e7334',
   companyName: 'Team09', productName: 'FindDokkaebi', productVersion: '0.1',
 }, function (p) {
   var pct = Math.round(p * 100);
