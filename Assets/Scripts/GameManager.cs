@@ -17,10 +17,13 @@ using UnityEngine.UI;
 //        ↑ 다시 (이전 그림에 이어 그리기) ← (틀림 + 사탕 남음)          맞음 / 포기 / 사탕 없음 → [채점표] → 다음 물건
 //   5번째 물건 뒤 → [끝 장면] → 로비의 챕터 선택
 //
-//   저주 챕터 (5) : 3단계, 하트 3개
-//   [시작 장면] → 단계마다 [단계 대화] → [고르기: 요청 물건 · 맞설 물건] → 떠올리기 … 결과 → 채점표
-//   맞설 물건 성공 → 하트 -1 (0이면 해피 엔딩). 요청 물건 실패 → 점프스케어 + 친구 영혼. 같은 물건 두 번 실패 → 게임오버.
-//   3단계 끝에 하트가 남으면 배드 엔딩. 엔딩 · 게임오버도 깬 것으로 쳐요.
+//   저주 챕터 (5) : 3단계, 주인공 하트 3개 (챕터 전체), 사탕 없음, 기회는 한 번씩
+//   [시작 장면] → 단계마다 [단계 대화] → [고르기: 요청 물건 · 맞설 물건]
+//     요청 물건 → 그리지 않고 도깨비가 가져가요 (하트 -1) → 같은 단계 고르기
+//     맞설 물건 → 떠올리기 → 그리기 (방해 연출) → 쪽지를 들이밀기 → 판정 대기 → 결과 (채점표 · 다시 · 포기 없음)
+//       성공 → "제법이군" → 다음 단계 (3단계를 다 이기면 해피 엔딩)
+//       실패 → 점프스케어 (하트 -1) → 같은 단계 고르기
+//   하트가 0이 되면 친구가 쓰러지고 영혼을 빼앗겨요 → 게임오버. 엔딩 · 게임오버도 깬 것으로 쳐요.
 //
 // 쪽지는 주인공이 도깨비에게 써 주는 것이에요. 판정 기준은 시작 대화의 생김새 대사로 알려 줘요.
 // 오프닝은 준비물이 사라지는 그림과 함께 보여 줘요. 모든 대사는 터치해야 넘어가요. 떠올리기는 2단계부터 주인공, 1단계는 도깨비가 해요.
@@ -50,7 +53,7 @@ using UnityEngine.UI;
 //   GameManager.Draw.cs      그리기 · 돋보기 · 건네기 · 판정 대기
 //   GameManager.Result.cs    결과 · 채점표 · 이야기 종료 · 2~4챕터 끝 장면
 //   GameManager.Guide.cs     챕터 안내 (펜 · 색) · 도깨비 기분
-//   GameManager.Chapter5.cs  5챕터 엔딩
+//   GameManager.Chapter5.cs  5챕터 빼앗기기 · 결과 · 엔딩
 public partial class GameManager : MonoBehaviour
 {
     enum State { Title, Chapter, Dialogue, Observe, Draw, Give, Judge, Result, Compare, Ending }
@@ -64,7 +67,7 @@ public partial class GameManager : MonoBehaviour
     [Header("규칙 (기획서 수치)")]
     [SerializeField] int candiesPerStage = 3;       // 쪽지를 건넬 때 쓰는 사탕 (단계마다)
     [SerializeField] int magnifierPerChapter = 1;   // 돋보기 (챕터마다. 시범과 무료 기회는 따로)
-    [SerializeField] int heartsPerCurse = 3;        // 5챕터 도깨비 하트
+    [SerializeField] int heartsPerCurse = 3;        // 5챕터 주인공 하트 (챕터 전체)
     [SerializeField] float observeSeconds = 3f;
     [SerializeField] float drawSeconds = 60f;
     [SerializeField] float peekSeconds = 5f;        // 돋보기로 둘러보는 시간
@@ -276,15 +279,15 @@ public partial class GameManager : MonoBehaviour
 
     Coroutine giftRoutine;
     // 5챕터
-    int hearts;             // 도깨비 하트 (맞설 물건을 맞히면 -1)
+    int hearts;             // 주인공 하트 (요청 물건을 고르거나 맞설 물건을 틀리면 -1, 0이면 게임오버)
     StageData chosen;       // 이번 단계에 고른 물건
     bool chosenCounter;     // 고른 것이 맞설 물건인지
+    bool curseTaken;        // 이번 결과는 요청 물건을 골라 빼앗긴 것인지
     bool leftIsCounter;     // 고르기 화면 왼쪽이 맞설 물건인지 (좌우를 섞어요)
-    int[] requestFails;     // 단계별 요청 물건 실패 횟수 (두 번이면 게임오버)
     bool friendLost;        // 친구 영혼을 빼앗겼는지
     bool dark;              // 숲이 어두워지고 도깨비가 흑화했는지
     bool gameOverPending;   // 결과 대사를 넘기면 게임오버
-    int curseEnd;           // 0 없음, 1 게임오버, 2 해피, 3 배드
+    int curseEnd;           // 0 없음, 1 게임오버, 2 해피
     bool curseEndTalking;
     Coroutine scareRoutine;
     float timeLeft;
@@ -373,7 +376,6 @@ public partial class GameManager : MonoBehaviour
         attempts = new int[stages.Length];
         cleared = new bool[stages.Length];
         itemsFound = new Sprite[stages.Length];
-        requestFails = new int[stages.Length];
         // 방망이 : 1챕터에서는 찾기 전까지 빈손. 다른 챕터는 1챕터 결과대로 (기록이 없으면 들고 있어요)
         batLost = chapter.number != 1 && Progress.BatKnown && !Progress.BatFound;
         magnifiers = chapter.hasMagnifier ? magnifierPerChapter : 0;
@@ -525,12 +527,14 @@ public partial class GameManager : MonoBehaviour
         magnifierButton.interactable = ready > 0 || peekGuideStep == 1 || peekGuideStep == 2;
         magnifierBadge.SetActive(ready > 0);
         magnifierBadgeText.text = ready.ToString();
-        // 5챕터 하트 : 남은 만큼 또렷하게
+        // 5챕터 : 사탕 대신 주인공 하트. 남은 만큼 또렷하게
+        candyIcons[0].transform.parent.gameObject.SetActive(!IsCurse);
         heartGroup.SetActive(IsCurse && dark);
         for (int i = 0; i < heartIcons.Length; i++) heartIcons[i].color = i < hearts ? Color.white : UsedSnackColor;
     }
 
-    string NoteText() => chapter.number != 1 ? GameScript.ItemNote(Stage.targetName) : GameScript.NoteText(stageIndex);
+    string NoteText() => IsCurse ? GameScript.CurseNote
+                       : chapter.number != 1 ? GameScript.ItemNote(Stage.targetName) : GameScript.NoteText(stageIndex);
 
     // 무료 기회 : 도깨비가 대사를 시작할 때부터 오른손(화면에서 오른쪽)에 돋보기를 쥐고 있다가,
     //   잠깐 뒤 손을 떠나 포물선으로 맨 위 돋보기 자리에 날아가 반짝여요.

@@ -158,7 +158,7 @@ public partial class GameManager
         }
     }
 
-    // 5챕터 친구 : 화면에 세워 둬요. 요청 물건을 틀리면 영혼을 빼앗겨 흐려져요
+    // 5챕터 친구 : 화면에 세워 둬요. 하트를 다 잃으면 영혼을 빼앗겨 흐려져요
     void ShowFriend()
     {
         dialogueFriend.gameObject.SetActive(IsCurse);
@@ -170,20 +170,27 @@ public partial class GameManager
     void ShowChoose()
     {
         state = State.Dialogue;
+        hud.SetActive(false);
+        timerGroup.SetActive(false);
+        jamOverlay.SetActive(false);
+        magnifierPeek.Stop();
+        backgroundImage.sprite = PlayBackground;
         leftIsCounter = Random.value < 0.5f;
         chooseImages[0].sprite = (leftIsCounter ? chapter.counterItems[stageIndex] : stages[stageIndex]).originalSprite;
         chooseImages[1].sprite = (leftIsCounter ? stages[stageIndex] : chapter.counterItems[stageIndex]).originalSprite;
         ShowPanel(choosePanel);
     }
 
-    /// <summary>[버튼] 고르기 : 0 왼쪽, 1 오른쪽 그림. 고른 물건을 떠올리고 그려요</summary>
+    /// <summary>[버튼] 고르기 : 0 왼쪽, 1 오른쪽 그림.
+    /// 맞설 물건은 떠올리고 그려요. 요청 물건은 그리지 않고 바로 도깨비가 가져가며 하트 -1 (TakeRequest)</summary>
     public void ChooseItem(int side)
     {
         if (!IsCurse || !choosePanel.activeSelf) return;
         Sfx.Play(Sfx.Tap);
         chosenCounter = (side == 0) == leftIsCounter;
         chosen = chosenCounter ? chapter.counterItems[stageIndex] : stages[stageIndex];
-        StartObserve();
+        if (chosenCounter) StartObserve();
+        else TakeRequest();
     }
 
     /// <summary>[화면 터치] 대사 넘기기 → 떠올리기. 건네기 중이면 건네기를 이어 가요</summary>

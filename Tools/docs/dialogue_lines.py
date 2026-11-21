@@ -196,22 +196,26 @@ def read_lines(path=SOURCE):
             scene = f"요청 물건 {requested} : 그림을 요구함" if k == 1 else f"주인공 속마음 : 맞설 물건 {counter} 떠올림"
             add(f"C5-단계{i}-{k}", f"5챕터 · {i}단계", scene, FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
 
-    boasts = _strings(src, *_block(src, "CurseBoast"))
-    assert len(boasts) == 3
-    for i, (s, power) in enumerate(zip(boasts, ["짚신 : 한 걸음에 어디든 쫓아감", "도깨비 부채 : 숲에 가둠", "도깨비 감투 : 모습이 보이지 않음"]), 1):
-        add(f"C5-자랑-{i}", f"5챕터 · {i}단계", f"요청 물건 성공 : {power}", "도깨비", *s)
+    takes = _strings(src, *_block(src, "CurseTake"))
+    assert len(takes) == 3
+    for i, (s, item) in enumerate(zip(takes, ["짚신", "도깨비 부채", "도깨비 감투"]), 1):
+        add(f"C5-요청-{i}", f"5챕터 · {i}단계", f"요청 물건 {item}을 고름 : 그리지 않고 도깨비가 가져감, 주인공 하트 -1", "도깨비", *s)
+    hits = _strings(src, *_block(src, "CurseCounterHit"))
+    assert len(hits) == 3
+    for i, s in enumerate(hits, 1):
+        add(f"C5-맞섬-성공-{i}", f"5챕터 · {i}단계", "맞설 물건 성공 : 도깨비가 \"제법이군\" 하고 다음 단계로" + (" (마지막 단계)" if i == 3 else ""), "도깨비", *s)
 
+    add("C5-쪽지글", "5챕터 · 맞설 물건", "쪽지에 적힌 글", "(쪽지 글)", *const("CurseNote"))
+    add("C5-건네기", "5챕터 · 맞설 물건", "다 그린 쪽지를 도깨비에게 들이밀 때 (사탕 없음)", FACE["BoySurprised"], *const("CurseGiveBoy"))
     for num, scene, who, name in (
-        ("C5-맞섬-성공", "맞설 물건 성공 : 도깨비가 아파하고 하트 하나를 잃음", "도깨비", "CurseCounterHit"),
-        ("C5-맞섬-실패", "맞설 물건 실패 : 도깨비가 비웃음", "도깨비", "CurseCounterWrong"),
-        ("C5-요청-실패", "같은 요청 물건 첫 실패 : 무서운 얼굴이 나타나고 친구 영혼을 빼앗김", "도깨비", "CurseRequestWrong"),
+        ("C5-주인공-요청", "요청 물건을 빼앗긴 뒤 주인공 속마음", FACE["BoySad"], "CurseBoyTaken"),
         ("C5-주인공-맞섬", "맞설 물건 성공 뒤 주인공 속마음", FACE["BoyHappy"], "CurseBoyHit"),
-        ("C5-주인공-자랑", "요청 물건 성공 뒤 주인공 속마음", FACE["BoyHappy"], "CurseBoyBoast"),
-        ("C5-주인공-실패", "그림 실패 뒤 주인공 반응 (사탕이 남았고 게임오버가 아닐 때)", FACE["BoySad"], "CurseBoyWrong"),
-        ("C5-게임오버", "같은 요청 물건 두 번째 실패 : 도깨비 뒤로 의식을 잃은 사람들의 실루엣", "도깨비", "CurseGameOver"),
-        ("C5-해피-방망이", "하트가 모두 사라짐 : 정화된 도깨비가 도망감. 1챕터에서 찾은 방망이를 남김", FACE["BoyHappy"], "CurseHappy"),
-        ("C5-해피-방망이없음", "하트가 모두 사라짐 : 정화된 도깨비가 도망감. 1챕터에서 방망이를 못 찾음", FACE["BoyHappy"], "CurseHappyNoBat"),
-        ("C5-배드", "3단계 뒤 하트가 남음 : 도깨비가 감투를 쓰고 사라지는 불안한 끝", "도깨비", "CurseBad"),
+        ("C5-맞섬-실패", "맞설 물건 실패 : 점프스케어 뒤 도깨비가 비웃음, 주인공 하트 -1", "도깨비", "CurseCounterWrong"),
+        ("C5-주인공-실패", "맞설 물건 실패 뒤 주인공 (하트가 남았을 때)", FACE["BoySad"], "CurseBoyWrong"),
+        ("C5-영혼", "하트 0 : 친구가 쓰러지고 도깨비가 친구 영혼을 데려감", "도깨비", "CurseSoulTaken"),
+        ("C5-게임오버", "게임오버 : 도깨비 뒤로 의식을 잃은 사람들의 실루엣", "도깨비", "CurseGameOver"),
+        ("C5-해피-방망이", "3단계를 모두 이김 : 착해진 도깨비가 도망감. 1챕터에서 찾은 방망이를 남김", FACE["BoyHappy"], "CurseHappy"),
+        ("C5-해피-방망이없음", "3단계를 모두 이김 : 착해진 도깨비가 도망감. 1챕터에서 방망이를 못 찾음", FACE["BoyHappy"], "CurseHappyNoBat"),
     ):
         add(num, "5챕터 · 결과", scene, who, *const(name))
     return rows

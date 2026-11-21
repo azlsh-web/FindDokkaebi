@@ -103,10 +103,7 @@ def missing_art():
         ("Char_Dokkaebi_Awkward", "4챕터 몸", "붉은 머리 불, 어색한 웃음. 기존 몸과 구도 맞추기.", "기획서 4장 · C-55", body),
         ("Char_DokkaebiFace_Awkward", "4챕터 대사 얼굴", "몸과 같은 어색한 웃음·머리 불 색.", "기획서 4장 · C-55", face),
         ("Char_Dokkaebi_DarkThink", "5챕터 판정 대기", "초록 도깨비 대신 흑화 도깨비의 판정 대기 자세.", "BACKLOG B2", dark),
-        ("Char_Dokkaebi_DarkJipsin", "5챕터 요청 물건 성공", "짚신을 지닌 모습. 단계별 소지품 조합은 5챕터 흐름 확정 뒤 맞춰요.", "BACKLOG B4", dark),
-        ("Char_Dokkaebi_DarkBuchae", "5챕터 요청 물건 성공", "부채를 지닌 모습. 이전 단계 소지품 유지 여부는 흐름 확정 뒤 맞춰요.", "BACKLOG B4", dark),
         ("Char_Dokkaebi_DarkRun", "5챕터 해피 엔딩", "도망가는 자세. 이동·퇴장은 개발이 연결해요.", "BACKLOG B5", dark),
-        ("Char_Dokkaebi_DarkGamtu", "5챕터 배드 엔딩", "감투를 쓴 모습. 사라지는 연출은 개발이 연결해요.", "BACKLOG B6", dark),
         ("Char_Friend_SpiritEscape", "5챕터 친구 영혼 이탈", "흐리게 만든 정지 그림은 이미 있어요. 여기서는 몸에서 빠져나가는 영혼용 별도 그림을 요청해요. 애니메이션 연결은 개발 작업.", "BACKLOG C4 · 사용자 승인 11/20", "Chapter5/Char_Friend_Spirit.png"),
     ]
     specs += [(f"Char_DokkaebiFace_Dark{pose}", "5챕터 흑화 대사 얼굴", "기존 흑화 전신과 같은 그림체·머리 색. 초록 얼굴을 대신해요.", "BACKLOG B1", face)
@@ -137,10 +134,9 @@ SOUND_SPECS = [
 NEW_SOUND = [
     ("bgm_curse", "5챕터 숲·흑화 이후", "밝은 방 음악을 대신할 불안한 분위기. 과도한 음량 없이", "30~60초 반복", "BACKLOG D1"),
     ("sfx_scare", "5챕터 점프스케어", "짧게 놀라게 하되 과도한 음량 없이", "0.5~1초", "BACKLOG B3 · 11/20 승인"),
-    ("sfx_heart_loss", "도깨비 하트 감소", "한 개 깎이는 순간을 알림", "0.5~1초", "BACKLOG C2"),
+    ("sfx_heart_loss", "5챕터 주인공 하트 감소", "한 개 깎이는 순간을 알림", "0.5~1초", "BACKLOG C2"),
     ("sfx_interfere", "그리기 방해", "반복해도 귀에 거슬리지 않는 장난·위협", "0.5~1초", "BACKLOG C3"),
     ("sfx_ending_happy", "5챕터 해피 엔딩", "저주가 풀리는 안도감", "2~4초", "BACKLOG C6"),
-    ("sfx_ending_bad", "5챕터 배드 엔딩", "감투를 쓰고 사라지는 불길함", "2~4초", "BACKLOG C6"),
     ("sfx_gameover", "5챕터 게임오버", "위협·좌절, 다른 엔딩과 구별", "2~4초", "BACKLOG C6"),
     ("amb_rain", "2챕터 비 오는 방", "대사를 가리지 않는 빗소리", "20~40초 반복", "C-55 · 11/20 승인"),
     ("bgm_evening", "3챕터 저녁 방", "기존 악기 톤을 유지하며 불안한 복선", "30~60초 반복", "C-55 · 11/20 승인"),

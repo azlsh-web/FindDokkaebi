@@ -177,23 +177,35 @@ public static class GameScript
                 new Line(Face.BoyNormal, "(팥주머니라면… 도깨비도 꼼짝 못 할 거야!)") },
     };
 
-    // 요청 물건을 받았을 때 도깨비가 힘 자랑 : [단계]
-    static readonly string[] CurseBoast =
+    // 요청 물건을 고름 : 그리지 않고 바로 도깨비가 가져가요 (주인공 하트 -1) : [단계]
+    static readonly string[] CurseTake =
     {
-        "히히! 이 짚신이면 네가 어디 있든 한 걸음에 따라가지!",
-        "부채질 한 번에 숲길이 싹 막혔지? 이제 못 나간다!",
-        "감투를 쓰면 내 모습이 싹 사라지지! 날 찾을 수 있겠어?",
+        "짚신은 내가 가져가지! 히히, 넌 이제 못 도망가!",
+        "히히, 부채는 잘 쓰마! 숲길을 꽁꽁 막아 주지!",
+        "히히, 감투는 내 거다! 안 보여도 난 네 뒤에 있어!",
     };
-    public const string CurseCounterHit = "으악! 따가워! 내 힘이 빠져나가잖아!";
-    public const string CurseCounterWrong = "히히, 그런 건 하나도 안 무섭지!";
-    public const string CurseRequestWrong = "틀렸어! 네 친구 영혼은 내가 데려간다!";
-    public const string CurseBoyHit = "(됐다! 도깨비가 힘을 잃고 있어!)";
-    public const string CurseBoyBoast = "(큰일이야… 도깨비가 점점 강해져.)";
-    public const string CurseBoyWrong = "안 돼! 내 친구한테 손대지 마!";
+    public const string CurseBoyTaken = "(으윽… 시키는 대로 하니까 더 강해지잖아!)";
+
+    // 맞설 물건 : 쪽지 글 · 들이밀 때 주인공 (사탕은 주지 않아요)
+    public const string CurseNote = "도깨비야, 이걸 보고 저주를 풀어!";
+    public const string CurseGiveBoy = "도깨비야, 이거 봐! 네가 무서워하는 거야!";
+
+    // 맞설 물건 성공 : 도깨비가 "제법이군" 하고 다음 단계로 : [단계]
+    static readonly string[] CurseCounterHit =
+    {
+        "흠, 제법이군. 그렇다고 내가 겁먹은 건 아냐!",
+        "으윽… 제법이군. 그래도 아직 끝난 건 아냐!",
+        "제, 제법이군… 으으, 알았어! 저주 풀고 갈게!",
+    };
+    public const string CurseBoyHit = "(됐다! 도깨비의 무서운 기운이 사라지고 있어!)";
+    // 맞설 물건 실패 : 점프스케어 뒤 (주인공 하트 -1)
+    public const string CurseCounterWrong = "히히, 깜짝 놀랐지? 그걸로 날 막을 수 있겠어?";
+    public const string CurseBoyWrong = "아야… 아직 버틸 수 있어! 다시 해 보자!";
+    // 하트 0 : 친구가 쓰러지고 영혼을 빼앗겨요 → 게임오버
+    public const string CurseSoulTaken = "더는 못 버티겠지? 네 친구 영혼은 내가 데려간다!";
     public const string CurseGameOver = "내 뒤에 잠든 사람들 보이지? 너희도 함께 있어라!";
     public const string CurseHappy = "착해져서 도망갔네… 이 방망이로 잃어버린 걸 찾아야지!";
     public const string CurseHappyNoBat = "착해져서 도망갔네… 이제 잃어버린 건 내가 직접 찾아야지!";
-    public const string CurseBad = "감투를 쓰니 내 모습이 싹 사라졌지? 히히…";
 
     // ───────────── 2~4챕터 · 방 (기획서 대사 + codex 초안 임시 대사, 기획자 확인 전) ─────────────
     //   [챕터 - 2] 시작 장면 : 첫 줄은 기획서, 둘째 줄(주인공이 도깨비를 부름)부터 도깨비가 나와요 (ChapterData.aloneLines = 2)
@@ -427,7 +439,8 @@ public static class GameScript
     public static int RoomOpeningLength(int chapterNumber) => RoomOpening[Room(chapterNumber)].Length;
 
     public static Line[] CurseStepLines(int step) => CurseStep[Mathf.Clamp(step, 0, CurseStep.Length - 1)];
-    public static string CurseBoastLine(int step) => CurseBoast[Mathf.Clamp(step, 0, CurseBoast.Length - 1)];
+    public static string CurseTakeLine(int step) => CurseTake[Mathf.Clamp(step, 0, CurseTake.Length - 1)];
+    public static string CurseCounterHitLine(int step) => CurseCounterHit[Mathf.Clamp(step, 0, CurseCounterHit.Length - 1)];
     /// <summary>쪽지 글 : "도깨비야, 이 OO 찾아 줘!" (쪽지 가운데 정렬)</summary>
     public static string ItemNote(string name) => $"도깨비야, 이 {name} 찾아 줘!";
     public static string ItemRead(string name) => $"음, {name}{GameManager.Josa(name, "이구나", "구나")}. 좋아, 찾아올게!";
@@ -457,9 +470,10 @@ public static class GameScript
         foreach (string l in new[] { GiveBoyNoCandy, PenDraw, PenUndo, PenDone, MixBrush, MixHow }) yield return l;
         foreach (Line l in CurseIntro) yield return l.text;
         foreach (Line[] step in CurseStep) foreach (Line l in step) yield return l.text;
-        foreach (string l in CurseBoast) yield return l;
-        foreach (string l in new[] { CurseCounterHit, CurseCounterWrong, CurseRequestWrong, CurseBoyHit, CurseBoyBoast, CurseBoyWrong,
-                                     CurseGameOver, CurseHappy, CurseHappyNoBat, CurseBad })
+        foreach (string l in CurseTake) yield return l;
+        foreach (string l in CurseCounterHit) yield return l;
+        foreach (string l in new[] { CurseBoyTaken, CurseGiveBoy, CurseBoyHit, CurseCounterWrong, CurseBoyWrong, CurseSoulTaken,
+                                     CurseGameOver, CurseHappy, CurseHappyNoBat })
             yield return l;
     }
 

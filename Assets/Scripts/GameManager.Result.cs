@@ -44,27 +44,13 @@ public partial class GameManager
                     : GameScript.DokkaebiResult(Mathf.Min(stageIndex, 4), outcome);
         if (IsCurse)
         {
-            if (success && chosenCounter)
-            {
-                hearts = Mathf.Max(0, hearts - 1);      // 맞설 물건 성공 : 도깨비 하트 -1
-                UpdateSnacks();
-                line = GameScript.CurseCounterHit;
-            }
-            else if (success)
-            {
-                line = GameScript.CurseBoastLine(stageIndex);       // 요청 물건 성공 : 도깨비가 힘 자랑
-            }
-            else if (chosenCounter)
-            {
-                line = GameScript.CurseCounterWrong;
-            }
+            curseTaken = false;
+            if (success) line = GameScript.CurseCounterHitLine(stageIndex);
             else
             {
-                // 요청 물건 실패 : 점프스케어 → 친구 영혼을 빼앗겨요. 같은 물건을 두 번 틀리면 게임오버
-                requestFails[stageIndex]++;
-                friendLost = true;
-                gameOverPending = requestFails[stageIndex] >= 2;
-                line = GameScript.CurseRequestWrong;       // 게임오버 대사는 게임오버 화면에서 한 번만
+                // 맞설 물건 실패 : 점프스케어 + 주인공 하트 -1
+                LoseHeart();
+                line = GameScript.CurseCounterWrong;
                 if (scareRoutine != null) StopCoroutine(scareRoutine);
                 scareRoutine = StartCoroutine(Scare());
             }
@@ -97,6 +83,10 @@ public partial class GameManager
         {
             ShowCurseEnd(1);
         }
+        else if (IsCurse)
+        {
+            CurseResultTap();
+        }
         else if (resultPhase == ResultPhase.Dokkaebi)
         {
             bool wrong = outcome != 0;
@@ -113,7 +103,6 @@ public partial class GameManager
             resultDokkaebiAnim.Play(SimpleAnim.Kind.None);
             string line = wrong && candies <= 0 && chapter.CanRetry ? GameScript.BoyOutOfSnacks
                 : RoomChapter ? GameScript.RoomBoyResult(chapter.number, stageIndex, !wrong)
-                : IsCurse ? (wrong ? GameScript.CurseBoyWrong : chosenCounter ? GameScript.CurseBoyHit : GameScript.CurseBoyBoast)
                 : GameScript.BoyResult(stageIndex, outcome);
             resultBox.Say(line, wrong ? faceBoySad : faceBoyHappy);     // 엉뚱한 물건 · 간식 없음 : 우는 얼굴
         }
@@ -180,9 +169,7 @@ public partial class GameManager
     public void NextStage()
     {
         Sfx.Play(Sfx.Tap);
-        if (IsCurse && hearts <= 0) ShowCurseEnd(2);                  // 맞설 물건으로 하트를 다 깎음 : 해피 엔딩
-        else if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
-        else if (IsCurse) ShowCurseEnd(3);                            // 3단계 끝에 하트가 남음 : 배드 엔딩
+        if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
         else ShowEnding();
     }
 

@@ -197,7 +197,8 @@ public partial class GameManager
         giveNoteAnim.Play(SimpleAnim.Kind.Float);
         dialogueBoyAnim.Play(SimpleAnim.Kind.Gentle);
         dialogueDokkaebiAnim.Play(SimpleAnim.Kind.None);
-        dialogueBox.Say(chapter.candies > 0 ? GameScript.GiveBoy : GameScript.GiveBoyNoCandy, faceBoyHappy);
+        dialogueBox.Say(IsCurse ? GameScript.CurseGiveBoy : chapter.candies > 0 ? GameScript.GiveBoy : GameScript.GiveBoyNoCandy,
+                        IsCurse ? faceBoySurprised : faceBoyHappy);
     }
 
     // 주인공이 건네면 쪽지와 간식이 날아가고, 도깨비가 먹고 읽은 뒤 찾으러 가요
@@ -205,7 +206,13 @@ public partial class GameManager
     {
         if (dialogueBox.FinishTyping()) return;
         Sfx.Play(giveStep == 0 ? Sfx.Give : Sfx.Tap);     // 쪽지와 사탕이 날아갈 때는 건네는 소리
-        if (giveStep == 0 && chapter.candies <= 0)
+        if (IsCurse)
+        {
+            // 5챕터 : 사탕 없이 쪽지를 들이밀어요. 도깨비는 먹거나 읽지 않고 바로 판정해요
+            attempts[stageIndex]++;
+            StartJudge();
+        }
+        else if (giveStep == 0 && chapter.candies <= 0)
         {
             // 4챕터 : 사탕 없이 쪽지만 건네요. 도깨비는 먹지 않고 바로 읽어요
             giveStep = 2;

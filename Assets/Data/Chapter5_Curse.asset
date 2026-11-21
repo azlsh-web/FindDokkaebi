@@ -18,7 +18,7 @@ MonoBehaviour:
   criteriaLevel: 5
   penMode: 3
   hasMagnifier: 1
-  candies: 3
+  candies: 0
   guide: 0
   aloneLines: 2
   windowFire: 0

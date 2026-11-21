@@ -196,7 +196,7 @@ public static partial class MvpSceneBuilder
         Rules("Chapter4_Snack", ColorMode.MixFree, magnifier: true, candies: 0, ChapterGuide.None, mood: 2, endEyes: true);
         Chapter("Chapter5_Curse", 5, "도깨비의 저주", ChapterRule.Curse, 5, "Chapter5/Chapter_Forest.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestDark.png",
             new[] { "Ch5_Jipsin", "Ch5_Buchae", "Ch5_Gamtu" }, new[] { "Ch5_Bujeok", "Ch5_DakpiBowl", "Ch5_PatBag" });
-        Rules("Chapter5_Curse", ColorMode.MixFree, magnifier: true, candies: 3, ChapterGuide.None);
+        Rules("Chapter5_Curse", ColorMode.MixFree, magnifier: true, candies: 0, ChapterGuide.None);     // 5챕터는 사탕 대신 주인공 하트
         AssetDatabase.SaveAssets();
     }
 
