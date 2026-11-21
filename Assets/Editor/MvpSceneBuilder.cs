@@ -1006,6 +1006,36 @@ public static partial class MvpSceneBuilder
             PIn(scribble.rectTransform, sc[0] / 3f, sc[1] / 3f, sc[2] / 3f, sc[3] / 3f);
             scribble.rectTransform.localEulerAngles = new Vector3(0f, 0f, sc[4]);
         }
+        var jamScribbles = jamOverlay.GetComponentsInChildren<Image>(true);
+        jamScribbles = System.Array.FindAll(jamScribbles, im => im.name == "Scribble");
+        // 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나 흔들거려요 (GameManager 가 자리 · 크기를 움직여요). 클릭은 통과해요
+        var jamPeek = NewImage("Peek", jamOverlay, Color.white);
+        jamPeek.sprite = dokkaebiDark;
+        jamPeek.preserveAspect = true;
+        jamPeek.raycastTarget = false;
+        PIn(jamPeek.rectTransform, 0, 0, 100, 98);
+        jamPeek.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        jamPeek.rectTransform.anchoredPosition = new Vector2(820f, -240f);     // GameManager.JamSpots 첫 자리. 처음엔 숨어 있어요
+        jamPeek.rectTransform.localScale = Vector3.zero;
+
+        // 5챕터 판정 대기 : 찾아다니는 도깨비 대신, 빛나는 쪽지와 움찔거리는 흑화 도깨비
+        var judgeCurse = NewEmpty("CurseJudge", judgeP);
+        judgeCurse.SetSiblingIndex(0);                       // 내 쪽지 뒤에서 빛나요
+        var judgeGlow = MImage("Glow", judgeCurse, T("Common_SoftPuff"), 60, 50, 240, 260);
+        judgeGlow.preserveAspect = false;
+        judgeGlow.color = new Color32(255, 214, 102, 210);
+        var judgeCurseDok = MImage("Dokkaebi", judgeCurse, dokkaebiDark, 105, 330, 150, 146);
+        PivotBottom(judgeCurseDok.rectTransform);
+        Anim(judgeCurseDok.gameObject, SimpleAnim.Kind.Sway, 0.5f, 0f, 0f, 6f);
+        judgeCurse.gameObject.SetActive(false);
+
+        // 5챕터 하트 0 : 결과 화면에서 친구가 쓰러지고, 영혼이 빠져나가 도깨비에게 가요 (GameManager.SoulLeaves)
+        var soulFriend = MImage("SoulFriend", result, friend, 190, 330, 130, 146);
+        PivotBottom(soulFriend.rectTransform);
+        soulFriend.gameObject.SetActive(false);
+        var soulSpirit = MImage("Soul", result, friendSpirit, 190, 330, 130, 146);
+        PivotBottom(soulSpirit.rectTransform);
+        soulSpirit.gameObject.SetActive(false);
 
         // 5챕터 끝 화면 : 소년 · 친구 · 도깨비, 어두운 그림자와 방망이, 위쪽 대사 상자. 아무 데나 누르면 넘어가요
         var curseEnd = NewPanel("CurseEndPanel", canvas);
@@ -1195,6 +1225,14 @@ public static partial class MvpSceneBuilder
         Set(so, "scareOverlay", scareOverlay.gameObject);
         Set(so, "jamOverlay", jamOverlay.gameObject);
         SetArray(so, "jamFires", jamFires);
+        Set(so, "jamPeek", jamPeek.rectTransform);
+        SetArray(so, "jamScribbles", jamScribbles);
+        Set(so, "jamTint", jamTint);
+        Set(so, "judgeRoam", dokEnterGo);
+        Set(so, "judgeCurse", judgeCurse.gameObject);
+        Set(so, "judgeGlow", judgeGlow);
+        Set(so, "soulFriend", soulFriend);
+        Set(so, "soulSpirit", soulSpirit);
         Set(so, "curseEndPanel", curseEnd.gameObject);
         Set(so, "curseEndBoy", curseEndBoy);
         Set(so, "curseEndFriend", curseEndFriend);

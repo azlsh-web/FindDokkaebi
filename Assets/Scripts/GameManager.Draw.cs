@@ -59,6 +59,7 @@ public partial class GameManager
 
         // 5챕터 맞설 물건 : 방해 연출 (쪽지 위에 덮기만)
         jamOverlay.SetActive(IsCurse && chosenCounter);
+        if (jamOverlay.activeSelf) AnimateJam();
 
         UpdateSnacks();
         if (!keepDrawing) noteRoutine = StartCoroutine(WriteNote());
@@ -208,9 +209,11 @@ public partial class GameManager
         Sfx.Play(giveStep == 0 ? Sfx.Give : Sfx.Tap);     // 쪽지와 사탕이 날아갈 때는 건네는 소리
         if (IsCurse)
         {
-            // 5챕터 : 사탕 없이 쪽지를 들이밀어요. 도깨비는 먹거나 읽지 않고 바로 판정해요
+            // 5챕터 : 사탕 없이 쪽지를 들이밀어요. 도깨비는 먹거나 읽지 않고 움찔한 뒤 바로 판정해요
+            if (giveStep != 0) return;
+            giveStep = 2;
             attempts[stageIndex]++;
-            StartJudge();
+            StartCoroutine(ThrustNote());
         }
         else if (giveStep == 0 && chapter.candies <= 0)
         {
@@ -255,6 +258,8 @@ public partial class GameManager
     {
         state = State.Judge;
         giveNote.SetActive(false);
+        judgeRoam.SetActive(!IsCurse);              // 5챕터는 찾아다니지 않고, 쪽지가 빛나요
+        judgeCurse.SetActive(IsCurse);
         giveSnackOut.gameObject.SetActive(false);
         Sfx.Bgm(Sfx.BgmJudge);
 

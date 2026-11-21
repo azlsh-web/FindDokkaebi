@@ -69,6 +69,7 @@ static partial class MvpSelfTest
             Check(IsOn("DrawPanel") && IsOn("HUD/HeartGroup") && LitHearts() == 3, "그리기 : 위 줄에 주인공 하트 3개");
             Check(!IsOn("HUD/CandyRow"), "5챕터에는 사탕이 없다");
             Check(IsOn("DrawPanel/JamOverlay"), "맞설 물건을 그릴 때는 방해 연출이 덮인다");
+            Check(IsOn("DrawPanel/JamOverlay/Peek"), "방해 연출 : 흑화 도깨비가 쪽지 위에 나타난다");
             Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 2챕터에서만");
             Check(GetInt("magnifiers") == 1, "돋보기는 챕터마다 1번");
             DrawStage("c5", false);
@@ -80,6 +81,11 @@ static partial class MvpSelfTest
                 Check(Plain("DialoguePanel/DialogueBox/Line") == GameScript.CurseGiveBoy, "쪽지를 들이밀 때 주인공 대사 (사탕 없음)");
             });
         }, () => IsOn("DrawPanel"));
+        Add(1.0f, "5챕터 판정 대기", () =>
+        {
+            Check(IsOn("JudgePanel/CurseJudge") && !IsOn("JudgePanel/DokkaebiEnter"), "5챕터 판정 대기 : 찾아다니는 도깨비 대신 빛나는 쪽지");
+            Shot("c5_judge");
+        }, () => { PassGive(); return IsOn("JudgePanel"); });
         Add(0.3f, "5챕터 맞설 물건 성공", () =>
         {
             Check(GetInt("hearts") == 3 && LitHearts() == 3, "맞설 물건을 맞히면 하트는 그대로");
@@ -141,17 +147,26 @@ static partial class MvpSelfTest
                 Check(GetInt("hearts") == 0, "마지막 하트를 잃었다");
             });
         }, () => ResultShown());
-        Add(0.3f, "5챕터 게임오버", () =>
+        Add(0.3f, "5챕터 하트 0", () =>
         {
             Next();
             Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.CurseSoulTaken, "하트가 0이면 도깨비가 친구 영혼을 데려간다");
             Check(GetBool("friendLost") && GetBool("gameOverPending"), "친구 영혼을 빼앗기고 게임오버 예약");
-            Next();
+            Check(IsOn("ResultPanel/SoulFriend") && !Find("ResultPanel/ReturnedItem").GetComponent<Image>().enabled, "물건 대신 친구가 나온다");
+        }, () => ResultShown());
+        Add(1.5f, "5챕터 친구 영혼", () =>
+        {
+            Check(IsOn("ResultPanel/Soul"), "친구가 쓰러지고 영혼이 빠져나간다");
+            Shot("c5_soul");
+            Then(() => Next());
+        });
+        Add(0.3f, "5챕터 게임오버", () =>
+        {
             Check(IsOn("CurseEndPanel") && GetInt("curseEnd") == 1, "대사를 넘기면 게임오버 화면");
             Check(IsOn("CurseEndPanel/Silhouette") && !IsOn("CurseEndPanel/Boy") && !IsOn("HUD"), "게임오버는 실루엣만, 위 줄 없음");
             Check(Progress.IsCleared(5), "엔딩을 보면 5챕터를 깬 것으로 친다");
             Shot("c5_gameover");
-        }, () => ResultShown());
+        }, () => IsOn("CurseEndPanel"));
 
         // 3단계를 다 이김 → 해피 엔딩 (3단계에서 시작해서 맞설 물건을 한 번 맞힘)
         Add(0.5f, "5챕터 해피 엔딩 준비", () =>

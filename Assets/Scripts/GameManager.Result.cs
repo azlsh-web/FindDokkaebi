@@ -45,6 +45,7 @@ public partial class GameManager
         if (IsCurse)
         {
             curseTaken = false;
+            HideSoul();
             if (success) line = GameScript.CurseCounterHitLine(stageIndex);
             else
             {

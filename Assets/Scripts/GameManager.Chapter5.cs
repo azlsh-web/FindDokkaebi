@@ -15,6 +15,7 @@ public partial class GameManager
         resultPhase = ResultPhase.Dokkaebi;
         curseTaken = true;
         outcome = 2;
+        HideSoul();
         lastPresent = null;
         hud.SetActive(true);            // 위 줄 하트가 깎이는 게 보여요
         timerGroup.SetActive(false);
@@ -35,6 +36,118 @@ public partial class GameManager
     {
         hearts = Mathf.Max(0, hearts - 1);
         UpdateSnacks();
+        if (hearts < heartIcons.Length) StartCoroutine(HeartPunch(heartIcons[hearts].rectTransform));
+    }
+
+    // 깎인 하트가 크게 튀었다가 제자리로 줄어들며 흐려져요
+    IEnumerator HeartPunch(RectTransform heart)
+    {
+        for (float t = 0f; t < 0.5f; t += Time.deltaTime)
+        {
+            float k = t / 0.5f;
+            heart.localScale = Vector3.one * (1f + 0.8f * Mathf.Sin(k * Mathf.PI) * (1f - k * 0.5f));
+            heart.localEulerAngles = new Vector3(0f, 0f, Mathf.Sin(k * Mathf.PI * 4f) * 15f * (1f - k));
+            yield return null;
+        }
+        heart.localScale = Vector3.one;
+        heart.localEulerAngles = Vector3.zero;
+    }
+
+    // ───────────── 5챕터 연출 ─────────────
+
+    // 그리기 방해 : 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나 흔들거리다 사라져요 (3.2초마다 다른 자리).
+    //   낙서와 붉은 막도 일렁여요. 모두 클릭을 통과해서 그리는 데는 지장이 없어요
+    static readonly Vector2[] JamSpots = { new Vector2(820f, -240f), new Vector2(200f, -700f), new Vector2(780f, -1000f), new Vector2(240f, -230f) };
+    void AnimateJam()
+    {
+        const float Cycle = 3.2f;
+        int n = Mathf.FloorToInt(Time.time / Cycle);
+        float t = Time.time - n * Cycle;
+        float size = t < 0.35f ? Mathf.SmoothStep(0f, 1f, t / 0.35f)
+                   : t < 2.2f ? 1f
+                   : t < 2.55f ? 1f - Mathf.SmoothStep(0f, 1f, (t - 2.2f) / 0.35f) : 0f;
+        jamPeek.anchoredPosition = JamSpots[n % JamSpots.Length];
+        jamPeek.localScale = new Vector3(n % 2 == 0 ? size : -size, size, 1f);       // 번갈아 좌우를 뒤집어요
+        jamPeek.localEulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.time * 14f) * 9f * size);
+        for (int i = 0; i < jamScribbles.Length; i++)
+        {
+            Color c = jamScribbles[i].color;
+            c.a = 0.35f + 0.45f * Mathf.Abs(Mathf.Sin(Time.time * 1.7f + i * 1.3f));
+            jamScribbles[i].color = c;
+        }
+        Color tint = jamTint.color;
+        tint.a = 0.2f + 0.08f * Mathf.Sin(Time.time * 3f);
+        jamTint.color = tint;
+    }
+
+    // 쪽지를 들이밀어요 : 쪽지가 도깨비에게 날아가고 도깨비가 움찔한 뒤 판정 대기로
+    IEnumerator ThrustNote()
+    {
+        giveNoteAnim.Play(SimpleAnim.Kind.NoteGive);
+        dialogueBoyAnim.Play(SimpleAnim.Kind.None);
+        dialogueDokkaebiAnim.Play(SimpleAnim.Kind.Shake);
+        yield return new WaitForSeconds(0.7f);
+        if (state == State.Give) StartJudge();
+    }
+
+    // 판정 대기 : 내 쪽지 뒤의 빛이 커졌다 작아졌다
+    void PulseGlow()
+    {
+        float k = 0.5f + 0.5f * Mathf.Sin(Time.time * 4f);
+        judgeGlow.rectTransform.localScale = Vector3.one * (0.92f + 0.16f * k);
+        Color c = judgeGlow.color;
+        c.a = 0.55f + 0.35f * k;
+        judgeGlow.color = c;
+    }
+
+    void HideSoul()
+    {
+        soulFriend.gameObject.SetActive(false);
+        soulSpirit.gameObject.SetActive(false);
+    }
+
+    // 하트 0 : 물건 자리에 친구가 서 있다가 쓰러지고, 영혼이 빠져나가 도깨비에게 날아가 스며들어요
+    IEnumerator SoulLeaves()
+    {
+        resultItemImage.enabled = false;
+        resultItemShadow.SetActive(false);
+        resultSparkles.SetActive(false);
+        RectTransform body = soulFriend.rectTransform, soul = soulSpirit.rectTransform;
+        soulFriend.gameObject.SetActive(true);
+        soulFriend.color = Color.white;
+        body.localEulerAngles = Vector3.zero;
+        soulSpirit.gameObject.SetActive(false);
+        Vector2 from = body.anchoredPosition;
+        Vector2 to = resultDokkaebi.rectTransform.anchoredPosition + new Vector2(0f, resultDokkaebi.rectTransform.sizeDelta.y * 0.5f);
+        yield return new WaitForSeconds(0.5f);
+        for (float t = 0f; t < 0.5f; t += Time.deltaTime)           // 옆으로 쓰러져요
+        {
+            float k = Mathf.SmoothStep(0f, 1f, t / 0.5f);
+            body.localEulerAngles = new Vector3(0f, 0f, 85f * k);          // 화면 안쪽(왼쪽)으로 쓰러져요
+            soulFriend.color = Color.Lerp(Color.white, new Color(0.6f, 0.6f, 0.7f, 1f), k);
+            yield return null;
+        }
+        body.localEulerAngles = new Vector3(0f, 0f, 85f);
+        Sfx.Play(Sfx.Fail);
+        soulSpirit.gameObject.SetActive(true);
+        Color sc = Color.white;
+        for (float t = 0f; t < 1.6f; t += Time.deltaTime)           // 위로 떠올랐다가 도깨비에게 날아가 스며들어요
+        {
+            float k = t / 1.6f;
+            Vector2 up = from + new Vector2(0f, 180f);
+            Vector2 p = k < 0.4f ? Vector2.Lerp(from, up, Mathf.SmoothStep(0f, 1f, k / 0.4f))
+                                 : Vector2.Lerp(up, to, Mathf.SmoothStep(0f, 1f, (k - 0.4f) / 0.6f));
+            soul.anchoredPosition = p + new Vector2(Mathf.Sin(t * 8f) * 14f, 0f);
+            float shrink = k < 0.7f ? 1f : 1f - (k - 0.7f) / 0.3f;
+            soul.localScale = Vector3.one * Mathf.Max(0.05f, shrink);
+            sc.a = 0.85f * Mathf.Max(0f, shrink);
+            soulSpirit.color = sc;
+            yield return null;
+        }
+        soulSpirit.gameObject.SetActive(false);
+        soul.anchoredPosition = from;
+        soul.localScale = Vector3.one;
+        resultDokkaebiAnim.Play(SimpleAnim.Kind.Shake);
     }
 
     /// <summary>[화면 터치] 5챕터 결과 : 도깨비 대사 → (하트 0이면 친구 영혼) 주인공 대사 → 다음 단계 · 같은 단계 고르기</summary>
@@ -50,6 +163,7 @@ public partial class GameManager
                 // 하트를 다 잃음 : 친구가 쓰러지고 영혼을 빼앗겨요. 다음 터치에 게임오버
                 friendLost = true;
                 gameOverPending = true;
+                StartCoroutine(SoulLeaves());
                 resultBox.Say(GameScript.CurseSoulTaken, faceDokkaebiTease);
                 return;
             }

@@ -574,7 +574,18 @@ static class MvpFlowShots
             }
         }
 
-        // 5챕터 : 고르기 · 맞설 물건 성공 · 게임오버 · 해피 / 배드 엔딩 화면 (판정은 미리 정해 넣어요)
+        // 5챕터 : C-56 흐름과 연출. 실제 AI 대신 판정 결과를 미리 정해 넣어요.
+        void ChooseCurse(bool counter)
+        {
+            bool left = (bool)typeof(GameManager).GetField("leftIsCounter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm);
+            gm.ChooseItem(left == counter ? 0 : 1);
+        }
+
+        void PassCurseIntro()
+        {
+            for (int k = 0; k < 80 && !IsOn("ChoosePanel"); k++) { FinishBoxes(); gm.DialogueTap(); }
+        }
+
         IEnumerator PlayChapter5()
         {
             section = "5챕터";
@@ -584,26 +595,56 @@ static class MvpFlowShots
             yield return Wait(0.5f);
             FinishBoxes();
             yield return Snap("5챕터 시작 대화 : 친구와 도깨비");
-            for (int k = 0; k < 80 && !IsOn("ChoosePanel"); k++) gm.DialogueTap();
+            PassCurseIntro();
             yield return Wait(0.4f);
             yield return Snap("고르기 : 그림 두 장 (좌우는 섞여요)", 0.3f);
-            bool left = (bool)typeof(GameManager).GetField("leftIsCounter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(gm);
-            gm.ChooseItem(left ? 0 : 1);
+            ChooseCurse(true);
             yield return Until(() => IsOn("DrawPanel"));
             yield return Snap("맞설 물건 그리기 : 방해 연출과 하트 3개", 0.8f);
             MvpSelfTest.LoadSketch(Scribble());
-            yield return SubmitAndWait(c5.counterItems[0], -2, "판정 대기");
-            yield return ResultLines("맞설 물건 성공 : 하트 -1");
-            yield return Snap("하트가 2개로 줄어듦", 0.3f);
+            MvpSelfTest.Expect(c5.counterItems[0], -2);
+            gm.Submit();
+            FinishBoxes();
+            yield return Snap("쪽지를 들이밀기 : 사탕 없이 맞섬", 0.4f);
+            FinishBoxes();
+            gm.DialogueTap();
+            yield return Until(() => IsOn("JudgePanel"));
+            yield return Snap("판정 대기 : 빛나는 쪽지와 흑화 도깨비", 0.4f);
+            yield return Until(ResultShown);
+            yield return ResultLines("맞설 물건 성공 : 하트 3개 유지");
 
-            // 엔딩 화면 3가지 (대사는 CurseEndTap 이 보여 줘요)
-            foreach (int kind in new[] { 1, 2, 3 })
-            {
-                MvpSelfTest.Invoke(gm, "ShowCurseEnd", kind);
-                yield return Wait(0.4f);
-                FinishBoxes();
-                yield return Snap(kind == 1 ? "게임오버" : kind == 2 ? "해피 엔딩" : "배드 엔딩", 0.5f);
-            }
+            // 다음 단계에서 요청 물건을 고르면 그리지 않고 빼앗겨요. 하트 2개.
+            PassCurseIntro();
+            ChooseCurse(false);
+            yield return Until(ResultShown);
+            yield return ResultLines("요청 물건 빼앗김 : 그리기 없이 하트 2개");
+            yield return Snap("같은 단계 고르기로 돌아옴", 0.3f);
+
+            // 맞설 물건 실패 → 점프스케어 + 하트 1개 → 같은 단계 고르기.
+            ChooseCurse(true);
+            yield return Until(() => IsOn("DrawPanel"));
+            MvpSelfTest.LoadSketch(Scribble());
+            yield return SubmitAndWait(c5.counterItems[1], -1, null);
+            yield return Snap("맞설 물건 실패 : 점프스케어와 하트 1개", 0.05f);
+            yield return ResultLines("맞설 물건 실패 : 하트 1개");
+
+            // 요청 물건을 다시 골라 하트 0. 친구가 쓰러지고 영혼을 빼앗겨요.
+            ChooseCurse(false);
+            yield return Until(ResultShown);
+            FinishBoxes();
+            gm.ResultTap();
+            FinishBoxes();
+            yield return Snap("하트 0 : 친구가 쓰러지고 영혼이 빠져나감", 1.3f);
+            yield return Wait(1.4f);
+            FinishBoxes();
+            gm.ResultTap();
+            FinishBoxes();
+            yield return Snap("게임오버 : 친구 영혼을 빼앗긴 뒤", 0.5f);
+
+            // 해피 엔딩 화면. 배드 엔딩은 C-56에서 없앴어요.
+            MvpSelfTest.Invoke(gm, "ShowCurseEnd", 2);
+            FinishBoxes();
+            yield return Snap("해피 엔딩 : 세 단계를 다 이긴 뒤", 0.5f);
             ChapterSelect.Current = 1;
         }
     }
