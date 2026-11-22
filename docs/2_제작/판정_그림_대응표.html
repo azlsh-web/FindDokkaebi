@@ -1,0 +1,1397 @@
+<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>판정 기준과 결과 그림 대응표 · 찾아라! 도깨비</title><link rel='stylesheet' href='../style.css'></head><body><div class='wrap'><a class='back' href='../index.html'>← 문서 목록</a><article class='doc'><h1 id="판정-기준과-결과-그림-대응표">판정 기준과 결과 그림 대응표</h1>
+<blockquote>
+<p><strong>상태</strong> 최신 · <strong>담당</strong> 개발 · <strong>마지막 갱신</strong> 2026-11-22 · 자동</p>
+</blockquote>
+<p><a href="판정_그림_비교.html">O/X를 눌러 그림 비교하기</a></p>
+<p>C-57 확정 기준. O는 충족, X는 미충족이며, 조합 순서는 F1 → F2 → F3예요. 실패 횟수는 그림 선택에 쓰지 않아요.</p>
+<table>
+<thead>
+<tr>
+<th>챕터</th>
+<th>보는 기준</th>
+<th>색 도구</th>
+<th style="text-align: right;">물건 수</th>
+<th style="text-align: right;">정답 포함 조합 수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>형태 1항목</td>
+<td>검정</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>2</td>
+<td>형태 + 무늬</td>
+<td>검정</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>3</td>
+<td>형태 + 무늬 + 색</td>
+<td>빨강·노랑·파랑을 각각 사용</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr>
+<td>4</td>
+<td>형태 + 무늬 + 색</td>
+<td>원색 2가지 혼합</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">24</td>
+</tr>
+<tr>
+<td>5</td>
+<td>형태 + 무늬 + 색</td>
+<td>원색 3가지 혼합</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">24</td>
+</tr>
+</tbody>
+</table>
+<p>현재 그림 판정을 받는 17개 물건, 총 94가지예요. 새 오답 그림은 72장이고, 1챕터의 완전 오답 그림 5장은 기존 물건을 그대로 써요.</p>
+<p>색은 완성된 그림을 보고 하나의 항목으로 판정해요. 한 물건에 지정된 색이 여러 개면 전부 맞아야 색 O예요. 형태나 무늬가 틀려도 색은 독립적으로 봐요. 물감을 섞은 조작 이력은 판정하지 않아요.</p>
+<h2 id="어디서-고치나요">어디서 고치나요?</h2>
+<table>
+<thead>
+<tr>
+<th>바꿀 내용</th>
+<th>수정할 곳</th>
+<th>반영 방법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>물건 설명·판정 기준·그림 파일 목록</td>
+<td><code>Assets/Editor/MvpSceneBuilder.Data.cs</code>의 <code>CreateStageDataFiles</code></td>
+<td>Unity가 켜진 상태에서 <code>Temp/mvp_wrongart.flag</code> 파일 생성</td>
+</tr>
+<tr>
+<td>실제 물건 데이터</td>
+<td><code>Assets/Data/*.asset</code></td>
+<td>위 빌더에서 다시 만들므로 기준은 빌더부터 수정</td>
+</tr>
+<tr>
+<td>판정 O/X에 맞는 그림 선택</td>
+<td><code>Assets/Scripts/StageData.cs</code>의 <code>SpriteFor</code></td>
+<td>F1부터 X를 1로 읽은 값 − 1번 오답 칸 선택</td>
+</tr>
+<tr>
+<td>결과 화면에 표시</td>
+<td><code>Assets/Scripts/GameManager.Result.cs</code>의 <code>ShowResult</code></td>
+<td>판정 배열을 그대로 <code>SpriteFor</code>에 전달</td>
+</tr>
+<tr>
+<td>그림 파일</td>
+<td><code>Assets/Sprites/Chapter2</code> ~ <code>Chapter5</code></td>
+<td><code>_Wrong_OOX.png</code>처럼 기준 순서에 맞게 저장</td>
+</tr>
+<tr>
+<td>AI 공통 원칙</td>
+<td><code>Assets/Scripts/OpenAIJudge.cs</code></td>
+<td>물건 기준과 함께 프롬프트 내보내기</td>
+</tr>
+<tr>
+<td>서버가 쓰는 프롬프트</td>
+<td><code>Server/judge/stages.json</code></td>
+<td>로컬 내보내기 후 서버 배포 시 적용</td>
+</tr>
+</tbody>
+</table>
+<p>오답 배열 순서: 기준 1개는 X, 2개는 OX / XO / XX, 3개는 OOX / OXO / OXX / XOO / XOX / XXO / XXX예요. 전부 O이면 원본이에요.</p>
+<h2 id="1챕터-방망이-stage1_bat">1챕터 · 방망이 (Stage1_Bat)</h2>
+<p>데이터: <code>Assets/Data/Stage1_Bat.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>굵은 머리 + 돌기</td>
+<td>굵은 머리가 표현되어 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다. 손잡이의 유무와 길이는 판정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O</td>
+<td>F1</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Stage1_Bat/Bat_Original.png" width="90" loading="lazy" alt="방망이 O"></td>
+<td><a href="../_assets/judge-variants/Stage1_Bat/Bat_Original.png">Bat_Original.png</a></td>
+</tr>
+<tr>
+<td>X</td>
+<td>없음</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Stage1_Bat/Bat_Wrong_X.png" width="90" loading="lazy" alt="방망이 X"></td>
+<td><a href="../_assets/judge-variants/Stage1_Bat/Bat_Wrong_X.png">Bat_Wrong_X.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="1챕터-가방-stage2_bag">1챕터 · 가방 (Stage2_Bag)</h2>
+<p>데이터: <code>Assets/Data/Stage2_Bag.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>네모 몸체 + 위쪽 손잡이 + 앞주머니</td>
+<td>네 변을 가진 사각형에 가까운 몸체 외곽, 몸체 위쪽에 이어진 고리나 아치 모양 손잡이, 몸체 안쪽의 작은 사각형 주머니가 모두 식별되어야 합니다. 모서리가 둥글거나 선이 삐뚤어도 인정합니다. 원형이나 삼각형 몸체, 옆이나 아래에만 있는 손잡이는 인정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O</td>
+<td>F1</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Stage2_Bag/Bag_Original.png" width="90" loading="lazy" alt="가방 O"></td>
+<td><a href="../_assets/judge-variants/Stage2_Bag/Bag_Original.png">Bag_Original.png</a></td>
+</tr>
+<tr>
+<td>X</td>
+<td>없음</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Stage2_Bag/Bag_Wrong_XX.png" width="90" loading="lazy" alt="가방 X"></td>
+<td><a href="../_assets/judge-variants/Stage2_Bag/Bag_Wrong_XX.png">Bag_Wrong_XX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="1챕터-돗자리-stage3_mat">1챕터 · 돗자리 (Stage3_Mat)</h2>
+<p>데이터: <code>Assets/Data/Stage3_Mat.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>사각형 외곽</td>
+<td>네 변을 가진 사각형에 가까운 외곽이 식별되어야 합니다. 비스듬하거나 선이 삐뚤고 비율이 달라도 인정합니다. 원형이나 삼각형처럼 명확히 다른 외곽이면 인정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O</td>
+<td>F1</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Stage3_Mat/Mat_Original.png" width="90" loading="lazy" alt="돗자리 O"></td>
+<td><a href="../_assets/judge-variants/Stage3_Mat/Mat_Original.png">Mat_Original.png</a></td>
+</tr>
+<tr>
+<td>X</td>
+<td>없음</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Stage3_Mat/Mat_Wrong_XXX.png" width="90" loading="lazy" alt="돗자리 X"></td>
+<td><a href="../_assets/judge-variants/Stage3_Mat/Mat_Wrong_XXX.png">Mat_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="1챕터-김밥-stage4_gimbap">1챕터 · 김밥 (Stage4_Gimbap)</h2>
+<p>데이터: <code>Assets/Data/Stage4_Gimbap.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>둥근 테두리</td>
+<td>둥근 바깥 테두리가 둘러져 있어야 합니다. 살짝 찌그러지거나 선이 조금 끊겨도 전체적으로 둥근 외곽이 식별되면 인정합니다. 사각형 외곽이나 크게 열린 곡선은 인정하지 않습니다. 선의 색과 굵기, 안쪽 재료의 유무와 배치는 판정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O</td>
+<td>F1</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Stage4_Gimbap/Gimbap_Original.png" width="90" loading="lazy" alt="김밥 O"></td>
+<td><a href="../_assets/judge-variants/Stage4_Gimbap/Gimbap_Original.png">Gimbap_Original.png</a></td>
+</tr>
+<tr>
+<td>X</td>
+<td>없음</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Stage4_Gimbap/Gimbap_Wrong_XXXX.png" width="90" loading="lazy" alt="김밥 X"></td>
+<td><a href="../_assets/judge-variants/Stage4_Gimbap/Gimbap_Wrong_XXXX.png">Gimbap_Wrong_XXXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="1챕터-친구-stage5_friend">1챕터 · 친구 (Stage5_Friend)</h2>
+<p>데이터: <code>Assets/Data/Stage5_Friend.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>양 갈래 머리</td>
+<td>머리 양옆으로 묶은 머리 두 갈래가 구분되어야 합니다. 단발이나 한 갈래 머리는 인정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>O</td>
+<td>F1</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Stage5_Friend/Friend_Original.png" width="90" loading="lazy" alt="친구 O"></td>
+<td><a href="../_assets/judge-variants/Stage5_Friend/Friend_Original.png">Friend_Original.png</a></td>
+</tr>
+<tr>
+<td>X</td>
+<td>없음</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Stage5_Friend/Friend_Wrong_XXXXX.png" width="90" loading="lazy" alt="친구 X"></td>
+<td><a href="../_assets/judge-variants/Stage5_Friend/Friend_Wrong_XXXXX.png">Friend_Wrong_XXXXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2챕터-체크무늬-베개-ch2_pillow">2챕터 · 체크무늬 베개 (Ch2_Pillow)</h2>
+<p>데이터: <code>Assets/Data/Ch2_Pillow.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>베개 모양</td>
+<td>모서리가 둥글거나 살짝 부푼 네모 모양이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>체크무늬</td>
+<td>베개 안에 가로줄과 세로줄이 엇갈려 작은 네모 칸이 여러 개 생겨야 합니다. 한 방향 줄만 있으면 인정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OO</td>
+<td>F1 · F2</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Pillow_Original.png" width="90" loading="lazy" alt="체크무늬 베개 OO"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Pillow_Original.png">Ch2_Pillow_Original.png</a></td>
+</tr>
+<tr>
+<td>OX</td>
+<td>F1</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Pillow_Wrong_OX.png" width="90" loading="lazy" alt="체크무늬 베개 OX"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Pillow_Wrong_OX.png">Ch2_Pillow_Wrong_OX.png</a></td>
+</tr>
+<tr>
+<td>XO</td>
+<td>F2</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Pillow_Wrong_XO.png" width="90" loading="lazy" alt="체크무늬 베개 XO"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Pillow_Wrong_XO.png">Ch2_Pillow_Wrong_XO.png</a></td>
+</tr>
+<tr>
+<td>XX</td>
+<td>없음</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Pillow_Wrong_XX.png" width="90" loading="lazy" alt="체크무늬 베개 XX"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Pillow_Wrong_XX.png">Ch2_Pillow_Wrong_XX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2챕터-줄무늬-양말-ch2_socks">2챕터 · 줄무늬 양말 (Ch2_Socks)</h2>
+<p>데이터: <code>Assets/Data/Ch2_Socks.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>양말 모양</td>
+<td>발목 부분과 옆으로 굽은 발끝이 이어진 L자 양말 모양이 식별되어야 합니다. 네모나 원만 그린 것은 인정하지 않습니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>가로 줄무늬</td>
+<td>양말 안에 가로 방향 줄이 두 줄 이상 반복되어야 합니다. 세로줄이나 점무늬는 인정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OO</td>
+<td>F1 · F2</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Socks_Original.png" width="90" loading="lazy" alt="줄무늬 양말 OO"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Socks_Original.png">Ch2_Socks_Original.png</a></td>
+</tr>
+<tr>
+<td>OX</td>
+<td>F1</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Socks_Wrong_OX.png" width="90" loading="lazy" alt="줄무늬 양말 OX"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Socks_Wrong_OX.png">Ch2_Socks_Wrong_OX.png</a></td>
+</tr>
+<tr>
+<td>XO</td>
+<td>F2</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Socks_Wrong_XO.png" width="90" loading="lazy" alt="줄무늬 양말 XO"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Socks_Wrong_XO.png">Ch2_Socks_Wrong_XO.png</a></td>
+</tr>
+<tr>
+<td>XX</td>
+<td>없음</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Socks_Wrong_XX.png" width="90" loading="lazy" alt="줄무늬 양말 XX"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Socks_Wrong_XX.png">Ch2_Socks_Wrong_XX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2챕터-물방울무늬-우산-ch2_umbrella">2챕터 · 물방울무늬 우산 (Ch2_Umbrella)</h2>
+<p>데이터: <code>Assets/Data/Ch2_Umbrella.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>우산 모양</td>
+<td>위가 둥근 지붕 모양과 그 아래로 이어진 손잡이 대가 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>물방울무늬</td>
+<td>우산 지붕 안에 작은 점이나 동그라미가 세 개 이상 있어야 합니다. 줄무늬는 인정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OO</td>
+<td>F1 · F2</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Original.png" width="90" loading="lazy" alt="물방울무늬 우산 OO"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Original.png">Ch2_Umbrella_Original.png</a></td>
+</tr>
+<tr>
+<td>OX</td>
+<td>F1</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Wrong_OX.png" width="90" loading="lazy" alt="물방울무늬 우산 OX"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Wrong_OX.png">Ch2_Umbrella_Wrong_OX.png</a></td>
+</tr>
+<tr>
+<td>XO</td>
+<td>F2</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Wrong_XO.png" width="90" loading="lazy" alt="물방울무늬 우산 XO"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Wrong_XO.png">Ch2_Umbrella_Wrong_XO.png</a></td>
+</tr>
+<tr>
+<td>XX</td>
+<td>없음</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Wrong_XX.png" width="90" loading="lazy" alt="물방울무늬 우산 XX"></td>
+<td><a href="../_assets/judge-variants/Chapter2/Ch2_Umbrella_Wrong_XX.png">Ch2_Umbrella_Wrong_XX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3챕터-풍선-ch3_balloons">3챕터 · 풍선 (Ch3_Balloons)</h2>
+<p>데이터: <code>Assets/Data/Ch3_Balloons.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>풍선 세 개</td>
+<td>둥근 원이나 타원에 가까운 풍선 몸통 세 개가 식별되어야 합니다. 하트나 네모처럼 명확히 다른 외곽은 인정하지 않습니다. 끈이나 색은 이 항목에서 판정하지 않습니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>묶은 끈</td>
+<td>풍선마다 아래로 줄이 있고, 줄이 아래에서 한 점으로 모여야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>빨강 · 노랑 · 파랑 풍선</td>
+<td>풍선 영역이 빨강, 노랑, 파랑으로 하나씩 칠해져 있어야 합니다. 둥근 외곽이나 묶은 끈이 틀려도 색을 독립적으로 봅니다. 세 색이 모두 맞아야 충족입니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Original.png" width="90" loading="lazy" alt="풍선 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Original.png">Ch3_Balloons_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_OOX.png" width="90" loading="lazy" alt="풍선 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_OOX.png">Ch3_Balloons_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_OXO.png" width="90" loading="lazy" alt="풍선 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_OXO.png">Ch3_Balloons_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_OXX.png" width="90" loading="lazy" alt="풍선 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_OXX.png">Ch3_Balloons_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XOO.png" width="90" loading="lazy" alt="풍선 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XOO.png">Ch3_Balloons_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XOX.png" width="90" loading="lazy" alt="풍선 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XOX.png">Ch3_Balloons_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XXO.png" width="90" loading="lazy" alt="풍선 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XXO.png">Ch3_Balloons_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XXX.png" width="90" loading="lazy" alt="풍선 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_Balloons_Wrong_XXX.png">Ch3_Balloons_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3챕터-선물-상자-ch3_giftbox">3챕터 · 선물 상자 (Ch3_GiftBox)</h2>
+<p>데이터: <code>Assets/Data/Ch3_GiftBox.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>상자 모양</td>
+<td>네모난 상자와 위의 리본 매듭이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>별무늬</td>
+<td>상자 안에 별 모양이 하나 이상 있어야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>파랑 · 빨강 · 노랑</td>
+<td>선물 용기 바탕은 파랑, 리본은 빨강, 장식 영역은 노랑 계열이어야 합니다. 용기의 외곽이나 별 무늬 모양이 틀려도 해당 영역의 색을 독립적으로 봅니다. 세 색이 모두 맞아야 충족입니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Original.png" width="90" loading="lazy" alt="선물 상자 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Original.png">Ch3_GiftBox_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_OOX.png" width="90" loading="lazy" alt="선물 상자 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_OOX.png">Ch3_GiftBox_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_OXO.png" width="90" loading="lazy" alt="선물 상자 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_OXO.png">Ch3_GiftBox_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_OXX.png" width="90" loading="lazy" alt="선물 상자 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_OXX.png">Ch3_GiftBox_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XOO.png" width="90" loading="lazy" alt="선물 상자 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XOO.png">Ch3_GiftBox_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XOX.png" width="90" loading="lazy" alt="선물 상자 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XOX.png">Ch3_GiftBox_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XXO.png" width="90" loading="lazy" alt="선물 상자 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XXO.png">Ch3_GiftBox_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XXX.png" width="90" loading="lazy" alt="선물 상자 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_GiftBox_Wrong_XXX.png">Ch3_GiftBox_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3챕터-고깔모자-ch3_partyhat">3챕터 · 고깔모자 (Ch3_PartyHat)</h2>
+<p>데이터: <code>Assets/Data/Ch3_PartyHat.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>고깔 모양</td>
+<td>위가 뾰족하고 아래가 넓은 삼각뿔 모자 모양이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>띠 무늬</td>
+<td>모자 안에 띠가 두 줄 이상 있어야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>빨강 · 노랑 · 파랑</td>
+<td>모자의 위쪽에는 빨강, 가운데에는 노랑, 아래쪽에는 파랑 계열로 칠한 영역이 분명히 있어야 합니다. 띠 무늬나 고깔 모양이 틀려도 이 위치의 색을 독립적으로 봅니다. 세 위치가 모두 맞아야 충족입니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Original.png" width="90" loading="lazy" alt="고깔모자 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Original.png">Ch3_PartyHat_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_OOX.png" width="90" loading="lazy" alt="고깔모자 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_OOX.png">Ch3_PartyHat_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_OXO.png" width="90" loading="lazy" alt="고깔모자 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_OXO.png">Ch3_PartyHat_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_OXX.png" width="90" loading="lazy" alt="고깔모자 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_OXX.png">Ch3_PartyHat_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XOO.png" width="90" loading="lazy" alt="고깔모자 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XOO.png">Ch3_PartyHat_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XOX.png" width="90" loading="lazy" alt="고깔모자 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XOX.png">Ch3_PartyHat_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XXO.png" width="90" loading="lazy" alt="고깔모자 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XXO.png">Ch3_PartyHat_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XXX.png" width="90" loading="lazy" alt="고깔모자 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter3/Ch3_PartyHat_Wrong_XXX.png">Ch3_PartyHat_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="4챕터-줄무늬-사탕-ch4_candy">4챕터 · 줄무늬 사탕 (Ch4_Candy)</h2>
+<p>데이터: <code>Assets/Data/Ch4_Candy.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>사탕 모양</td>
+<td>둥근 사탕과 양 끝에 꼬인 포장이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>줄무늬</td>
+<td>사탕 가운데에 줄이 두 줄 이상 번갈아 있어야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>주황 · 초록</td>
+<td>사탕 중앙 영역에 주황색(빨강 + 노랑)과 초록색(노랑 + 파랑)이 모두 충분히 칠해져 있어야 합니다. 사탕 외곽이나 줄무늬 모양이 틀려도 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Original.png" width="90" loading="lazy" alt="줄무늬 사탕 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Original.png">Ch4_Candy_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_OOX.png" width="90" loading="lazy" alt="줄무늬 사탕 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_OOX.png">Ch4_Candy_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_OXO.png" width="90" loading="lazy" alt="줄무늬 사탕 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_OXO.png">Ch4_Candy_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_OXX.png" width="90" loading="lazy" alt="줄무늬 사탕 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_OXX.png">Ch4_Candy_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XOO.png" width="90" loading="lazy" alt="줄무늬 사탕 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XOO.png">Ch4_Candy_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XOX.png" width="90" loading="lazy" alt="줄무늬 사탕 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XOX.png">Ch4_Candy_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XXO.png" width="90" loading="lazy" alt="줄무늬 사탕 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XXO.png">Ch4_Candy_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XXX.png" width="90" loading="lazy" alt="줄무늬 사탕 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Candy_Wrong_XXX.png">Ch4_Candy_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="4챕터-포도-ch4_grapes">4챕터 · 포도 (Ch4_Grapes)</h2>
+<p>데이터: <code>Assets/Data/Ch4_Grapes.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>송이 모양</td>
+<td>송이 전체의 외곽이 위가 넓고 아래가 좁게 모여야 합니다. 개별 알의 둥근 모양이나 내부 구분은 이 항목에서 판정하지 않습니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>알 배열</td>
+<td>둥근 알이 여러 개 다닥다닥 붙어 있어야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>보라 알 · 초록 줄기</td>
+<td>송이 몸통 영역은 보라색(빨강 + 파랑), 위쪽 줄기는 초록색(노랑 + 파랑) 계열이어야 합니다. 송이 외곽이나 알 배열이 틀려도 해당 영역의 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Original.png" width="90" loading="lazy" alt="포도 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Original.png">Ch4_Grapes_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_OOX.png" width="90" loading="lazy" alt="포도 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_OOX.png">Ch4_Grapes_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_OXO.png" width="90" loading="lazy" alt="포도 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_OXO.png">Ch4_Grapes_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_OXX.png" width="90" loading="lazy" alt="포도 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_OXX.png">Ch4_Grapes_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XOO.png" width="90" loading="lazy" alt="포도 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XOO.png">Ch4_Grapes_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XOX.png" width="90" loading="lazy" alt="포도 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XOX.png">Ch4_Grapes_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XXO.png" width="90" loading="lazy" alt="포도 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XXO.png">Ch4_Grapes_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XXX.png" width="90" loading="lazy" alt="포도 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Grapes_Wrong_XXX.png">Ch4_Grapes_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="4챕터-귤-ch4_tangerine">4챕터 · 귤 (Ch4_Tangerine)</h2>
+<p>데이터: <code>Assets/Data/Ch4_Tangerine.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>둥근 모양</td>
+<td>둥근 귤 몸통이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>잎</td>
+<td>몸통 위쪽에 잎 모양이 붙어 있어야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>주황 몸통 · 초록 잎</td>
+<td>몸통은 주황색(빨강 + 노랑), 위쪽 잎 자리의 칠한 부분은 초록색(노랑 + 파랑) 계열이어야 합니다. 몸통이나 잎 모양이 틀려도 해당 위치의 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Original.png" width="90" loading="lazy" alt="귤 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Original.png">Ch4_Tangerine_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_OOX.png" width="90" loading="lazy" alt="귤 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_OOX.png">Ch4_Tangerine_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_OXO.png" width="90" loading="lazy" alt="귤 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_OXO.png">Ch4_Tangerine_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_OXX.png" width="90" loading="lazy" alt="귤 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_OXX.png">Ch4_Tangerine_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XOO.png" width="90" loading="lazy" alt="귤 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XOO.png">Ch4_Tangerine_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XOX.png" width="90" loading="lazy" alt="귤 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XOX.png">Ch4_Tangerine_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XXO.png" width="90" loading="lazy" alt="귤 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XXO.png">Ch4_Tangerine_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XXX.png" width="90" loading="lazy" alt="귤 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter4/Ch4_Tangerine_Wrong_XXX.png">Ch4_Tangerine_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5챕터-부적-ch5_bujeok">5챕터 · 부적 (Ch5_Bujeok)</h2>
+<p>데이터: <code>Assets/Data/Ch5_Bujeok.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>긴 네모 종이</td>
+<td>세로로 긴 사각형 종이 모양이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>부적 붓 문양</td>
+<td>종이 가운데에 세로로 이어진 부적 문양이 있고, 가로·대각선·꺾인 붓 획이 여러 개 교차하거나 가지처럼 갈라져야 합니다. 정확한 글자나 획순은 요구하지 않으며 색은 이 항목에서 판정하지 않습니다. 단순한 점이나 원 하나는 인정하지 않습니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>황토빛 종이 · 붉은 갈색 문양</td>
+<td>종이 바탕은 노랑이 많이 섞인 황토색·금갈색 계열, 가운데 칠한 문양 영역은 빨강이 많이 섞인 붉은 갈색 계열이어야 합니다. 순수 노랑 종이와 선명한 순수 빨강 문양, 진한 갈색 종이와 검정 문양은 인정하지 않습니다. 종이 외곽이나 문양 모양이 틀려도 해당 위치의 색을 독립적으로 봅니다. 둘 다 맞아야 충족입니다. 실제 혼색 조작은 판정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Original.png" width="90" loading="lazy" alt="부적 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Original.png">Ch5_Bujeok_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_OOX.png" width="90" loading="lazy" alt="부적 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_OOX.png">Ch5_Bujeok_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_OXO.png" width="90" loading="lazy" alt="부적 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_OXO.png">Ch5_Bujeok_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_OXX.png" width="90" loading="lazy" alt="부적 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_OXX.png">Ch5_Bujeok_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XOO.png" width="90" loading="lazy" alt="부적 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XOO.png">Ch5_Bujeok_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XOX.png" width="90" loading="lazy" alt="부적 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XOX.png">Ch5_Bujeok_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XXO.png" width="90" loading="lazy" alt="부적 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XXO.png">Ch5_Bujeok_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XXX.png" width="90" loading="lazy" alt="부적 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_Bujeok_Wrong_XXX.png">Ch5_Bujeok_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5챕터-닭피-그릇-ch5_dakpibowl">5챕터 · 닭피 그릇 (Ch5_DakpiBowl)</h2>
+<p>데이터: <code>Assets/Data/Ch5_DakpiBowl.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>둥근 그릇 모양</td>
+<td>위가 넓고 아래가 둥근 그릇 모양이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>그릇 무늬</td>
+<td>그릇 옆면에 가로 띠나 줄 무늬가 두 줄 이상 있어야 합니다. 외곽 모양과 색은 이 항목에서 판정하지 않습니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>붉은 갈색 피</td>
+<td>그릇 위쪽 안의 내용물이 어두운 붉은 갈색 계열이어야 합니다. 선명한 순수 빨강, 파랑, 보라는 인정하지 않습니다. 그릇의 외곽이나 줄무늬가 틀려도 내용물의 색을 독립적으로 봅니다. 실제 혼색 조작은 판정하지 않습니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Original.png" width="90" loading="lazy" alt="닭피 그릇 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Original.png">Ch5_DakpiBowl_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_OOX.png" width="90" loading="lazy" alt="닭피 그릇 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_OOX.png">Ch5_DakpiBowl_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_OXO.png" width="90" loading="lazy" alt="닭피 그릇 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_OXO.png">Ch5_DakpiBowl_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_OXX.png" width="90" loading="lazy" alt="닭피 그릇 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_OXX.png">Ch5_DakpiBowl_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XOO.png" width="90" loading="lazy" alt="닭피 그릇 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XOO.png">Ch5_DakpiBowl_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XOX.png" width="90" loading="lazy" alt="닭피 그릇 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XOX.png">Ch5_DakpiBowl_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XXO.png" width="90" loading="lazy" alt="닭피 그릇 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XXO.png">Ch5_DakpiBowl_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XXX.png" width="90" loading="lazy" alt="닭피 그릇 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_DakpiBowl_Wrong_XXX.png">Ch5_DakpiBowl_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5챕터-팥주머니-ch5_patbag">5챕터 · 팥주머니 (Ch5_PatBag)</h2>
+<p>데이터: <code>Assets/Data/Ch5_PatBag.asset</code></p>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>이름</th>
+<th>충족 기준</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>주머니 모양</td>
+<td>아래가 둥글고 위가 오므라든 주머니 모양이 식별되어야 합니다.</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>매듭</td>
+<td>주머니 위쪽에 묶은 매듭이나 끈이 있어야 합니다.</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>팥색</td>
+<td>주머니의 주된 채색이 어두운 붉은 갈색(팥색) 계열이어야 합니다.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>조합</th>
+<th>충족</th>
+<th>미충족</th>
+<th>가져올 그림</th>
+<th>파일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OOO</td>
+<td>F1 · F2 · F3</td>
+<td>없음</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Original.png" width="90" loading="lazy" alt="팥주머니 OOO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Original.png">Ch5_PatBag_Original.png</a></td>
+</tr>
+<tr>
+<td>OOX</td>
+<td>F1 · F2</td>
+<td>F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_OOX.png" width="90" loading="lazy" alt="팥주머니 OOX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_OOX.png">Ch5_PatBag_Wrong_OOX.png</a></td>
+</tr>
+<tr>
+<td>OXO</td>
+<td>F1 · F3</td>
+<td>F2</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_OXO.png" width="90" loading="lazy" alt="팥주머니 OXO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_OXO.png">Ch5_PatBag_Wrong_OXO.png</a></td>
+</tr>
+<tr>
+<td>OXX</td>
+<td>F1</td>
+<td>F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_OXX.png" width="90" loading="lazy" alt="팥주머니 OXX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_OXX.png">Ch5_PatBag_Wrong_OXX.png</a></td>
+</tr>
+<tr>
+<td>XOO</td>
+<td>F2 · F3</td>
+<td>F1</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XOO.png" width="90" loading="lazy" alt="팥주머니 XOO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XOO.png">Ch5_PatBag_Wrong_XOO.png</a></td>
+</tr>
+<tr>
+<td>XOX</td>
+<td>F2</td>
+<td>F1 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XOX.png" width="90" loading="lazy" alt="팥주머니 XOX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XOX.png">Ch5_PatBag_Wrong_XOX.png</a></td>
+</tr>
+<tr>
+<td>XXO</td>
+<td>F3</td>
+<td>F1 · F2</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XXO.png" width="90" loading="lazy" alt="팥주머니 XXO"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XXO.png">Ch5_PatBag_Wrong_XXO.png</a></td>
+</tr>
+<tr>
+<td>XXX</td>
+<td>없음</td>
+<td>F1 · F2 · F3</td>
+<td><img src="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XXX.png" width="90" loading="lazy" alt="팥주머니 XXX"></td>
+<td><a href="../_assets/judge-variants/Chapter5/Ch5_PatBag_Wrong_XXX.png">Ch5_PatBag_Wrong_XXX.png</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5챕터-요청-물건">5챕터 요청 물건</h2>
+<p>짚신·부채·감투는 현재 흐름에서 고르면 바로 빼앗기는 요청 물건이에요. 그림 판정이 없으므로 오답 조합 그림은 만들지 않아요. 기준 데이터의 색은 각각 갈색 짚신 / 갈색 부챗살 / 검정 감투로, 모두 세 원색 혼합색이에요.</p>
+<p>이 문서는 <code>py Tools/art_temp/build_judge_variant_manifest.py</code> 다음 <code>py Tools/art_temp/build_judge_variant_review.py</code>로 다시 만들어요.</p></article></div></body></html>
