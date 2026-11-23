@@ -173,6 +173,8 @@ static partial class MvpSelfTest
         {
             Check(IsOn("CurseEndPanel") && GetInt("curseEnd") == 1, "대사를 넘기면 게임오버 화면");
             Check(IsOn("CurseEndPanel/Silhouette") && !IsOn("CurseEndPanel/Boy") && !IsOn("HUD"), "게임오버는 실루엣만, 위 줄 없음");
+            Check(IsOn("CurseEndPanel/PileSoul") && IsOn("CurseEndPanel/Dokkaebi") && !IsOn("CurseEndPanel/CandyJar"),
+                  "게임오버 : 더미 위에 친구 영혼, 더미 앞에 도깨비, 사탕 통 없음");
             Check(Progress.IsCleared(5), "엔딩을 보면 5챕터를 깬 것으로 친다");
             Shot("c5_gameover");
         }, () => IsOn("CurseEndPanel"));
@@ -202,8 +204,11 @@ static partial class MvpSelfTest
             Check(IsOn("CurseEndPanel") && GetInt("curseEnd") == 2, "3단계를 다 이기면 해피 엔딩");
             Check(!IsOn("HUD"), "엔딩에는 위 줄이 없다");
             Check(Plain("CurseEndPanel/DialogueBox/Line") == (GetBool("batLost") ? GameScript.CurseHappyNoBat : GameScript.CurseHappy), "해피 엔딩 대사");
+            Check(!IsOn("CurseEndPanel/Dokkaebi"), "정화된 도깨비가 뛰어서 도망간 뒤에 대사가 나온다");
+            Check(IsOn("CurseEndPanel/CandyJar") && Find("CurseEndPanel/CandyJar").GetComponent<CandyJar>().Shown == GetInt("hearts"),
+                  "남은 하트가 사탕 통에 사탕으로 담긴다");
             Shot("c5_happy");
-        }, () => IsOn("CurseEndPanel"));
+        }, () => IsOn("CurseEndPanel") && IsOn("CurseEndPanel/DialogueBox"));
         Add(0.3f, "5챕터 마지막 사진 저장", () => { });     // 사진은 다음 프레임에 저장돼요. 바로 끝나면 안 찍혀요
     }
 }

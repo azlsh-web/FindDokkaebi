@@ -31,7 +31,8 @@ public partial class GameManager
         giveSnackOut.gameObject.SetActive(false);
         dialogueBoy.gameObject.SetActive(true);
         dialogueDokkaebi.SetActive(false);
-        dialogueDokkaebi.GetComponent<SimpleAnim>().enabled = true;     // 대화에서는 도깨비가 걸어 들어와요
+        // 대화에서는 도깨비가 걸어 들어와요. 5챕터 2단계부터는 계속 맞서 있으니 제자리에 그대로 (C5)
+        dialogueDokkaebi.GetComponent<SimpleAnim>().enabled = !(IsCurse && index > 0);
         dialogueDokkaebiImage.sprite = DokkaebiSprite();
         ShowFriend();
         ShowPanel(dialoguePanel);
@@ -57,10 +58,11 @@ public partial class GameManager
         {
             dark = true;
             ApplyDarkFaces();
-            backgroundImage.sprite = PlayBackground;
-            dialogueDokkaebiImage.sprite = DokkaebiSprite();
             UpdateSnacks();
             Sfx.Play(Sfx.Fail);
+            // 그림은 바로 바꾸지 않고, 부르르 떨며 1초 동안 번지듯 바꿔요 (C1)
+            if (darkRoutine != null) StopCoroutine(darkRoutine);
+            darkRoutine = StartCoroutine(DarkTransition());
         }
 
         opening = AloneAt(dialogueLine);

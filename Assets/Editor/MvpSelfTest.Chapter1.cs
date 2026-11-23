@@ -378,7 +378,9 @@ static partial class MvpSelfTest
             Check(Find("EndingPanel/MatSlot").GetComponent<Image>().sprite == stages[2].originalSprite, "찾은 물건은 진짜가 놓인다");
             Check(Find("EndingPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal" && !IsOn("EndingPanel/BatSlot"),
                   "방망이를 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비어 있다");
-            Check(TryFind("EndingPanel/CandyJar") == null, "사탕 통은 없다");
+            var jar = Find("EndingPanel/CandyJar").GetComponent<CandyJar>();
+            Check(IsOn("EndingPanel/CandyJar") && jar.Shown == GetInt("jarCandies") && jar.Shown > 0,
+                  "사탕 통에 물건마다 남은 사탕이 모여 있다 (11/23 다시 넣음)");
             Check(Progress.IsCleared(1), "끝까지 하면 1챕터를 깬 것으로 저장된다");
             Shot("ending");
             Then(() =>

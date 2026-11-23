@@ -24,6 +24,8 @@ static class MvpLayoutCheck
     static readonly string[][] Intended =
     {
         new[] { "DrawPanel/ToolBar/Brush/", "DrawPanel/ToolBar/Brush/" },
+        new[] { "CurseEndPanel/Silhouette", "CurseEndPanel/PileSoul" },     // 게임오버 : 사람 더미 위에 친구 영혼이 떠 있어요
+        new[] { "CurseEndPanel/Silhouette", "CurseEndPanel/Dokkaebi" },     // 게임오버 : 더미 앞에 도깨비가 서서 다가와요
         new[] { "HUD/TimerGroup/Incense", "HUD/TimerGroup/Incense" },   // 향 불꽃은 향 끝에 얹혀요
         new[] { "HUD/TimerGroup/GaugeSlot", "HUD/TimerGroup/Incense" },   // 게이지 바는 같은 크기의 옅은 틀 위에 놓여요
         new[] { "DrawPanel/ToolBar/BrushHighlight", "DrawPanel/" },   // 5단계 시범 때 붓 둘레를 도는 도깨비불   // 붓 끝(지금 색) 위에 붓대
@@ -199,7 +201,8 @@ static class MvpLayoutCheck
     {
         if (parent == null) return false;
         return parent.Find("Button") != null && parent.Find("Frame") != null
-            || parent.name.StartsWith("Size_") || parent.name == "MixOpen";
+            || parent.name.StartsWith("Size_") || parent.name == "MixOpen"
+            || parent.name == "CandyJar";                                   // 사탕 통 : 유리 뒤 · 사탕 · 테두리를 겹쳐 한 그림
     }
 
     static bool IsIntended(string a, string b)

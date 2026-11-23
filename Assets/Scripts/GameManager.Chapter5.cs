@@ -194,14 +194,163 @@ public partial class GameManager
         curseEndSilhouette.SetActive(kind == 1);
         curseEndBoy.gameObject.SetActive(kind != 1);
         curseEndFriend.gameObject.SetActive(kind != 1);
+        if (curseEndSoul != null) curseEndSoul.SetActive(kind == 1);
+        PlaceCurseEndDokkaebi(gameOver: kind == 1);
         curseEndFriend.sprite = friendLost && !happy ? friendSpiritSprite : friendSprite;
         curseEndDokkaebi.sprite = happy ? (batLost ? dokkaebiNoBat : dokkaebiNormal) : DokkaebiSprite();
         curseEndBat.SetActive(happy && !batLost);       // 해피 엔딩 : 들고 있던 방망이만 두고 가요
         curseEndBox.gameObject.SetActive(false);
+        if (curseEndJar != null)
+        {
+            curseEndJar.gameObject.SetActive(happy);
+            if (happy) curseEndJar.Fill(hearts);    // 남은 하트가 사탕이 되어 통에 담겨요
+        }
         Progress.MarkCleared(chapter.number);
         Sfx.Play(happy ? Sfx.Cheer : Sfx.Fail);
         ShowPanel(curseEndPanel);
+        // 해피 : 정화된 도깨비가 머뭇거리다 뛰어서 도망가고 방망이만 남아요 (C6 · B5, 기획서 4쪽)
+        // 게임오버 : 사람 더미 앞의 도깨비가 화면 쪽으로 천천히 커지며 다가와요 (C6 · B7)
+        if (curseEndRoutine != null) StopCoroutine(curseEndRoutine);
+        curseEndRoutine = StartCoroutine(happy ? HappyRunOff() : GameOverApproach());
+    }
+
+    // ───────────── 5챕터 연출 (11/23, BACKLOG C1 · C5 · C6 · 쪽지 → 물건) ─────────────
+
+    // 끝 화면 도깨비 자리 : 해피는 오른쪽 (조립한 자리), 게임오버는 사람 더미 앞 가운데 (가운데를 기준으로 커져요)
+    Vector2 curseEndDokHome;
+    Vector2 curseEndDokPivot;
+    bool curseEndDokSaved;
+    void PlaceCurseEndDokkaebi(bool gameOver)
+    {
+        RectTransform rt = curseEndDokkaebi.rectTransform;
+        if (!curseEndDokSaved)
+        {
+            curseEndDokSaved = true;
+            curseEndDokHome = rt.anchoredPosition;
+            curseEndDokPivot = rt.pivot;
+        }
+        rt.localScale = Vector3.one;
+        rt.pivot = curseEndDokPivot;
+        rt.anchoredPosition = curseEndDokHome;
+        curseEndDokkaebi.gameObject.SetActive(true);
+        if (!gameOver) return;
+        // 조립한 자리(왼쪽 위 x 732, y 1070)의 가운데에서 화면 가운데(x 540)로, 조금 위(y 1010)로 옮겨요
+        Vector2 size = rt.sizeDelta;
+        Vector2 center = curseEndDokHome + new Vector2((0.5f - curseEndDokPivot.x) * size.x, (0.5f - curseEndDokPivot.y) * size.y);
+        rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = center + new Vector2(540f - (732f + 162f), 60f);
+        rt.localScale = Vector3.one * 1.3f;
+    }
+
+    static readonly Color DarkTint = new Color(0.3f, 0.3f, 0.36f, 1f);
+
+    /// <summary>진행 중인 연출을 멈추고 색 · 자리를 되돌려요 (챕터를 새로 시작할 때)</summary>
+    void StopMotion()
+    {
+        foreach (Coroutine r in new[] { darkRoutine, noteItemRoutine, curseEndRoutine })
+            if (r != null) StopCoroutine(r);
+        darkRoutine = noteItemRoutine = curseEndRoutine = null;
+        backgroundImage.color = Color.white;
+        if (dialogueDokkaebiImage != null) dialogueDokkaebiImage.color = Color.white;
+        if (darkFlash != null) darkFlash.gameObject.SetActive(false);
+        if (curseNote != null) curseNote.SetActive(false);
+        if (curseEndDokkaebi != null && curseEndDokSaved) PlaceCurseEndDokkaebi(gameOver: false);
+    }
+
+    /// <summary>C1 흑화 : 도깨비가 부르르 떨며 숲과 함께 어두워지고, 번쩍 한 뒤 흑화한 모습으로 번져요 (약 1초)</summary>
+    IEnumerator DarkTransition()
+    {
+        dialogueDokkaebiAnim.Play(SimpleAnim.Kind.Shake);
+        Image dok = dialogueDokkaebiImage;
+        for (float t = 0f; t < 0.5f; t += Time.deltaTime)
+        {
+            Color c = Color.Lerp(Color.white, DarkTint, t / 0.5f);
+            dok.color = c;
+            backgroundImage.color = c;
+            yield return null;
+        }
+        backgroundImage.sprite = PlayBackground;
+        dok.sprite = DokkaebiSprite();
+        if (darkFlash != null) darkFlash.gameObject.SetActive(true);
+        dialogueDokkaebiAnim.Play(SimpleAnim.Kind.Shake);
+        for (float t = 0f; t < 0.5f; t += Time.deltaTime)
+        {
+            float k = t / 0.5f;
+            Color c = Color.Lerp(DarkTint, Color.white, k);
+            dok.color = c;
+            backgroundImage.color = c;
+            if (darkFlash != null) darkFlash.color = new Color(1f, 1f, 1f, 0.85f * (1f - k));
+            yield return null;
+        }
+        dok.color = Color.white;
+        backgroundImage.color = Color.white;
+        if (darkFlash != null) darkFlash.gameObject.SetActive(false);
+        darkRoutine = null;
+    }
+
+    /// <summary>쪽지 → 물건 : 결과 화면에서 내 쪽지가 빛나다가 번쩍 하며 물건으로 바뀌어요 (5챕터)</summary>
+    IEnumerator NoteToItem()
+    {
+        if (curseNote == null) yield break;
+        GameObject item = resultItemImage.gameObject;
+        item.SetActive(false);
+        curseNote.SetActive(true);
+        var rt = (RectTransform)curseNote.transform;
+        rt.localScale = Vector3.one;
+        if (curseNoteDrawing != null) curseNoteDrawing.texture = board.Texture;
+        for (float t = 0f; t < 0.6f; t += Time.deltaTime)
+        {
+            if (curseNoteGlow != null) curseNoteGlow.color = new Color(1f, 0.84f, 0.4f, 0.5f + 0.4f * Mathf.Sin(t * 20f));
+            rt.localEulerAngles = new Vector3(0f, 0f, Mathf.Sin(t * 40f) * 3f);
+            yield return null;
+        }
+        for (float t = 0f; t < 0.2f; t += Time.deltaTime)
+        {
+            float k = t / 0.2f;
+            rt.localScale = Vector3.one * Mathf.Lerp(1f, 1.4f, k);
+            if (curseNoteGlow != null) curseNoteGlow.color = new Color(1f, 1f, 0.8f, 1f - k);
+            yield return null;
+        }
+        rt.localEulerAngles = Vector3.zero;
+        curseNote.SetActive(false);
+        item.SetActive(true);                       // 물건이 톡 커지며 나와요 (ReturnedItem 의 Pop)
+        noteItemRoutine = null;
+    }
+
+    /// <summary>해피 엔딩 : 정화된 도깨비가 두리번거리다 깡충깡충 오른쪽으로 도망가요. 다 나가면 주인공 대사</summary>
+    IEnumerator HappyRunOff()
+    {
+        RectTransform rt = curseEndDokkaebi.rectTransform;
+        Vector2 home = rt.anchoredPosition;
+        for (float t = 0f; t < 0.8f; t += Time.deltaTime)
+        {
+            rt.anchoredPosition = home + new Vector2(Mathf.Sin(t * 22f) * 10f, 0f);
+            yield return null;
+        }
+        for (float t = 0f; t < 0.9f; t += Time.deltaTime)
+        {
+            float k = t / 0.9f;
+            rt.anchoredPosition = home + new Vector2(k * k * 1100f, Mathf.Abs(Mathf.Sin(k * Mathf.PI * 3f)) * 40f);
+            yield return null;
+        }
+        curseEndDokkaebi.gameObject.SetActive(false);
+        rt.anchoredPosition = home;
+        curseEndRoutine = null;
+        if (!curseEndTalking) CurseEndTap();
+    }
+
+    /// <summary>게임오버 : 사람 더미 앞의 도깨비가 화면 쪽으로 천천히 커지며 다가와요. 대사는 바로 나와요</summary>
+    IEnumerator GameOverApproach()
+    {
         CurseEndTap();
+        RectTransform rt = curseEndDokkaebi.rectTransform;
+        for (float t = 0f; t < 2.5f; t += Time.deltaTime)
+        {
+            float k = t / 2.5f;
+            rt.localScale = Vector3.one * Mathf.Lerp(1.3f, 1.7f, k * (2f - k)) * (1f + Mathf.Sin(t * 3f) * 0.015f);
+            yield return null;
+        }
+        curseEndRoutine = null;
     }
 
     /// <summary>[화면 터치] 엔딩 대사 → 챕터 선택</summary>

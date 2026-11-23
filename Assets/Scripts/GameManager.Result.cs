@@ -46,6 +46,8 @@ public partial class GameManager
         {
             curseTaken = false;
             HideSoul();
+            if (noteItemRoutine != null) StopCoroutine(noteItemRoutine);
+            noteItemRoutine = StartCoroutine(NoteToItem());
             if (success) line = GameScript.CurseCounterHitLine(stageIndex);
             else
             {
@@ -170,6 +172,7 @@ public partial class GameManager
     public void NextStage()
     {
         Sfx.Play(Sfx.Tap);
+        jarCandies += Mathf.Max(0, candies);            // 이 물건에서 남은 사탕은 끝 장면 사탕 통으로
         if (stageIndex + 1 < stages.Length) StartStage(stageIndex + 1);
         else ShowEnding();
     }
@@ -194,6 +197,7 @@ public partial class GameManager
         // 방망이는 화면에 하나만 : 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비워요.
         //   못 찾았으면 도깨비는 빈손이고 그 자리에 받은 엉뚱한 물건이 놓여요.
         endingItems[0].gameObject.SetActive(batLost);
+        if (endingJar != null) endingJar.Fill(jarCandies);
         Sfx.Bgm(Sfx.BgmPicnic);
         Sfx.Play(Sfx.Cheer);
         ShowPanel(endingPanel);
@@ -236,6 +240,7 @@ public partial class GameManager
             roomEndItems[i].gameObject.SetActive(used);
             if (used) roomEndItems[i].sprite = itemsFound[i] != null ? itemsFound[i] : stages[i].originalSprite;
         }
+        if (roomEndJar != null) roomEndJar.Fill(jarCandies);
         Progress.MarkCleared(chapter.number);       // 물건을 다 거치면 깬 것 → 다음 챕터가 열려요
         Sfx.Bgm(Sfx.BgmRoom);
         Sfx.Play(Sfx.Cheer);

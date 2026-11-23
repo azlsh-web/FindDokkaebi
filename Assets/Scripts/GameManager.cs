@@ -257,6 +257,16 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] GameObject curseEndSilhouette;
     [SerializeField] GameObject curseEndBat;
     [SerializeField] DialogueBox curseEndBox;
+    // 끝 장면 사탕 통 (11/23) : 1챕터 소풍 · 2~4챕터 방 · 5챕터 해피 엔딩
+    [SerializeField] CandyJar endingJar;
+    [SerializeField] CandyJar roomEndJar;
+    [SerializeField] CandyJar curseEndJar;
+    // 5챕터 연출 (C1 흑화 · 쪽지가 물건으로)
+    [SerializeField] Image darkFlash;               // 흑화 순간 화면이 번쩍
+    [SerializeField] GameObject curseNote;          // 결과 화면 : 빛나는 쪽지가 번쩍 하며 물건으로 바뀌어요
+    [SerializeField] RawImage curseNoteDrawing;
+    [SerializeField] Image curseNoteGlow;
+    [SerializeField] GameObject curseEndSoul;       // 게임오버 : 사람 더미 위에 희미하게 떠 있는 친구 영혼
 
     static readonly Color UsedSnackColor = new Color(0.55f, 0.55f, 0.55f, 0.35f);
 
@@ -300,6 +310,8 @@ public partial class GameManager : MonoBehaviour
     int curseEnd;           // 0 없음, 1 게임오버, 2 해피
     bool curseEndTalking;
     Coroutine scareRoutine;
+    Coroutine darkRoutine, noteItemRoutine, curseEndRoutine;
+    int jarCandies;         // 끝 장면 사탕 통 : 물건마다 남은 사탕을 더해요
     float timeLeft;
     float savedDrawTime;    // AI 오류로 그리기로 돌아갈 때 쓸 남은 시간
     int[] attempts;
@@ -400,6 +412,8 @@ public partial class GameManager : MonoBehaviour
         friendLost = false;
         dark = false;
         curseEnd = 0;
+        jarCandies = 0;
+        StopMotion();
         peekShown = chapter.guide != ChapterGuide.Magnifier;     // 돋보기 시범은 2챕터 첫 물건에서만
         backgroundImage.sprite = PlayBackground;
         int first = 0;

@@ -415,6 +415,42 @@ public static partial class MvpSceneBuilder
         p.objectReferenceValue = value;
     }
 
+    // 끝 장면 사탕 통 (11/23 다시 넣음) : 유리 뒤쪽 → 사탕 15개(한 줄 3개, 아래부터) → 테두리 · 뚜껑. 통 그림은 make_candy_jar.py
+    //   x, y, w, h 는 M 단위 (화면 폭 360). 사탕은 통이 나온 뒤 하나씩 톡톡 나타나요 (CandyJar.Fill 이 개수만큼 켜요)
+    static CandyJar NewCandyJar(Transform parent, Sprite candy, float x, float y, float w, float h, float delay)
+    {
+        var go = new GameObject("CandyJar", typeof(RectTransform));
+        go.transform.SetParent(parent, false);
+        M((RectTransform)go.transform, x, y, w, h);
+        Anim(go, SimpleAnim.Kind.Pop, 0.45f, delay, 0f);
+        var back = NewImage("Back", go.transform, Color.white);
+        back.sprite = T("Ending_CandyJarBack");
+        back.raycastTarget = false;
+        Stretch(back.rectTransform);
+        float sx = w / 62f, sy = h / 80f;               // 옛 소풍 통(62 x 80) 기준 자리를 크기에 맞춰요
+        var candies = new Object[15];
+        for (int k = 0; k < candies.Length; k++)
+        {
+            int row = k / 3, col = k % 3;
+            var c = NewImage($"Candy_{k + 1}", go.transform, Color.white);
+            c.sprite = candy;
+            c.preserveAspect = true;
+            c.raycastTarget = false;
+            PIn(c.rectTransform, (6 + col * 16 + (row % 2) * 2) * sx, (61 - row * 9) * sy, 17 * sx, 12 * sy);
+            Anim(c.gameObject, SimpleAnim.Kind.Pop, 0.3f, delay + 0.5f + k * 0.08f, 0f);
+            candies[k] = c.gameObject;
+        }
+        var front = NewImage("Front", go.transform, Color.white);
+        front.sprite = T("Ending_CandyJarFront");
+        front.raycastTarget = false;
+        Stretch(front.rectTransform);
+        var jar = go.AddComponent<CandyJar>();
+        var so = new SerializedObject(jar);
+        SetArray(so, "candies", candies);
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return jar;
+    }
+
     static void SetArray(SerializedObject so, string field, Object[] items)
     {
         SerializedProperty p = so.FindProperty(field);

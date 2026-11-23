@@ -234,6 +234,8 @@ static partial class MvpSelfTest
                 Check(IsOn("RoomEndPanel/Item_0") && IsOn("RoomEndPanel/Item_2") && Find("RoomEndPanel/Item_0").GetComponent<Image>().sprite == st.AllWrongSprite,
                       "찾은 물건 3개가 놓이고, 포기한 물건은 받은 엉뚱한 물건");
                 Check(Progress.IsCleared(2) && Progress.IsOpen(3), "2챕터를 깨면 3챕터가 열린다");
+                Check(IsOn("RoomEndPanel/CandyJar") && Find("RoomEndPanel/CandyJar").GetComponent<CandyJar>().Shown == GetInt("jarCandies"),
+                      "방 끝 장면에도 사탕 통 : 남은 사탕이 모인다");
                 Shot("c2_end");
                 Then(() =>
                 {

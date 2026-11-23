@@ -766,6 +766,22 @@ public static partial class MvpSceneBuilder
         var resultItem = MImage("ReturnedItem", result, null, 130, 256, 220, 220);
         PivotBottom(resultItem.rectTransform);
         Anim(resultItem.gameObject, SimpleAnim.Kind.Pop, 0.6f, 0f, 0f);
+        // 5챕터 : 내 쪽지가 빛나다 번쩍 하며 물건으로 바뀌어요 (GameManager.NoteToItem). 물건 자리 가운데에
+        var curseNoteGo = NewEmpty("CurseNote", result);
+        M((RectTransform)curseNoteGo, 170, 286, 140, 165);
+        var curseNoteGlowImg = NewImage("Glow", curseNoteGo, new Color32(255, 214, 102, 210));
+        curseNoteGlowImg.sprite = T("Common_SoftPuff");
+        curseNoteGlowImg.raycastTarget = false;
+        Stretch(curseNoteGlowImg.rectTransform, -30f);
+        var curseNotePaper = NewPaper("Paper", curseNoteGo, "Draw_Paper");
+        curseNotePaper.raycastTarget = false;
+        Stretch(curseNotePaper.rectTransform);
+        var curseNoteDrawingGo = new GameObject("Drawing", typeof(RectTransform), typeof(RawImage));
+        curseNoteDrawingGo.transform.SetParent(curseNoteGo, false);
+        var curseNoteDrawingImg = curseNoteDrawingGo.GetComponent<RawImage>();
+        curseNoteDrawingImg.raycastTarget = false;
+        Stretch(curseNoteDrawingImg.rectTransform, 8f);
+        curseNoteGo.gameObject.SetActive(false);
         var sparkles = NewEmpty("Sparkles", result);
         float[][] sparkleXY = { new float[] { 150, 262, 22, 0.3f }, new float[] { 326, 286, 16, 0.7f }, new float[] { 318, 430, 20, 1f } };
         for (int i = 0; i < sparkleXY.Length; i++)
@@ -886,6 +902,7 @@ public static partial class MvpSceneBuilder
         var endBag = Item("BagSlot", 50, 418, 74, 66, 0.7f);
         var endGimbap = Item("GimbapSlot", 150, 468, 62, 62, 1.2f);
         var endBat = Item("BatSlot", 246, 416, 66, 90, 1.7f);
+        var endingJar = NewCandyJar(ending, snack, 288, 500, 62, 80, 1.9f);     // 돗자리 오른쪽 아래 (옛 C-25 자리)
         Color32[] confettiColors = { new Color32(242, 119, 107, 255), new Color32(245, 201, 107, 255), new Color32(90, 167, 217, 255) };
         float[][] confetti = { new float[] { 40, 3.2f, 0f }, new float[] { 110, 2.6f, 0.5f }, new float[] { 190, 3.5f, 1f }, new float[] { 260, 2.9f, 0.2f }, new float[] { 325, 3.3f, 1.4f } };
         for (int i = 0; i < confetti.Length; i++)
@@ -913,6 +930,7 @@ public static partial class MvpSceneBuilder
             roomEndItems[i] = MImage("Item_" + i, roomEnd, null, 40 + 100 * i, 416.7f, 80, 80);
             Anim(roomEndItems[i].gameObject, SimpleAnim.Kind.Land, 0.7f, 0.2f + 0.5f * i, 1080f);
         }
+        var roomEndJar = NewCandyJar(roomEnd, snack, 150, 330, 50, 64, 1.6f);    // 주인공과 도깨비 사이 바닥
         // 4챕터 독백 : 밤 창 안에서 빨간 눈이 지켜봐요 (방 배경 창 x 620~1080, y 280~826 안)
         var roomEndEyes = MImage("RedEyes", roomEnd, LoadSprite("Chapter4/Room_RedEyes.png"), 263, 200, 70, 24);     // 위 대사 상자(아래 끝 y 504) 밑
         Anim(roomEndEyes.gameObject, SimpleAnim.Kind.FadeIn, 1.2f, 0.3f, 0f);
@@ -1047,11 +1065,16 @@ public static partial class MvpSceneBuilder
         curseSilhouetteImg.raycastTarget = false;
         Sprite silhouetteSprite = LoadSprite("Chapter5/GameOver_Silhouette.png");
         if (silhouetteSprite != null) { curseSilhouetteImg.sprite = silhouetteSprite; curseSilhouetteImg.color = Color.white; curseSilhouetteImg.preserveAspect = true; }
-        Put3(curseSilhouetteImg.rectTransform, 0, 560, 1080, 700);
+        Put3(curseSilhouetteImg.rectTransform, 0, 520, 1080, 700);           // 도깨비 등 뒤에 쌓여 있어요 (기획서 4쪽)
+        var curseEndSoulImg = Img3("PileSoul", curseEnd, friendSpirit, 140, 560, 150, 170);   // 더미 위의 친구 영혼 (희미하게, 대사 상자 아래)
+        curseEndSoulImg.color = new Color(1f, 1f, 1f, 0.55f);
+        curseEndSoulImg.raycastTarget = false;
+        Anim(curseEndSoulImg.gameObject, SimpleAnim.Kind.Float, 2.4f, 0f, 12f);
         var curseEndBoy = Img3("Boy", curseEnd, boyNormal, 24, 838, 360, 548);
         var curseEndFriend = Img3("Friend", curseEnd, friend, 408, 1086, 300, 300);
         var curseEndDokkaebi = Img3("Dokkaebi", curseEnd, dokkaebiDark, 732, 1070, 324, 316);
         var curseEndBat = Img3("Bat", curseEnd, LoadSprite("Stage1_Bat/Bat_Original.png"), 600, 1300, 198, 270);
+        var curseEndJar = NewCandyJar(curseEnd, snack, 330f / 3f, 1420f / 3f, 150f / 3f, 194f / 3f, 0.8f);   // 해피 : 남은 하트가 사탕으로
         var curseEndBoxComp = NewDialogueBox(curseEnd, faceSurprised);
         M((RectTransform)curseEndBoxComp.transform, 12, 64, 336, 104);          // 위쪽 (36, 192) : 인물을 가리지 않게
         var curseEndTapButton = NewTap("TapButton", curseEnd);
@@ -1248,6 +1271,19 @@ public static partial class MvpSceneBuilder
         Set(so, "curseEndSilhouette", curseSilhouetteImg.gameObject);
         Set(so, "curseEndBat", curseEndBat.gameObject);
         Set(so, "curseEndBox", curseEndBoxComp);
+        Set(so, "curseEndSoul", curseEndSoulImg.gameObject);
+        Set(so, "endingJar", endingJar);
+        Set(so, "roomEndJar", roomEndJar);
+        Set(so, "curseEndJar", curseEndJar);
+        Set(so, "curseNote", curseNoteGo.gameObject);
+        Set(so, "curseNoteDrawing", curseNoteDrawingImg);
+        Set(so, "curseNoteGlow", curseNoteGlowImg);
+        // 흑화 순간 번쩍 (C1) : 대화 화면 맨 위를 덮는 흰 막. 터치는 막지 않아요
+        var darkFlashImg = NewImage("DarkFlash", dialogue, new Color(1f, 1f, 1f, 0.85f));
+        darkFlashImg.raycastTarget = false;
+        Stretch(darkFlashImg.rectTransform);
+        darkFlashImg.gameObject.SetActive(false);
+        Set(so, "darkFlash", darkFlashImg);
         Set(so, "settingsMain", settingsMain.gameObject);
         Set(so, "settingsConfirm", settingsConfirm.gameObject);
         Set(so, "settingsExitButton", settingsExit.transform.parent.gameObject);
