@@ -8,7 +8,7 @@ using UnityEngine;
 // 특징 이름은 결과 대사에 넣지 않아요 (정답 힌트가 되니까요). 판정 기준은 시작 대화의 생김새 대사로 알려 줘요.
 public static class GameScript
 {
-    public enum Face { BoySurprised, BoyHappy, Dokkaebi, BoySad, BoyNormal }   // BoyNormal : 물건 생김새를 차분히 설명할 때
+    public enum Face { BoySurprised, BoyHappy, Dokkaebi, BoySad, BoyNormal, Friend }   // BoyNormal : 물건 생김새를 차분히 설명할 때 · Friend : 5챕터 친구
 
     public struct Line
     {
@@ -166,14 +166,18 @@ public static class GameScript
     };
     public const int CurseDarkFrom = 2;
 
-    // 단계 대화 : [단계] 도깨비가 요청 물건 이름을 말하고, 주인공은 혼잣말로 맞설 물건을 떠올려요
+    // 단계 대화 : [단계] 도깨비가 요청 물건 이름을 말하고, 친구가 귓속말로 맞설 물건을 일러 줘요 (A3)
+    //   2~4챕터 끝 장면에서 도깨비가 흘린 말(부적 · 닭피 · 팥)을 주인공이 친구에게 전해 줬어요
     static readonly Line[][] CurseStep =
     {
         new[] { new Line(Face.Dokkaebi, "짚신을 그려 와! 한 걸음에 어디든 널 쫓아가게!"),
-                new Line(Face.BoyNormal, "(부적을 무서워한댔어. 황토빛 종이에 붉은 갈색 문양이었지…)") },
+                new Line(Face.Friend, "(속닥) 네가 그랬잖아. 도깨비는 부적이 질색이라고!"),
+                new Line(Face.BoyNormal, "(맞아! 황토빛 종이에 붉은 갈색 문양이었지…)") },
         new[] { new Line(Face.Dokkaebi, "도깨비 부채를 그려 와! 한 번 부치면 널 이 숲에 가둘 거야!"),
-                new Line(Face.BoyNormal, "(닭피 그릇을 보면 도망간댔어. 친구를 지켜야 해…!)") },
+                new Line(Face.Friend, "(속닥) 생일 파티 때 닭피 얘기에 부르르 떨었다며?"),
+                new Line(Face.BoyNormal, "(그래, 닭피 그릇! 친구를 지켜야 해…!)") },
         new[] { new Line(Face.Dokkaebi, "도깨비 감투를 그려 와! 아무도 날 못 보게 말이야!"),
+                new Line(Face.Friend, "(속닥) 팥은 보기만 해도 다리가 후들거린댔지?"),
                 new Line(Face.BoyNormal, "(팥주머니라면… 도깨비도 꼼짝 못 할 거야!)") },
     };
 
@@ -388,11 +392,21 @@ public static class GameScript
     // [챕터 - 2] 끝 장면 : 도깨비 인사 (4챕터는 약속 + 주인공 속마음, 속마음은 기획서)
     static readonly Line[][] RoomEnd =
     {
-        new[] { new Line(Face.Dokkaebi, "나도 사람일 땐 이랬지… 앗, 비 그친다! 또 봐!") },
-        new[] { new Line(Face.Dokkaebi, "휴, 난 좀 쉴래. 동생한테 생일 축하한다고 해!") },
+        // 5챕터 복선 (A3) : 2챕터 부적 · 3챕터 닭피 · 4챕터 팥을 도깨비가 싫어한다고 흘려요
+        new[]
+        {
+            new Line(Face.Dokkaebi, "참, 혹시 부적 있으면 숨겨 줘. 보기만 해도 따끔따끔해!"),
+            new Line(Face.Dokkaebi, "나도 사람일 땐 이랬지… 앗, 비 그친다! 또 봐!"),
+        },
+        new[]
+        {
+            new Line(Face.Dokkaebi, "빨간 건 다 좋은데… 닭피만은 싫어. 부르르!"),
+            new Line(Face.Dokkaebi, "휴, 난 좀 쉴래. 동생한테 생일 축하한다고 해!"),
+        },
         new[]
         {
             new Line(Face.Dokkaebi, "찾은 간식은 전부 내 거랬지? 히히, 기다릴게!"),
+            new Line(Face.Dokkaebi, "아, 팥 든 건 빼 줘! 팥만 보면 다리가 후들거려."),
             new Line(Face.BoyNormal, "(간식을 숨겨 두면 도깨비도 못 찾겠지? 다 찾고 보니 간식이 아까워ㅠ)"),
         },
     };

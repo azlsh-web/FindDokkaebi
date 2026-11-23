@@ -68,6 +68,8 @@ def art_inventory():
             method = "기존 아트 색 바꾸기 (Tools/art_temp)"
         elif "Char_Dokkaebi_Dark" in rel:
             method = "Codex CLI가 기존 아트 색 바꾸기 (finish_chapter5.ps1)"
+        elif "Char_FriendFace" in rel:
+            method = "Claude가 아트팀 친구 원본(Friend_Original)에서 얼굴만 오림. 임의 제작 (A3, 11/23)"
         elif "Char_Friend_Spirit" in rel:
             method = "Codex CLI가 친구 원본을 흐리게 가공 (finish_chapter5.ps1)"
         elif "Codex" in source:

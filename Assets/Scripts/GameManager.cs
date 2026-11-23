@@ -116,6 +116,7 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] Sprite faceBoyNormal;          // 물건 생김새를 차분히 설명할 때
     [SerializeField] Sprite faceBoySad;             // 틀렸을 때 · 간식이 떨어졌을 때 : 우는 얼굴
     [SerializeField] Sprite faceDokkaebi;
+    [SerializeField] Sprite faceFriend;            // 5챕터 친구 귓속말 (Friend_Original 에서 얼굴만 오린 임시 그림)
     [SerializeField] Sprite faceDokkaebiProud;     // 맞았을 때 : 뿌듯한 얼굴
     [SerializeField] Sprite faceDokkaebiTease;     // 틀렸을 때 : 놀리는 얼굴
     [SerializeField] Sprite dokkaebiNormal;
@@ -499,7 +500,8 @@ public partial class GameManager : MonoBehaviour
     // ───────────── 도우미 함수 ─────────────
 
     Sprite FaceOf(GameScript.Face face) =>
-        face == GameScript.Face.BoySurprised ? faceBoySurprised : face == GameScript.Face.BoyHappy ? faceBoyHappy
+        face == GameScript.Face.Friend && faceFriend != null ? faceFriend
+        : face == GameScript.Face.BoySurprised ? faceBoySurprised : face == GameScript.Face.BoyHappy ? faceBoyHappy
         : face == GameScript.Face.BoySad ? faceBoySad : face == GameScript.Face.BoyNormal ? faceBoyNormal : faceDokkaebi;
 
     // (에디터에서만) 제출한 그림과 판정 결과를 Temp/Submissions 에 저장 → 판정 기준을 조절할 때 참고해요.

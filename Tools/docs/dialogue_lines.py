@@ -8,7 +8,7 @@ from PIL import ImageFont
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 SOURCE = os.path.join(ROOT, "Assets", "Scripts", "GameScript.cs")
 STAGES = ["방망이", "가방", "돗자리", "김밥", "친구"]
-FACE = {"BoySurprised": "주인공 (놀람)", "BoyHappy": "주인공 (기쁨)", "BoySad": "주인공 (울음)", "BoyNormal": "주인공 (보통)", "Dokkaebi": "도깨비"}
+FACE = {"BoySurprised": "주인공 (놀람)", "BoyHappy": "주인공 (기쁨)", "BoySad": "주인공 (울음)", "BoyNormal": "주인공 (보통)", "Dokkaebi": "도깨비", "Friend": "친구"}
 
 # 대사 상자 크기 : MvpSceneBuilder.NewDialogueBox (글자 칸 폭 663, 글자 크기 48, 세 줄까지 들어가요)
 BOX_WIDTH, FONT_SIZE, MAX_LINES = 663, 48, 3
@@ -191,9 +191,12 @@ def read_lines(path=SOURCE):
     assert len(steps) == 3
     for i, ((a, b), requested, counter) in enumerate(zip(steps, ["짚신", "도깨비 부채", "도깨비 감투"], ["부적", "닭피 그릇", "팥주머니"]), 1):
         matches = list(re.finditer(r'new Line\(Face\.(\w+),\s*"((?:[^"\\]|\\.)*)"\)', src[a:b]))
-        assert len(matches) == 2
+        assert len(matches) == 3
+        scenes = [f"요청 물건 {requested} : 그림을 요구함",
+                  f"친구 귓속말 : 맞설 물건 {counter}을 일러 줌 (2~4챕터 끝 장면 복선)",
+                  f"주인공 속마음 : 맞설 물건 {counter} 생김새를 떠올림"]
         for k, m in enumerate(matches, 1):
-            scene = f"요청 물건 {requested} : 그림을 요구함" if k == 1 else f"주인공 속마음 : 맞설 물건 {counter} 떠올림"
+            scene = scenes[k - 1]
             add(f"C5-단계{i}-{k}", f"5챕터 · {i}단계", scene, FACE[m.group(1)], m.group(2), a + m.start(2), a + m.end(2))
 
     takes = _strings(src, *_block(src, "CurseTake"))

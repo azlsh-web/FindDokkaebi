@@ -354,7 +354,11 @@ static partial class MvpSelfTest
                 Check(Plain("RoomEndPanel/DialogueBox/Line") == GameScript.RoomEndLines(4)[0].text, "도깨비가 약속을 말한다");
                 Gm().EndingTap();
                 Gm().EndingTap();
-                Check(Plain("RoomEndPanel/DialogueBox/Line") == GameScript.RoomEndLines(4)[1].text, "주인공 속마음 (간식을 숨기자)");
+                Check(Plain("RoomEndPanel/DialogueBox/Line") == GameScript.RoomEndLines(4)[1].text && !IsOn("RoomEndPanel/RedEyes"),
+                      "도깨비가 팥은 싫다고 흘린다 (5챕터 복선)");
+                Gm().EndingTap();
+                Gm().EndingTap();
+                Check(Plain("RoomEndPanel/DialogueBox/Line") == GameScript.RoomEndLines(4)[2].text, "주인공 속마음 (간식을 숨기자)");
                 Check(IsOn("RoomEndPanel/RedEyes"), "속마음 때 창 안에 빨간 눈 (복선)");
                 Check(Progress.IsCleared(4) && Progress.IsOpen(5), "4챕터를 깨면 5챕터가 열린다");
             });

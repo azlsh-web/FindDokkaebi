@@ -80,8 +80,9 @@ public partial class GameManager
         }
 
         bool dokkaebiTalks = line.face == GameScript.Face.Dokkaebi;
+        bool friendTalks = line.face == GameScript.Face.Friend;
         dialogueBoyAnim.Play(line.face == GameScript.Face.BoySurprised ? SimpleAnim.Kind.Shake
-                             : dokkaebiTalks ? SimpleAnim.Kind.None : SimpleAnim.Kind.Gentle);
+                             : dokkaebiTalks || friendTalks ? SimpleAnim.Kind.None : SimpleAnim.Kind.Gentle);
         if (dialogueDokkaebi.activeSelf)
             dialogueDokkaebiAnim.Play(dokkaebiTalks ? SimpleAnim.Kind.Gentle : SimpleAnim.Kind.None);
     }

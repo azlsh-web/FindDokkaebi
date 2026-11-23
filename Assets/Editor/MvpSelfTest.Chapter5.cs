@@ -38,6 +38,12 @@ static partial class MvpSelfTest
             Shot("c5_dialogue");
             Then(() =>
             {
+                // A3 : 단계 대화에서 친구가 귓속말로 맞설 물건을 일러 준다 (친구 얼굴)
+                string friendLine = GameScript.CurseStepLines(0)[1].text;
+                for (int k = 0; k < 80 && !IsOn("ChoosePanel") && Plain("DialoguePanel/DialogueBox/Line") != friendLine; k++) Gm().DialogueTap();
+                Check(Plain("DialoguePanel/DialogueBox/Line") == friendLine
+                      && Find("DialoguePanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_FriendFace_Normal",
+                      "친구가 귓속말로 맞설 물건을 일러 준다 (친구 얼굴)");
                 TapToChoose();
                 Check(GetBool("dark"), "간식 이야기를 꺼내면 숲이 어두워지고 도깨비가 흑화한다");
                 Check(IsOn("ChoosePanel") && !IsOn("DialoguePanel"), "대사가 끝나면 고르기 화면");

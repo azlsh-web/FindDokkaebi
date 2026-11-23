@@ -171,6 +171,7 @@ TREE = [
         ("Background (어두운 숲)", "Chapter5/BG_ForestDark", CODEX + " 임시 그림"),
         ("흑화 도깨비 (빈손)", "Chapter5/Char_Dokkaebi_Dark", CODEX + ", Char_Dokkaebi_NoBat 색을 바꿈"),
         ("흑화 도깨비 (방망이)", "Chapter5/Char_Dokkaebi_DarkBat", CODEX + ", Char_Dokkaebi_Normal 색을 바꿈"),
+        ("DialogueBox/Face (친구 귓속말 얼굴)", "Characters/Char_FriendFace_Normal", "Claude 임시 가공, 친구 원본에서 얼굴만 오림 (11/23)"),
         ("DialoguePanel/Friend (영혼을 빼앗긴 친구)", "Chapter5/Char_Friend_Spirit", CODEX + ", Friend_Original 을 흐리게"),
         ("HUD/HeartGroup/Heart_0~2 (도깨비 하트)", "Chapter5/HUD_Heart", CODEX + " 임시 그림"),
         ("CurseEndPanel/Silhouette (게임오버)", "Chapter5/GameOver_Silhouette", CODEX + " 임시 그림"),

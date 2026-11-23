@@ -82,6 +82,7 @@ public static partial class MvpSceneBuilder
         Sprite boyHappy = LoadSprite("Characters/Char_Boy_Happy.png");
         Sprite faceHappy = LoadSprite("Characters/Char_BoyFace_Happy.png");
         Sprite faceSurprised = LoadSprite("Characters/Char_BoyFace_Surprised.png");
+        Sprite faceFriend = LoadSprite("Characters/Char_FriendFace_Normal.png");        // 5챕터 친구 귓속말 (임시 : 친구 원본에서 얼굴만)
         Sprite faceNormal = LoadSprite("Characters/Char_BoyFace_Normal.png");           // 물건 생김새를 차분히 설명할 때
         Sprite faceSad = LoadSprite("Characters/Char_BoyFace_Sad.png");                 // 틀렸을 때 · 간식이 떨어졌을 때
         Sprite dokkaebi = LoadSprite("Characters/Char_Dokkaebi_Normal.png");
@@ -1207,6 +1208,7 @@ public static partial class MvpSceneBuilder
         Set(so, "magnifierButton", magnifierButton);
         Set(so, "magnifierPeek", peek);
         Set(so, "faceDokkaebi", faceDokkaebi);
+        Set(so, "faceFriend", faceFriend);
         Set(so, "faceDokkaebiProud", faceDokkaebiProud);
         Set(so, "faceDokkaebiTease", faceDokkaebiTease);
         Set(so, "dokkaebiNormal", dokkaebi);
