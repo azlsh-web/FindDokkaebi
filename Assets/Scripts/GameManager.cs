@@ -236,6 +236,7 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] Sprite friendSpiritSprite;     // 요청 물건을 틀리면 친구 영혼을 빼앗겨 흐려져요
     [SerializeField] Sprite dokkaebiDark;           // 흑화한 도깨비 (빈손)
     [SerializeField] Sprite dokkaebiDarkBat;        // 흑화한 도깨비 (방망이)
+    [SerializeField] Sprite[] faceDark;             // 흑화한 도깨비 대사 얼굴 : 보통 · 뿌듯 · 놀림 (B1, 아트팀 얼굴 색만 바꾼 임시)
     [SerializeField] Sprite forestBright;
     [SerializeField] Sprite forestDark;
     [SerializeField] GameObject scareOverlay;       // 점프스케어 (화면에 덮기만)

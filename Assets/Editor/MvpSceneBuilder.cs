@@ -955,7 +955,8 @@ public static partial class MvpSceneBuilder
         float[] chooseX = { 54, 558 };
         for (int i = 0; i < 2; i++)
         {
-            var chooseCard = NewCard("ChooseCard_" + i, choose, Vector2.zero, Vector2.zero);
+            // 카드는 다른 화면의 쪽지와 같은 종이 질감(Draw_Paper) (B9)
+            var chooseCard = NewPaper("ChooseCard_" + i, choose, "Draw_Paper").transform;
             Put3((RectTransform)chooseCard, chooseX[i], 240, 468, 460);
             var chooseButton = chooseCard.gameObject.AddComponent<Button>();
             var chooseItem = NewImage("Item", chooseCard, Color.white);
@@ -1223,6 +1224,9 @@ public static partial class MvpSceneBuilder
         Set(so, "friendSprite", friend);
         Set(so, "friendSpiritSprite", friendSpirit);
         Set(so, "dokkaebiDark", dokkaebiDark);
+        SetArray(so, "faceDark", new[] { Chap5("Char_DokkaebiFace_Normal_Dark.png", faceDokkaebi),
+                                         Chap5("Char_DokkaebiFace_Proud_Dark.png", faceDokkaebiProud),
+                                         Chap5("Char_DokkaebiFace_Tease_Dark.png", faceDokkaebiTease) });
         Set(so, "dokkaebiDarkBat", dokkaebiDarkBat);
         Set(so, "forestBright", forestBright);
         Set(so, "forestDark", forestDark);

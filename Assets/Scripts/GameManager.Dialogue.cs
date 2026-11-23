@@ -56,6 +56,7 @@ public partial class GameManager
         if (IsCurse && stageIndex == 0 && !dark && dialogueLine >= GameScript.CurseDarkFrom)
         {
             dark = true;
+            ApplyDarkFaces();
             backgroundImage.sprite = PlayBackground;
             dialogueDokkaebiImage.sprite = DokkaebiSprite();
             UpdateSnacks();

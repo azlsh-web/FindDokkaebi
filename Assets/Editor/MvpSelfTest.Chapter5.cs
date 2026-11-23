@@ -46,6 +46,8 @@ static partial class MvpSelfTest
                       "친구가 귓속말로 맞설 물건을 일러 준다 (친구 얼굴)");
                 TapToChoose();
                 Check(GetBool("dark"), "간식 이야기를 꺼내면 숲이 어두워지고 도깨비가 흑화한다");
+                var darkFace = (Sprite)typeof(GameManager).GetField("faceDokkaebi", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(Gm());
+                Check(darkFace != null && darkFace.name.EndsWith("_Dark"), "흑화한 뒤에는 대사 상자 얼굴도 흑화 얼굴 (B1)");
                 Check(IsOn("ChoosePanel") && !IsOn("DialoguePanel"), "대사가 끝나면 고르기 화면");
             });
         });
@@ -60,6 +62,7 @@ static partial class MvpSelfTest
             Check((left == counter && right == request) || (left == request && right == counter) , "두 그림은 요청 물건과 맞설 물건");
             Check(left == (leftCounter ? counter : request), "왼쪽 그림이 맞설 물건인지는 leftIsCounter 와 같다");
             Check(IsOn("ChoosePanel/ChooseCard_0") && IsOn("ChoosePanel/ChooseCard_1"), "그림 카드 두 장이 보인다");
+            Check(Find("ChoosePanel/ChooseCard_0").GetComponent<Image>().sprite.name == "Draw_Paper", "고르기 카드는 쪽지 종이 질감 (B9)");
             Shot("c5_choose");
             Then(() =>
             {

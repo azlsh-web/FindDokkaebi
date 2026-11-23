@@ -102,6 +102,15 @@ public partial class GameManager
         guideHighlight.gameObject.SetActive(false);
     }
 
+    /// <summary>5챕터 흑화 : 대사 상자 얼굴도 흑화 얼굴로 (몸 그림과 맞아요). 챕터를 새로 시작하면 ApplyMood 가 되돌려요</summary>
+    void ApplyDarkFaces()
+    {
+        if (faceDark == null || faceDark.Length < 3) return;
+        if (faceDark[0] != null) faceDokkaebi = faceDark[0];
+        if (faceDark[1] != null) faceDokkaebiProud = faceDark[1];
+        if (faceDark[2] != null) faceDokkaebiTease = faceDark[2];
+    }
+
     /// <summary>도깨비 기분(머리 불 색)에 맞는 그림으로 바꿔요 : 0 보통, 1 주황 (3챕터), 2 붉음 (4챕터)</summary>
     void ApplyMood(int mood)
     {
