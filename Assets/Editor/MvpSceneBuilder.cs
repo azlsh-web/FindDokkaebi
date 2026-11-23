@@ -156,11 +156,13 @@ public static partial class MvpSceneBuilder
 
         // ── HUD (게임 중에만 보임) : 위 줄에 돋보기 · 사탕 · 일시정지, 오른쪽 긴 향 ──
         //   좌표는 시안 그림(2248x3952) 픽셀 그대로 적고, PlaceM 이 화면(1080x1899) 크기로 바꿔요.
+        //   위 줄 칸은 화면 y 0 ~ 200 이고, 돋보기(몸통) · 사탕 · 하트 · 톱니는 보이는 그림의 가운데를 y 100 에 맞춰요 (11/23).
+        //   그림마다 투명 여백이 달라서 상자 숫자는 서로 달라요. 로비 톱니(LobbySceneBuilder)도 같은 높이예요.
         var hud = NewEmpty("HUD", canvas);
         // 오른쪽 위 톱니 : 소리 설정 창 (시작 · 챕터 화면에도 같은 자리에 있어요)
         Button SettingsButton(Transform parent)
         {
-            var img = TeamImage("SettingsButton", parent, T("HUD_SettingsButton"), 1880, 112, 2108, 344);
+            var img = TeamImage("SettingsButton", parent, T("HUD_SettingsButton"), 1880, 93, 2108, 325);
             img.preserveAspect = true;
             img.raycastTarget = true;
             return img.gameObject.AddComponent<Button>();
@@ -171,7 +173,7 @@ public static partial class MvpSceneBuilder
         // 위 줄 : 돋보기 (오른쪽 아래에 쓸 수 있는 횟수) | 사탕 3개 | 일시정지. 사탕은 단계마다 새로 받아요.
         //   쓴 사탕은 왼쪽부터 흐려지고, 돋보기를 다 쓰면 숫자가 사라지고 흐려져요 (GameManager.UpdateSnacks)
         // 돋보기는 화면 모서리에서 조금 띄워요 (콩콩 뛰거나 도깨비불이 돌아도 화면 안에 있게)
-        var magImg = TeamImage("MagnifierButton", hud, T("Magnifier_Icon"), 207, 119, 417, 367);
+        var magImg = TeamImage("MagnifierButton", hud, T("Magnifier_Icon"), 207, 84, 417, 332);
         magImg.preserveAspect = true;
         magImg.raycastTarget = true;
         var magnifierButton = magImg.gameObject.AddComponent<Button>();
@@ -179,7 +181,7 @@ public static partial class MvpSceneBuilder
         magColors.disabledColor = new Color(0.8f, 0.8f, 0.8f, 0.45f);    // 다 쓰면 흐리게
         magnifierButton.colors = magColors;
         // 쓸 수 있는 횟수 : 돋보기 오른쪽 아래의 코랄 동그라미 숫자 (떠올리기 숫자와 같은 모양)
-        var magBadge = TeamImage("MagnifierBadge", hud, circleSprite, 349, 277, 459, 387);
+        var magBadge = TeamImage("MagnifierBadge", hud, circleSprite, 349, 242, 459, 352);
         magBadge.color = OutlineColor;
         var magBadgeFill = NewImage("Fill", magBadge.transform, new Color32(242, 119, 107, 255));
         magBadgeFill.sprite = circleSprite;
@@ -190,7 +192,7 @@ public static partial class MvpSceneBuilder
         magBadgeText.color = Color.white;
         // 무료 돋보기를 받으면 반짝 (켤 때마다 처음부터)
         var magSparkles = NewEmpty("MagnifierSparkles", hud);
-        float[][] magSparkXY = { new float[] { 183, 135, 60, 0f }, new float[] { 407, 165, 44, 0.25f }, new float[] { 140, 290, 46, 0.5f } };
+        float[][] magSparkXY = { new float[] { 183, 100, 60, 0f }, new float[] { 407, 130, 44, 0.25f }, new float[] { 140, 255, 46, 0.5f } };
         foreach (float[] sp in magSparkXY)
         {
             var spark = TeamImage("Spark", magSparkles, circleSprite, sp[0], sp[1], sp[0] + sp[2], sp[1] + sp[2]);
@@ -209,7 +211,7 @@ public static partial class MvpSceneBuilder
             for (int i = 0; i < PerStage; i++)
             {
                 float x = x0 + i * step;
-                icons[i] = TeamImage($"{item}_{i}", parent, sprite, x, 132, x + w, 324);
+                icons[i] = TeamImage($"{item}_{i}", parent, sprite, x, 157, x + w, 349);
                 icons[i].preserveAspect = true;
                 float distance = Mathf.Abs(x + w * 0.5f - fromX) * K;
                 float delay = (rightFirst ? PerStage - 1 - i : i) * 0.14f;
@@ -223,7 +225,7 @@ public static partial class MvpSceneBuilder
         // 푸른 도깨비불 세 개가 돋보기 둘레를 빙글빙글 돌아요 (GameManager 가 돌려요). 가운데 = 돋보기 가운데
         var fireOrbit = new GameObject("Orbit", typeof(RectTransform));
         fireOrbit.transform.SetParent(magHighlight, false);
-        PlaceM((RectTransform)fireOrbit.transform, 312, 243, 312, 243);
+        PlaceM((RectTransform)fireOrbit.transform, 312, 208, 312, 208);
         var magFires = DokkaebiFires(fireOrbit.transform, 84f);
         magHighlight.SetAsLastSibling();
         magImg.transform.SetAsLastSibling();
@@ -942,7 +944,7 @@ public static partial class MvpSceneBuilder
         var heartIcons = new Image[3];
         for (int i = 0; i < 3; i++)
         {
-            heartIcons[i] = Img3("Heart_" + i, heartGroup, heartSprite != null ? heartSprite : circleSprite, 260 + i * 100, 68, 88, 88);
+            heartIcons[i] = Img3("Heart_" + i, heartGroup, heartSprite != null ? heartSprite : circleSprite, 260 + i * 100, 56, 88, 88);
             if (heartSprite == null) heartIcons[i].color = new Color32(224, 64, 64, 255);   // 그림이 없으면 빨간 동그라미
         }
 

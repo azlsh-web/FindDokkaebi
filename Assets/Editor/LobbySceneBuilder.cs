@@ -170,7 +170,7 @@ public static class LobbySceneBuilder
         var gearImg = NewImage("SettingsButton", topRt, Color.white);
         gearImg.sprite = Ui("HUD_SettingsButton");
         gearImg.preserveAspect = true;
-        G(gearImg.rectTransform, 902, 54, 110, 112);
+        G(gearImg.rectTransform, 902, 45, 110, 112);
         var gearButton = gearImg.gameObject.AddComponent<Button>();
 
         // ── 큰 사진 창 : 어둡게 덮고, 창을 누르면 게임 시작 · 바깥을 누르면 닫기 ──
