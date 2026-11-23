@@ -207,6 +207,7 @@ public partial class GameManager
         }
         Progress.MarkCleared(chapter.number);
         Sfx.Play(happy ? Sfx.Cheer : Sfx.Fail);
+        Sfx.Bgm(happy ? Sfx.BgmPicnic : Sfx.BgmCurse);  // 해피 : 밝은 소풍 곡으로 저주가 풀려요
         ShowPanel(curseEndPanel);
         // 해피 : 정화된 도깨비가 머뭇거리다 뛰어서 도망가고 방망이만 남아요 (C6 · B5, 기획서 4쪽)
         // 게임오버 : 사람 더미 앞의 도깨비가 화면 쪽으로 천천히 커지며 다가와요 (C6 · B7)

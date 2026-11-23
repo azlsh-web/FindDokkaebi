@@ -25,7 +25,7 @@ public partial class GameManager
         timerGroup.SetActive(false);
         backgroundImage.sprite = PlayBackground;
         UpdateSnacks();
-        Sfx.Bgm(Sfx.BgmRoom);
+        Sfx.Bgm(IsCurse && dark ? Sfx.BgmCurse : Sfx.BgmRoom);
 
         giveNote.SetActive(false);
         giveSnackOut.gameObject.SetActive(false);
@@ -60,6 +60,7 @@ public partial class GameManager
             ApplyDarkFaces();
             UpdateSnacks();
             Sfx.Play(Sfx.Fail);
+            Sfx.Bgm(Sfx.BgmCurse);                   // 흑화하는 순간 음악도 어두워져요 (D1)
             // 그림은 바로 바꾸지 않고, 부르르 떨며 1초 동안 번지듯 바꿔요 (C1)
             if (darkRoutine != null) StopCoroutine(darkRoutine);
             darkRoutine = StartCoroutine(DarkTransition());

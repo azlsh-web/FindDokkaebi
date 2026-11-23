@@ -122,7 +122,8 @@ SOUND_SPECS = [
     ("bgm_room", "방 대화·관찰", "포근한 아침, 아기자기하고 느리게", "30~60초 반복"),
     ("bgm_draw", "그리기", "집중할 수 있게 작고 잔잔한 똑딱거림", "30~60초 반복"),
     ("bgm_judge", "판정 대기·결과·채점표", "바순·클라리넷으로 갸웃갸웃, 성공·실패 모두 어울리게", "20~40초 반복"),
-    ("bgm_picnic", "1챕터 소풍 엔딩", "밝지만 시끄럽지 않게", "30~60초 반복"),
+    ("bgm_picnic", "1챕터 소풍 엔딩 · 5챕터 해피 엔딩", "밝지만 시끄럽지 않게", "30~60초 반복"),
+    ("bgm_curse", "5챕터 흑화 뒤 대화·그리기·판정·게임오버", "밝은 방 음악을 대신할 불안한 분위기. 과도한 음량 없이", "30~60초 반복"),
     ("sfx_tap", "대사·버튼 터치", "가벼운 톡", "0.1초"),
     ("sfx_count", "관찰·돋보기 숫자", "짧은 똑딱", "0.2초"),
     ("sfx_submit", "다 그렸어!", "종이를 접는 소리", "0.5초"),
@@ -138,7 +139,6 @@ SOUND_SPECS = [
     ("sfx_land", "소풍 물건 착지", "가벼운 톡", "0.2초"),
 ]
 NEW_SOUND = [
-    ("bgm_curse", "5챕터 숲·흑화 이후", "밝은 방 음악을 대신할 불안한 분위기. 과도한 음량 없이", "30~60초 반복", "BACKLOG D1"),
     ("sfx_scare", "5챕터 점프스케어", "짧게 놀라게 하되 과도한 음량 없이", "0.5~1초", "BACKLOG B3 · 11/20 승인"),
     ("sfx_heart_loss", "5챕터 주인공 하트 감소", "한 개 깎이는 순간을 알림", "0.5~1초", "BACKLOG C2"),
     ("sfx_interfere", "그리기 방해", "반복해도 귀에 거슬리지 않는 장난·위협", "0.5~1초", "BACKLOG C3"),
@@ -160,7 +160,9 @@ def sound_inventory():
     out = []
     for name, where, feel, length in SOUND_SPECS:
         p = next(p for p in SOUND.iterdir() if p.stem == name and p.suffix in (".wav", ".ogg", ".mp3"))
-        out.append(Request("사운드", "기존 소리 교체", "Resources/Sound/" + p.name, "임시", "VARCO Sound (11/11 효과음, 11/12~13 배경음)",
+        method = ("Claude가 bgm_judge 를 느리고 낮게 바꿈 (ffmpeg 속도 0.87 · 고음 줄임 · 울림). 임의 제작 (D1, 11/23)"
+                  if name == "bgm_curse" else "VARCO Sound (11/11 효과음, 11/12~13 배경음)")
+        out.append(Request("사운드", "기존 소리 교체", "Resources/Sound/" + p.name, "임시", method,
                            where, feel, "교체", "C-21·C-28 · ArtSource/Sound/varco/출처.txt · Sfx.cs", length))
     for name, where, feel, length, evidence in NEW_SOUND:
         out.append(Request("사운드", "아직 없는 소리", f"Resources/Sound/{name}.ogg" if name.startswith(("bgm", "amb")) else f"Resources/Sound/{name}.wav",

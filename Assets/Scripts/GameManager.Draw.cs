@@ -30,7 +30,7 @@ public partial class GameManager
         drawTitle.maxVisibleCharacters = keepDrawing ? int.MaxValue : 0;
         hud.SetActive(true);
         timerGroup.SetActive(true);
-        Sfx.Bgm(Sfx.BgmDraw);
+        Sfx.Bgm(IsCurse ? Sfx.BgmCurse : Sfx.BgmDraw);
         ShowPanel(drawPanel);
         magnifierPeek.Stop();
         StopGift();
@@ -261,7 +261,7 @@ public partial class GameManager
         judgeRoam.SetActive(!IsCurse);              // 5챕터는 찾아다니지 않고, 쪽지가 빛나요
         judgeCurse.SetActive(IsCurse);
         giveSnackOut.gameObject.SetActive(false);
-        Sfx.Bgm(Sfx.BgmJudge);
+        Sfx.Bgm(IsCurse ? Sfx.BgmCurse : Sfx.BgmJudge);
 
         judgeDrawing.texture = board.Texture;
         judgeNoteText.text = NoteText();

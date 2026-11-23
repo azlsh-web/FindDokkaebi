@@ -29,6 +29,7 @@ public static class Sfx
     public const string BgmDraw = "bgm_draw";
     public const string BgmJudge = "bgm_judge";
     public const string BgmPicnic = "bgm_picnic";
+    public const string BgmCurse = "bgm_curse";     // 5챕터 흑화 뒤 (임시 : bgm_judge 를 느리고 낮게 바꾼 곡, D1)
 
     const string BgmKey = "volume_bgm";
     const string SfxKey = "volume_sfx";
