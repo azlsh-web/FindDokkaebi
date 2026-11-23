@@ -1,0 +1,1382 @@
+{
+  "tool": "Built-in image_gen",
+  "actual_ai_judge_calls": 0,
+  "game_data_changed": true,
+  "attempts": [
+    {
+      "item": "Ch2_Socks",
+      "mask": "OX",
+      "prompt": "Use case: precise-object-edit. Game sprite variant, exactly one asset. Edit target: referenced original blue and cream striped sock. Output a 1024x1024 RGBA sprite with genuinely transparent background. This variant is Ch2_Socks_Wrong_OX: F1 sock silhouette PRESENT; F2 repeated horizontal stripes ABSENT. Keep the exact original L-shaped sock silhouette, curled rightward toe, brown outline thickness, cream cuff, centered composition, size, friendly hand-painted watercolor shading. Change only the body pattern: remove ALL blue stripes and all repeated bands, making the sock body a uniform soft blue fill with subtle watercolor shading, with the single cream top cuff retained. No lines, dots, new ornaments, text, shadows on background, border, watermark. Must clearly remain an L-shaped sock, with no two or more horizontal stripes. Save output as Ch2_Socks_Wrong_OX.png if filenames are supported.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Socks_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_OX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-8b2f17c8-d701-4754-b412-a8c2f3c19d6b.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Socks",
+      "mask": "XO",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. F1 ABSENT: replace L-shaped sock silhouette with a straight rectangular long scarf with NO bent foot or toe. F2 PRESENT: retain at least three broad alternating sky-blue and cream HORIZONTAL stripes across the scarf, like the original sock stripes. One scarf only.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Socks_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_XO.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-77e9cbb9-bd1c-434b-b82f-7cce9f6950e4.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Socks",
+      "mask": "XX",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. Both features ABSENT: replace the entire sock with ONE plain round-bellied ceramic jar, gray-blue body and plain cream lip, no handle, no bent toe, NO stripes or repeated bands or patterns. This must be a completely different item, in the original art style.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Socks_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_XX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-bd233e0b-65d0-456a-bc7f-2947b2528017.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Pillow",
+      "mask": "OX",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. F1 PRESENT: keep original horizontally rectangular puffy pillow with four soft projecting corners, same outline and size. F2 ABSENT: remove ALL checker squares and grid. Make the entire pillow plain solid soft peach with subtle shading, no lines or dots or squares.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_OX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-d258ae05-720b-4aa7-9449-017d2f971ce2.png",
+      "visual_review": "rejected_blurred_outline"
+    },
+    {
+      "item": "Ch2_Pillow",
+      "mask": "XO",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. F1 ABSENT: change pillow outline into a perfectly ROUND circular cushion with no rectangular corners or lobes. F2 PRESENT: retain original large clearly visible cream-and-peach CHECKERED GRID squares with several horizontal and vertical divisions. One circular cushion only.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XO.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-0b3e0cc1-f08a-46d3-8258-2f949b54aaf0.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Pillow",
+      "mask": "XX",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. Both features ABSENT: replace the pillow with ONE giant simple orange carrot, tapered triangular root and three green leaves at top, just two short brown root marks. NO cushion, rectangle, grid, checkers or intersecting repeated lines. Completely different item in same original art style.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1f2c1e9f-03e4-44fb-8380-7a8f17c64fe5.png",
+      "visual_review": "rejected_blurred_outline"
+    },
+    {
+      "item": "Ch2_Umbrella",
+      "mask": "OX",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. F1 PRESENT: keep exact original open semicircular umbrella canopy with scalloped lower edge, vertical shaft and J-shaped handle. F2 ABSENT: remove ALL cream polka dots from canopy, replace canopy with uniform sky blue fill, no dots, circles, stripes or pattern. Preserve blue J-handle, cream shaft and dark brown outline.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Umbrella_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_OX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-9cce1a52-71b1-4d3f-8779-2a828f4a19e7.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Umbrella",
+      "mask": "XO",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. F1 ABSENT: remove ENTIRE shaft and J-shaped handle below the canopy, leaving only the detached dome-shaped canopy. It must have no stick, pole or handle at all. F2 PRESENT: retain original blue canopy with at least five large cream circular polka dots, the canopy's exact shape, scalloped edge and dark brown outline.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Umbrella_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_XO.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-3f5e53fb-6c62-417f-a093-6c77aa5bd14d.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Umbrella",
+      "mask": "XX",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE alternate item sprite by editing the referenced original. Unity children's game artwork. Keep the original thick dark brown outline, friendly flat pastel fills, gentle watercolor shading, viewpoint, approximate scale and composition. Center whole object with generous transparent margin, nothing cropped. Genuinely transparent RGBA background. No text, letters, numbers, watermark, frame, ground plane or cast shadow. Match the source style closely. Feature mask order is F1 shape, F2 pattern, O=present, X=absent. Preserve ALL features marked O and visibly violate ALL features marked X. Both features ABSENT: replace entire umbrella with ONE simple old broom, straight brown wooden stick and fan-shaped tan bristles tied at bottom with one plain band. NO dome canopy, J-shaped hook, polka dots or circular decorations. Completely different item in same original art style.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Umbrella_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_XX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-aa8c24dc-578d-4143-9f84-1726d0c10ed8.png",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch2_Pillow",
+      "mask": "OX",
+      "prompt": "Use case: precise-object-edit. Exactly ONE production game sprite derived from the attached original. Keep original rectangular puffy pillow outline with four small corner lobes. Remove the original checkerboard entirely and fill the pillow plain uniform soft peach. F1 pillow shape present, F2 checkered pattern absent. IMPORTANT: Match the attached ORIGINAL's clean crisp thick DARK BROWN OUTLINE as a clearly visible solid stroke all around the object, simple smooth flat fills with subtle gentle shading, original cartoon style. DO NOT add watercolor paper grain, glow, halo, feathered outline, blurry shadows, brown haze or any cast shadow. Outline must be sharp and fully opaque, not diffuse. TRUE TRANSPARENT empty background with no visible pixels outside the clean subject edge. Front view, centered whole object, 1024x1024 SQUARE canvas, generous empty margins, no cropping. No words, letters, labels, watermark or framing. Keep transparency.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_OX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-ccfcc165-b780-4fa0-bc85-1f64d7ead4d4.png",
+      "visual_review": "pass",
+      "revision": 2
+    },
+    {
+      "item": "Ch2_Pillow",
+      "mask": "XX",
+      "prompt": "Use case: precise-object-edit. Exactly ONE production game sprite derived from the attached original. Replace pillow with one simple tapered triangular orange carrot and three green leaves, two short brown root marks. No rectangular pillow shape and no checkered pattern: F1 and F2 both absent. IMPORTANT: Match the attached ORIGINAL's clean crisp thick DARK BROWN OUTLINE as a clearly visible solid stroke all around the object, simple smooth flat fills with subtle gentle shading, original cartoon style. DO NOT add watercolor paper grain, glow, halo, feathered outline, blurry shadows, brown haze or any cast shadow. Outline must be sharp and fully opaque, not diffuse. TRUE TRANSPARENT empty background with no visible pixels outside the clean subject edge. Front view, centered whole object, 1024x1024 SQUARE canvas, generous empty margins, no cropping. No words, letters, labels, watermark or framing. Keep transparency.",
+      "original": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+      "target": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XX.png",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-cff7e700-e1a8-4cf1-b75c-a09f479d4c59.png",
+      "visual_review": "pass",
+      "revision": 2
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Overall bunch silhouette is an INVERTED TRIANGLE, NARROW AT TOP and WIDE AT BOTTOM, clearly reversed from original. Replace all round grape shapes with one smooth solid triangular bunch body without any internal grape circles, partitions, dots or individual berry outlines. Outer bunch shape is still as specified above. Bunch or berry bodies PURPLE, bent stem GREEN.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-6b526018-4443-423e-a385-255d68a4c503.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_revision",
+      "normalized": true,
+      "ok": true
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Overall grape bunch silhouette is TRIANGULAR, WIDE AT TOP tapering to ONE point at BOTTOM. Replace all round grape shapes with one smooth solid triangular bunch body without any internal grape circles, partitions, dots or individual berry outlines. Outer bunch shape is still as specified above. Bunch or berry bodies ORANGE, bent stem BLUE, no purple grapes or green stem.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-e2a9ab31-a0bc-42fb-97e5-79d2b97178e6.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_revision",
+      "normalized": true,
+      "ok": true
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Overall grape bunch silhouette is TRIANGULAR, WIDE AT TOP tapering to ONE point at BOTTOM. Replace all round grape shapes with one smooth solid triangular bunch body without any internal grape circles, partitions, dots or individual berry outlines. Outer bunch shape is still as specified above. Bunch or berry bodies PURPLE, bent stem GREEN.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-0cca815f-3148-4bf6-9fb4-be4e86e4a9b3.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_revision",
+      "normalized": true,
+      "ok": true
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Exactly THREE ROUND oval balloons in original arrangement. Keep three strings descending and visibly tied together in ONE knot below. All THREE balloon bodies solid GREEN, none red, yellow or blue.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-bb1e5ae2-7a0c-49ac-befb-34ae19724257.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "5763a25a86ca5d5a0e2fc5ac3884b8e0b951d68e6497a026ed6f150f69aa8d92"
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Exactly THREE ROUND oval balloons in original arrangement. Remove every string and the knot completely; balloons float separately with no attached string. One solid RED balloon upper left, one solid YELLOW upper right, one solid BLUE lower middle, exactly as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-584ee436-d5d2-482b-a754-3a8a234f1022.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "2deeaeee8394599c6aa1c48e369d8db6f231a87a890be0c80a92b6c21502b1ff"
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Exactly THREE ROUND oval balloons in original arrangement. Remove every string and the knot completely; balloons float separately with no attached string. All THREE balloon bodies solid GREEN, none red, yellow or blue.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-32424828-f332-47e9-9bbf-cd63184099dd.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "0b9a6e912fe42fdb043d6c8676f0c58daa1262cceb85b3552a7eb5aa01a5ba10"
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Exactly THREE clearly HEART-SHAPED balloons, each with two lobes and sharp bottom, absolutely no round oval balloons. Keep three strings descending and visibly tied together in ONE knot below. One solid RED balloon upper left, one solid YELLOW upper right, one solid BLUE lower middle, exactly as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-3190616a-93d8-4837-9f7c-6e9da83e6635.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "624dc8af2f4e85b2e34957e0bc6c3bdad099076fbf4987fce27914215daf73c5"
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Exactly THREE clearly HEART-SHAPED balloons, each with two lobes and sharp bottom, absolutely no round oval balloons. Keep three strings descending and visibly tied together in ONE knot below. All THREE balloon bodies solid GREEN, none red, yellow or blue.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c089bcde-ceca-429a-8723-f4f9cca07af4.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "bbf3c25c17815b4769baa9e7ca03ca757bc662b597ad2296bebefbd333b9883b"
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Exactly THREE clearly HEART-SHAPED balloons, each with two lobes and sharp bottom, absolutely no round oval balloons. Remove every string and the knot completely; balloons float separately with no attached string. One solid RED balloon upper left, one solid YELLOW upper right, one solid BLUE lower middle, exactly as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-801260a8-7344-47a5-9e28-500d7a03661c.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "42705724411c0aadda04972eda84fd5dc04b491f84b638874bed1061164fd481"
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXX. ALL THREE features absent. Replace entire target with One plain gray ceramic jug, no balloons, round balloon group, strings, knots, red, yellow or blue fills.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-f134a513-4114-4591-8fc0-f9eeb73f933a.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "33ce823b4e85ccba2c0ad8d47cd3f20545999141df11a2365302cb752381b992"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Keep original SQUARE gift box, lid, cross ribbon and bow on top. Keep several clearly visible FIVE-POINT STAR decorations on the gift container. Container GREEN, ribbon and bow PURPLE, decorative motifs ORANGE, none in the correct blue/red/yellow positions.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-a899123e-b771-46fe-a04e-a728b761b4ad.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "4527706e11e24daf4faa8c24ff3bbcbe872d57c1d5fc5f3e5f18506bfabaebd8"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Keep original SQUARE gift box, lid, cross ribbon and bow on top. Replace all star decorations with large plain circular POLKA DOTS. Absolutely NO stars or pointed star shapes. Container BLUE, ribbon and bow RED, all decorative motifs YELLOW, regardless of whether motifs are stars or circles.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-83bdb9d8-98c4-4372-8c72-5999ecdd2ce0.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "9dde104dfb67d78cb1d3455f581a7e977780cb8faea6f2e56435fa70cb280914"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Keep original SQUARE gift box, lid, cross ribbon and bow on top. Replace all star decorations with large plain circular POLKA DOTS. Absolutely NO stars or pointed star shapes. Container GREEN, ribbon and bow PURPLE, decorative motifs ORANGE, none in the correct blue/red/yellow positions.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-cdc1d7ef-edb2-45ef-9c42-071cf3161380.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "dde19b66a07ec74b6b8ac0a4d0996b6780a78225fec2d74f32115f9cc0d70df6"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Change the square box into a clearly ROUND circular gift tin viewed front on, retain a bow on top and cross ribbon; no square or rectangular box silhouette. Keep several clearly visible FIVE-POINT STAR decorations on the gift container. Container BLUE, ribbon and bow RED, all decorative motifs YELLOW, regardless of whether motifs are stars or circles.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-817c4dee-42b9-4a7c-b929-27076841c749.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "5b1207085d92a39001caf3f752e94e6b1b36af7c4d5433f78dbdaa54174a3f6b"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Change the square box into a clearly ROUND circular gift tin viewed front on, retain a bow on top and cross ribbon; no square or rectangular box silhouette. Keep several clearly visible FIVE-POINT STAR decorations on the gift container. Container GREEN, ribbon and bow PURPLE, decorative motifs ORANGE, none in the correct blue/red/yellow positions.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-fc34bbb8-1f96-4d50-945a-e104f7899e41.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "283632b48e320d81da4d2e564bb841ec0caee0a91d96f74b2ee2b8938d00ac52"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Change the square box into a clearly ROUND circular gift tin viewed front on, retain a bow on top and cross ribbon; no square or rectangular box silhouette. Replace all star decorations with large plain circular POLKA DOTS. Absolutely NO stars or pointed star shapes. Container BLUE, ribbon and bow RED, all decorative motifs YELLOW, regardless of whether motifs are stars or circles.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-403569be-a72b-4bc1-a9e9-5aa4cc378ab6.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "5307da26e069496b71d97d15d600cbce0dadbf6bfbe2b99d3ce88e90cb687f1f"
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXX. ALL THREE features absent. Replace entire target with One plain gray ceramic teapot with spout and handle, no gift box, ribbon, bow, stars, blue/red/yellow decorations.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-4c4033ed-cdd2-48c6-ad21-7fe790c529e3.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "34f14cf3b848587bb3deff91f2ea4ac5a0fdce8de59ee03478f0b44fb6268dae"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Keep a pointed triangular CONE party hat with small round pompom. Keep at least three broad diagonal stripe bands separated by clear dark lines. Swap target order: upper BLUE, middle RED, lower YELLOW. Pompom blue, not red.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-e6add9d0-7389-4367-b2c1-ac6c32ef124c.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "f5f77cd776c187ece2a45dfaab1c69bb9cbb0ed7628b78243d9ab8ee4732dfb0"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Keep a pointed triangular CONE party hat with small round pompom. Remove all stripe bands and internal dividing lines. Instead use three large separated circular POLKA DOT decorations in upper, middle and lower areas on a cream base; absolutely no stripes or bands. Upper area/decorations RED, middle YELLOW, lower BLUE; preserve this order even when the shape or pattern is wrong.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c2528c97-acdb-4942-a6b7-e2bee3477fba.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "b561fa79e4305846ca5e8c40869d7c8ec65a84d67481ea2ca15aec765fbb0956"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Keep a pointed triangular CONE party hat with small round pompom. Remove all stripe bands and internal dividing lines. Instead use three large separated circular POLKA DOT decorations in upper, middle and lower areas on a cream base; absolutely no stripes or bands. Swap target order: upper BLUE, middle RED, lower YELLOW. Pompom blue, not red.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-79daca9f-b2a8-45a8-924d-49110c8349d1.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "c1c58c1d3ccb4b76f7bf73431881d76a9b0a5b758ac66e7e2d21eb972b86cba2"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Change cone into a cylindrical TOP HAT with flat horizontal crown and brim, NO pointed cone. Keep at least three broad diagonal stripe bands separated by clear dark lines. Upper area/decorations RED, middle YELLOW, lower BLUE; preserve this order even when the shape or pattern is wrong.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-d2e1f01b-b889-475a-b2d0-594710643cce.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "ef13dfe791799875eecadddb038fe4a0ad934e46c5b14b04d67dbad2cdecc544"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Change cone into a cylindrical TOP HAT with flat horizontal crown and brim, NO pointed cone. Keep at least three broad diagonal stripe bands separated by clear dark lines. Swap target order: upper BLUE, middle RED, lower YELLOW. Pompom blue, not red.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-8ee2312d-d3d5-4c5f-8ed4-3f48be3a0a4f.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "b8f102c2c93118151336adb4805de5ea0382f64ddd0cc6d340a87eca4f4ce59b"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Change cone into a cylindrical TOP HAT with flat horizontal crown and brim, NO pointed cone. Remove all stripe bands and internal dividing lines. Instead use three large separated circular POLKA DOT decorations in upper, middle and lower areas on a cream base; absolutely no stripes or bands. Upper area/decorations RED, middle YELLOW, lower BLUE; preserve this order even when the shape or pattern is wrong.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1c787262-efde-4d3c-aa85-cf74095cad56.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "d28a0d23b6fee4e72325104e15557d0515df8427944b99636b05fca75d2e3566"
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXX. ALL THREE features absent. Replace entire target with One plain neutral gray ceramic jar, no hat, pointed cone, stripes, red, yellow or blue decorations.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-a19d5b31-d644-49bb-aea0-195ec2db3b1c.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "90a17f510ea4bf6ed499de7db208d0854a238b8d460369cced6eb170515c4583"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Keep original ROUND circular candy center and twisted wrapper on BOTH left and right. Central candy has at least four broad alternating VERTICAL STRIPES. Central candy uses PURPLE and YELLOW: purple base and yellow stripes or dots; purple wrappers. No orange or green fills.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-5e35cb93-56fd-426d-b9be-271fedd6800c.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "45497917ec0d3321bba6d0495d855548cca0f62189973f6f6ccc1bdd4c722d93"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Keep original ROUND circular candy center and twisted wrapper on BOTH left and right. Remove all stripes and dividing lines. Use a plain solid base with several large contrasting circular POLKA DOTS in the central candy; no bands or stripes. Central candy uses ORANGE and GREEN: orange base and green stripes or green dots; orange wrappers.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-7097d5e9-cc2d-4cec-8474-fc12c6a0853a.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "793337b70c7d1ed2130662c0ee1a5c1c342cd73959ba655cd7296bd64c397685"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Keep original ROUND circular candy center and twisted wrapper on BOTH left and right. Remove all stripes and dividing lines. Use a plain solid base with several large contrasting circular POLKA DOTS in the central candy; no bands or stripes. Central candy uses PURPLE and YELLOW: purple base and yellow stripes or dots; purple wrappers. No orange or green fills.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c7c4fc2a-3aca-42eb-99d0-849a9302f22b.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "1dd82e9c0b90f3bc10d1194b79cf0966e0d00a39c7f7525ee2c0c40cf8926343"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Change candy center into a clearly SQUARE with four straight edges and corners, keep side wrapper twists; no round central silhouette. Central candy has at least four broad alternating VERTICAL STRIPES. Central candy uses ORANGE and GREEN: orange base and green stripes or green dots; orange wrappers.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-90ecb019-1217-46a8-a26a-b91fb8d78a7f.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "11b800f534219f4f8ddfa7953c160610d6ae70ffc21a947618e8697be0b8ac8f"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Change candy center into a clearly SQUARE with four straight edges and corners, keep side wrapper twists; no round central silhouette. Central candy has at least four broad alternating VERTICAL STRIPES. Central candy uses PURPLE and YELLOW: purple base and yellow stripes or dots; purple wrappers. No orange or green fills.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-cbbd8cda-c3f2-4682-bd73-6b6ba9671635.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "01d02738cb311b53b9be5ad83cf3ca79bde4014d9acdf5c0e1ea70cfc6952ea9"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Change candy center into a clearly SQUARE with four straight edges and corners, keep side wrapper twists; no round central silhouette. Remove all stripes and dividing lines. Use a plain solid base with several large contrasting circular POLKA DOTS in the central candy; no bands or stripes. Central candy uses ORANGE and GREEN: orange base and green stripes or green dots; orange wrappers.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1f6f6213-9df4-44f7-a507-b3768e288bac.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "80355ceb0db8bd118b9fafef1e48590e1b3d42751593bb231720a0e6bbaf93f9"
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXX. ALL THREE features absent. Replace entire target with One plain gray ceramic cup with a handle, no candy, side wrapper twists, stripes, orange or green fills.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-a172f276-a5a2-4f7a-989a-2518eab94e73.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "315a810eafae8c87382cf565fa956f0becdcba8c377800e623cfe306fdea1f19"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Overall grape bunch silhouette is TRIANGULAR, WIDE AT TOP tapering to ONE point at BOTTOM. Bunch composed of several clearly separate ROUND CIRCULAR grape shapes touching each other, dark outlines around each. Bunch or berry bodies ORANGE, bent stem BLUE, no purple grapes or green stem.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-0c1f0335-ecfa-4c57-abb8-914aeeb596ca.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "18d2c051727af042a18bb1b42c580337388a602132791307ca96607b0101ee50"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Edit the referenced original grape sprite to one exact feature variant. The outer body MUST be one simple purple DOWNWARD-POINTING TRIANGLE: broad FLAT HORIZONTAL EDGE at TOP, one pointed vertex at BOTTOM. Correct bunch outline F1=O. Completely remove ALL berry circles, scallops and rounded lobes; one smooth solid triangular slab with straight sides and no interior marks, F2=X. Bent stem GREEN at top, body PURPLE, F3=O. Match original crisp thick opaque dark brown outlines and clean simple cartoon fills. Entire object centered, generous margins, 1024x1024 square RGBA with TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, text, labels or watermark.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-20e72d37-4ab4-43d1-aea3-8eb36a5d4014.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "revision": 2,
+      "sha256": "cac85ab737e2da7e2a5ff876361c0e4d417cb6e78e0b22be7ac0321a6b566103"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Edit the referenced original grape sprite to one exact feature variant. The outer body MUST be one simple orange DOWNWARD-POINTING TRIANGLE: broad FLAT HORIZONTAL EDGE at TOP, one pointed vertex at BOTTOM. Correct bunch outline F1=O. Completely remove ALL berry circles, scallops and rounded lobes; one smooth solid triangular slab with straight sides and no interior marks, F2=X. Bent stem BLUE at top, body ORANGE (not purple), F3=X. Match original crisp thick opaque dark brown outlines and clean simple cartoon fills. Entire object centered, generous margins, 1024x1024 square RGBA with TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, text, labels or watermark.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-15735638-2665-4d13-b7d4-005d746560bc.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "revision": 2,
+      "sha256": "0f7f994dea34dfa11d385c8998568fc225371351a09a1611455920596291db22"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Overall bunch silhouette is an INVERTED TRIANGLE, NARROW AT TOP and WIDE AT BOTTOM, clearly reversed from original. Bunch composed of several clearly separate ROUND CIRCULAR grape shapes touching each other, dark outlines around each. Bunch or berry bodies PURPLE, bent stem GREEN.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-8caf9236-3864-42ea-9d74-8de97d8da193.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "0e0f768b968be9fdd661cbd51ffa47750821bf5073ea0550b86758caaa9cb342"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Overall bunch silhouette is an INVERTED TRIANGLE, NARROW AT TOP and WIDE AT BOTTOM, clearly reversed from original. Bunch composed of several clearly separate ROUND CIRCULAR grape shapes touching each other, dark outlines around each. Bunch or berry bodies ORANGE, bent stem BLUE, no purple grapes or green stem.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-5cfbf17d-669a-48e3-ab37-7671fee9adbf.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "89436ff020ba921e401c57f8e8b1f91766a6b342aba7f73b56045b9d57f23145"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Edit the referenced original grape sprite to one exact feature variant. The outer body MUST be one simple purple UPWARD-POINTING TRIANGLE (like an upright capital delta): exactly ONE pointed vertex at TOP and broad FLAT HORIZONTAL BASE at BOTTOM. This is the REVERSED WRONG grape-bunch outline, NARROW TOP and WIDE BOTTOM, F1=X. Attach green bent stem to the narrow TOP POINT. No individual berry circles, no scallops, no rounded lobes, no interior marks, just one smooth solid triangular slab, F2=X. Body PURPLE and bent stem GREEN, F3=O. CRITICAL: triangle must point UP, never down. Match original crisp thick opaque dark brown outlines and clean simple cartoon fills. Entire object centered, generous margins, 1024x1024 square RGBA with TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, text, labels or watermark.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-4c37750b-1074-4f97-b256-d2046f7431fc.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "revision": 2,
+      "sha256": "9fa5372a894e7c612b37321ea1680f7e27d295480699c13993c09bf601cf6e19"
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXX. ALL THREE features absent. Replace entire target with One plain gray rectangular closed book, no tapered grape cluster, circular berries, stems, purple or green fills.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1bdfb10a-b7cf-40f4-b8e7-6855e608d0f5.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "aae2c6f547ac5c332e6a3c952487c42f94bb03f99ceaaf3181131b9c8d73af64"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Keep a ROUND tangerine body, original fruit dimples. Keep exactly one clearly pointed oval LEAF on a short stem on top. Fruit body BLUE; leaf or replacement bead and stem PINK. No orange body or green upper detail.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-7f873dc3-0361-4737-b2f5-68a2f5846eae.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "8aaa9e0faf26017f1b3c25c5f49fd5b9eb0aa5716d5d18af4344cc3632233073"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Keep a ROUND tangerine body, original fruit dimples. Remove the leaf shape completely. Replace the pointed leaf with ONE plain circular bead on the stem. Bead is a simple circle with no point or leaf vein. Fruit body ORANGE; leaf or replacement bead and stem GREEN. Keep these region colors even if silhouette or leaf shape is wrong.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-aed07605-bc38-4f20-b7d0-6fbdc64912ac.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "9dd709b228e256e3ec2938baffed8f66c8bf0c927d6b6b3207791538823889b1"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Keep a ROUND tangerine body, original fruit dimples. Remove the leaf shape completely. Replace the pointed leaf with ONE plain circular bead on the stem. Bead is a simple circle with no point or leaf vein. Fruit body BLUE; leaf or replacement bead and stem PINK. No orange body or green upper detail.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-87f02926-50c8-4d94-9b25-a6f22a3b7b6e.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "cc60ae243ed176c984122cc8f19c78aa90c7142b7420a6e2cbd57bdc71643d34"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Change fruit body to a clearly SQUARE cube with four straight sides and corners, not round. Keep exactly one clearly pointed oval LEAF on a short stem on top. Fruit body ORANGE; leaf or replacement bead and stem GREEN. Keep these region colors even if silhouette or leaf shape is wrong.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-e73cd97f-cdbe-4ba3-99ed-d1b108525655.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "22589fba7ef8844f68a037ddce5c363e75988a3bb782974c35eb6d9650e98f96"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Change fruit body to a clearly SQUARE cube with four straight sides and corners, not round. Keep exactly one clearly pointed oval LEAF on a short stem on top. Fruit body BLUE; leaf or replacement bead and stem PINK. No orange body or green upper detail.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-71ca2df0-5c69-4539-9e3e-a313ec1f8922.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "b3d2f954bbbaa93b463082245244b556ba2d4f067c50c934949f425a93c2dfca"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Change fruit body to a clearly SQUARE cube with four straight sides and corners, not round. Remove the leaf shape completely. Replace the pointed leaf with ONE plain circular bead on the stem. Bead is a simple circle with no point or leaf vein. Fruit body ORANGE; leaf or replacement bead and stem GREEN. Keep these region colors even if silhouette or leaf shape is wrong.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-d4ea16a9-f8d7-44d4-a044-9eafdaed799c.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "84bb0c3165c5c88add96f7eda62eee5688bf7f0a84f0b71d99a62b95d87484ba"
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXX. ALL THREE features absent. Replace entire target with One plain gray rectangular closed book, no rounded fruit, leaf or top bead, orange/green fills or fruit dimples.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c54135e6-5ce6-4bb7-abce-7c7488ac0ec6.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "b64bc1ecab3e77407f53666f31acceee2477525a88b5f9a2d8a7fcdbc3273bdf"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OOX. Keep the tall narrow RECTANGULAR talisman paper. Keep original central brush SYMBOL with one vertical stroke and at least two crossing strokes branching sideways. Paper or seal is bright BLUE; central symbol or replacement circle is RED, not black, with no brown paper.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-5d71039c-4033-46cc-8e11-ac2e905c5135.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "2e3a3f9683c77ae68fc034722535f38e2f23cf9e2dd3b193336046a9f31750bd"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXO. Keep the tall narrow RECTANGULAR talisman paper. Remove all brush symbols and crossing strokes. Use exactly ONE plain filled circle in the center, no branching strokes, writing or rune shapes. Paper or seal is warm BROWN; central symbol or replacement circle is CHARCOAL BLACK.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-bb0807f4-1cf1-460c-9a9d-62ce0d86cb36.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "e8a581209a139f6cd9242a386a57dca2bf3c97c7823752b964451b786e63203c"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXX. Keep the tall narrow RECTANGULAR talisman paper. Remove all brush symbols and crossing strokes. Use exactly ONE plain filled circle in the center, no branching strokes, writing or rune shapes. Paper or seal is bright BLUE; central symbol or replacement circle is RED, not black, with no brown paper.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-b9f05c3d-2e08-41ee-b650-46ca5a39547c.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "ba3d2b2df9827f3747bd8e7223c387a1292bbafe71068e8d616bd8bad3b2c868"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOO. Change paper into a clearly ROUND CIRCULAR seal/disc, no rectangular silhouette. Keep original central brush SYMBOL with one vertical stroke and at least two crossing strokes branching sideways. Paper or seal is warm BROWN; central symbol or replacement circle is CHARCOAL BLACK.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-3ef19ff5-e1f4-4a5c-9196-b4cbab866ea9.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "273c7beb69c0d1946445c6402b3155b679ea6e83341d837064e7068a331b62ca"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOX. Change paper into a clearly ROUND CIRCULAR seal/disc, no rectangular silhouette. Keep original central brush SYMBOL with one vertical stroke and at least two crossing strokes branching sideways. Paper or seal is bright BLUE; central symbol or replacement circle is RED, not black, with no brown paper.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-0f624464-fd4d-4a4c-bf8d-9915de6a106b.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "f56d58f91bc681a67c7374bfb071528ab69afd15a8d56eacc8434b981e5f5f09"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XXO. Change paper into a clearly ROUND CIRCULAR seal/disc, no rectangular silhouette. Remove all brush symbols and crossing strokes. Use exactly ONE plain filled circle in the center, no branching strokes, writing or rune shapes. Paper or seal is warm BROWN; central symbol or replacement circle is CHARCOAL BLACK.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-8ca59980-5c6a-4968-819e-ecbcce0a39a8.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "a1c1015162ac7b5d7b1f125f180ba0fa73d5190b6bf12f58520497dfaab51092"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XXX. ALL features absent. Replace entire original with One plain light gray irregular smooth stone, no rectangular paper, brush symbols, brown paper fill or black central motif.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-696baf2d-f610-4bb5-b7a9-72ffa2b30bc1.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_user_requested_traditional_talisman",
+      "normalized": true,
+      "sha256": "7679ba9d5a86b7bb2a42c6447f30e0ca6385acff75bae6596786d178f772d672"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OOX. Keep original ROUND bowl with curved base, oval opening, small foot and wide top. Keep at least TWO separated dark brown HORIZONTAL stripe bands on the side of the vessel. Visible contents bright BLUE, not brown, red or burgundy; vessel cream as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-3354d4e8-7e2a-47e9-b48d-7266a5c1078f.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "dc70dd64216ad80851d10c45cb3242b08a7b9b53269c43f800c7cd111ed0f61a"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXO. Keep original ROUND bowl with curved base, oval opening, small foot and wide top. Remove ALL side stripe bands. Vessel exterior is plain solid cream, no stripes, dots or decorations. Keep the visible contents DARK REDDISH BROWN / BURGUNDY BROWN, clearly brown tinted, not pure bright red or purple; vessel cream as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c3fcde58-1c84-43d3-8764-34a59a36eeee.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "83559127e76900eac297e66b173d913e9d379e769df8a37fbce11cb828cce04f"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXX. Keep original ROUND bowl with curved base, oval opening, small foot and wide top. Remove ALL side stripe bands. Vessel exterior is plain solid cream, no stripes, dots or decorations. Visible contents bright BLUE, not brown, red or burgundy; vessel cream as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-b4267c66-e4f8-4955-82d6-30d2f9c52128.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "d4e96fba31ebe967aacbacd1882149dc0b07c0296a672f9b88f74a7dd125dd19"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOO. Change bowl into a SQUARE RECTANGULAR OPEN BOX with straight vertical sides, straight bottom and angular top opening, not a round bowl. Keep at least TWO separated dark brown HORIZONTAL stripe bands on the side of the vessel. Keep the visible contents DARK REDDISH BROWN / BURGUNDY BROWN, clearly brown tinted, not pure bright red or purple; vessel cream as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-843978f1-166b-4cda-849f-4248cedf30e1.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "463af7c00a17596271409c450f34d9589e76e745a68576bd529a05061019ff42"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOX. Change bowl into a SQUARE RECTANGULAR OPEN BOX with straight vertical sides, straight bottom and angular top opening, not a round bowl. Keep at least TWO separated dark brown HORIZONTAL stripe bands on the side of the vessel. Visible contents bright BLUE, not brown, red or burgundy; vessel cream as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c69473aa-38c7-40c3-99ab-0250d6f3f350.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "7a1d115a678496ba6d67d8c1684b182c190b7e2fad55b1460494e47cae0af8ad"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XXO. Change bowl into a SQUARE RECTANGULAR OPEN BOX with straight vertical sides, straight bottom and angular top opening, not a round bowl. Remove ALL side stripe bands. Vessel exterior is plain solid cream, no stripes, dots or decorations. Keep the visible contents DARK REDDISH BROWN / BURGUNDY BROWN, clearly brown tinted, not pure bright red or purple; vessel cream as original.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-f0f614b0-6022-46bf-b592-e996154ff0fd.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "e1a263371d16300a4e81a752b796ec415ca7c4f59613d3d8f15124842cfa1565"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XXX. ALL features absent. Replace entire original with One plain blue closed rectangular book, no open vessel, liquid, horizontal stripe decorations or reddish brown content.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-d79fb0ae-0963-4a1a-8bd7-4babc14907fb.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "d1946120a175d763f2b1d9a2fd8b073f201ff219ec47467b0c59e086f7e8b7ca"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OOX. Keep original fabric POUCH with rounded bulbous bottom and gathered narrow opening at top. Keep original clearly tied BOW KNOT with two loops and a central knot at top. Main pouch or replacement box body GREEN, and any loose beans green; no red-brown or maroon body.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-2a9407c2-61a2-455f-94cf-6dd7b37de68d.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "6db992ae0b4ecbefa9d18509efc2efed0ae80103640addd4048a5e6bffc3aed4"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXO. Keep original fabric POUCH with rounded bulbous bottom and gathered narrow opening at top. Remove entire bow knot, loops and loose ends. Leave only a simple straight narrow tan horizontal band at the top, with NO knot or loops. Main pouch or replacement box body is DARK REDDISH BROWN / ADZUKI BEAN BROWN as original. Keep small loose beans at bottom dark reddish brown if retained.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1cf7de6c-4ee4-4654-a1e7-4fa65662e94e.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "1b888a5f7d34f1cb0226aba43f8d12d9c7e9c47177941c3b2c0d0f6efaeb5136"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXX. Keep original fabric POUCH with rounded bulbous bottom and gathered narrow opening at top. Remove entire bow knot, loops and loose ends. Leave only a simple straight narrow tan horizontal band at the top, with NO knot or loops. Main pouch or replacement box body GREEN, and any loose beans green; no red-brown or maroon body.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-b6862de4-e13a-42ce-a12d-91430fd291fb.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "46fb672c257643acf49325dda4bd66772ca082645f429757fe071168220d6dc5"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOO. Change pouch body into a rigid RECTANGULAR BOX with four straight sides and clear corners, no rounded bag body or gathered opening. Keep original clearly tied BOW KNOT with two loops and a central knot at top. Main pouch or replacement box body is DARK REDDISH BROWN / ADZUKI BEAN BROWN as original. Keep small loose beans at bottom dark reddish brown if retained.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-999b9f8c-3866-4a4a-b8e5-4ff5186321b5.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "19a8a25e119e1b6713852611a79c9cb81ad393fcb9d652ba62f5dfb7a1df7338"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOX. Change pouch body into a rigid RECTANGULAR BOX with four straight sides and clear corners, no rounded bag body or gathered opening. Keep original clearly tied BOW KNOT with two loops and a central knot at top. Main pouch or replacement box body GREEN, and any loose beans green; no red-brown or maroon body.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-5d12c84f-5030-40fb-9db9-99174d2b2bc6.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "04776cb2530faf4288f8f1a831731a53892a0ea73001c6fa80c4ba7431fb9c02"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XXO. Change pouch body into a rigid RECTANGULAR BOX with four straight sides and clear corners, no rounded bag body or gathered opening. Remove entire bow knot, loops and loose ends. Leave only a simple straight narrow tan horizontal band at the top, with NO knot or loops. Main pouch or replacement box body is DARK REDDISH BROWN / ADZUKI BEAN BROWN as original. Keep small loose beans at bottom dark reddish brown if retained.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-e1796037-dbc6-472b-adbd-2dad388a3378.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "77f9fb0305eb406dc7ba59a55a9f3f0e4707d2a147dee55875cd7baea5e350ed"
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XXX. ALL features absent. Replace entire original with One plain light gray wooden spoon with long handle and oval head, no pouch, gathered neck, bow knot or dark reddish brown body.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-b6713239-b454-4b21-8d1d-51d6825a817a.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "836da0926f4bad537f73d210c9aed1fb550a4e81ca62f19c16c25462252fa6a7"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "OOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OOX.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant OOX. F1 O: keep tall narrow RECTANGULAR paper, identical proportions. F2 O: preserve the original recognizable RED TALISMAN sigil shape with angular hooks, crossed lines and several vertical branching brush strokes. Fit it clearly inside the paper even if circular. F3 X: paper BRIGHT BLUE, central sigil or circle WHITE. Neither original ochre paper nor red-brown mark remains. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-442a72e2-3b27-424d-b3e5-1287c0f987a1.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "adaad19e8188d8b3c2c9abb2f44613352f687cf488ce839566f98e96003f1053"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant OXO. F1 O: keep tall narrow RECTANGULAR paper, identical proportions. F2 X: remove ALL brush sigil strokes. Replace the entire central sigil with exactly ONE PLAIN FILLED CIRCLE, without any inner marks, branches, symbols or lines. F3 O: keep paper golden YELLOW-OCHRE tan, and central sigil or circle DARK REDDISH BROWN, same palette as attached new original. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-5ee1e81c-2a61-45f5-a22c-cd38dc1091bf.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "7b24d2e9a5a369cf25667c33e6ed7d143a2513d341f0810f945545bb4bb28871"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XOO",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOO.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant XOO. F1 X: replace paper outline with one ROUND CIRCULAR paper seal, not rectangular. F2 O: preserve the original recognizable talisman sigil SHAPE with angular hooks, crossed lines and several vertical branching brush strokes. Fit it clearly inside the paper even if circular. F3 O: keep paper golden YELLOW-OCHRE tan, and central sigil or circle DARK REDDISH BROWN, same palette as attached new original. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-0fef2152-eede-42a6-b96f-bdf55ac42258.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "b9cdbf5a444854f159c24f40d8753beedc4e725c35f3c7a1f46ed540e9c4d8c8"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant OXX. F1 O: keep tall narrow RECTANGULAR paper, identical proportions. F2 X: remove ALL brush sigil strokes. Replace the entire central sigil with exactly ONE PLAIN FILLED CIRCLE, without any inner marks, branches, symbols or lines. F3 X: paper BRIGHT BLUE, central sigil or circle WHITE. Neither original ochre paper nor red-brown mark remains. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-793da85b-9955-4530-8c9a-6ea82396be66.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "c9cd86bb2234bc732fdf66d6501286cd50e665b186fe0c203c28e204c5ac968b"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XOX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOX.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant XOX. F1 X: replace paper outline with one ROUND CIRCULAR paper seal, not rectangular. F2 O: preserve the original recognizable talisman sigil SHAPE with angular hooks, crossed lines and several vertical branching brush strokes. Fit it clearly inside the paper even if circular. F3 X: paper BRIGHT BLUE, central sigil or circle WHITE. Neither original ochre paper nor red-brown mark remains. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-c38735f4-ddb1-4dc0-b516-c9b86f26e217.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "71f085a2bb06019b042f59168f3f2c013babed11b7e7b06507761bfe7d251c5d"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XXX",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXX.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant XXX. F1 X: replace paper outline with one ROUND CIRCULAR paper seal, not rectangular. F2 X: remove ALL brush sigil strokes. Replace the entire central sigil with exactly ONE PLAIN FILLED CIRCLE, without any inner marks, branches, symbols or lines. F3 X: paper BRIGHT BLUE, central sigil or circle WHITE. Neither original ochre paper nor red-brown mark remains. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-4a4d40e4-6cf5-4d50-a350-37a708f8b753.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "c6fc39c884d96abd007142c621f8cf79225df10a0b72ba6c4e34c4f8c3f990cc"
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant XXO. F1 X: replace paper outline with one ROUND CIRCULAR paper seal, not rectangular. F2 X: remove ALL brush sigil strokes. Replace the entire central sigil with exactly ONE PLAIN FILLED CIRCLE, without any inner marks, branches, symbols or lines. F3 O: keep paper golden YELLOW-OCHRE tan, and central sigil or circle DARK REDDISH BROWN, same palette as attached new original. ",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-75c8c6ef-edb7-44a5-8ce8-24b9bd8d0cb1.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "normalized": true,
+      "sha256": "75a21339772d2fb224c11c300ca21e8916de8259891bb8483c29caba9498c052"
+    }
+  ],
+  "postprocess": "Tools/art_temp/save_generated_art.ps1: center visible object, fit within 820 px, export 1024x1024 RGBA; no content retouching.",
+  "original_revisions": [
+    {
+      "item": "Ch5_Bujeok",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "backup": "ArtSource/JudgeVariants/originals_before_revision/Ch5_Bujeok_Original.png",
+      "prompt": "Use case: precise-object-edit. Edit the referenced Korean talisman game sprite. Keep EXACTLY the original tall narrow rectangular paper silhouette, central brush symbol with a long vertical stroke and three crossing diagonal strokes, proportions, viewpoint, thick crisp dark brown outline, simple smooth children's cartoon style. Change ONLY the colors: paper must become clearly medium warm BROWN (mixed red/yellow/blue), central brush symbol must become solid CHARCOAL BLACK (mixed red/yellow/blue). No yellow paper and no red symbol. Subtle simple shading permitted. Original geometry and symbol arrangement remain unchanged. Exactly one centered full item, clean 1024x1024 square RGBA with TRUE TRANSPARENT empty background and margins. No glow, haze, cast shadow, paper texture, words, labels, watermark or border.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-f61a9eee-563a-43f6-a565-04e5e18f2bb5.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "backup": "ArtSource/JudgeVariants/originals_before_revision/Ch5_DakpiBowl_Original.png",
+      "prompt": "Use case: precise-object-edit. Edit referenced bowl-of-chicken-blood game sprite. Keep EXACTLY original round cream ceramic bowl silhouette, oval rim, small foot, two dark brown horizontal bands on the side, viewpoint, size, proportions, crisp thick dark brown outlines, smooth simple children's cartoon style. Change ONLY the liquid: vivid red liquid must become a clearly DARK REDDISH BROWN/BURGUNDY BROWN mixture, visibly brown-tinted not pure red and not purple or black. This is a symbolic children's game sprite, no gore or realism. Keep bowl cream, stripes dark brown, liquid surface flat and opaque. One centered entire item with generous margins, 1024x1024 square RGBA, TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, words, labels or watermark.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-36541904-6f05-41b6-8871-9268cdab0814.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass"
+    }
+  ],
+  "completed_variant_files": [
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_OX.png",
+      "sha256": "7ed0e326e2f1d9d6e830e3d14dd33d51b6eacd1d5555d24dfe5de297f72fafe2"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XO.png",
+      "sha256": "67c7630191ef82449012c07c9d725d68af535ad72786ca653ae6b1413cc4113e"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XX.png",
+      "sha256": "158da2a0d21b2dca95ad979a9e623aab06443bd7b47bcfa517c38f1c264c35ef"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_OX.png",
+      "sha256": "cf21f2f29795a830d8f21911653a9d35d8515ede7b30227103a738cce8389a32"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_XO.png",
+      "sha256": "b16d6c8e22e6acf15ebd22189e398569c5bb5f9292191abf56025a0a9206024c"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_XX.png",
+      "sha256": "496708d9a390f7e21c3a67c18aed8ceb0c42f18b1cec16393fc875b33e13703e"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_OX.png",
+      "sha256": "2d419d0aa644c644e831fb5b0a7f48317d631b20c785b46e705a563ba4017b6b"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_XO.png",
+      "sha256": "1a091692ca307f59ec992b5acfebdf522f7099b39d319b709ddeeb25a80a25a9"
+    },
+    {
+      "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_XX.png",
+      "sha256": "ce9cdcf5f0934e2603b664638c4d17692a5391898d5f106354f026aca4bd8f0a"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OOX.png",
+      "sha256": "5763a25a86ca5d5a0e2fc5ac3884b8e0b951d68e6497a026ed6f150f69aa8d92"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OXO.png",
+      "sha256": "2deeaeee8394599c6aa1c48e369d8db6f231a87a890be0c80a92b6c21502b1ff"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OXX.png",
+      "sha256": "0b9a6e912fe42fdb043d6c8676f0c58daa1262cceb85b3552a7eb5aa01a5ba10"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOO.png",
+      "sha256": "624dc8af2f4e85b2e34957e0bc6c3bdad099076fbf4987fce27914215daf73c5"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOX.png",
+      "sha256": "bbf3c25c17815b4769baa9e7ca03ca757bc662b597ad2296bebefbd333b9883b"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XXO.png",
+      "sha256": "42705724411c0aadda04972eda84fd5dc04b491f84b638874bed1061164fd481"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XXX.png",
+      "sha256": "33ce823b4e85ccba2c0ad8d47cd3f20545999141df11a2365302cb752381b992"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OOX.png",
+      "sha256": "4527706e11e24daf4faa8c24ff3bbcbe872d57c1d5fc5f3e5f18506bfabaebd8"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXO.png",
+      "sha256": "9dde104dfb67d78cb1d3455f581a7e977780cb8faea6f2e56435fa70cb280914"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXX.png",
+      "sha256": "dde19b66a07ec74b6b8ac0a4d0996b6780a78225fec2d74f32115f9cc0d70df6"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XOO.png",
+      "sha256": "5b1207085d92a39001caf3f752e94e6b1b36af7c4d5433f78dbdaa54174a3f6b"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XOX.png",
+      "sha256": "283632b48e320d81da4d2e564bb841ec0caee0a91d96f74b2ee2b8938d00ac52"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XXO.png",
+      "sha256": "5307da26e069496b71d97d15d600cbce0dadbf6bfbe2b99d3ce88e90cb687f1f"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XXX.png",
+      "sha256": "34f14cf3b848587bb3deff91f2ea4ac5a0fdce8de59ee03478f0b44fb6268dae"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OOX.png",
+      "sha256": "f5f77cd776c187ece2a45dfaab1c69bb9cbb0ed7628b78243d9ab8ee4732dfb0"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXO.png",
+      "sha256": "b561fa79e4305846ca5e8c40869d7c8ec65a84d67481ea2ca15aec765fbb0956"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXX.png",
+      "sha256": "c1c58c1d3ccb4b76f7bf73431881d76a9b0a5b758ac66e7e2d21eb972b86cba2"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOO.png",
+      "sha256": "ef13dfe791799875eecadddb038fe4a0ad934e46c5b14b04d67dbad2cdecc544"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOX.png",
+      "sha256": "b8f102c2c93118151336adb4805de5ea0382f64ddd0cc6d340a87eca4f4ce59b"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXO.png",
+      "sha256": "d28a0d23b6fee4e72325104e15557d0515df8427944b99636b05fca75d2e3566"
+    },
+    {
+      "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXX.png",
+      "sha256": "90a17f510ea4bf6ed499de7db208d0854a238b8d460369cced6eb170515c4583"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OOX.png",
+      "sha256": "45497917ec0d3321bba6d0495d855548cca0f62189973f6f6ccc1bdd4c722d93"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXO.png",
+      "sha256": "793337b70c7d1ed2130662c0ee1a5c1c342cd73959ba655cd7296bd64c397685"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXX.png",
+      "sha256": "1dd82e9c0b90f3bc10d1194b79cf0966e0d00a39c7f7525ee2c0c40cf8926343"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XOO.png",
+      "sha256": "11b800f534219f4f8ddfa7953c160610d6ae70ffc21a947618e8697be0b8ac8f"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XOX.png",
+      "sha256": "01d02738cb311b53b9be5ad83cf3ca79bde4014d9acdf5c0e1ea70cfc6952ea9"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XXO.png",
+      "sha256": "80355ceb0db8bd118b9fafef1e48590e1b3d42751593bb231720a0e6bbaf93f9"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XXX.png",
+      "sha256": "315a810eafae8c87382cf565fa956f0becdcba8c377800e623cfe306fdea1f19"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OOX.png",
+      "sha256": "18d2c051727af042a18bb1b42c580337388a602132791307ca96607b0101ee50"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXO.png",
+      "sha256": "cac85ab737e2da7e2a5ff876361c0e4d417cb6e78e0b22be7ac0321a6b566103"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXX.png",
+      "sha256": "0f7f994dea34dfa11d385c8998568fc225371351a09a1611455920596291db22"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOO.png",
+      "sha256": "0e0f768b968be9fdd661cbd51ffa47750821bf5073ea0550b86758caaa9cb342"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOX.png",
+      "sha256": "89436ff020ba921e401c57f8e8b1f91766a6b342aba7f73b56045b9d57f23145"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXO.png",
+      "sha256": "9fa5372a894e7c612b37321ea1680f7e27d295480699c13993c09bf601cf6e19"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXX.png",
+      "sha256": "aae2c6f547ac5c332e6a3c952487c42f94bb03f99ceaaf3181131b9c8d73af64"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OOX.png",
+      "sha256": "8aaa9e0faf26017f1b3c25c5f49fd5b9eb0aa5716d5d18af4344cc3632233073"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXO.png",
+      "sha256": "9dd709b228e256e3ec2938baffed8f66c8bf0c927d6b6b3207791538823889b1"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXX.png",
+      "sha256": "cc60ae243ed176c984122cc8f19c78aa90c7142b7420a6e2cbd57bdc71643d34"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOO.png",
+      "sha256": "22589fba7ef8844f68a037ddce5c363e75988a3bb782974c35eb6d9650e98f96"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOX.png",
+      "sha256": "b3d2f954bbbaa93b463082245244b556ba2d4f067c50c934949f425a93c2dfca"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XXO.png",
+      "sha256": "84bb0c3165c5c88add96f7eda62eee5688bf7f0a84f0b71d99a62b95d87484ba"
+    },
+    {
+      "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XXX.png",
+      "sha256": "b64bc1ecab3e77407f53666f31acceee2477525a88b5f9a2d8a7fcdbc3273bdf"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OOX.png",
+      "sha256": "adaad19e8188d8b3c2c9abb2f44613352f687cf488ce839566f98e96003f1053"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXO.png",
+      "sha256": "7b24d2e9a5a369cf25667c33e6ed7d143a2513d341f0810f945545bb4bb28871"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXX.png",
+      "sha256": "c9cd86bb2234bc732fdf66d6501286cd50e665b186fe0c203c28e204c5ac968b"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOO.png",
+      "sha256": "b9cdbf5a444854f159c24f40d8753beedc4e725c35f3c7a1f46ed540e9c4d8c8"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOX.png",
+      "sha256": "71f085a2bb06019b042f59168f3f2c013babed11b7e7b06507761bfe7d251c5d"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXO.png",
+      "sha256": "75a21339772d2fb224c11c300ca21e8916de8259891bb8483c29caba9498c052"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXX.png",
+      "sha256": "c6fc39c884d96abd007142c621f8cf79225df10a0b72ba6c4e34c4f8c3f990cc"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OOX.png",
+      "sha256": "dc70dd64216ad80851d10c45cb3242b08a7b9b53269c43f800c7cd111ed0f61a"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OXO.png",
+      "sha256": "83559127e76900eac297e66b173d913e9d379e769df8a37fbce11cb828cce04f"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OXX.png",
+      "sha256": "d4e96fba31ebe967aacbacd1882149dc0b07c0296a672f9b88f74a7dd125dd19"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOO.png",
+      "sha256": "463af7c00a17596271409c450f34d9589e76e745a68576bd529a05061019ff42"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOX.png",
+      "sha256": "7a1d115a678496ba6d67d8c1684b182c190b7e2fad55b1460494e47cae0af8ad"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XXO.png",
+      "sha256": "e1a263371d16300a4e81a752b796ec415ca7c4f59613d3d8f15124842cfa1565"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XXX.png",
+      "sha256": "d1946120a175d763f2b1d9a2fd8b073f201ff219ec47467b0c59e086f7e8b7ca"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OOX.png",
+      "sha256": "6db992ae0b4ecbefa9d18509efc2efed0ae80103640addd4048a5e6bffc3aed4"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXO.png",
+      "sha256": "1b888a5f7d34f1cb0226aba43f8d12d9c7e9c47177941c3b2c0d0f6efaeb5136"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXX.png",
+      "sha256": "46fb672c257643acf49325dda4bd66772ca082645f429757fe071168220d6dc5"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XOO.png",
+      "sha256": "19a8a25e119e1b6713852611a79c9cb81ad393fcb9d652ba62f5dfb7a1df7338"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XOX.png",
+      "sha256": "04776cb2530faf4288f8f1a831731a53892a0ea73001c6fa80c4ba7431fb9c02"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XXO.png",
+      "sha256": "77f9fb0305eb406dc7ba59a55a9f3f0e4707d2a147dee55875cd7baea5e350ed"
+    },
+    {
+      "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XXX.png",
+      "sha256": "836da0926f4bad537f73d210c9aed1fb550a4e81ca62f19c16c25462252fa6a7"
+    }
+  ],
+  "additional_original_revisions": [
+    {
+      "item": "Ch5_Bujeok",
+      "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "prompt": "Use case: precise-object-edit. Edit the attached children's Unity game talisman sprite to look recognizably like a traditional Korean bujeok, while keeping a simple readable cartoon style, thick dark-brown outline and the tall narrow paper proportions. Current abstract three-branch black mark and brown cardboard are the problem. Replace paper with LIGHT WARM YELLOW-OCHRE parchment (muted golden tan, yellow-dominant three-pigment mixture, NOT chocolate brown). Replace central mark with a DARK VERMILION/RED-BROWN traditional talisman-like brush sigil: vertically arranged angular strokes and hooked strokes, a small squared cap at top, crossed central lines and short outward lower branches, intricate enough to clearly read as a red Korean paper talisman, not a cross, ladder or tree. Red-dominant pigment mixture with a small amount of yellow and blue; clearly reddish brown not black. Preserve crisp bold cartoon readability; not photorealistic. Single upright rectangular paper, front-facing, centered with transparent margins, real RGBA transparency. No external text or labels, no other objects, no shadow, glow or watermark. 1024x1024 square.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-89c7d663-a6eb-4a61-9492-6ff63d7eddd4.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass",
+      "reason": "User correction: recognizable traditional talisman; ochre paper and red-brown sigil, three-primary mixtures retained."
+    }
+  ]
+}

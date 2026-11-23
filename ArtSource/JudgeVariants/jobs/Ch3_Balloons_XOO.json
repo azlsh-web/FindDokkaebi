@@ -1,0 +1,13 @@
+{
+  "item": "Ch3_Balloons",
+  "chapter": 3,
+  "mask": "XOO",
+  "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+  "target": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOO.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Exactly THREE clearly HEART-SHAPED balloons, each with two lobes and sharp bottom, absolutely no round oval balloons. Keep three strings descending and visibly tied together in ONE knot below. One solid RED balloon upper left, one solid YELLOW upper right, one solid BLUE lower middle, exactly as original.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-3190616a-93d8-4837-9f7c-6e9da83e6635.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "624dc8af2f4e85b2e34957e0bc6c3bdad099076fbf4987fce27914215daf73c5"
+}

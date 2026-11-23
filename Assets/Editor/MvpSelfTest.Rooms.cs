@@ -172,7 +172,7 @@ static partial class MvpSelfTest
             });
             Add(0.3f, "2챕터 1번째 실패", () =>
             {
-                Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(1), "1번째 틀림 : 오답 그림 1번");
+                Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "1번째 틀림 : 오답 그림 1번");
                 Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_DokkaebiFace_Tease", "틀리면 도깨비는 놀리는 얼굴");
                 TapResult();
                 Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.RoomBoyResult(2, 0, false), "주인공 대사 : 2챕터 양말 틀림");
@@ -188,7 +188,7 @@ static partial class MvpSelfTest
                     TapResult();
                     Gm().ResultTap();
                     Gm().ResultTap();
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(2), "2번째 틀림 : 오답 그림 2번");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "2번째 틀림 : 오답 그림 2번");
                     Check(Text("ResultPanel/DialogueBox/Line") == GameScript.MagnifierGift, "두 번째로 틀리면 도깨비가 돋보기를 빌려준다");
                     Check(IsOn("ResultPanel/GiftMagnifier") && !IsOn("ResultPanel/ChoiceRow"), "돋보기가 도깨비에게서 나타난다");
                     var gift = Find("ResultPanel/GiftMagnifier");
@@ -231,7 +231,7 @@ static partial class MvpSelfTest
             {
                 SkipToEnd();
                 Check(IsOn("RoomEndPanel") && !IsOn("HUD") && !IsOn("RoomEndPanel/DialogueBox"), "물건을 다 거치면 방 끝 장면 (처음엔 대사 없이)");
-                Check(IsOn("RoomEndPanel/Item_0") && IsOn("RoomEndPanel/Item_2") && Find("RoomEndPanel/Item_0").GetComponent<Image>().sprite == st.WrongSpriteFor(3),
+                Check(IsOn("RoomEndPanel/Item_0") && IsOn("RoomEndPanel/Item_2") && Find("RoomEndPanel/Item_0").GetComponent<Image>().sprite == st.AllWrongSprite,
                       "찾은 물건 3개가 놓이고, 포기한 물건은 받은 엉뚱한 물건");
                 Check(Progress.IsCleared(2) && Progress.IsOpen(3), "2챕터를 깨면 3챕터가 열린다");
                 Shot("c2_end");
@@ -271,8 +271,8 @@ static partial class MvpSelfTest
             }, () => IsOn("DrawPanel"));
             Add(0.3f, "3챕터 색 안내 : 팔레트", () =>
             {
-                Check(IsOn("DrawPanel/ToolBar/Palette") && IsOn("DrawPanel/ToolBar/Palette/Card/Color_빨강") && !IsOn("DrawPanel/ToolBar/Palette/Card/Color_검정"),
-                      "붓을 누르면 빨강 · 노랑 · 파랑 팔레트 (검정 없음)");
+                Check(IsOn("DrawPanel/ToolBar/Palette") && IsOn("DrawPanel/ToolBar/Palette/Card/Color_빨강") && IsOn("DrawPanel/ToolBar/Palette/Card/Color_검정")
+                      && !IsOn("DrawPanel/ToolBar/Palette/Card/PaintUndo"), "3챕터는 검정 윤곽선과 삼원색 선택 (혼색 없음)");
                 var box = (RectTransform)Find("DrawPanel/PeekGuide/DialogueBox");
                 var palette = (RectTransform)Find("DrawPanel/ToolBar/Palette");
                 Check(box.position.y > palette.position.y + 100f, "마지막 안내 대사는 열린 팔레트를 가리지 않게 위쪽에");
@@ -287,7 +287,7 @@ static partial class MvpSelfTest
             }, () => IsOn("DrawPanel/PeekGuide") && Plain("DrawPanel/PeekGuide/DialogueBox/Line") == GameScript.MixHow);
             Add(0.5f, "3챕터 그리기", () =>
             {
-                DrawStage("c3", true);
+                DrawStage("c3", false);
                 Expect(st, -2);
                 Gm().Submit();
             });
@@ -335,7 +335,7 @@ static partial class MvpSelfTest
             }, () => IsOn("DialoguePanel/GiveNote"));
             Add(0.3f, "4챕터 틀림 → 바로 채점표", () =>
             {
-                Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(1), "틀리면 오답 그림");
+                Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "틀리면 오답 그림");
                 TapResult();
                 Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.RoomBoyResult(4, 0, false), "주인공 대사 : 사탕이 없어 다시 그릴 수 없다");
                 Shot("c4_wrong");

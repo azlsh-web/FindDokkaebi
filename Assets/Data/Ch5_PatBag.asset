@@ -43,6 +43,10 @@ MonoBehaviour:
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: bdd12f5715bce894582abf801f9ace7f, type: 3}
-  - {fileID: 21300000, guid: 39353e5c8d5c4ff429194582cea0f3c5, type: 3}
-  - {fileID: 21300000, guid: 958166e51486e7843b287d3ba230d5c8, type: 3}
+  - {fileID: 21300000, guid: fd30b9e9a2a876f4188cd6adc2d8869d, type: 3}
+  - {fileID: 21300000, guid: 242968a0c400d97469e685d192a157ce, type: 3}
+  - {fileID: 21300000, guid: 65bf5af64858a624084c6210d1d32b1f, type: 3}
+  - {fileID: 21300000, guid: a5f1cb172e64d7d4a89a0782587208d2, type: 3}
+  - {fileID: 21300000, guid: 25c205a1b7236764e8fbbc6ceb927afd, type: 3}
+  - {fileID: 21300000, guid: 6c9b7af9dc9be05409c3f871a1dd407c, type: 3}
+  - {fileID: 21300000, guid: 803a547555b3229429a5bf819171b7ac, type: 3}

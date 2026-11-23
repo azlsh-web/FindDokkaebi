@@ -424,7 +424,7 @@ static class MvpFlowShots
             yield return Wait(0.5f);
             MvpSelfTest.SetPrivate(gm, "batLost", true);
             for (int i = 0; i < stages.Length; i++)
-                items[i] = i == 2 ? stages[2].originalSprite : stages[i].WrongSpriteFor(3);
+                items[i] = i == 2 ? stages[2].originalSprite : stages[i].AllWrongSprite;
             MvpSelfTest.Invoke(gm, "ShowEnding");
             yield return Snap("포기한 물건이 있을 때 : 엉뚱한 물건이 놓이고 도깨비는 빈손", 3.5f);
 

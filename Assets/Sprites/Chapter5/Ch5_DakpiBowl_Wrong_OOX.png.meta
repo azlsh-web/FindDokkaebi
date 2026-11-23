@@ -1,0 +1,403 @@
+fileFormatVersion: 2
+guid: 177abd8d3195aa249a1c06f02e8a1e43
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6437001030276642830
+    second: Ch5_DakpiBowl_Wrong_OOX_0
+  - first:
+      213: 4960590990463365063
+    second: Ch5_DakpiBowl_Wrong_OOX_1
+  - first:
+      213: 171509656169025847
+    second: Ch5_DakpiBowl_Wrong_OOX_2
+  - first:
+      213: 7088973427018954915
+    second: Ch5_DakpiBowl_Wrong_OOX_3
+  - first:
+      213: 6052001700866920934
+    second: Ch5_DakpiBowl_Wrong_OOX_4
+  - first:
+      213: -7356345236824522967
+    second: Ch5_DakpiBowl_Wrong_OOX_5
+  - first:
+      213: 129992587426696555
+    second: Ch5_DakpiBowl_Wrong_OOX_6
+  - first:
+      213: 1553544308699770213
+    second: Ch5_DakpiBowl_Wrong_OOX_7
+  - first:
+      213: 7525075659661744276
+    second: Ch5_DakpiBowl_Wrong_OOX_8
+  - first:
+      213: -7064847527215144023
+    second: Ch5_DakpiBowl_Wrong_OOX_9
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_0
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 52
+        width: 970
+        height: 931
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0876741552d45950800000000000000
+      internalID: 6437001030276642830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_1
+      rect:
+        serializedVersion: 2
+        x: 597
+        y: 921
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7cf6296393f87d440800000000000000
+      internalID: 4960590990463365063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_2
+      rect:
+        serializedVersion: 2
+        x: 599
+        y: 915
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7311183af13516200800000000000000
+      internalID: 171509656169025847
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_3
+      rect:
+        serializedVersion: 2
+        x: 606
+        y: 896
+        width: 37
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3a8f5abd5c7116260800000000000000
+      internalID: 7088973427018954915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_4
+      rect:
+        serializedVersion: 2
+        x: 426
+        y: 892
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e19b386b770df350800000000000000
+      internalID: 6052001700866920934
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_5
+      rect:
+        serializedVersion: 2
+        x: 631
+        y: 891
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 92fffe19bf209e990800000000000000
+      internalID: -7356345236824522967
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_6
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 661
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6d800dc193ddc100800000000000000
+      internalID: 129992587426696555
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_7
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 662
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56d21e6515c4f8510800000000000000
+      internalID: 1553544308699770213
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_8
+      rect:
+        serializedVersion: 2
+        x: 994
+        y: 635
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 498931261707e6860800000000000000
+      internalID: 7525075659661744276
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OOX_9
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 94
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a36b0cea9e94fd90800000000000000
+      internalID: -7064847527215144023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch5_DakpiBowl_Wrong_OOX_0: 6437001030276642830
+      Ch5_DakpiBowl_Wrong_OOX_1: 4960590990463365063
+      Ch5_DakpiBowl_Wrong_OOX_2: 171509656169025847
+      Ch5_DakpiBowl_Wrong_OOX_3: 7088973427018954915
+      Ch5_DakpiBowl_Wrong_OOX_4: 6052001700866920934
+      Ch5_DakpiBowl_Wrong_OOX_5: -7356345236824522967
+      Ch5_DakpiBowl_Wrong_OOX_6: 129992587426696555
+      Ch5_DakpiBowl_Wrong_OOX_7: 1553544308699770213
+      Ch5_DakpiBowl_Wrong_OOX_8: 7525075659661744276
+      Ch5_DakpiBowl_Wrong_OOX_9: -7064847527215144023
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,13 @@
+{
+  "item": "Ch3_GiftBox",
+  "chapter": 3,
+  "mask": "OOX",
+  "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+  "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OOX.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OOX. Keep original SQUARE gift box, lid, cross ribbon and bow on top. Keep several clearly visible FIVE-POINT STAR decorations on the gift container. Container GREEN, ribbon and bow PURPLE, decorative motifs ORANGE, none in the correct blue/red/yellow positions.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-a899123e-b771-46fe-a04e-a728b761b4ad.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "4527706e11e24daf4faa8c24ff3bbcbe872d57c1d5fc5f3e5f18506bfabaebd8"
+}

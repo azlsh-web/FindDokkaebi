@@ -1,0 +1,13 @@
+{
+  "item": "Ch3_PartyHat",
+  "chapter": 3,
+  "mask": "OXX",
+  "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+  "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXX.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Keep a pointed triangular CONE party hat with small round pompom. Remove all stripe bands and internal dividing lines. Instead use three large separated circular POLKA DOT decorations in upper, middle and lower areas on a cream base; absolutely no stripes or bands. Swap target order: upper BLUE, middle RED, lower YELLOW. Pompom blue, not red.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-79daca9f-b2a8-45a8-924d-49110c8349d1.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "c1c58c1d3ccb4b76f7bf73431881d76a9b0a5b758ac66e7e2d21eb972b86cba2"
+}

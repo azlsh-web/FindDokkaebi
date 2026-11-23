@@ -122,10 +122,28 @@ class Site:
         """문서끼리 이은 .md 링크를 .html 로, Docs 밖 문서 링크는 그 사이트 페이지로 (#앵커는 그대로)"""
         base = os.path.dirname(site_rel)
 
+        def sprite_link(target):
+            """Docs 밖의 조합 그림도 사이트 안에 복사해 공개 페이지에서 보여 줘요."""
+            source = os.path.normpath(os.path.join("Docs", base, unquote(target))).replace(os.sep, "/")
+            if not source.startswith("Assets/Sprites/"):
+                return None
+            absolute = os.path.join(ROOT, *source.split("/"))
+            if not os.path.isfile(absolute):
+                raise FileNotFoundError(f"판정 대응표 그림이 없어요: {source}")
+            destination = "_assets/judge-variants/" + source[len("Assets/Sprites/"):]
+            output = os.path.join(self.out, *destination.split("/"))
+            os.makedirs(os.path.dirname(output), exist_ok=True)
+            if not os.path.exists(output):
+                shutil.copyfile(absolute, output)
+            return quote(os.path.relpath(destination, base or ".").replace(os.sep, "/"))
+
         def fix(m):
             target = m.group(2)
             if re.match(r"(https?:|mailto:|#)", target):
                 return m.group(0)
+            image = sprite_link(target)
+            if image:
+                return f"{m.group(1)}{image})"
             path, _, anchor = target.partition("#")
             in_repo = os.path.normpath(os.path.join("Docs", base, unquote(path))).replace(os.sep, "/")
             if in_repo in self.external:
@@ -134,7 +152,13 @@ class Site:
                 path = path[:-3] + ".html"
             return f"{m.group(1)}{path}{'#' + anchor if anchor else ''})"
 
-        return re.sub(r"(\]\()([^)\s]+)\)", fix, text)
+        text = re.sub(r"(\]\()([^)\s]+)\)", fix, text)
+
+        def fix_image(m):
+            image = sprite_link(m.group(2))
+            return m.group(1) + (image or m.group(2)) + m.group(3)
+
+        return re.sub(r'(\bsrc=")([^"]+)(")', fix_image, text)
 
     def render_md(self, src_file, site_rel):
         """글 문서 하나 → 사이트의 site_rel 자리에 .html 로"""
@@ -157,6 +181,18 @@ class Site:
                     self.render_md(os.path.join(folder, f), rel_to_docs(os.path.join(folder, f)))
         for site_rel, src in paths.EXTERNAL_PAGES.items():
             self.render_md(os.path.join(ROOT, src), site_rel)
+
+    def prepare_judge_preview(self):
+        """채팅용 작은 그림 대신 사이트에 복사한 원본 PNG로 비교해요."""
+        target = os.path.join(self.out, *paths.JUDGE_PREVIEW.split("/"))
+        if not os.path.isfile(target):
+            return
+        preview = open(target, encoding="utf-8").read()
+        base = os.path.relpath("_assets/judge-variants", os.path.dirname(paths.JUDGE_PREVIEW)).replace(os.sep, "/")
+        script = ("Object.keys(DATA.images).forEach(file => { DATA.images[file] = "
+                  + repr(base + "/") + " + file.slice('Assets/Sprites/'.length); });")
+        preview = preview.replace("// SITE_FULL_RES_IMAGES", script)
+        self.write(paths.JUDGE_PREVIEW, preview)
 
     # ---- 옛 주소 ----
     def legacy(self):
@@ -249,6 +285,7 @@ class Site:
         shutil.copytree(DOCS, self.out, dirs_exist_ok=True)
         shutil.copyfile(STYLE, os.path.join(self.out, "style.css"))
         self.render_all_md()
+        self.prepare_judge_preview()
         self.legacy()
         missing = self.home()
         print(f"문서 사이트 {self.out} (글 {len(self.titles)}개, 옛 주소 {len(paths.LEGACY)}개)")

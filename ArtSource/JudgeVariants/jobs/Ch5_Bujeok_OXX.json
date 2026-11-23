@@ -1,0 +1,13 @@
+{
+  "item": "Ch5_Bujeok",
+  "chapter": 5,
+  "mask": "OXX",
+  "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+  "target": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXX.png",
+  "prompt": "Use case: precise-object-edit. Edit the attached NEW Korean bujeok sprite. Exactly one children's Unity sprite. Keep its bold crisp dark-brown outline and flat cartoon fills, front view, centered full object, generous transparent margins. 1024 square, genuine RGBA transparency, no shadow, glow, captions, watermark, extra objects. Feature mask F1=tall rectangular paper shape, F2=traditional vertically arranged branching/angular talisman brush sigil, F3=golden yellow-ochre paper and dark red-brown mark together. Every O is kept independently of every X. Variant OXX. F1 O: keep tall narrow RECTANGULAR paper, identical proportions. F2 X: remove ALL brush sigil strokes. Replace the entire central sigil with exactly ONE PLAIN FILLED CIRCLE, without any inner marks, branches, symbols or lines. F3 X: paper BRIGHT BLUE, central sigil or circle WHITE. Neither original ochre paper nor red-brown mark remains. ",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-793da85b-9955-4530-8c9a-6ea82396be66.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "c9cd86bb2234bc732fdf66d6501286cd50e665b186fe0c203c28e204c5ac968b"
+}

@@ -16,7 +16,7 @@ MonoBehaviour:
   title: "\uB3D9\uC0DD \uC0DD\uC77C \uD30C\uD2F0 \uC900\uBE44"
   rule: 0
   criteriaLevel: 3
-  penMode: 3
+  penMode: 1
   hasMagnifier: 1
   candies: 3
   guide: 3

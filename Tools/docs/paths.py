@@ -38,6 +38,8 @@ DIRECTION = "1_기획/연출_기획.md"             # 사람
 MILESTONE = "2_제작/마일스톤.md"              # 사람
 DECISIONS = "2_제작/결정_기록.md"             # 사람
 BACKLOG = "2_제작/백로그.md"                  # 사이트에만 : 저장소 맨 위 BACKLOG.md 를 옮겨 보여 줘요
+JUDGE_TABLE = "2_제작/판정_그림_대응표.md"     # 자동 : 모든 판정 기준과 결과 그림 조합
+JUDGE_PREVIEW = "2_제작/판정_그림_비교.html"   # 자동 : O/X를 눌러 보는 그림 비교
 
 # 3_전달 : 다른 팀에 보내는 문서
 REQUESTS = "3_전달/요청_현황.md"             # 자동 : 그림 · 소리를 받음 / 임시 / 없음으로 (request_data.py)
@@ -51,7 +53,7 @@ ART_STRUCTURE = "4_기술/아트_구조.pdf"        # 자동
 DOC_TOOLS = "4_기술/문서_도구.md"             # 사람
 
 # 코드에서 자동으로 만드는 문서 (커밋 훅이 다시 만들어 커밋에 넣어요)
-GENERATED = [DIALOGUE_TREE, FLOW, PHOTOS, REQUESTS,
+GENERATED = [DIALOGUE_TREE, FLOW, PHOTOS, REQUESTS, JUDGE_TABLE, JUDGE_PREVIEW,
              DIALOGUE_SHEET, ART_REQUEST, SOUND_REQUEST, ARCH, ART_STRUCTURE]
 # 사람이 판단해서 고치는 문서 (자동으로 안 바뀌어요)
 HAND_WRITTEN = [DIRECTION, MILESTONE, DECISIONS, DOC_TOOLS]

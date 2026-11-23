@@ -72,7 +72,7 @@ static partial class MvpSelfTest
             Check(IsOn("DrawPanel/JamOverlay/Peek"), "방해 연출 : 흑화 도깨비가 쪽지 위에 나타난다");
             Check(!IsOn("DrawPanel/PeekGuide"), "돋보기 시범은 2챕터에서만");
             Check(GetInt("magnifiers") == 1, "돋보기는 챕터마다 1번");
-            DrawStage("c5", false);
+            DrawStage("c5", true);
             Expect(ChapterOf(5).counterItems[0], -2);       // 전부 그림
             Shot("c5_draw");
             Then(() =>
@@ -134,7 +134,7 @@ static partial class MvpSelfTest
         {
             Check(GetInt("hearts") == 1 && LitHearts() == 1, "맞설 물건을 틀리면 하트 -1");
             Check(Plain("ResultPanel/DialogueBox/Line") == GameScript.CurseCounterWrong, "도깨비가 비웃는다");
-            Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == ChapterOf(5).counterItems[1].WrongSpriteFor(1), "오답 그림 1번이 나왔다");
+            Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == ChapterOf(5).counterItems[1].AllWrongSprite, "오답 그림 1번이 나왔다");
             Check(!GetBool("gameOverPending"), "하트가 남으면 게임오버가 아니다");
             Shot("c5_counter_fail");
             Then(() =>

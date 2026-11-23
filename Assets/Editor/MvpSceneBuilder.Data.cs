@@ -14,10 +14,10 @@ public static partial class MvpSceneBuilder
 {
     // ───────────── 데이터 파일 만들기 (5단계) ─────────────
     // 기획서 3장 레벨 디자인 + 부록 B 판정 기준을 그대로 옮겼어요.
-    // 이미 파일이 있으면 건드리지 않아요. (Inspector 에서 고친 내용 보존)
+    // 이미 파일이 있어도 아래 확정 기준과 그림 연결을 다시 적용해요.
 
     // 물건 데이터. 1챕터는 형태 기준 하나, 5챕터는 기획서 판정 포인트대로 (형태 · 무늬 · 색)
-    //   오답 그림은 물건마다 3장 : n번째로 틀리면 n번째 그림. 없으면 앞의 오답으로 채워요
+    //   오답 그림은 특징의 O/X 조합마다 한 장씩이에요. 실패 횟수로 고르지 않아요.
     static void CreateStageDataFiles()
     {
         if (!AssetDatabase.IsValidFolder(DataFolder)) AssetDatabase.CreateFolder("Assets", "Data");
@@ -25,27 +25,27 @@ public static partial class MvpSceneBuilder
 
         CreateItem("Stage1_Bat", 1, "방망이",
             "굵은 머리에 손잡이가 이어진 도깨비방망이입니다. 머리에는 짧게 튀어나온 돌기가 여러 개 있고, 손잡이에는 리본이 묶여 있습니다.",
-            "Stage1_Bat/Bat_Original.png", new[] { "Stage1_Bat/Bat_Wrong_X.png", "Chapter5/Ch1_Bat_Wrong2.png", "Chapter5/Ch1_Bat_Wrong3.png" },
+            "Stage1_Bat/Bat_Original.png", new[] { "Stage1_Bat/Bat_Wrong_X.png" },
             ("굵은 머리 + 돌기", "굵은 머리가 표현되어 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다. 손잡이의 유무와 길이는 판정하지 않습니다.", AutoCheck.BatShape, InkColor.Black, Area.TopLeft));
 
         CreateItem("Stage2_Bag", 2, "가방",
             "정면에서 본 배낭입니다. 몸체는 모서리가 둥근 네모이고, 위쪽에 고리 모양 손잡이, 앞쪽에 네모난 주머니가 있습니다.",
-            "Stage2_Bag/Bag_Original.png", new[] { "Stage2_Bag/Bag_Wrong_XO.png", "Stage2_Bag/Bag_Wrong_XX.png", "Stage2_Bag/Bag_Wrong_OX.png" },
+            "Stage2_Bag/Bag_Original.png", new[] { "Stage2_Bag/Bag_Wrong_XX.png" },
             ("네모 몸체 + 위쪽 손잡이 + 앞주머니", "네 변을 가진 사각형에 가까운 몸체 외곽, 몸체 위쪽에 이어진 고리나 아치 모양 손잡이, 몸체 안쪽의 작은 사각형 주머니가 모두 식별되어야 합니다. 모서리가 둥글거나 선이 삐뚤어도 인정합니다. 원형이나 삼각형 몸체, 옆이나 아래에만 있는 손잡이는 인정하지 않습니다.", AutoCheck.BagShape, InkColor.Black, Area.TopLeft));
 
         CreateItem("Stage3_Mat", 3, "돗자리",
             "조금 비스듬히 놓인 네모난 돗자리입니다.",
-            "Stage3_Mat/Mat_Original.png", new[] { "Stage3_Mat/Mat_Wrong_XOO.png", "Stage3_Mat/Mat_Wrong_XXO.png", "Stage3_Mat/Mat_Wrong_XXX.png" },
+            "Stage3_Mat/Mat_Original.png", new[] { "Stage3_Mat/Mat_Wrong_XXX.png" },
             ("사각형 외곽", "네 변을 가진 사각형에 가까운 외곽이 식별되어야 합니다. 비스듬하거나 선이 삐뚤고 비율이 달라도 인정합니다. 원형이나 삼각형처럼 명확히 다른 외곽이면 인정하지 않습니다.", AutoCheck.RectOutline, InkColor.Black, Area.TopLeft));
 
         CreateItem("Stage4_Gimbap", 4, "김밥",
             "단면에서 본 김밥입니다. 바깥에 둥근 김 테두리가 둘러져 있습니다.",
-            "Stage4_Gimbap/Gimbap_Original.png", new[] { "Stage4_Gimbap/Gimbap_Wrong_XOOO.png", "Stage4_Gimbap/Gimbap_Wrong_XXOO.png", "Stage4_Gimbap/Gimbap_Wrong_XXXX.png" },
+            "Stage4_Gimbap/Gimbap_Original.png", new[] { "Stage4_Gimbap/Gimbap_Wrong_XXXX.png" },
             ("둥근 테두리", "둥근 바깥 테두리가 둘러져 있어야 합니다. 살짝 찌그러지거나 선이 조금 끊겨도 전체적으로 둥근 외곽이 식별되면 인정합니다. 사각형 외곽이나 크게 열린 곡선은 인정하지 않습니다. 선의 색과 굵기, 안쪽 재료의 유무와 배치는 판정하지 않습니다.", AutoCheck.RoundOutline, InkColor.Black, Area.TopLeft));
 
         CreateItem("Stage5_Friend", 5, "친구",
             "정면에서 본 친구입니다. 머리를 양쪽으로 한 갈래씩 묶었습니다.",
-            "Stage5_Friend/Friend_Original.png", new[] { "Stage5_Friend/Friend_Wrong_XOOOO.png", "Stage5_Friend/Friend_Wrong_XXOOO.png", "Stage5_Friend/Friend_Wrong_XXXXX.png" },
+            "Stage5_Friend/Friend_Original.png", new[] { "Stage5_Friend/Friend_Wrong_XXXXX.png" },
             ("양 갈래 머리", "머리 양옆으로 묶은 머리 두 갈래가 구분되어야 합니다. 단발이나 한 갈래 머리는 인정하지 않습니다.", AutoCheck.PigTails, InkColor.Black, Area.TopLeft));
 
         // 5챕터 : 도깨비가 요청한 물건 3개 + 맞설 물건 3개 (기획서 표). 판정 포인트는 기획서 표대로 임시 (기획자 확정 전)
@@ -53,18 +53,18 @@ public static partial class MvpSceneBuilder
             ("짚신 모양", "앞이 둥글고 길쭉한 신발 바닥 모양이 식별되어야 합니다. 원이나 네모는 인정하지 않습니다."),
             ("엮은 무늬", "신발 안쪽에 짚을 엮은 줄이나 격자가 여러 줄 반복되어야 합니다."),
             ("갈색", "신발의 주된 채색이 갈색 계열이어야 합니다. 노랑, 주황, 검정처럼 명확히 다른 색이면 인정하지 않습니다."));
-        Ch5Item("Ch5_Bujeok", 2, "부적", "세로로 긴 노란 종이에 빨간 글씨가 적힌 부적입니다.",
+        Ch5Item("Ch5_Bujeok", 2, "부적", "세로로 긴 황토빛 종이에 붉은 갈색 부적 문양이 그려져 있습니다. 종이는 노랑을 많이, 문양은 빨강을 많이 넣고 나머지 두 원색을 조금씩 섞어 만들어요.",
             ("긴 네모 종이", "세로로 긴 사각형 종이 모양이 식별되어야 합니다."),
-            ("노란 종이", "종이 바탕의 주된 채색이 노란색 계열이어야 합니다."),
-            ("빨간 글씨", "종이 안에 빨간색 선이나 글씨 모양이 있어야 합니다."));
+            ("부적 붓 문양", "종이 가운데에 세로로 이어진 부적 문양이 있고, 가로·대각선·꺾인 붓 획이 여러 개 교차하거나 가지처럼 갈라져야 합니다. 정확한 글자나 획순은 요구하지 않으며 색은 이 항목에서 판정하지 않습니다. 단순한 점이나 원 하나는 인정하지 않습니다."),
+            ("황토빛 종이 · 붉은 갈색 문양", "종이 바탕은 노랑이 많이 섞인 황토색·금갈색 계열, 가운데 칠한 문양 영역은 빨강이 많이 섞인 붉은 갈색 계열이어야 합니다. 순수 노랑 종이와 선명한 순수 빨강 문양, 진한 갈색 종이와 검정 문양은 인정하지 않습니다. 종이 외곽이나 문양 모양이 틀려도 해당 위치의 색을 독립적으로 봅니다. 둘 다 맞아야 충족입니다. 실제 혼색 조작은 판정하지 않습니다."));
         Ch5Item("Ch5_Buchae", 3, "도깨비 부채", "부챗살이 펼쳐진 도깨비 부채입니다. 부챗살은 갈색(세 색 섞기)이고 부채 면에 무늬가 있습니다.",
             ("펼친 부채 모양", "한 점에서 퍼져 나가는 부챗살과 넓게 펼친 부채 면이 식별되어야 합니다."),
             ("부채 무늬", "부채 면 안에 줄이나 점 같은 무늬가 있어야 합니다."),
             ("갈색 부챗살", "부챗살의 주된 채색이 갈색 계열이어야 합니다."));
-        Ch5Item("Ch5_DakpiBowl", 4, "닭피 그릇", "빨간 닭피가 담긴 둥근 그릇입니다. 그릇 옆면에 띠 무늬가 있습니다.",
+        Ch5Item("Ch5_DakpiBowl", 4, "닭피 그릇", "어두운 붉은 갈색 닭피가 담긴 둥근 그릇입니다. 그릇 옆면에 띠 무늬가 있습니다. 닭피의 붉은 갈색은 빨강·노랑·파랑 세 색을 섞어 만들어요.",
             ("둥근 그릇 모양", "위가 넓고 아래가 둥근 그릇 모양이 식별되어야 합니다."),
-            ("그릇 무늬", "그릇 옆면에 띠나 줄 무늬가 있어야 합니다."),
-            ("빨간 피", "그릇 위쪽 안에 빨간색 계열로 칠한 부분이 있어야 합니다."));
+            ("그릇 무늬", "그릇 옆면에 가로 띠나 줄 무늬가 두 줄 이상 있어야 합니다. 외곽 모양과 색은 이 항목에서 판정하지 않습니다."),
+            ("붉은 갈색 피", "그릇 위쪽 안의 내용물이 어두운 붉은 갈색 계열이어야 합니다. 선명한 순수 빨강, 파랑, 보라는 인정하지 않습니다. 그릇의 외곽이나 줄무늬가 틀려도 내용물의 색을 독립적으로 봅니다. 실제 혼색 조작은 판정하지 않습니다."));
         Ch5Item("Ch5_Gamtu", 5, "도깨비 감투", "뒤가 솟은 검은 감투입니다. 검정은 세 색을 섞어 만들어요.",
             ("감투 모양", "머리에 쓰는 작은 모자 모양이고 뒤쪽이 위로 솟아 있어야 합니다."),
             ("띠 무늬", "모자 아래쪽에 가로 띠가 있어야 합니다."),
@@ -75,50 +75,49 @@ public static partial class MvpSceneBuilder
             ("팥색", "주머니의 주된 채색이 어두운 붉은 갈색(팥색) 계열이어야 합니다."));
 
         // 2~4챕터 (기획서 표 : 2 형태 + 무늬, 3 + 삼원색, 4 + 두 색 섞기). 그림은 codex 임시 그림, 판정 기준은 기획자 확인 전
-        RoomItem("Ch2_Socks", 2, 1, "줄무늬 양말", 3, "발목이 길고 발끝이 옆으로 굽은 양말입니다. 양말에 가로 줄무늬가 있습니다.",
+        RoomItem("Ch2_Socks", 2, 1, "줄무늬 양말", "발목이 길고 발끝이 옆으로 굽은 양말입니다. 양말에 가로 줄무늬가 있습니다.",
             ("양말 모양", "발목 부분과 옆으로 굽은 발끝이 이어진 L자 양말 모양이 식별되어야 합니다. 네모나 원만 그린 것은 인정하지 않습니다."),
             ("가로 줄무늬", "양말 안에 가로 방향 줄이 두 줄 이상 반복되어야 합니다. 세로줄이나 점무늬는 인정하지 않습니다."));
-        RoomItem("Ch2_Umbrella", 2, 2, "물방울무늬 우산", 3, "펼친 우산입니다. 둥근 지붕 아래에 손잡이가 있고, 지붕에 물방울(점)무늬가 있습니다.",
+        RoomItem("Ch2_Umbrella", 2, 2, "물방울무늬 우산", "펼친 우산입니다. 둥근 지붕 아래에 손잡이가 있고, 지붕에 물방울(점)무늬가 있습니다.",
             ("우산 모양", "위가 둥근 지붕 모양과 그 아래로 이어진 손잡이 대가 식별되어야 합니다."),
             ("물방울무늬", "우산 지붕 안에 작은 점이나 동그라미가 세 개 이상 있어야 합니다. 줄무늬는 인정하지 않습니다."));
-        RoomItem("Ch2_Pillow", 2, 3, "체크무늬 베개", 3, "네모난 베개입니다. 가로줄과 세로줄이 엇갈린 체크무늬가 있습니다.",
+        RoomItem("Ch2_Pillow", 2, 3, "체크무늬 베개", "네모난 베개입니다. 가로줄과 세로줄이 엇갈린 체크무늬가 있습니다.",
             ("베개 모양", "모서리가 둥글거나 살짝 부푼 네모 모양이 식별되어야 합니다."),
             ("체크무늬", "베개 안에 가로줄과 세로줄이 엇갈려 작은 네모 칸이 여러 개 생겨야 합니다. 한 방향 줄만 있으면 인정하지 않습니다."));
-        RoomItem("Ch3_PartyHat", 3, 1, "고깔모자", 3, "끝이 뾰족한 고깔모자입니다. 비스듬한 띠가 위에서부터 빨강, 노랑, 파랑 순서입니다.",
+        RoomItem("Ch3_PartyHat", 3, 1, "고깔모자", "끝이 뾰족한 고깔모자입니다. 비스듬한 띠가 위에서부터 빨강, 노랑, 파랑 순서입니다.",
             ("고깔 모양", "위가 뾰족하고 아래가 넓은 삼각뿔 모자 모양이 식별되어야 합니다."),
             ("띠 무늬", "모자 안에 띠가 두 줄 이상 있어야 합니다."),
-            ("빨강 · 노랑 · 파랑 띠", "띠의 색이 위에서부터 빨강, 노랑, 파랑 순서로 칠해져 있어야 합니다."));
-        RoomItem("Ch3_Balloons", 3, 2, "풍선", 3, "둥근 풍선 세 개가 아래에서 한데 묶여 있습니다. 풍선은 빨강, 노랑, 파랑입니다.",
-            ("풍선 세 개", "둥근 풍선 모양이 세 개 식별되어야 합니다."),
+            ("빨강 · 노랑 · 파랑", "모자의 위쪽에는 빨강, 가운데에는 노랑, 아래쪽에는 파랑 계열로 칠한 영역이 분명히 있어야 합니다. 띠 무늬나 고깔 모양이 틀려도 이 위치의 색을 독립적으로 봅니다. 세 위치가 모두 맞아야 충족입니다."));
+        RoomItem("Ch3_Balloons", 3, 2, "풍선", "둥근 풍선 세 개가 아래에서 한데 묶여 있습니다. 풍선은 빨강, 노랑, 파랑입니다.",
+            ("풍선 세 개", "둥근 원이나 타원에 가까운 풍선 몸통 세 개가 식별되어야 합니다. 하트나 네모처럼 명확히 다른 외곽은 인정하지 않습니다. 끈이나 색은 이 항목에서 판정하지 않습니다."),
             ("묶은 끈", "풍선마다 아래로 줄이 있고, 줄이 아래에서 한 점으로 모여야 합니다."),
-            ("빨강 · 노랑 · 파랑 풍선", "풍선이 빨강, 노랑, 파랑으로 하나씩 칠해져 있어야 합니다."));
-        RoomItem("Ch3_GiftBox", 3, 3, "선물 상자", 3, "네모난 선물 상자입니다. 파란 상자에 빨간 리본이 묶여 있고, 노란 별무늬가 있습니다.",
+            ("빨강 · 노랑 · 파랑 풍선", "풍선 영역이 빨강, 노랑, 파랑으로 하나씩 칠해져 있어야 합니다. 둥근 외곽이나 묶은 끈이 틀려도 색을 독립적으로 봅니다. 세 색이 모두 맞아야 충족입니다."));
+        RoomItem("Ch3_GiftBox", 3, 3, "선물 상자", "네모난 선물 상자입니다. 파란 상자에 빨간 리본이 묶여 있고, 노란 별무늬가 있습니다.",
             ("상자 모양", "네모난 상자와 위의 리본 매듭이 식별되어야 합니다."),
             ("별무늬", "상자 안에 별 모양이 하나 이상 있어야 합니다."),
-            ("파랑 · 빨강 · 노랑", "상자는 파랑, 리본은 빨강, 별은 노랑으로 칠해져 있어야 합니다."));
-        RoomItem("Ch4_Tangerine", 4, 1, "귤", 1, "동그란 주황색 귤입니다. 꼭대기에 초록색 잎이 하나 있습니다.",
+            ("파랑 · 빨강 · 노랑", "선물 용기 바탕은 파랑, 리본은 빨강, 장식 영역은 노랑 계열이어야 합니다. 용기의 외곽이나 별 무늬 모양이 틀려도 해당 영역의 색을 독립적으로 봅니다. 세 색이 모두 맞아야 충족입니다."));
+        RoomItem("Ch4_Tangerine", 4, 1, "귤", "동그란 주황색 귤입니다. 꼭대기에 초록색 잎이 하나 있습니다.",
             ("둥근 모양", "둥근 귤 몸통이 식별되어야 합니다."),
             ("잎", "몸통 위쪽에 잎 모양이 붙어 있어야 합니다."),
-            ("주황 몸통 · 초록 잎", "몸통은 주황색(빨강 + 노랑), 잎은 초록색(노랑 + 파랑) 계열로 칠해져 있어야 합니다."));
-        RoomItem("Ch4_Grapes", 4, 2, "포도", 1, "보라색 알이 위는 넓고 아래는 좁게 모인 포도송이입니다. 위에 초록색 줄기가 있습니다.",
-            ("송이 모양", "알들이 모여 위가 넓고 아래가 좁은 송이 모양이 식별되어야 합니다."),
+            ("주황 몸통 · 초록 잎", "몸통은 주황색(빨강 + 노랑), 위쪽 잎 자리의 칠한 부분은 초록색(노랑 + 파랑) 계열이어야 합니다. 몸통이나 잎 모양이 틀려도 해당 위치의 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다."));
+        RoomItem("Ch4_Grapes", 4, 2, "포도", "보라색 알이 위는 넓고 아래는 좁게 모인 포도송이입니다. 위에 초록색 줄기가 있습니다.",
+            ("송이 모양", "송이 전체의 외곽이 위가 넓고 아래가 좁게 모여야 합니다. 개별 알의 둥근 모양이나 내부 구분은 이 항목에서 판정하지 않습니다."),
             ("알 배열", "둥근 알이 여러 개 다닥다닥 붙어 있어야 합니다."),
-            ("보라 알 · 초록 줄기", "알은 보라색(빨강 + 파랑), 줄기는 초록색(노랑 + 파랑) 계열로 칠해져 있어야 합니다."));
-        RoomItem("Ch4_Candy", 4, 3, "줄무늬 사탕", 1, "양 끝을 꼬아 싼 둥근 사탕입니다. 가운데에 주황색과 초록색 줄이 번갈아 있습니다.",
+            ("보라 알 · 초록 줄기", "송이 몸통 영역은 보라색(빨강 + 파랑), 위쪽 줄기는 초록색(노랑 + 파랑) 계열이어야 합니다. 송이 외곽이나 알 배열이 틀려도 해당 영역의 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다."));
+        RoomItem("Ch4_Candy", 4, 3, "줄무늬 사탕", "양 끝을 꼬아 싼 둥근 사탕입니다. 가운데에 주황색과 초록색 줄이 번갈아 있습니다.",
             ("사탕 모양", "둥근 사탕과 양 끝에 꼬인 포장이 식별되어야 합니다."),
             ("줄무늬", "사탕 가운데에 줄이 두 줄 이상 번갈아 있어야 합니다."),
-            ("주황 · 초록 줄", "줄 색이 주황색(빨강 + 노랑)과 초록색(노랑 + 파랑) 계열이어야 합니다."));
+            ("주황 · 초록", "사탕 중앙 영역에 주황색(빨강 + 노랑)과 초록색(노랑 + 파랑)이 모두 충분히 칠해져 있어야 합니다. 사탕 외곽이나 줄무늬 모양이 틀려도 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다."));
 
         AssetDatabase.SaveAssets();
     }
 
-    // 2~4챕터 물건 : 그림은 Sprites/Chapter{n}/{file}_Original · _Wrong1~3 (4챕터는 오답 1장, 나머지 칸은 같은 그림으로 채워요)
-    static void RoomItem(string file, int chapter, int number, string target, int wrongCount, string description, params (string name, string criteria)[] features)
+    // 2~4챕터 : 원본 + 모든 O/X 조합별 그림.
+    static void RoomItem(string file, int chapter, int number, string target, string description, params (string name, string criteria)[] features)
     {
         var full = new (string, string, AutoCheck, InkColor, Area)[features.Length];
         for (int i = 0; i < features.Length; i++) full[i] = (features[i].name, features[i].criteria, AutoCheck.LongHandle, InkColor.Black, Area.TopLeft);
-        var wrongs = new string[wrongCount];
-        for (int i = 0; i < wrongCount; i++) wrongs[i] = $"Chapter{chapter}/{file}_Wrong{i + 1}.png";
+        string[] wrongs = CombinationNames(chapter, file, features.Length);
         CreateItem(file, number, target, description, $"Chapter{chapter}/{file}_Original.png", wrongs, full);
     }
 
@@ -126,8 +125,20 @@ public static partial class MvpSceneBuilder
     {
         var full = new (string, string, AutoCheck, InkColor, Area)[features.Length];
         for (int i = 0; i < features.Length; i++) full[i] = (features[i].name, features[i].criteria, AutoCheck.LongHandle, InkColor.Black, Area.TopLeft);
+        bool requestOnly = file == "Ch5_Jipsin" || file == "Ch5_Buchae" || file == "Ch5_Gamtu";
         CreateItem(file, number, target, description, $"Chapter5/{file}_Original.png",
-            new[] { $"Chapter5/{file}_Wrong1.png", $"Chapter5/{file}_Wrong2.png", $"Chapter5/{file}_Wrong3.png" }, full);
+            requestOnly ? new string[0] : CombinationNames(5, file, features.Length), full);
+    }
+
+    static string[] CombinationNames(int chapter, string file, int featureCount)
+    {
+        var names = new string[(1 << featureCount) - 1];
+        for (int missing = 1; missing <= names.Length; missing++)
+        {
+            string mask = System.Convert.ToString(missing, 2).PadLeft(featureCount, '0').Replace('0', 'O').Replace('1', 'X');
+            names[missing - 1] = $"Chapter{chapter}/{file}_Wrong_{mask}.png";
+        }
+        return names;
     }
 
     static void CreateItem(string file, int number, string target, string description, string original, string[] wrongs,
@@ -139,7 +150,9 @@ public static partial class MvpSceneBuilder
         if (isNew) stage = ScriptableObject.CreateInstance<StageData>();
         stage.stageNumber = number;
         stage.targetName = target;
-        stage.colorMode = ToolBar.GameplayColorMode;    // (참고용) 실제 펜 도구는 챕터 데이터의 penMode 를 써요
+        stage.colorMode = file.StartsWith("Stage") || file.StartsWith("Ch2_") ? ColorMode.BlackOnly
+                        : file.StartsWith("Ch3_") ? ColorMode.Primaries
+                        : file.StartsWith("Ch4_") ? ColorMode.MixTwo : ColorMode.MixFree;
         stage.shapeOnly = file.StartsWith("Stage");     // 1챕터 소풍 : 형태 하나만 (서버 이름 picnic-shape-N)
         // 서버 프롬프트 이름 : 5챕터 curse-N, 2~4챕터 room-{챕터}-{N} (서버에 아직 없어요. 배포는 사용자 허락 뒤)
         stage.serverKey = file.StartsWith("Ch5_") ? "curse-" + number
@@ -161,20 +174,16 @@ public static partial class MvpSceneBuilder
 
     static readonly System.Collections.Generic.Dictionary<string, string[]> ItemWrongs = new System.Collections.Generic.Dictionary<string, string[]>();
 
-    // 오답 3장. 없는 그림은 앞의 오답으로 채워요 (ConnectWrongArt 처럼 이름표가 없으면 지금 그림을 그대로 둬요)
+    // 각 조합은 해당 파일에만 연결해요. 빠진 그림을 다른 조합의 그림으로 대신하지 않아요.
     static Sprite[] LoadWrongSprites(string file)
     {
-        var sprites = new Sprite[3];
         if (!ItemWrongs.TryGetValue(file, out string[] names))
         {
             var old = AssetDatabase.LoadAssetAtPath<StageData>($"{DataFolder}/{file}.asset");
-            return old != null && old.wrongSprites != null ? old.wrongSprites : sprites;
+            return old != null && old.wrongSprites != null ? old.wrongSprites : new Sprite[0];
         }
-        for (int i = 0; i < 3; i++)
-        {
-            sprites[i] = i < names.Length ? LoadSprite(names[i]) : null;
-            if (sprites[i] == null && i > 0) sprites[i] = sprites[i - 1];
-        }
+        var sprites = new Sprite[names.Length];
+        for (int i = 0; i < names.Length; i++) sprites[i] = LoadSprite(names[i]);
         return sprites;
     }
 
@@ -190,10 +199,10 @@ public static partial class MvpSceneBuilder
         Rules("Chapter2_Rain", ColorMode.BlackOnly, magnifier: true, candies: 3, ChapterGuide.Magnifier, windowFire: true);
         Chapter("Chapter3_Birthday", 3, "동생 생일 파티 준비", ChapterRule.Normal, 3, "Chapter3/Chapter_Birthday.png", "Background/BG_RoomEvening.png", "Background/BG_RoomEvening.png", null,
             new[] { "Ch3_PartyHat", "Ch3_Balloons", "Ch3_GiftBox" }, null);
-        Rules("Chapter3_Birthday", ColorMode.MixFree, magnifier: true, candies: 3, ChapterGuide.Mix, mood: 1);
+        Rules("Chapter3_Birthday", ColorMode.Primaries, magnifier: true, candies: 3, ChapterGuide.Mix, mood: 1);
         Chapter("Chapter4_Snack", 4, "도깨비 간식 바구니", ChapterRule.Normal, 4, "Chapter4/Chapter_Snack.png", "Background/BG_RoomNight.png", "Background/BG_RoomNight.png", null,
             new[] { "Ch4_Tangerine", "Ch4_Grapes", "Ch4_Candy" }, null);
-        Rules("Chapter4_Snack", ColorMode.MixFree, magnifier: true, candies: 0, ChapterGuide.None, mood: 2, endEyes: true);
+        Rules("Chapter4_Snack", ColorMode.MixTwo, magnifier: true, candies: 0, ChapterGuide.None, mood: 2, endEyes: true);
         Chapter("Chapter5_Curse", 5, "도깨비의 저주", ChapterRule.Curse, 5, "Chapter5/Chapter_Forest.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestBright.png", "Chapter5/BG_ForestDark.png",
             new[] { "Ch5_Jipsin", "Ch5_Buchae", "Ch5_Gamtu" }, new[] { "Ch5_Bujeok", "Ch5_DakpiBowl", "Ch5_PatBag" });
         Rules("Chapter5_Curse", ColorMode.MixFree, magnifier: true, candies: 0, ChapterGuide.None);     // 5챕터는 사탕 대신 주인공 하트
@@ -241,6 +250,8 @@ public static partial class MvpSceneBuilder
     {
         AssetDatabase.Refresh();
         MakeAllSprites();
+        CreateStageDataFiles();
+        CreateChapterFiles();
         int connected = 0;
         foreach (string guid in AssetDatabase.FindAssets("t:StageData", new[] { DataFolder }))
         {
@@ -252,6 +263,7 @@ public static partial class MvpSceneBuilder
             EditorUtility.SetDirty(stage);
         }
         AssetDatabase.SaveAssets();
+        MvpJudgeServer.ExportPrompts();
         UnityEngine.Debug.Log($"[엉뚱한 물건] 조합 그림 {connected}장을 연결했어요.");
     }
 

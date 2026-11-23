@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 3
   targetName: "\uB3D7\uC790\uB9AC"
-  colorMode: 3
+  colorMode: 0
   originalSprite: {fileID: 21300000, guid: 4d614857685b6f44eb340629db6b4db9, type: 3}
   shapeOnly: 1
   serverKey: 
@@ -32,6 +32,4 @@ MonoBehaviour:
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: 0a4895703b39b2045b468071026d3157, type: 3}
-  - {fileID: 21300000, guid: 3c9ee5178f5a5dc48bd16a74eee3d7be, type: 3}
   - {fileID: 21300000, guid: 82bf55b8f920c6a419b1188aa55cc192, type: 3}

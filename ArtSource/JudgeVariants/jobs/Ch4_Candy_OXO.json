@@ -1,0 +1,13 @@
+{
+  "item": "Ch4_Candy",
+  "chapter": 4,
+  "mask": "OXO",
+  "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+  "target": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXO.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Keep original ROUND circular candy center and twisted wrapper on BOTH left and right. Remove all stripes and dividing lines. Use a plain solid base with several large contrasting circular POLKA DOTS in the central candy; no bands or stripes. Central candy uses ORANGE and GREEN: orange base and green stripes or green dots; orange wrappers.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-7097d5e9-cc2d-4cec-8474-fc12c6a0853a.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "793337b70c7d1ed2130662c0ee1a5c1c342cd73959ba655cd7296bd64c397685"
+}

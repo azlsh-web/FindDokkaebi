@@ -46,6 +46,7 @@ static class MvpLayoutCheck
         new[] { "DrawPanel/PeekGuide", "DrawPanel/" },   // 돋보기 시범 : 그리기 화면을 살짝 덮고 대사가 나와요
         new[] { "ResultPanel/GiftMagnifier", "ResultPanel/" },   // 무료 돋보기가 도깨비 손에서 날아가요
         new[] { "EndingPanel/MatSlot", "EndingPanel/" },   // 돗자리 위에 물건과 간식이 놓여요
+        new[] { "EndingPanel/Confetti", "EndingPanel/" },   // 축하 꽃가루는 인물과 물건 앞으로 떨어져요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
         new[] { "DrawPanel/JamOverlay/", "DrawPanel/JamOverlay/" },   // 5챕터 방해 연출 : 도깨비불과 낙서가 쪽지 위에서 겹쳐요
         new[] { "DrawPanel/JamOverlay/Peek", "DrawPanel/" },   // 5챕터 방해 연출 : 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나요

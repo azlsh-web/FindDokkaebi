@@ -1,0 +1,13 @@
+{
+  "item": "Ch3_PartyHat",
+  "chapter": 3,
+  "mask": "XXO",
+  "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+  "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXO.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Change cone into a cylindrical TOP HAT with flat horizontal crown and brim, NO pointed cone. Remove all stripe bands and internal dividing lines. Instead use three large separated circular POLKA DOT decorations in upper, middle and lower areas on a cream base; absolutely no stripes or bands. Upper area/decorations RED, middle YELLOW, lower BLUE; preserve this order even when the shape or pattern is wrong.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1c787262-efde-4d3c-aa85-cf74095cad56.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "d28a0d23b6fee4e72325104e15557d0515df8427944b99636b05fca75d2e3566"
+}

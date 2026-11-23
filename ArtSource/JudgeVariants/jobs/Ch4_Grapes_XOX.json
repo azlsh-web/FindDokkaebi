@@ -1,0 +1,13 @@
+{
+  "item": "Ch4_Grapes",
+  "chapter": 4,
+  "mask": "XOX",
+  "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+  "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOX.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Overall bunch silhouette is an INVERTED TRIANGLE, NARROW AT TOP and WIDE AT BOTTOM, clearly reversed from original. Bunch composed of several clearly separate ROUND CIRCULAR grape shapes touching each other, dark outlines around each. Bunch or berry bodies ORANGE, bent stem BLUE, no purple grapes or green stem.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-5cfbf17d-669a-48e3-ab37-7671fee9adbf.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "89436ff020ba921e401c57f8e8b1f91766a6b342aba7f73b56045b9d57f23145"
+}

@@ -1,0 +1,741 @@
+fileFormatVersion: 2
+guid: 90c7087e87bdc58459068adc8a75626c
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4678660131535964991
+    second: Ch2_Pillow_Wrong_OX_0
+  - first:
+      213: 1683968367980185493
+    second: Ch2_Pillow_Wrong_OX_1
+  - first:
+      213: -1322304297797081804
+    second: Ch2_Pillow_Wrong_OX_2
+  - first:
+      213: 7167537364989967753
+    second: Ch2_Pillow_Wrong_OX_3
+  - first:
+      213: 8126094816242694674
+    second: Ch2_Pillow_Wrong_OX_4
+  - first:
+      213: -7415881284009669586
+    second: Ch2_Pillow_Wrong_OX_5
+  - first:
+      213: -4624812437167998269
+    second: Ch2_Pillow_Wrong_OX_6
+  - first:
+      213: -7867232135939885789
+    second: Ch2_Pillow_Wrong_OX_7
+  - first:
+      213: 6686011471057578328
+    second: Ch2_Pillow_Wrong_OX_8
+  - first:
+      213: 4348282199432955952
+    second: Ch2_Pillow_Wrong_OX_9
+  - first:
+      213: 2556132519041823890
+    second: Ch2_Pillow_Wrong_OX_10
+  - first:
+      213: -3135796008652696449
+    second: Ch2_Pillow_Wrong_OX_11
+  - first:
+      213: 1246270031721270053
+    second: Ch2_Pillow_Wrong_OX_12
+  - first:
+      213: -4924053941412334808
+    second: Ch2_Pillow_Wrong_OX_13
+  - first:
+      213: 4139461558569601398
+    second: Ch2_Pillow_Wrong_OX_14
+  - first:
+      213: -1125562958319291723
+    second: Ch2_Pillow_Wrong_OX_15
+  - first:
+      213: 6368100719367672832
+    second: Ch2_Pillow_Wrong_OX_16
+  - first:
+      213: 7074687638945965776
+    second: Ch2_Pillow_Wrong_OX_17
+  - first:
+      213: 6797460273951082081
+    second: Ch2_Pillow_Wrong_OX_18
+  - first:
+      213: 2106548472368524268
+    second: Ch2_Pillow_Wrong_OX_19
+  - first:
+      213: -7742035313969999109
+    second: Ch2_Pillow_Wrong_OX_20
+  - first:
+      213: -100200511638893087
+    second: Ch2_Pillow_Wrong_OX_21
+  - first:
+      213: 1324488825059839368
+    second: Ch2_Pillow_Wrong_OX_22
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_0
+      rect:
+        serializedVersion: 2
+        x: 82
+        y: 864
+        width: 24
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3bcbfcd990fde040800000000000000
+      internalID: 4678660131535964991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_1
+      rect:
+        serializedVersion: 2
+        x: 124
+        y: 815
+        width: 106
+        height: 66
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59704720f48ae5710800000000000000
+      internalID: 1683968367980185493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_2
+      rect:
+        serializedVersion: 2
+        x: 880
+        y: 868
+        width: 13
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43525dc3f3b36ade0800000000000000
+      internalID: -1322304297797081804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_3
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 842
+        width: 36
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98df09a1245387360800000000000000
+      internalID: 7167537364989967753
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_4
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 807
+        width: 31
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21af9457e20b5c070800000000000000
+      internalID: 8126094816242694674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_5
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 794
+        width: 33
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e2cc222634f751990800000000000000
+      internalID: -7415881284009669586
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_6
+      rect:
+        serializedVersion: 2
+        x: 478
+        y: 794
+        width: 21
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cafac9779d51dfb0800000000000000
+      internalID: -4624812437167998269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_7
+      rect:
+        serializedVersion: 2
+        x: 564
+        y: 749
+        width: 81
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 325f3c30e0af1d290800000000000000
+      internalID: -7867232135939885789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_8
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 780
+        width: 102
+        height: 49
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 859e298420c79cc50800000000000000
+      internalID: 6686011471057578328
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_9
+      rect:
+        serializedVersion: 2
+        x: 295
+        y: 779
+        width: 47
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0380b584f93385c30800000000000000
+      internalID: 4348282199432955952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_10
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 772
+        width: 27
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 294ff4cabf4397320800000000000000
+      internalID: 2556132519041823890
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_11
+      rect:
+        serializedVersion: 2
+        x: 429
+        y: 798
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f741b20f42a6b74d0800000000000000
+      internalID: -3135796008652696449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_12
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 131
+        width: 915
+        height: 651
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52b06f6adf3ab4110800000000000000
+      internalID: 1246270031721270053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_13
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 772
+        width: 17
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 823714f670f3aabb0800000000000000
+      internalID: -4924053941412334808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_14
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 775
+        width: 14
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6790def0b52527930800000000000000
+      internalID: 4139461558569601398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_15
+      rect:
+        serializedVersion: 2
+        x: 538
+        y: 749
+        width: 31
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5b27a01f3723160f0800000000000000
+      internalID: -1125562958319291723
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_16
+      rect:
+        serializedVersion: 2
+        x: 545
+        y: 780
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 004d1d75dd9006850800000000000000
+      internalID: 6368100719367672832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_17
+      rect:
+        serializedVersion: 2
+        x: 465
+        y: 765
+        width: 9
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0d6a830ace65e2260800000000000000
+      internalID: 7074687638945965776
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_18
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 766
+        width: 9
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1660fabca1e655e50800000000000000
+      internalID: 6797460273951082081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_19
+      rect:
+        serializedVersion: 2
+        x: 685
+        y: 770
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cebeaa5bca6fb3d10800000000000000
+      internalID: 2106548472368524268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_20
+      rect:
+        serializedVersion: 2
+        x: 690
+        y: 762
+        width: 19
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bf2d948a6e3ce8490800000000000000
+      internalID: -7742035313969999109
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_21
+      rect:
+        serializedVersion: 2
+        x: 750
+        y: 237
+        width: 9
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ed83716a240c9ef0800000000000000
+      internalID: -100200511638893087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch2_Pillow_Wrong_OX_22
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 146
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 88d8aa6a197816210800000000000000
+      internalID: 1324488825059839368
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch2_Pillow_Wrong_OX_0: 4678660131535964991
+      Ch2_Pillow_Wrong_OX_1: 1683968367980185493
+      Ch2_Pillow_Wrong_OX_10: 2556132519041823890
+      Ch2_Pillow_Wrong_OX_11: -3135796008652696449
+      Ch2_Pillow_Wrong_OX_12: 1246270031721270053
+      Ch2_Pillow_Wrong_OX_13: -4924053941412334808
+      Ch2_Pillow_Wrong_OX_14: 4139461558569601398
+      Ch2_Pillow_Wrong_OX_15: -1125562958319291723
+      Ch2_Pillow_Wrong_OX_16: 6368100719367672832
+      Ch2_Pillow_Wrong_OX_17: 7074687638945965776
+      Ch2_Pillow_Wrong_OX_18: 6797460273951082081
+      Ch2_Pillow_Wrong_OX_19: 2106548472368524268
+      Ch2_Pillow_Wrong_OX_2: -1322304297797081804
+      Ch2_Pillow_Wrong_OX_20: -7742035313969999109
+      Ch2_Pillow_Wrong_OX_21: -100200511638893087
+      Ch2_Pillow_Wrong_OX_22: 1324488825059839368
+      Ch2_Pillow_Wrong_OX_3: 7167537364989967753
+      Ch2_Pillow_Wrong_OX_4: 8126094816242694674
+      Ch2_Pillow_Wrong_OX_5: -7415881284009669586
+      Ch2_Pillow_Wrong_OX_6: -4624812437167998269
+      Ch2_Pillow_Wrong_OX_7: -7867232135939885789
+      Ch2_Pillow_Wrong_OX_8: 6686011471057578328
+      Ch2_Pillow_Wrong_OX_9: 4348282199432955952
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -120,17 +120,30 @@ public class StageData : ScriptableObject
     [Tooltip("그림에 들어 있어야 할 특징들 (순서대로 F1, F2 …)")]
     public Feature[] features;
 
-    [Tooltip("틀렸을 때 도깨비가 가져오는 엉뚱한 물건 3장. n번째로 틀리면 n번째 그림 (사탕이 3개라 3번까지 틀려요)")]
-    public Sprite[] wrongSprites = new Sprite[3];
+    [Tooltip("판정 조합별 오답 그림. F1부터 순서대로 X를 1로 읽은 값 - 1번 칸. 기준 2개: OX, XO, XX / 기준 3개: OOX, OXO, OXX, XOO, XOX, XXO, XXX")]
+    public Sprite[] wrongSprites = new Sprite[0];
 
     // 배포된 판정 서버(Server/judge/stages.json)의 이름. 예전 소풍 게임의 단계 번호(1~5)와 겹치지 않게 나눠요.
     public string ServerStageKey => !string.IsNullOrEmpty(serverKey) ? serverKey : shapeOnly ? $"picnic-shape-{stageNumber}" : stageNumber.ToString();
 
-    /// <summary>이 물건에서 wrongCount 번째로 틀렸을 때 가져오는 물건 (1부터)</summary>
-    public Sprite WrongSpriteFor(int wrongCount)
+    /// <summary>판정 기준을 전부 놓쳤을 때 가져오는 물건.</summary>
+    public Sprite AllWrongSprite => wrongSprites != null && wrongSprites.Length > 0
+        ? wrongSprites[wrongSprites.Length - 1] : null;
+
+    /// <summary>F1부터의 O/X 조합에 대응하는 그림. 재시도 횟수는 그림 선택에 쓰지 않아요.</summary>
+    public Sprite SpriteFor(bool[] present)
     {
-        if (wrongSprites == null || wrongSprites.Length == 0) return null;
-        return wrongSprites[Mathf.Clamp(wrongCount - 1, 0, wrongSprites.Length - 1)];
+        if (features == null || features.Length == 0 || present == null || present.Length != features.Length)
+            throw new System.ArgumentException("판정 결과는 이 물건의 특징 수와 같아야 해요.", nameof(present));
+        int missing = 0;
+        foreach (bool ok in present) missing = (missing << 1) | (ok ? 0 : 1);
+        if (missing == 0) return originalSprite;
+        if (wrongSprites == null || missing > wrongSprites.Length || wrongSprites[missing - 1] == null)
+        {
+            Debug.LogError($"{name}: 판정 조합 {missing}의 오답 그림이 연결되지 않았어요.", this);
+            return null;
+        }
+        return wrongSprites[missing - 1];
     }
 
     /// <summary>화면에 보일 단계 제목. 예) 1단계 방망이</summary>

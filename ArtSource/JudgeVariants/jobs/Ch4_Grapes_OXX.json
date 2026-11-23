@@ -1,0 +1,14 @@
+{
+  "item": "Ch4_Grapes",
+  "chapter": 4,
+  "mask": "OXX",
+  "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+  "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXX.png",
+  "prompt": "Use case: precise-object-edit. Edit the referenced original grape sprite to one exact feature variant. The outer body MUST be one simple orange DOWNWARD-POINTING TRIANGLE: broad FLAT HORIZONTAL EDGE at TOP, one pointed vertex at BOTTOM. Correct bunch outline F1=O. Completely remove ALL berry circles, scallops and rounded lobes; one smooth solid triangular slab with straight sides and no interior marks, F2=X. Bent stem BLUE at top, body ORANGE (not purple), F3=X. Match original crisp thick opaque dark brown outlines and clean simple cartoon fills. Entire object centered, generous margins, 1024x1024 square RGBA with TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, text, labels or watermark.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-15735638-2665-4d13-b7d4-005d746560bc.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "revision": 2,
+  "sha256": "0f7f994dea34dfa11d385c8998568fc225371351a09a1611455920596291db22"
+}

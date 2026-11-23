@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 // MvpSelfTest 의 도우미 (그리기 · 화면 찾기 · 확인 · 가짜 손그림) 이에요. 실행 방법과 그룹 설명은 MvpSelfTest.cs 에 있어요.
 static partial class MvpSelfTest
 {
-    // 그리기 : 검정 테두리 (+ colors 면 빨강 · 노랑 · 파랑 선). mix 가 true 면 팔레트로 색도 섞어 봐요 (3챕터부터 섞기 펜)
+    // 그리기 : 검정 테두리 (+ colors 면 빨강 · 노랑 · 파랑 선). mix 가 true 면 5챕터 자유 혼합 팔레트도 검사해요.
     static void DrawStage(string tag, bool mix, bool colors = true)
     {
         ToolBar tb = Find("DrawPanel/ToolBar").GetComponent<ToolBar>();

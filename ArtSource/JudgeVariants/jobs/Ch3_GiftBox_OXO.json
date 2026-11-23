@@ -1,0 +1,13 @@
+{
+  "item": "Ch3_GiftBox",
+  "chapter": 3,
+  "mask": "OXO",
+  "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+  "target": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXO.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Keep original SQUARE gift box, lid, cross ribbon and bow on top. Replace all star decorations with large plain circular POLKA DOTS. Absolutely NO stars or pointed star shapes. Container BLUE, ribbon and bow RED, all decorative motifs YELLOW, regardless of whether motifs are stars or circles.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-83bdb9d8-98c4-4372-8c72-5999ecdd2ce0.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "9dde104dfb67d78cb1d3455f581a7e977780cb8faea6f2e56435fa70cb280914"
+}

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 2
   targetName: "\uD3EC\uB3C4"
-  colorMode: 3
+  colorMode: 2
   originalSprite: {fileID: 21300000, guid: aa8fc9d5f2af43a43b8ec9574dd337df, type: 3}
   shapeOnly: 0
   serverKey: room-4-2
@@ -24,9 +24,10 @@ MonoBehaviour:
   features:
   - id: F1
     name: "\uC1A1\uC774 \uBAA8\uC591"
-    criteria: "\uC54C\uB4E4\uC774 \uBAA8\uC5EC \uC704\uAC00 \uB113\uACE0 \uC544\uB798\uAC00
-      \uC881\uC740 \uC1A1\uC774 \uBAA8\uC591\uC774 \uC2DD\uBCC4\uB418\uC5B4\uC57C
-      \uD569\uB2C8\uB2E4."
+    criteria: "\uC1A1\uC774 \uC804\uCCB4\uC758 \uC678\uACFD\uC774 \uC704\uAC00 \uB113\uACE0
+      \uC544\uB798\uAC00 \uC881\uAC8C \uBAA8\uC5EC\uC57C \uD569\uB2C8\uB2E4. \uAC1C\uBCC4
+      \uC54C\uC758 \uB465\uADFC \uBAA8\uC591\uC774\uB098 \uB0B4\uBD80 \uAD6C\uBD84\uC740
+      \uC774 \uD56D\uBAA9\uC5D0\uC11C \uD310\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
@@ -39,13 +40,20 @@ MonoBehaviour:
     area: 0
   - id: F3
     name: "\uBCF4\uB77C \uC54C \xB7 \uCD08\uB85D \uC904\uAE30"
-    criteria: "\uC54C\uC740 \uBCF4\uB77C\uC0C9(\uBE68\uAC15 + \uD30C\uB791), \uC904\uAE30\uB294
-      \uCD08\uB85D\uC0C9(\uB178\uB791 + \uD30C\uB791) \uACC4\uC5F4\uB85C \uCE60\uD574\uC838
-      \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+    criteria: "\uC1A1\uC774 \uBAB8\uD1B5 \uC601\uC5ED\uC740 \uBCF4\uB77C\uC0C9(\uBE68\uAC15
+      + \uD30C\uB791), \uC704\uCABD \uC904\uAE30\uB294 \uCD08\uB85D\uC0C9(\uB178\uB791
+      + \uD30C\uB791) \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uC1A1\uC774
+      \uC678\uACFD\uC774\uB098 \uC54C \uBC30\uC5F4\uC774 \uD2C0\uB824\uB3C4 \uD574\uB2F9
+      \uC601\uC5ED\uC758 \uC0C9\uC744 \uB3C5\uB9BD\uC801\uC73C\uB85C \uBD05\uB2C8\uB2E4.
+      \uB450 \uC0C9\uC774 \uBAA8\uB450 \uB9DE\uC544\uC57C \uCDA9\uC871\uC785\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: 433a346108a4dc948a3b809287c7a849, type: 3}
-  - {fileID: 21300000, guid: 433a346108a4dc948a3b809287c7a849, type: 3}
-  - {fileID: 21300000, guid: 433a346108a4dc948a3b809287c7a849, type: 3}
+  - {fileID: 21300000, guid: b6b0b225a445a6e43a6395fa340a8900, type: 3}
+  - {fileID: 21300000, guid: 5f7e55c5842a3994180309af81049e2a, type: 3}
+  - {fileID: 21300000, guid: 2796bead37acc524aaf62fed3eb9810b, type: 3}
+  - {fileID: 21300000, guid: 780af6208b139a846adfbea944b1fb0a, type: 3}
+  - {fileID: 21300000, guid: d9686c458dfcc9b4dbc8a9bcefa47e94, type: 3}
+  - {fileID: 21300000, guid: d7bdde0aad3dbb941bde0954ee8b8507, type: 3}
+  - {fileID: 21300000, guid: eb87b1e1c8788974da97b916e1644f7b, type: 3}

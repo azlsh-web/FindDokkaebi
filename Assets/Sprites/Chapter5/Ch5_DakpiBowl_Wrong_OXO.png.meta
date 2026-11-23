@@ -1,0 +1,1339 @@
+fileFormatVersion: 2
+guid: 81d4b27b7b3d4f5478fda3775627c021
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -603640572021410340
+    second: Ch5_DakpiBowl_Wrong_OXO_0
+  - first:
+      213: -7238031068403852304
+    second: Ch5_DakpiBowl_Wrong_OXO_1
+  - first:
+      213: 4939076960318958614
+    second: Ch5_DakpiBowl_Wrong_OXO_2
+  - first:
+      213: 1073685745011468547
+    second: Ch5_DakpiBowl_Wrong_OXO_3
+  - first:
+      213: 8029756985601390384
+    second: Ch5_DakpiBowl_Wrong_OXO_4
+  - first:
+      213: -292804612523044086
+    second: Ch5_DakpiBowl_Wrong_OXO_5
+  - first:
+      213: 3154717094225885182
+    second: Ch5_DakpiBowl_Wrong_OXO_6
+  - first:
+      213: -2146101056457742642
+    second: Ch5_DakpiBowl_Wrong_OXO_7
+  - first:
+      213: -8324215385879270430
+    second: Ch5_DakpiBowl_Wrong_OXO_8
+  - first:
+      213: 5299931557722703955
+    second: Ch5_DakpiBowl_Wrong_OXO_9
+  - first:
+      213: 1715501695872959892
+    second: Ch5_DakpiBowl_Wrong_OXO_10
+  - first:
+      213: -5732062083317400504
+    second: Ch5_DakpiBowl_Wrong_OXO_11
+  - first:
+      213: -2565848236117453830
+    second: Ch5_DakpiBowl_Wrong_OXO_12
+  - first:
+      213: -4156047470510882394
+    second: Ch5_DakpiBowl_Wrong_OXO_13
+  - first:
+      213: 7402261405053335688
+    second: Ch5_DakpiBowl_Wrong_OXO_14
+  - first:
+      213: -8328950295669930119
+    second: Ch5_DakpiBowl_Wrong_OXO_15
+  - first:
+      213: -8508298844971620492
+    second: Ch5_DakpiBowl_Wrong_OXO_16
+  - first:
+      213: -8135800195509256905
+    second: Ch5_DakpiBowl_Wrong_OXO_17
+  - first:
+      213: 3760239654625712705
+    second: Ch5_DakpiBowl_Wrong_OXO_18
+  - first:
+      213: -5004088371868176068
+    second: Ch5_DakpiBowl_Wrong_OXO_19
+  - first:
+      213: 5741616365034377338
+    second: Ch5_DakpiBowl_Wrong_OXO_20
+  - first:
+      213: -6956680040688265758
+    second: Ch5_DakpiBowl_Wrong_OXO_21
+  - first:
+      213: -5959016481019159530
+    second: Ch5_DakpiBowl_Wrong_OXO_22
+  - first:
+      213: 6059662114846947431
+    second: Ch5_DakpiBowl_Wrong_OXO_23
+  - first:
+      213: -6187559999564371068
+    second: Ch5_DakpiBowl_Wrong_OXO_24
+  - first:
+      213: -5530484284861529597
+    second: Ch5_DakpiBowl_Wrong_OXO_25
+  - first:
+      213: -8458063522999017655
+    second: Ch5_DakpiBowl_Wrong_OXO_26
+  - first:
+      213: -6810802569107327958
+    second: Ch5_DakpiBowl_Wrong_OXO_27
+  - first:
+      213: 2573569774580322091
+    second: Ch5_DakpiBowl_Wrong_OXO_28
+  - first:
+      213: 1567588819061590617
+    second: Ch5_DakpiBowl_Wrong_OXO_29
+  - first:
+      213: -5694396993694918671
+    second: Ch5_DakpiBowl_Wrong_OXO_30
+  - first:
+      213: 7240411253530704548
+    second: Ch5_DakpiBowl_Wrong_OXO_31
+  - first:
+      213: 200595364150916666
+    second: Ch5_DakpiBowl_Wrong_OXO_32
+  - first:
+      213: -744064201808120185
+    second: Ch5_DakpiBowl_Wrong_OXO_33
+  - first:
+      213: 4926218606476538054
+    second: Ch5_DakpiBowl_Wrong_OXO_34
+  - first:
+      213: -2317479320785312386
+    second: Ch5_DakpiBowl_Wrong_OXO_35
+  - first:
+      213: -2655965870586690516
+    second: Ch5_DakpiBowl_Wrong_OXO_36
+  - first:
+      213: 6348404124635541746
+    second: Ch5_DakpiBowl_Wrong_OXO_37
+  - first:
+      213: -9165009756752441357
+    second: Ch5_DakpiBowl_Wrong_OXO_38
+  - first:
+      213: 8995723319010109342
+    second: Ch5_DakpiBowl_Wrong_OXO_39
+  - first:
+      213: 4611045202361990443
+    second: Ch5_DakpiBowl_Wrong_OXO_40
+  - first:
+      213: -4696770964130177224
+    second: Ch5_DakpiBowl_Wrong_OXO_41
+  - first:
+      213: 1765703613906777449
+    second: Ch5_DakpiBowl_Wrong_OXO_42
+  - first:
+      213: 269167456173905216
+    second: Ch5_DakpiBowl_Wrong_OXO_43
+  - first:
+      213: -531214676845471495
+    second: Ch5_DakpiBowl_Wrong_OXO_44
+  - first:
+      213: -3087575378147966842
+    second: Ch5_DakpiBowl_Wrong_OXO_45
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_0
+      rect:
+        serializedVersion: 2
+        x: 18
+        y: 9
+        width: 977
+        height: 977
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd576a419107f97f0800000000000000
+      internalID: -603640572021410340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_1
+      rect:
+        serializedVersion: 2
+        x: 385
+        y: 967
+        width: 43
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0fb1c8e87195d8b90800000000000000
+      internalID: -7238031068403852304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_2
+      rect:
+        serializedVersion: 2
+        x: 499
+        y: 973
+        width: 6
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61ca02ab3502b8440800000000000000
+      internalID: 4939076960318958614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_3
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 965
+        width: 6
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3092fc71f7f76ee00800000000000000
+      internalID: 1073685745011468547
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_4
+      rect:
+        serializedVersion: 2
+        x: 431
+        y: 959
+        width: 15
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0377b775f6d6f6f60800000000000000
+      internalID: 8029756985601390384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_5
+      rect:
+        serializedVersion: 2
+        x: 563
+        y: 945
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a03d7f991cfbfebf0800000000000000
+      internalID: -292804612523044086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_6
+      rect:
+        serializedVersion: 2
+        x: 609
+        y: 937
+        width: 10
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef7bf289b7ec7cb20800000000000000
+      internalID: 3154717094225885182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_7
+      rect:
+        serializedVersion: 2
+        x: 665
+        y: 955
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec6eebda5748732e0800000000000000
+      internalID: -2146101056457742642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_8
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 946
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2eb23dac5327a7c80800000000000000
+      internalID: -8324215385879270430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_9
+      rect:
+        serializedVersion: 2
+        x: 616
+        y: 938
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 358c1f7eba32d8940800000000000000
+      internalID: 5299931557722703955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_10
+      rect:
+        serializedVersion: 2
+        x: 636
+        y: 914
+        width: 37
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 495861a04bfaec710800000000000000
+      internalID: 1715501695872959892
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_11
+      rect:
+        serializedVersion: 2
+        x: 675
+        y: 922
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84c716da7ef9370b0800000000000000
+      internalID: -5732062083317400504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_12
+      rect:
+        serializedVersion: 2
+        x: 252
+        y: 928
+        width: 8
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af318aaaf96446cd0800000000000000
+      internalID: -2565848236117453830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_13
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 931
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a1c98268d0c256c0800000000000000
+      internalID: -4156047470510882394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_14
+      rect:
+        serializedVersion: 2
+        x: 438
+        y: 917
+        width: 21
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 888b9ce678d1ab660800000000000000
+      internalID: 7402261405053335688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_15
+      rect:
+        serializedVersion: 2
+        x: 497
+        y: 914
+        width: 29
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97785b2b5df996c80800000000000000
+      internalID: -8328950295669930119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_16
+      rect:
+        serializedVersion: 2
+        x: 555
+        y: 897
+        width: 61
+        height: 47
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 477a99687437ce980800000000000000
+      internalID: -8508298844971620492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_17
+      rect:
+        serializedVersion: 2
+        x: 413
+        y: 920
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73dfd17d3d4d71f80800000000000000
+      internalID: -8135800195509256905
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_18
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 916
+        width: 15
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14a9d441b0e0f2430800000000000000
+      internalID: 3760239654625712705
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_19
+      rect:
+        serializedVersion: 2
+        x: 695
+        y: 912
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c31722a7328ed8ab0800000000000000
+      internalID: -5004088371868176068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_20
+      rect:
+        serializedVersion: 2
+        x: 497
+        y: 878
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a709172e9a15eaf40800000000000000
+      internalID: 5741616365034377338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_21
+      rect:
+        serializedVersion: 2
+        x: 524
+        y: 911
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e5d9be6c58e47f90800000000000000
+      internalID: -6956680040688265758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_22
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 887
+        width: 16
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61c972e25125d4da0800000000000000
+      internalID: -5959016481019159530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_23
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 894
+        width: 16
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7683856869e381450800000000000000
+      internalID: 6059662114846947431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_24
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 899
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48bac87a6fe512aa0800000000000000
+      internalID: -6187559999564371068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_25
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 892
+        width: 9
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 302c2fc38d5cf33b0800000000000000
+      internalID: -5530484284861529597
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_26
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 886
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94f54ffd90cee9a80800000000000000
+      internalID: -8458063522999017655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_27
+      rect:
+        serializedVersion: 2
+        x: 471
+        y: 873
+        width: 18
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a243a09062b2b71a0800000000000000
+      internalID: -6810802569107327958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_28
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 862
+        width: 21
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2fca8a131827b320800000000000000
+      internalID: 2573569774580322091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_29
+      rect:
+        serializedVersion: 2
+        x: 737
+        y: 880
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95a4a0ab9b131c510800000000000000
+      internalID: 1567588819061590617
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_30
+      rect:
+        serializedVersion: 2
+        x: 760
+        y: 866
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f713ccba1079f0b0800000000000000
+      internalID: -5694396993694918671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_31
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 873
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4aa307a7cab1b7460800000000000000
+      internalID: 7240411253530704548
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_32
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 855
+        width: 25
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a363ecfbb68a8c200800000000000000
+      internalID: 200595364150916666
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_33
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 659
+        width: 18
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7867429fc8d8ca5f0800000000000000
+      internalID: -744064201808120185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_34
+      rect:
+        serializedVersion: 2
+        x: 997
+        y: 644
+        width: 15
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c034fce8b17d5440800000000000000
+      internalID: 4926218606476538054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_35
+      rect:
+        serializedVersion: 2
+        x: 966
+        y: 491
+        width: 6
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e75274616d8a6dfd0800000000000000
+      internalID: -2317479320785312386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_36
+      rect:
+        serializedVersion: 2
+        x: 474
+        y: 154
+        width: 25
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c248e14dc1d142bd0800000000000000
+      internalID: -2655965870586690516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_37
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 155
+        width: 23
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f0b6838aef0a1850800000000000000
+      internalID: 6348404124635541746
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_38
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 118
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ff08cd3f285fc080800000000000000
+      internalID: -9165009756752441357
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_39
+      rect:
+        serializedVersion: 2
+        x: 569
+        y: 103
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e97ab4f72ba37dc70800000000000000
+      internalID: 8995723319010109342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_40
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 90
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2d3e026e29bdff30800000000000000
+      internalID: 4611045202361990443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_41
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 55
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 83fd6a351b7b1deb0800000000000000
+      internalID: -4696770964130177224
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_42
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 65
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 965798de41a018810800000000000000
+      internalID: 1765703613906777449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_43
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 50
+        width: 7
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 045575210664cb300800000000000000
+      internalID: 269167456173905216
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_44
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 26
+        width: 9
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f8d62fd01fb0a8f0800000000000000
+      internalID: -531214676845471495
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_DakpiBowl_Wrong_OXO_45
+      rect:
+        serializedVersion: 2
+        x: 670
+        y: 31
+        width: 14
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6808f306d8ab625d0800000000000000
+      internalID: -3087575378147966842
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch5_DakpiBowl_Wrong_OXO_0: -603640572021410340
+      Ch5_DakpiBowl_Wrong_OXO_1: -7238031068403852304
+      Ch5_DakpiBowl_Wrong_OXO_10: 1715501695872959892
+      Ch5_DakpiBowl_Wrong_OXO_11: -5732062083317400504
+      Ch5_DakpiBowl_Wrong_OXO_12: -2565848236117453830
+      Ch5_DakpiBowl_Wrong_OXO_13: -4156047470510882394
+      Ch5_DakpiBowl_Wrong_OXO_14: 7402261405053335688
+      Ch5_DakpiBowl_Wrong_OXO_15: -8328950295669930119
+      Ch5_DakpiBowl_Wrong_OXO_16: -8508298844971620492
+      Ch5_DakpiBowl_Wrong_OXO_17: -8135800195509256905
+      Ch5_DakpiBowl_Wrong_OXO_18: 3760239654625712705
+      Ch5_DakpiBowl_Wrong_OXO_19: -5004088371868176068
+      Ch5_DakpiBowl_Wrong_OXO_2: 4939076960318958614
+      Ch5_DakpiBowl_Wrong_OXO_20: 5741616365034377338
+      Ch5_DakpiBowl_Wrong_OXO_21: -6956680040688265758
+      Ch5_DakpiBowl_Wrong_OXO_22: -5959016481019159530
+      Ch5_DakpiBowl_Wrong_OXO_23: 6059662114846947431
+      Ch5_DakpiBowl_Wrong_OXO_24: -6187559999564371068
+      Ch5_DakpiBowl_Wrong_OXO_25: -5530484284861529597
+      Ch5_DakpiBowl_Wrong_OXO_26: -8458063522999017655
+      Ch5_DakpiBowl_Wrong_OXO_27: -6810802569107327958
+      Ch5_DakpiBowl_Wrong_OXO_28: 2573569774580322091
+      Ch5_DakpiBowl_Wrong_OXO_29: 1567588819061590617
+      Ch5_DakpiBowl_Wrong_OXO_3: 1073685745011468547
+      Ch5_DakpiBowl_Wrong_OXO_30: -5694396993694918671
+      Ch5_DakpiBowl_Wrong_OXO_31: 7240411253530704548
+      Ch5_DakpiBowl_Wrong_OXO_32: 200595364150916666
+      Ch5_DakpiBowl_Wrong_OXO_33: -744064201808120185
+      Ch5_DakpiBowl_Wrong_OXO_34: 4926218606476538054
+      Ch5_DakpiBowl_Wrong_OXO_35: -2317479320785312386
+      Ch5_DakpiBowl_Wrong_OXO_36: -2655965870586690516
+      Ch5_DakpiBowl_Wrong_OXO_37: 6348404124635541746
+      Ch5_DakpiBowl_Wrong_OXO_38: -9165009756752441357
+      Ch5_DakpiBowl_Wrong_OXO_39: 8995723319010109342
+      Ch5_DakpiBowl_Wrong_OXO_4: 8029756985601390384
+      Ch5_DakpiBowl_Wrong_OXO_40: 4611045202361990443
+      Ch5_DakpiBowl_Wrong_OXO_41: -4696770964130177224
+      Ch5_DakpiBowl_Wrong_OXO_42: 1765703613906777449
+      Ch5_DakpiBowl_Wrong_OXO_43: 269167456173905216
+      Ch5_DakpiBowl_Wrong_OXO_44: -531214676845471495
+      Ch5_DakpiBowl_Wrong_OXO_45: -3087575378147966842
+      Ch5_DakpiBowl_Wrong_OXO_5: -292804612523044086
+      Ch5_DakpiBowl_Wrong_OXO_6: 3154717094225885182
+      Ch5_DakpiBowl_Wrong_OXO_7: -2146101056457742642
+      Ch5_DakpiBowl_Wrong_OXO_8: -8324215385879270430
+      Ch5_DakpiBowl_Wrong_OXO_9: 5299931557722703955
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

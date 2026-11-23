@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 1
   targetName: "\uADE4"
-  colorMode: 3
+  colorMode: 2
   originalSprite: {fileID: 21300000, guid: e7ab342dad601f14d8d807348c3b3675, type: 3}
   shapeOnly: 0
   serverKey: room-4-1
@@ -38,12 +38,19 @@ MonoBehaviour:
   - id: F3
     name: "\uC8FC\uD669 \uBAB8\uD1B5 \xB7 \uCD08\uB85D \uC78E"
     criteria: "\uBAB8\uD1B5\uC740 \uC8FC\uD669\uC0C9(\uBE68\uAC15 + \uB178\uB791),
-      \uC78E\uC740 \uCD08\uB85D\uC0C9(\uB178\uB791 + \uD30C\uB791) \uACC4\uC5F4\uB85C
-      \uCE60\uD574\uC838 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+      \uC704\uCABD \uC78E \uC790\uB9AC\uC758 \uCE60\uD55C \uBD80\uBD84\uC740 \uCD08\uB85D\uC0C9(\uB178\uB791
+      + \uD30C\uB791) \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4. \uBAB8\uD1B5\uC774\uB098
+      \uC78E \uBAA8\uC591\uC774 \uD2C0\uB824\uB3C4 \uD574\uB2F9 \uC704\uCE58\uC758
+      \uC0C9\uC744 \uB3C5\uB9BD\uC801\uC73C\uB85C \uBD05\uB2C8\uB2E4. \uB450 \uC0C9\uC774
+      \uBAA8\uB450 \uB9DE\uC544\uC57C \uCDA9\uC871\uC785\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: bdb732d65a72fba4e9d9a1d3e857b69f, type: 3}
-  - {fileID: 21300000, guid: bdb732d65a72fba4e9d9a1d3e857b69f, type: 3}
-  - {fileID: 21300000, guid: bdb732d65a72fba4e9d9a1d3e857b69f, type: 3}
+  - {fileID: 21300000, guid: 12ce263a8026de24493fd47fae5da498, type: 3}
+  - {fileID: 21300000, guid: 8787282204c15c2499e0a9c416e5356d, type: 3}
+  - {fileID: 21300000, guid: 16c95f74539a5c54ea4316ba119f7ec5, type: 3}
+  - {fileID: 21300000, guid: 58118bfce6fa97a43b34375de8e1f910, type: 3}
+  - {fileID: 21300000, guid: a6292c033a1d6b94088147caff09dc2e, type: 3}
+  - {fileID: 21300000, guid: 1de8ba316a82c2e4fb7058e109a47b5d, type: 3}
+  - {fileID: 21300000, guid: 60762b08a75867347a9f7e7a4ba65d09, type: 3}

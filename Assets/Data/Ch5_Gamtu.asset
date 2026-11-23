@@ -42,7 +42,4 @@ MonoBehaviour:
     check: 0
     color: 0
     area: 0
-  wrongSprites:
-  - {fileID: 21300000, guid: 865b65634fc53174ea36ae37d7367962, type: 3}
-  - {fileID: 21300000, guid: ea3b20f5c3852be4cad977eee335bdd7, type: 3}
-  - {fileID: 21300000, guid: 84c4b005bca26bc43a5ace3bc9c7738c, type: 3}
+  wrongSprites: []

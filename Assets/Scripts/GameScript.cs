@@ -170,7 +170,7 @@ public static class GameScript
     static readonly Line[][] CurseStep =
     {
         new[] { new Line(Face.Dokkaebi, "짚신을 그려 와! 한 걸음에 어디든 널 쫓아가게!"),
-                new Line(Face.BoyNormal, "(부적을 무서워한댔어. 노란 종이에 빨간 글씨였지…)") },
+                new Line(Face.BoyNormal, "(부적을 무서워한댔어. 황토빛 종이에 붉은 갈색 문양이었지…)") },
         new[] { new Line(Face.Dokkaebi, "도깨비 부채를 그려 와! 한 번 부치면 널 이 숲에 가둘 거야!"),
                 new Line(Face.BoyNormal, "(닭피 그릇을 보면 도망간댔어. 친구를 지켜야 해…!)") },
         new[] { new Line(Face.Dokkaebi, "도깨비 감투를 그려 와! 아무도 날 못 보게 말이야!"),
@@ -405,7 +405,7 @@ public static class GameScript
     public const string PenUndo = "앗, 잘못 그렸어? 이걸 누르면 되돌릴 수 있어!";
     public const string PenDone = "다 그렸으면 이 버튼을 눌러 줘!";
     public const string MixBrush = "이젠 색도 중요하네! 붓을 눌러 봐.";
-    public const string MixHow = "빨강 · 노랑 · 파랑 중 하나만 써도, 둘이나 셋을 섞어도 돼!";
+    public const string MixHow = "빨강 · 노랑 · 파랑을 하나씩 골라서 칠해 봐!";
 
     static int Room(int chapterNumber) => Mathf.Clamp(chapterNumber - 2, 0, RoomOpening.Length - 1);
 

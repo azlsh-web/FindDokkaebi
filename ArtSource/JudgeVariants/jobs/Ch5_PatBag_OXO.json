@@ -1,0 +1,13 @@
+{
+  "item": "Ch5_PatBag",
+  "chapter": 5,
+  "mask": "OXO",
+  "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+  "target": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXO.png",
+  "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant OXO. Keep original fabric POUCH with rounded bulbous bottom and gathered narrow opening at top. Remove entire bow knot, loops and loose ends. Leave only a simple straight narrow tan horizontal band at the top, with NO knot or loops. Main pouch or replacement box body is DARK REDDISH BROWN / ADZUKI BEAN BROWN as original. Keep small loose beans at bottom dark reddish brown if retained.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-1cf7de6c-4ee4-4654-a1e7-4fa65662e94e.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "1b888a5f7d34f1cb0226aba43f8d12d9c7e9c47177941c3b2c0d0f6efaeb5136"
+}

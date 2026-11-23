@@ -18,8 +18,11 @@ MonoBehaviour:
   originalSprite: {fileID: 21300000, guid: c20d81d33633e534bb92b2165e727cf0, type: 3}
   shapeOnly: 0
   serverKey: curse-2
-  targetDescription: "\uC138\uB85C\uB85C \uAE34 \uB178\uB780 \uC885\uC774\uC5D0 \uBE68\uAC04
-    \uAE00\uC528\uAC00 \uC801\uD78C \uBD80\uC801\uC785\uB2C8\uB2E4."
+  targetDescription: "\uC138\uB85C\uB85C \uAE34 \uD669\uD1A0\uBE5B \uC885\uC774\uC5D0
+    \uBD89\uC740 \uAC08\uC0C9 \uBD80\uC801 \uBB38\uC591\uC774 \uADF8\uB824\uC838
+    \uC788\uC2B5\uB2C8\uB2E4. \uC885\uC774\uB294 \uB178\uB791\uC744 \uB9CE\uC774,
+    \uBB38\uC591\uC740 \uBE68\uAC15\uC744 \uB9CE\uC774 \uB123\uACE0 \uB098\uBA38\uC9C0
+    \uB450 \uC6D0\uC0C9\uC744 \uC870\uAE08\uC529 \uC11E\uC5B4 \uB9CC\uB4E4\uC5B4\uC694."
   features:
   - id: F1
     name: "\uAE34 \uB124\uBAA8 \uC885\uC774"
@@ -29,20 +32,39 @@ MonoBehaviour:
     color: 0
     area: 0
   - id: F2
-    name: "\uB178\uB780 \uC885\uC774"
-    criteria: "\uC885\uC774 \uBC14\uD0D5\uC758 \uC8FC\uB41C \uCC44\uC0C9\uC774 \uB178\uB780\uC0C9
-      \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+    name: "\uBD80\uC801 \uBD93 \uBB38\uC591"
+    criteria: "\uC885\uC774 \uAC00\uC6B4\uB370\uC5D0 \uC138\uB85C\uB85C \uC774\uC5B4\uC9C4
+      \uBD80\uC801 \uBB38\uC591\uC774 \uC788\uACE0, \uAC00\uB85C\xB7\uB300\uAC01\uC120\xB7\uAEBE\uC778
+      \uBD93 \uD68D\uC774 \uC5EC\uB7EC \uAC1C \uAD50\uCC28\uD558\uAC70\uB098 \uAC00\uC9C0\uCC98\uB7FC
+      \uAC08\uB77C\uC838\uC57C \uD569\uB2C8\uB2E4. \uC815\uD655\uD55C \uAE00\uC790\uB098
+      \uD68D\uC21C\uC740 \uC694\uAD6C\uD558\uC9C0 \uC54A\uC73C\uBA70 \uC0C9\uC740
+      \uC774 \uD56D\uBAA9\uC5D0\uC11C \uD310\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.
+      \uB2E8\uC21C\uD55C \uC810\uC774\uB098 \uC6D0 \uD558\uB098\uB294 \uC778\uC815\uD558\uC9C0
+      \uC54A\uC2B5\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
   - id: F3
-    name: "\uBE68\uAC04 \uAE00\uC528"
-    criteria: "\uC885\uC774 \uC548\uC5D0 \uBE68\uAC04\uC0C9 \uC120\uC774\uB098 \uAE00\uC528
-      \uBAA8\uC591\uC774 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4."
+    name: "\uD669\uD1A0\uBE5B \uC885\uC774 \xB7 \uBD89\uC740 \uAC08\uC0C9 \uBB38\uC591"
+    criteria: "\uC885\uC774 \uBC14\uD0D5\uC740 \uB178\uB791\uC774 \uB9CE\uC774 \uC11E\uC778
+      \uD669\uD1A0\uC0C9\xB7\uAE08\uAC08\uC0C9 \uACC4\uC5F4, \uAC00\uC6B4\uB370 \uCE60\uD55C
+      \uBB38\uC591 \uC601\uC5ED\uC740 \uBE68\uAC15\uC774 \uB9CE\uC774 \uC11E\uC778
+      \uBD89\uC740 \uAC08\uC0C9 \uACC4\uC5F4\uC774\uC5B4\uC57C \uD569\uB2C8\uB2E4.
+      \uC21C\uC218 \uB178\uB791 \uC885\uC774\uC640 \uC120\uBA85\uD55C \uC21C\uC218
+      \uBE68\uAC15 \uBB38\uC591, \uC9C4\uD55C \uAC08\uC0C9 \uC885\uC774\uC640 \uAC80\uC815
+      \uBB38\uC591\uC740 \uC778\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4. \uC885\uC774
+      \uC678\uACFD\uC774\uB098 \uBB38\uC591 \uBAA8\uC591\uC774 \uD2C0\uB824\uB3C4
+      \uD574\uB2F9 \uC704\uCE58\uC758 \uC0C9\uC744 \uB3C5\uB9BD\uC801\uC73C\uB85C
+      \uBD05\uB2C8\uB2E4. \uB458 \uB2E4 \uB9DE\uC544\uC57C \uCDA9\uC871\uC785\uB2C8\uB2E4.
+      \uC2E4\uC81C \uD63C\uC0C9 \uC870\uC791\uC740 \uD310\uC815\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: 5751be8e648e2c1419dce341fc974a8f, type: 3}
-  - {fileID: 21300000, guid: 586d14e814ef7804597fa01a4ea4af75, type: 3}
-  - {fileID: 21300000, guid: 05b094a09dc2f02429f992a34f9e4c70, type: 3}
+  - {fileID: 21300000, guid: 080bb489ac6661149baebd1138df91c1, type: 3}
+  - {fileID: 21300000, guid: 308d43c0a4d97ae488af0dd0ece69726, type: 3}
+  - {fileID: 21300000, guid: 2cb145dff2643ba498830258fe20d02b, type: 3}
+  - {fileID: 21300000, guid: 95278b904d7f76a469f8ae7c6964883e, type: 3}
+  - {fileID: 21300000, guid: bd4dc4b7bdc5e5247ae179d94ca6d496, type: 3}
+  - {fileID: 21300000, guid: fa3eda557a9e93e48842038bf33ba78e, type: 3}
+  - {fileID: 21300000, guid: 35a2b950c981e6b40954b39a9cade6ae, type: 3}

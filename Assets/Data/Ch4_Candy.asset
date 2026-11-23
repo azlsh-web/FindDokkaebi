@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 3
   targetName: "\uC904\uBB34\uB2AC \uC0AC\uD0D5"
-  colorMode: 3
+  colorMode: 2
   originalSprite: {fileID: 21300000, guid: d337ae8e6090b414e95de6b3a990de0f, type: 3}
   shapeOnly: 0
   serverKey: room-4-3
@@ -37,14 +37,21 @@ MonoBehaviour:
     color: 0
     area: 0
   - id: F3
-    name: "\uC8FC\uD669 \xB7 \uCD08\uB85D \uC904"
-    criteria: "\uC904 \uC0C9\uC774 \uC8FC\uD669\uC0C9(\uBE68\uAC15 + \uB178\uB791)\uACFC
-      \uCD08\uB85D\uC0C9(\uB178\uB791 + \uD30C\uB791) \uACC4\uC5F4\uC774\uC5B4\uC57C
-      \uD569\uB2C8\uB2E4."
+    name: "\uC8FC\uD669 \xB7 \uCD08\uB85D"
+    criteria: "\uC0AC\uD0D5 \uC911\uC559 \uC601\uC5ED\uC5D0 \uC8FC\uD669\uC0C9(\uBE68\uAC15
+      + \uB178\uB791)\uACFC \uCD08\uB85D\uC0C9(\uB178\uB791 + \uD30C\uB791)\uC774
+      \uBAA8\uB450 \uCDA9\uBD84\uD788 \uCE60\uD574\uC838 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4.
+      \uC0AC\uD0D5 \uC678\uACFD\uC774\uB098 \uC904\uBB34\uB2AC \uBAA8\uC591\uC774
+      \uD2C0\uB824\uB3C4 \uC0C9\uC744 \uB3C5\uB9BD\uC801\uC73C\uB85C \uBD05\uB2C8\uB2E4.
+      \uB450 \uC0C9\uC774 \uBAA8\uB450 \uB9DE\uC544\uC57C \uCDA9\uC871\uC785\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: c37ff6ee75aa73f429838b3aecf6d19b, type: 3}
-  - {fileID: 21300000, guid: c37ff6ee75aa73f429838b3aecf6d19b, type: 3}
-  - {fileID: 21300000, guid: c37ff6ee75aa73f429838b3aecf6d19b, type: 3}
+  - {fileID: 21300000, guid: b028e20bdd6daea4698711ab9c4b10f6, type: 3}
+  - {fileID: 21300000, guid: d447431771434714390ca54e9cb5a622, type: 3}
+  - {fileID: 21300000, guid: 368e5625206dbb641b019487609921a9, type: 3}
+  - {fileID: 21300000, guid: eb83a308a646d9c49bbf4e18810e5f04, type: 3}
+  - {fileID: 21300000, guid: da75fd98803aa6648b22ca59c41c1a67, type: 3}
+  - {fileID: 21300000, guid: 4ed825d819097fc4ebb13f5de5c8a32a, type: 3}
+  - {fileID: 21300000, guid: 0f6c35bbb30925542ba89e39d7284bf7, type: 3}

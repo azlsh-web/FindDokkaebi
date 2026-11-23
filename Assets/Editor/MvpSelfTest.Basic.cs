@@ -39,9 +39,9 @@ static partial class MvpSelfTest
                 string prompt = OpenAIJudge.BuildPrompt(s);
                 bool all = s.features.Length == 1;      // 1챕터는 물건마다 형태 하나
                 foreach (Feature f in s.features) all &= prompt.Contains("featureId: " + f.id);
-                all &= s.wrongSprites.Length == 3;      // 오답 그림 3장 (사탕이 3개라 3번까지 틀려요)
+                all &= s.wrongSprites.Length == 1;      // 형태 하나라 정답 또는 전체 오답뿐이에요.
                 for (int i = 0; i < s.wrongSprites.Length; i++) all &= s.wrongSprites[i] != null;
-                Check(all && s.originalSprite != null, $"{s.Title} 데이터 (그림 + 특징 1개 + 오답 3장 + 프롬프트)");
+                Check(all && s.originalSprite != null, $"{s.Title} 데이터 (그림 + 특징 1개 + 전체 오답 1장 + 프롬프트)");
             }
             // 5챕터 : 단계마다 요청 물건 · 맞설 물건 한 쌍
             ChapterData curse = ChapterOf(5);
@@ -64,16 +64,45 @@ static partial class MvpSelfTest
                 if (ok)
                     foreach (StageData it in c.items)
                     {
-                        ok &= it != null && it.originalSprite != null && it.features.Length == (n == 2 ? 2 : 3) && it.wrongSprites.Length == 3;
+                        ok &= it != null && it.originalSprite != null && it.features.Length == (n == 2 ? 2 : 3)
+                              && it.wrongSprites.Length == (n == 2 ? 3 : 7);
                         if (ok) foreach (Sprite w in it.wrongSprites) ok &= w != null;
                         ok &= it.ServerStageKey.StartsWith($"room-{n}-");
                     }
-                Check(ok, $"{n}챕터 데이터 (물건 3개 + 그림 + 특징 {(n == 2 ? 2 : 3)}개 + 오답 3칸 + 서버 이름 room-{n}-N)");
+                Check(ok, $"{n}챕터 데이터 (물건 3개 + 특징 {(n == 2 ? 2 : 3)}개 + 모든 O/X 조합 그림 + 서버 이름 room-{n}-N)");
             }
             ChapterData c2 = ChapterOf(2), c3 = ChapterOf(3), c4 = ChapterOf(4);
             Check(c2 != null && c2.penMode == ColorMode.BlackOnly && c2.guide == ChapterGuide.Magnifier && c2.windowFire, "2챕터 : 검정 펜, 돋보기 안내, 창밖 도깨비불");
-            Check(c3 != null && c3.penMode == ColorMode.MixFree && c3.guide == ChapterGuide.Mix && c3.dokkaebiMood == 1, "3챕터 : 섞기 펜, 색 안내, 주황 머리");
-            Check(c4 != null && c4.candies == 0 && !c4.CanRetry && c4.guide == ChapterGuide.None && c4.dokkaebiMood == 2 && c4.endEyes, "4챕터 : 사탕 0개, 안내 없음, 붉은 머리, 끝에 빨간 눈");
+            Check(c3 != null && c3.penMode == ColorMode.Primaries && c3.guide == ChapterGuide.Mix && c3.dokkaebiMood == 1, "3챕터 : 삼원색 선택, 색 안내, 주황 머리");
+            Check(c4 != null && c4.penMode == ColorMode.MixTwo && c4.candies == 0 && !c4.CanRetry && c4.guide == ChapterGuide.None && c4.dokkaebiMood == 2 && c4.endEyes, "4챕터 : 두 색 혼합, 사탕 0개, 안내 없음, 붉은 머리, 끝에 빨간 눈");
+        });
+        Add(0.1f, "모든 판정 조합의 그림 연결", () =>
+        {
+            // 배열 인덱스가 아니라 파일의 O/X 이름과 비교해 뒤바뀐 연결을 잡아요.
+            string[][] masks = {
+                new[] { "O", "X" },
+                new[] { "OO", "OX", "XO", "XX" },
+                new[] { "OOO", "OOX", "OXO", "OXX", "XOO", "XOX", "XXO", "XXX" }
+            };
+            string[] legacy = { "Bat_Wrong_X", "Bag_Wrong_XX", "Mat_Wrong_XXX", "Gimbap_Wrong_XXXX", "Friend_Wrong_XXXXX" };
+            for (int chapterNumber = 1; chapterNumber <= 5; chapterNumber++)
+            {
+                ChapterData c = ChapterOf(chapterNumber);
+                StageData[] items = chapterNumber == 5 ? c.counterItems : c.items;
+                for (int item = 0; item < items.Length; item++)
+                {
+                    StageData stage = items[item];
+                    foreach (string mask in masks[stage.features.Length - 1])
+                    {
+                        bool[] present = System.Array.ConvertAll(mask.ToCharArray(), x => x == 'O');
+                        Sprite sprite = stage.SpriteFor(present);
+                        string expected = mask.IndexOf('X') < 0 ? stage.originalSprite.name
+                                        : chapterNumber == 1 ? legacy[item] : stage.name + "_Wrong_" + mask;
+                        Check(sprite != null && sprite.name == expected, $"{stage.name} {mask} → {expected}");
+                    }
+                }
+            }
+            Check(ChapterOf(5).penMode == ColorMode.MixFree, "5챕터는 세 색 혼합");
         });
     }
 

@@ -1,0 +1,13 @@
+{
+  "item": "Ch3_PartyHat",
+  "chapter": 3,
+  "mask": "XOO",
+  "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+  "target": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOO.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOO. Change cone into a cylindrical TOP HAT with flat horizontal crown and brim, NO pointed cone. Keep at least three broad diagonal stripe bands separated by clear dark lines. Upper area/decorations RED, middle YELLOW, lower BLUE; preserve this order even when the shape or pattern is wrong.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-d2e1f01b-b889-475a-b2d0-594710643cce.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "ef13dfe791799875eecadddb038fe4a0ad934e46c5b14b04d67dbad2cdecc544"
+}

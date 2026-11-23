@@ -1,0 +1,975 @@
+fileFormatVersion: 2
+guid: cf7c2c50b33b765469426cc2c0a7e8be
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2660522397495548816
+    second: Ch3_Balloons_Wrong_OXX_0
+  - first:
+      213: 4379708608952411264
+    second: Ch3_Balloons_Wrong_OXX_1
+  - first:
+      213: 7233963839982722988
+    second: Ch3_Balloons_Wrong_OXX_2
+  - first:
+      213: 3443577856727615698
+    second: Ch3_Balloons_Wrong_OXX_3
+  - first:
+      213: 6041864101511429409
+    second: Ch3_Balloons_Wrong_OXX_4
+  - first:
+      213: 7872071498609369500
+    second: Ch3_Balloons_Wrong_OXX_5
+  - first:
+      213: -8159716686954645861
+    second: Ch3_Balloons_Wrong_OXX_6
+  - first:
+      213: -7705053866557993981
+    second: Ch3_Balloons_Wrong_OXX_7
+  - first:
+      213: 8931969995234803867
+    second: Ch3_Balloons_Wrong_OXX_8
+  - first:
+      213: -6583051409143525848
+    second: Ch3_Balloons_Wrong_OXX_9
+  - first:
+      213: 7766024357942267476
+    second: Ch3_Balloons_Wrong_OXX_10
+  - first:
+      213: 2231001343068692331
+    second: Ch3_Balloons_Wrong_OXX_11
+  - first:
+      213: -5366136379739633346
+    second: Ch3_Balloons_Wrong_OXX_12
+  - first:
+      213: 8936928542923778741
+    second: Ch3_Balloons_Wrong_OXX_13
+  - first:
+      213: 4186647492385104653
+    second: Ch3_Balloons_Wrong_OXX_14
+  - first:
+      213: -1233396637419968716
+    second: Ch3_Balloons_Wrong_OXX_15
+  - first:
+      213: -205675811315943230
+    second: Ch3_Balloons_Wrong_OXX_16
+  - first:
+      213: 2835132913518953971
+    second: Ch3_Balloons_Wrong_OXX_17
+  - first:
+      213: 4479851078307553494
+    second: Ch3_Balloons_Wrong_OXX_18
+  - first:
+      213: 476679477833652210
+    second: Ch3_Balloons_Wrong_OXX_19
+  - first:
+      213: -3087870509608833553
+    second: Ch3_Balloons_Wrong_OXX_20
+  - first:
+      213: -5125958108162773952
+    second: Ch3_Balloons_Wrong_OXX_21
+  - first:
+      213: 4375233506650127562
+    second: Ch3_Balloons_Wrong_OXX_22
+  - first:
+      213: 287542429762884592
+    second: Ch3_Balloons_Wrong_OXX_23
+  - first:
+      213: -2996682197578603220
+    second: Ch3_Balloons_Wrong_OXX_24
+  - first:
+      213: -2422761043852560047
+    second: Ch3_Balloons_Wrong_OXX_25
+  - first:
+      213: -5016502397440499647
+    second: Ch3_Balloons_Wrong_OXX_26
+  - first:
+      213: 583968490781252741
+    second: Ch3_Balloons_Wrong_OXX_27
+  - first:
+      213: -206615442261770634
+    second: Ch3_Balloons_Wrong_OXX_28
+  - first:
+      213: -3531010290325831360
+    second: Ch3_Balloons_Wrong_OXX_29
+  - first:
+      213: 2429045011108719819
+    second: Ch3_Balloons_Wrong_OXX_30
+  - first:
+      213: -6529630714236674958
+    second: Ch3_Balloons_Wrong_OXX_31
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 0
+        width: 1023
+        height: 938
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09b51b346031ce420800000000000000
+      internalID: 2660522397495548816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_1
+      rect:
+        serializedVersion: 2
+        x: 945
+        y: 741
+        width: 7
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 084245076c9d7cc30800000000000000
+      internalID: 4379708608952411264
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_2
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 597
+        width: 7
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cafd03809c3346460800000000000000
+      internalID: 7233963839982722988
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_3
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 576
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d886aad0db0acf20800000000000000
+      internalID: 3443577856727615698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_4
+      rect:
+        serializedVersion: 2
+        x: 993
+        y: 172
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12df5cf936309d350800000000000000
+      internalID: 6041864101511429409
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_5
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 143
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c91a619e1573f3d60800000000000000
+      internalID: 7872071498609369500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_6
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 150
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b96bd3eb7ecd2ce80800000000000000
+      internalID: -8159716686954645861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_7
+      rect:
+        serializedVersion: 2
+        x: 277
+        y: 140
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30c8f8cd456221590800000000000000
+      internalID: -7705053866557993981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_8
+      rect:
+        serializedVersion: 2
+        x: 338
+        y: 119
+        width: 12
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b900b66136bb4fb70800000000000000
+      internalID: 8931969995234803867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_9
+      rect:
+        serializedVersion: 2
+        x: 351
+        y: 119
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82e8dd33f9d44a4a0800000000000000
+      internalID: -6583051409143525848
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_10
+      rect:
+        serializedVersion: 2
+        x: 1010
+        y: 128
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45e0e24e10676cb60800000000000000
+      internalID: 7766024357942267476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_11
+      rect:
+        serializedVersion: 2
+        x: 349
+        y: 108
+        width: 12
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6f5703b6eb16fe10800000000000000
+      internalID: 2231001343068692331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_12
+      rect:
+        serializedVersion: 2
+        x: 368
+        y: 93
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e398155c467a785b0800000000000000
+      internalID: -5366136379739633346
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_13
+      rect:
+        serializedVersion: 2
+        x: 375
+        y: 86
+        width: 24
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5ba6500f829560c70800000000000000
+      internalID: 8936928542923778741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_14
+      rect:
+        serializedVersion: 2
+        x: 396
+        y: 77
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d03e46766b5f91a30800000000000000
+      internalID: 4186647492385104653
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_15
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 66
+        width: 19
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 437eb670b4812eee0800000000000000
+      internalID: -1233396637419968716
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_16
+      rect:
+        serializedVersion: 2
+        x: 447
+        y: 86
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c87f9770fa452df0800000000000000
+      internalID: -205675811315943230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_17
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 91
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f5c0591d5a685720800000000000000
+      internalID: 2835132913518953971
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_18
+      rect:
+        serializedVersion: 2
+        x: 435
+        y: 57
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d02c2902d0ab2e30800000000000000
+      internalID: 4479851078307553494
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_19
+      rect:
+        serializedVersion: 2
+        x: 458
+        y: 47
+        width: 18
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f75ef3a5718d9600800000000000000
+      internalID: 476679477833652210
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_20
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 60
+        width: 6
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fed6c5ab12ea525d0800000000000000
+      internalID: -3087870509608833553
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_21
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 60
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04cac655240fcd8b0800000000000000
+      internalID: -5125958108162773952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_22
+      rect:
+        serializedVersion: 2
+        x: 551
+        y: 64
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: acc744d71b3f7bc30800000000000000
+      internalID: 4375233506650127562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_23
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 60
+        width: 8
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f39edff05e8df300800000000000000
+      internalID: 287542429762884592
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_24
+      rect:
+        serializedVersion: 2
+        x: 906
+        y: 47
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c25279c1b65a966d0800000000000000
+      internalID: -2996682197578603220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_25
+      rect:
+        serializedVersion: 2
+        x: 913
+        y: 45
+        width: 7
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 159738dbaaf906ed0800000000000000
+      internalID: -2422761043852560047
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_26
+      rect:
+        serializedVersion: 2
+        x: 975
+        y: 23
+        width: 39
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 140e9a9e5adc16ab0800000000000000
+      internalID: -5016502397440499647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_27
+      rect:
+        serializedVersion: 2
+        x: 988
+        y: 36
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 58c99059f3caa1800800000000000000
+      internalID: 583968490781252741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_28
+      rect:
+        serializedVersion: 2
+        x: 1009
+        y: 36
+        width: 9
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 67e70e69954f12df0800000000000000
+      internalID: -206615442261770634
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_29
+      rect:
+        serializedVersion: 2
+        x: 122
+        y: 1
+        width: 8
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04141ea59d45ffec0800000000000000
+      internalID: -3531010290325831360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_30
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 1
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcce1966193b5b120800000000000000
+      internalID: 2429045011108719819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch3_Balloons_Wrong_OXX_31
+      rect:
+        serializedVersion: 2
+        x: 801
+        y: 0
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27c517bf5771265a0800000000000000
+      internalID: -6529630714236674958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch3_Balloons_Wrong_OXX_0: 2660522397495548816
+      Ch3_Balloons_Wrong_OXX_1: 4379708608952411264
+      Ch3_Balloons_Wrong_OXX_10: 7766024357942267476
+      Ch3_Balloons_Wrong_OXX_11: 2231001343068692331
+      Ch3_Balloons_Wrong_OXX_12: -5366136379739633346
+      Ch3_Balloons_Wrong_OXX_13: 8936928542923778741
+      Ch3_Balloons_Wrong_OXX_14: 4186647492385104653
+      Ch3_Balloons_Wrong_OXX_15: -1233396637419968716
+      Ch3_Balloons_Wrong_OXX_16: -205675811315943230
+      Ch3_Balloons_Wrong_OXX_17: 2835132913518953971
+      Ch3_Balloons_Wrong_OXX_18: 4479851078307553494
+      Ch3_Balloons_Wrong_OXX_19: 476679477833652210
+      Ch3_Balloons_Wrong_OXX_2: 7233963839982722988
+      Ch3_Balloons_Wrong_OXX_20: -3087870509608833553
+      Ch3_Balloons_Wrong_OXX_21: -5125958108162773952
+      Ch3_Balloons_Wrong_OXX_22: 4375233506650127562
+      Ch3_Balloons_Wrong_OXX_23: 287542429762884592
+      Ch3_Balloons_Wrong_OXX_24: -2996682197578603220
+      Ch3_Balloons_Wrong_OXX_25: -2422761043852560047
+      Ch3_Balloons_Wrong_OXX_26: -5016502397440499647
+      Ch3_Balloons_Wrong_OXX_27: 583968490781252741
+      Ch3_Balloons_Wrong_OXX_28: -206615442261770634
+      Ch3_Balloons_Wrong_OXX_29: -3531010290325831360
+      Ch3_Balloons_Wrong_OXX_3: 3443577856727615698
+      Ch3_Balloons_Wrong_OXX_30: 2429045011108719819
+      Ch3_Balloons_Wrong_OXX_31: -6529630714236674958
+      Ch3_Balloons_Wrong_OXX_4: 6041864101511429409
+      Ch3_Balloons_Wrong_OXX_5: 7872071498609369500
+      Ch3_Balloons_Wrong_OXX_6: -8159716686954645861
+      Ch3_Balloons_Wrong_OXX_7: -7705053866557993981
+      Ch3_Balloons_Wrong_OXX_8: 8931969995234803867
+      Ch3_Balloons_Wrong_OXX_9: -6583051409143525848
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

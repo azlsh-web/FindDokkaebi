@@ -1,0 +1,13 @@
+{
+  "item": "Ch5_DakpiBowl",
+  "chapter": 5,
+  "mask": "XOO",
+  "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+  "target": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOO.png",
+  "prompt": "Use case: precise-object-edit. Exactly ONE Unity children's game sprite, edited from the attached revised original. Preserve its crisp thick opaque dark brown outlines, smooth flat fills with very subtle shading, simple shapes, viewpoint and proportions wherever not explicitly changed. Entire object centered, no cropping, generous empty margins, 1024x1024 SQUARE RGBA with TRUE TRANSPARENT background. No glow, haze, grain, feathered outline, cast shadow, ground, lettering, labels or watermark. Mask F1=shape, F2=pattern/detail, F3=target colors; O retains the feature, X must visibly violate it. Keep every O feature correct independently of X features. Variant XOO. Change bowl into a SQUARE RECTANGULAR OPEN BOX with straight vertical sides, straight bottom and angular top opening, not a round bowl. Keep at least TWO separated dark brown HORIZONTAL stripe bands on the side of the vessel. Keep the visible contents DARK REDDISH BROWN / BURGUNDY BROWN, clearly brown tinted, not pure bright red or purple; vessel cream as original.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-843978f1-166b-4cda-849f-4248cedf30e1.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "463af7c00a17596271409c450f34d9589e76e745a68576bd529a05061019ff42"
+}

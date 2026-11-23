@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 0f6c35bbb30925542ba89e39d7284bf7
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -4672554131784194674
+    second: Ch4_Candy_Wrong_XXX_0
+  - first:
+      213: 3176784198354600835
+    second: Ch4_Candy_Wrong_XXX_1
+  - first:
+      213: -7982561636642641959
+    second: Ch4_Candy_Wrong_XXX_2
+  - first:
+      213: 8964000703542135614
+    second: Ch4_Candy_Wrong_XXX_3
+  - first:
+      213: 895442478326852862
+    second: Ch4_Candy_Wrong_XXX_4
+  - first:
+      213: -7378112623663579327
+    second: Ch4_Candy_Wrong_XXX_5
+  - first:
+      213: -449911436727677061
+    second: Ch4_Candy_Wrong_XXX_6
+  - first:
+      213: 7679315690462899310
+    second: Ch4_Candy_Wrong_XXX_7
+  - first:
+      213: -847288307539579886
+    second: Ch4_Candy_Wrong_XXX_8
+  - first:
+      213: 1294773252199430223
+    second: Ch4_Candy_Wrong_XXX_9
+  - first:
+      213: 5821983371197303408
+    second: Ch4_Candy_Wrong_XXX_10
+  - first:
+      213: 2489869561292801867
+    second: Ch4_Candy_Wrong_XXX_11
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_0
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 928
+        width: 129
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e85283df5c0c72fb0800000000000000
+      internalID: -4672554131784194674
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_1
+      rect:
+        serializedVersion: 2
+        x: 414
+        y: 979
+        width: 18
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3830007a564361c20800000000000000
+      internalID: 3176784198354600835
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_2
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 898
+        width: 94
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d721422c7e383190800000000000000
+      internalID: -7982561636642641959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_3
+      rect:
+        serializedVersion: 2
+        x: 652
+        y: 928
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3b0bf48527866c70800000000000000
+      internalID: 8964000703542135614
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_4
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 14
+        width: 1024
+        height: 908
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efca77590304d6c00800000000000000
+      internalID: 895442478326852862
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_5
+      rect:
+        serializedVersion: 2
+        x: 560
+        y: 869
+        width: 10
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 14ff4b1e8adab9990800000000000000
+      internalID: -7378112623663579327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_6
+      rect:
+        serializedVersion: 2
+        x: 500
+        y: 845
+        width: 6
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7f06799ee791c9f0800000000000000
+      internalID: -449911436727677061
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_7
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 851
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6cef180fe8629a60800000000000000
+      internalID: 7679315690462899310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_8
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 822
+        width: 75
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21ce2cef5c3dd34f0800000000000000
+      internalID: -847288307539579886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_9
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 827
+        width: 60
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f483602b965f7f110800000000000000
+      internalID: 1294773252199430223
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_10
+      rect:
+        serializedVersion: 2
+        x: 80
+        y: 174
+        width: 8
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07a4278a707dbc050800000000000000
+      internalID: 5821983371197303408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch4_Candy_Wrong_XXX_11
+      rect:
+        serializedVersion: 2
+        x: 630
+        y: 145
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b474ae19c2bcd8220800000000000000
+      internalID: 2489869561292801867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch4_Candy_Wrong_XXX_0: -4672554131784194674
+      Ch4_Candy_Wrong_XXX_1: 3176784198354600835
+      Ch4_Candy_Wrong_XXX_10: 5821983371197303408
+      Ch4_Candy_Wrong_XXX_11: 2489869561292801867
+      Ch4_Candy_Wrong_XXX_2: -7982561636642641959
+      Ch4_Candy_Wrong_XXX_3: 8964000703542135614
+      Ch4_Candy_Wrong_XXX_4: 895442478326852862
+      Ch4_Candy_Wrong_XXX_5: -7378112623663579327
+      Ch4_Candy_Wrong_XXX_6: -449911436727677061
+      Ch4_Candy_Wrong_XXX_7: 7679315690462899310
+      Ch4_Candy_Wrong_XXX_8: -847288307539579886
+      Ch4_Candy_Wrong_XXX_9: 1294773252199430223
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -24,9 +24,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 # 플레이 화면이 달라질 수 있는 파일 : 사진까지 다시 찍어요
 SCREEN = ("Assets/Scripts/", "Assets/Scenes/", "Assets/Sprites/", "Assets/Data/", "Assets/Editor/MvpSceneBuilder", "Assets/Editor/LobbySceneBuilder", "Assets/Editor/MvpFlowShots", "Assets/Fonts/")
 # 문서를 만드는 데이터 : 사진 없이 문서만 다시 만들어요
-DOC_DATA = ("Assets/Resources/", "Tools/docs/request_data.py", "Tools/docs/art_tree_data.py", "Tools/docs/make_", "Tools/docs/dialogue_lines.py", "Tools/docs/flow_shots.py", "Tools/docs/doc_pdf.py", "Tools/docs/paths.py")
+DOC_DATA = ("Assets/Resources/", "Tools/docs/request_data.py", "Tools/docs/art_tree_data.py", "Tools/docs/make_", "Tools/docs/dialogue_lines.py", "Tools/docs/flow_shots.py", "Tools/docs/doc_pdf.py", "Tools/docs/paths.py", "Tools/art_temp/build_judge_variant")
 
-SCRIPTS = ["make_dialogue_tree.py", "make_dialogue_sheet.py", "make_art_structure.py", "make_flow_doc.py",
+SCRIPTS = ["../art_temp/build_judge_variant_manifest.py", "../art_temp/build_judge_variant_review.py",
+           "make_dialogue_tree.py", "make_dialogue_sheet.py", "make_art_structure.py", "make_flow_doc.py",
            "make_requests.py", "make_arch_doc.py"]
 GENERATED = [paths.repo(p) for p in paths.GENERATED]
 REMINDER = """

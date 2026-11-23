@@ -1,0 +1,13 @@
+{
+  "item": "Ch4_Tangerine",
+  "chapter": 4,
+  "mask": "OXX",
+  "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+  "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXX.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Keep a ROUND tangerine body, original fruit dimples. Remove the leaf shape completely. Replace the pointed leaf with ONE plain circular bead on the stem. Bead is a simple circle with no point or leaf vein. Fruit body BLUE; leaf or replacement bead and stem PINK. No orange body or green upper detail.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-87f02926-50c8-4d94-9b25-a6f22a3b7b6e.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "cc60ae243ed176c984122cc8f19c78aa90c7142b7420a6e2cbd57bdc71643d34"
+}

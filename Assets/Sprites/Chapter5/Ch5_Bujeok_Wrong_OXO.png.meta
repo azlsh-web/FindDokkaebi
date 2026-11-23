@@ -1,0 +1,429 @@
+fileFormatVersion: 2
+guid: 308d43c0a4d97ae488af0dd0ece69726
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1340703515667401754
+    second: Ch5_Bujeok_Wrong_OXO_0
+  - first:
+      213: 2797971199458486611
+    second: Ch5_Bujeok_Wrong_OXO_1
+  - first:
+      213: -3855433303084112567
+    second: Ch5_Bujeok_Wrong_OXO_2
+  - first:
+      213: -6643835550176531897
+    second: Ch5_Bujeok_Wrong_OXO_3
+  - first:
+      213: 3344255455439792798
+    second: Ch5_Bujeok_Wrong_OXO_4
+  - first:
+      213: -7589114469960849385
+    second: Ch5_Bujeok_Wrong_OXO_5
+  - first:
+      213: 8418150060976173120
+    second: Ch5_Bujeok_Wrong_OXO_6
+  - first:
+      213: -1209537953907208341
+    second: Ch5_Bujeok_Wrong_OXO_7
+  - first:
+      213: -5599942225212596419
+    second: Ch5_Bujeok_Wrong_OXO_8
+  - first:
+      213: -4422937127527341799
+    second: Ch5_Bujeok_Wrong_OXO_9
+  - first:
+      213: 2963681745902971143
+    second: Ch5_Bujeok_Wrong_OXO_10
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 2
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 2
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_0
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 17
+        width: 852
+        height: 910
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6e3f68f714dd46de0800000000000000
+      internalID: -1340703515667401754
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_1
+      rect:
+        serializedVersion: 2
+        x: 763
+        y: 886
+        width: 40
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3592f7b4bf364d620800000000000000
+      internalID: 2797971199458486611
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_2
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 855
+        width: 6
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 945e57a76dfbe7ac0800000000000000
+      internalID: -3855433303084112567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_3
+      rect:
+        serializedVersion: 2
+        x: 882
+        y: 761
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74aad9584ca5cc3a0800000000000000
+      internalID: -6643835550176531897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_4
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 672
+        width: 7
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9aa6ab3e9e296e20800000000000000
+      internalID: 3344255455439792798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_5
+      rect:
+        serializedVersion: 2
+        x: 727
+        y: 666
+        width: 11
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 718e432399c0ea690800000000000000
+      internalID: -7589114469960849385
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_6
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 603
+        width: 12
+        height: 58
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 040fa6211e643d470800000000000000
+      internalID: 8418150060976173120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_7
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 495
+        width: 8
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b6f020ba3abd63fe0800000000000000
+      internalID: -1209537953907208341
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_8
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 355
+        width: 6
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3f1e7747320942b0800000000000000
+      internalID: -5599942225212596419
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_9
+      rect:
+        serializedVersion: 2
+        x: 290
+        y: 215
+        width: 7
+        height: 79
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 911a8d1cd129e92c0800000000000000
+      internalID: -4422937127527341799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Ch5_Bujeok_Wrong_OXO_10
+      rect:
+        serializedVersion: 2
+        x: 729
+        y: 130
+        width: 8
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7092bdb78dc112920800000000000000
+      internalID: 2963681745902971143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Ch5_Bujeok_Wrong_OXO_0: -1340703515667401754
+      Ch5_Bujeok_Wrong_OXO_1: 2797971199458486611
+      Ch5_Bujeok_Wrong_OXO_10: 2963681745902971143
+      Ch5_Bujeok_Wrong_OXO_2: -3855433303084112567
+      Ch5_Bujeok_Wrong_OXO_3: -6643835550176531897
+      Ch5_Bujeok_Wrong_OXO_4: 3344255455439792798
+      Ch5_Bujeok_Wrong_OXO_5: -7589114469960849385
+      Ch5_Bujeok_Wrong_OXO_6: 8418150060976173120
+      Ch5_Bujeok_Wrong_OXO_7: -1209537953907208341
+      Ch5_Bujeok_Wrong_OXO_8: -5599942225212596419
+      Ch5_Bujeok_Wrong_OXO_9: -4422937127527341799
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,0 +1,39 @@
+{
+  "unity_full_suite": {
+    "passed": 763,
+    "failed": 0,
+    "result": "Temp/SelfTest/result.txt"
+  },
+  "runtime_sprite_combinations": 94,
+  "browser_comparison": {
+    "items": 17,
+    "cases": 94,
+    "errors": [],
+    "desktop": true,
+    "mobile_width": 390
+  },
+  "art": {
+    "new_wrong_sprites": 72,
+    "missing": 0,
+    "errors": 0,
+    "visual_contact_sheets": 12
+  },
+  "stage_prompt_sync": {
+    "items": 20,
+    "criteria_match": true,
+    "live_server_deployed": false
+  },
+  "actual_ai_judge_calls": 0,
+  "docs_deployment": {
+    "commit": "9e87f1f",
+    "branch": "gh-pages",
+    "scope": "8 documentation pages plus 94 sprites",
+    "status": "built",
+    "public_mapping_table_http": 200,
+    "public_mapping_images": 94,
+    "public_comparison_verified": true,
+    "original_png_width": 1024,
+    "partial_case": "OXO",
+    "chapter1_full_wrong": "Bat_Wrong_X.png"
+  }
+}

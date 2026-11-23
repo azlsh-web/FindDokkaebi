@@ -1,0 +1,2082 @@
+{
+  "basis": "C-57: user-approved result-color judging, grouped color criterion, chapter 5 three-primary mixtures.",
+  "mask_order": "StageData.features order (F1, F2, ...); O=present, X=absent",
+  "generation": "Built-in image_gen, original referenced as edit target, one call per variant.",
+  "items": [
+    {
+      "item": "Ch2_Pillow",
+      "chapter": 2,
+      "target": "체크무늬 베개",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch2_Pillow.asset",
+      "original": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+      "original_sha256": "65f54c7c98a4fab3383f80affa1fdf706b32921154586796129671a567a70889",
+      "features": [
+        {
+          "id": "F1",
+          "name": "베개 모양",
+          "criteria": "모서리가 둥글거나 살짝 부푼 네모 모양이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "체크무늬",
+          "criteria": "베개 안에 가로줄과 세로줄이 엇갈려 작은 네모 칸이 여러 개 생겨야 합니다. 한 방향 줄만 있으면 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OO",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_OX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XO",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Pillow_Wrong_XX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch2_Socks",
+      "chapter": 2,
+      "target": "줄무늬 양말",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch2_Socks.asset",
+      "original": "Assets/Sprites/Chapter2/Ch2_Socks_Original.png",
+      "original_sha256": "6086668148277f6742fd482cba34b6e114f04cc0cbd6500689a491c1acf64ca8",
+      "features": [
+        {
+          "id": "F1",
+          "name": "양말 모양",
+          "criteria": "발목 부분과 옆으로 굽은 발끝이 이어진 L자 양말 모양이 식별되어야 합니다. 네모나 원만 그린 것은 인정하지 않습니다."
+        },
+        {
+          "id": "F2",
+          "name": "가로 줄무늬",
+          "criteria": "양말 안에 가로 방향 줄이 두 줄 이상 반복되어야 합니다. 세로줄이나 점무늬는 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OO",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter2/Ch2_Socks_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_OX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XO",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_XO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Socks_Wrong_XX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch2_Umbrella",
+      "chapter": 2,
+      "target": "물방울무늬 우산",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch2_Umbrella.asset",
+      "original": "Assets/Sprites/Chapter2/Ch2_Umbrella_Original.png",
+      "original_sha256": "974665f869dbae8c8bf03ba211c4bbac63db9562c74884a4ba6e7837b3b54e8c",
+      "features": [
+        {
+          "id": "F1",
+          "name": "우산 모양",
+          "criteria": "위가 둥근 지붕 모양과 그 아래로 이어진 손잡이 대가 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "물방울무늬",
+          "criteria": "우산 지붕 안에 작은 점이나 동그라미가 세 개 이상 있어야 합니다. 줄무늬는 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OO",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_OX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XO",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_XO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter2/Ch2_Umbrella_Wrong_XX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch3_Balloons",
+      "chapter": 3,
+      "target": "풍선",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch3_Balloons.asset",
+      "original": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+      "original_sha256": "e82a434eeb7b0b3b461631e80e0034f940efdc0a0fbb5c687da3c7f4da90cba2",
+      "features": [
+        {
+          "id": "F1",
+          "name": "풍선 세 개",
+          "criteria": "둥근 원이나 타원에 가까운 풍선 몸통 세 개가 식별되어야 합니다. 하트나 네모처럼 명확히 다른 외곽은 인정하지 않습니다. 끈이나 색은 이 항목에서 판정하지 않습니다."
+        },
+        {
+          "id": "F2",
+          "name": "묶은 끈",
+          "criteria": "풍선마다 아래로 줄이 있고, 줄이 아래에서 한 점으로 모여야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "빨강 · 노랑 · 파랑 풍선",
+          "criteria": "풍선 영역이 빨강, 노랑, 파랑으로 하나씩 칠해져 있어야 합니다. 둥근 외곽이나 묶은 끈이 틀려도 색을 독립적으로 봅니다. 세 색이 모두 맞아야 충족입니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_Balloons_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch3_GiftBox",
+      "chapter": 3,
+      "target": "선물 상자",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch3_GiftBox.asset",
+      "original": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+      "original_sha256": "c44ce4a93720b7dab82bce088f1db5c4dc92b4442f256b99862d511015956a6e",
+      "features": [
+        {
+          "id": "F1",
+          "name": "상자 모양",
+          "criteria": "네모난 상자와 위의 리본 매듭이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "별무늬",
+          "criteria": "상자 안에 별 모양이 하나 이상 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "파랑 · 빨강 · 노랑",
+          "criteria": "선물 용기 바탕은 파랑, 리본은 빨강, 장식 영역은 노랑 계열이어야 합니다. 용기의 외곽이나 별 무늬 모양이 틀려도 해당 영역의 색을 독립적으로 봅니다. 세 색이 모두 맞아야 충족입니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_GiftBox_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch3_PartyHat",
+      "chapter": 3,
+      "target": "고깔모자",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch3_PartyHat.asset",
+      "original": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+      "original_sha256": "93d33d6cdd88b8221ccd06ebf08a0100722b8809e7fa076930b09c0cb338c81f",
+      "features": [
+        {
+          "id": "F1",
+          "name": "고깔 모양",
+          "criteria": "위가 뾰족하고 아래가 넓은 삼각뿔 모자 모양이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "띠 무늬",
+          "criteria": "모자 안에 띠가 두 줄 이상 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "빨강 · 노랑 · 파랑",
+          "criteria": "모자의 위쪽에는 빨강, 가운데에는 노랑, 아래쪽에는 파랑 계열로 칠한 영역이 분명히 있어야 합니다. 띠 무늬나 고깔 모양이 틀려도 이 위치의 색을 독립적으로 봅니다. 세 위치가 모두 맞아야 충족입니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter3/Ch3_PartyHat_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch4_Candy",
+      "chapter": 4,
+      "target": "줄무늬 사탕",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch4_Candy.asset",
+      "original": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+      "original_sha256": "ad297825845cd57d46804b34fe24dda28854d9c9dd6f3c1734c80326402459a7",
+      "features": [
+        {
+          "id": "F1",
+          "name": "사탕 모양",
+          "criteria": "둥근 사탕과 양 끝에 꼬인 포장이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "줄무늬",
+          "criteria": "사탕 가운데에 줄이 두 줄 이상 번갈아 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "주황 · 초록",
+          "criteria": "사탕 중앙 영역에 주황색(빨강 + 노랑)과 초록색(노랑 + 파랑)이 모두 충분히 칠해져 있어야 합니다. 사탕 외곽이나 줄무늬 모양이 틀려도 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Candy_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "target": "포도",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch4_Grapes.asset",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "original_sha256": "c3a9bca46d8737150eb5e9e43e33a0dd3d7ead43044c3cf88dd905eb62848288",
+      "features": [
+        {
+          "id": "F1",
+          "name": "송이 모양",
+          "criteria": "송이 전체의 외곽이 위가 넓고 아래가 좁게 모여야 합니다. 개별 알의 둥근 모양이나 내부 구분은 이 항목에서 판정하지 않습니다."
+        },
+        {
+          "id": "F2",
+          "name": "알 배열",
+          "criteria": "둥근 알이 여러 개 다닥다닥 붙어 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "보라 알 · 초록 줄기",
+          "criteria": "송이 몸통 영역은 보라색(빨강 + 파랑), 위쪽 줄기는 초록색(노랑 + 파랑) 계열이어야 합니다. 송이 외곽이나 알 배열이 틀려도 해당 영역의 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch4_Tangerine",
+      "chapter": 4,
+      "target": "귤",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch4_Tangerine.asset",
+      "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+      "original_sha256": "eb20fb84584a2543d04fa2ff2cde76765a5f5455293f050461287d9e3ccf8eb1",
+      "features": [
+        {
+          "id": "F1",
+          "name": "둥근 모양",
+          "criteria": "둥근 귤 몸통이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "잎",
+          "criteria": "몸통 위쪽에 잎 모양이 붙어 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "주황 몸통 · 초록 잎",
+          "criteria": "몸통은 주황색(빨강 + 노랑), 위쪽 잎 자리의 칠한 부분은 초록색(노랑 + 파랑) 계열이어야 합니다. 몸통이나 잎 모양이 틀려도 해당 위치의 색을 독립적으로 봅니다. 두 색이 모두 맞아야 충족입니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch5_Buchae",
+      "chapter": 5,
+      "target": "도깨비 부채",
+      "judged_in_current_flow": false,
+      "stage_data": "Assets/Data/Ch5_Buchae.asset",
+      "original": "Assets/Sprites/Chapter5/Ch5_Buchae_Original.png",
+      "original_sha256": "62ab5734284b23fcb0061e0cae899a608e09b4e696b56f8595f5c3463c0a5d2b",
+      "features": [
+        {
+          "id": "F1",
+          "name": "펼친 부채 모양",
+          "criteria": "한 점에서 퍼져 나가는 부챗살과 넓게 펼친 부채 면이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "부채 무늬",
+          "criteria": "부채 면 안에 줄이나 점 같은 무늬가 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "갈색 부챗살",
+          "criteria": "부챗살의 주된 채색이 갈색 계열이어야 합니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_OOX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_OXO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_OXX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_XOO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_XOX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_XXO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Buchae_Wrong_XXX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        }
+      ]
+    },
+    {
+      "item": "Ch5_Bujeok",
+      "chapter": 5,
+      "target": "부적",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch5_Bujeok.asset",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "original_sha256": "0d75057ec850a3122e5b0f35406bc4ee29b7c8139baf1c677fdaf59a615b4bac",
+      "features": [
+        {
+          "id": "F1",
+          "name": "긴 네모 종이",
+          "criteria": "세로로 긴 사각형 종이 모양이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "부적 붓 문양",
+          "criteria": "종이 가운데에 세로로 이어진 부적 문양이 있고, 가로·대각선·꺾인 붓 획이 여러 개 교차하거나 가지처럼 갈라져야 합니다. 정확한 글자나 획순은 요구하지 않으며 색은 이 항목에서 판정하지 않습니다. 단순한 점이나 원 하나는 인정하지 않습니다."
+        },
+        {
+          "id": "F3",
+          "name": "황토빛 종이 · 붉은 갈색 문양",
+          "criteria": "종이 바탕은 노랑이 많이 섞인 황토색·금갈색 계열, 가운데 칠한 문양 영역은 빨강이 많이 섞인 붉은 갈색 계열이어야 합니다. 순수 노랑 종이와 선명한 순수 빨강 문양, 진한 갈색 종이와 검정 문양은 인정하지 않습니다. 종이 외곽이나 문양 모양이 틀려도 해당 위치의 색을 독립적으로 봅니다. 둘 다 맞아야 충족입니다. 실제 혼색 조작은 판정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Bujeok_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "chapter": 5,
+      "target": "닭피 그릇",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch5_DakpiBowl.asset",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "original_sha256": "809924fcf0aee0a2a579c2c6118faae01843968c49f7d3a5519e9461bd65f075",
+      "features": [
+        {
+          "id": "F1",
+          "name": "둥근 그릇 모양",
+          "criteria": "위가 넓고 아래가 둥근 그릇 모양이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "그릇 무늬",
+          "criteria": "그릇 옆면에 가로 띠나 줄 무늬가 두 줄 이상 있어야 합니다. 외곽 모양과 색은 이 항목에서 판정하지 않습니다."
+        },
+        {
+          "id": "F3",
+          "name": "붉은 갈색 피",
+          "criteria": "그릇 위쪽 안의 내용물이 어두운 붉은 갈색 계열이어야 합니다. 선명한 순수 빨강, 파랑, 보라는 인정하지 않습니다. 그릇의 외곽이나 줄무늬가 틀려도 내용물의 색을 독립적으로 봅니다. 실제 혼색 조작은 판정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Ch5_Gamtu",
+      "chapter": 5,
+      "target": "도깨비 감투",
+      "judged_in_current_flow": false,
+      "stage_data": "Assets/Data/Ch5_Gamtu.asset",
+      "original": "Assets/Sprites/Chapter5/Ch5_Gamtu_Original.png",
+      "original_sha256": "d1c9695781c4a7b666d59e038a22e1987d01784aac0de25a92f6c13413a4c390",
+      "features": [
+        {
+          "id": "F1",
+          "name": "감투 모양",
+          "criteria": "머리에 쓰는 작은 모자 모양이고 뒤쪽이 위로 솟아 있어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "띠 무늬",
+          "criteria": "모자 아래쪽에 가로 띠가 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "검정",
+          "criteria": "모자의 주된 채색이 검정에 가까운 어두운 색이어야 합니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_OOX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_OXO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_OXX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_XOO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_XOX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_XXO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Gamtu_Wrong_XXX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        }
+      ]
+    },
+    {
+      "item": "Ch5_Jipsin",
+      "chapter": 5,
+      "target": "짚신",
+      "judged_in_current_flow": false,
+      "stage_data": "Assets/Data/Ch5_Jipsin.asset",
+      "original": "Assets/Sprites/Chapter5/Ch5_Jipsin_Original.png",
+      "original_sha256": "1cdf8be8a44d82f8b16b669b6f26ab40d82ba6a52aac13f13159f134283c6c7d",
+      "features": [
+        {
+          "id": "F1",
+          "name": "짚신 모양",
+          "criteria": "앞이 둥글고 길쭉한 신발 바닥 모양이 식별되어야 합니다. 원이나 네모는 인정하지 않습니다."
+        },
+        {
+          "id": "F2",
+          "name": "엮은 무늬",
+          "criteria": "신발 안쪽에 짚을 엮은 줄이나 격자가 여러 줄 반복되어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "갈색",
+          "criteria": "신발의 주된 채색이 갈색 계열이어야 합니다. 노랑, 주황, 검정처럼 명확히 다른 색이면 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_OOX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_OXO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_OXX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_XOO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_XOX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_XXO.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_Jipsin_Wrong_XXX.png",
+          "exists": false,
+          "status": "not_judged_in_current_flow",
+          "required_for_current_flow": false
+        }
+      ]
+    },
+    {
+      "item": "Ch5_PatBag",
+      "chapter": 5,
+      "target": "팥주머니",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Ch5_PatBag.asset",
+      "original": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+      "original_sha256": "062f652d81dc7d9ce4da54c9b58175e7850410d88dab0314a9f15ac57c003dd4",
+      "features": [
+        {
+          "id": "F1",
+          "name": "주머니 모양",
+          "criteria": "아래가 둥글고 위가 오므라든 주머니 모양이 식별되어야 합니다."
+        },
+        {
+          "id": "F2",
+          "name": "매듭",
+          "criteria": "주머니 위쪽에 묶은 매듭이나 끈이 있어야 합니다."
+        },
+        {
+          "id": "F3",
+          "name": "팥색",
+          "criteria": "주머니의 주된 채색이 어두운 붉은 갈색(팥색) 계열이어야 합니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "OOO",
+          "present": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OOX",
+          "present": [
+            "F1",
+            "F2"
+          ],
+          "absent": [
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXO",
+          "present": [
+            "F1",
+            "F3"
+          ],
+          "absent": [
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "OXX",
+          "present": [
+            "F1"
+          ],
+          "absent": [
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_OXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOO",
+          "present": [
+            "F2",
+            "F3"
+          ],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XOO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XOX",
+          "present": [
+            "F2"
+          ],
+          "absent": [
+            "F1",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XOX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXO",
+          "present": [
+            "F3"
+          ],
+          "absent": [
+            "F1",
+            "F2"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XXO.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "XXX",
+          "present": [],
+          "absent": [
+            "F1",
+            "F2",
+            "F3"
+          ],
+          "file": "Assets/Sprites/Chapter5/Ch5_PatBag_Wrong_XXX.png",
+          "exists": true,
+          "status": "reviewed",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Stage1_Bat",
+      "chapter": 1,
+      "target": "방망이",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Stage1_Bat.asset",
+      "original": "Assets/Sprites/Stage1_Bat/Bat_Original.png",
+      "original_sha256": "d092162bc81d3780468a9893250a873d31b43b65a54f253ca861dfff28bd243c",
+      "features": [
+        {
+          "id": "F1",
+          "name": "굵은 머리 + 돌기",
+          "criteria": "굵은 머리가 표현되어 있고, 머리 바깥 윤곽에 튀어나온 돌기가 두 개 이상 구분되어야 합니다. 뾰족한 돌기, 둥근 혹, 구름 모양을 인정합니다. 매끈한 원이나 타원 머리, 머리 안쪽의 무늬, 손잡이의 리본은 돌기로 인정하지 않습니다. 손잡이의 유무와 길이는 판정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "O",
+          "present": [
+            "F1"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Stage1_Bat/Bat_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "X",
+          "present": [],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Stage1_Bat/Bat_Wrong_X.png",
+          "exists": true,
+          "status": "reuse_original_all_wrong",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Stage2_Bag",
+      "chapter": 1,
+      "target": "가방",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Stage2_Bag.asset",
+      "original": "Assets/Sprites/Stage2_Bag/Bag_Original.png",
+      "original_sha256": "73c1f3622464b5c008cca9c825666d322ad41ab74392745810df5b1fabda402a",
+      "features": [
+        {
+          "id": "F1",
+          "name": "네모 몸체 + 위쪽 손잡이 + 앞주머니",
+          "criteria": "네 변을 가진 사각형에 가까운 몸체 외곽, 몸체 위쪽에 이어진 고리나 아치 모양 손잡이, 몸체 안쪽의 작은 사각형 주머니가 모두 식별되어야 합니다. 모서리가 둥글거나 선이 삐뚤어도 인정합니다. 원형이나 삼각형 몸체, 옆이나 아래에만 있는 손잡이는 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "O",
+          "present": [
+            "F1"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Stage2_Bag/Bag_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "X",
+          "present": [],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Stage2_Bag/Bag_Wrong_XX.png",
+          "exists": true,
+          "status": "reuse_original_all_wrong",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Stage3_Mat",
+      "chapter": 1,
+      "target": "돗자리",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Stage3_Mat.asset",
+      "original": "Assets/Sprites/Stage3_Mat/Mat_Original.png",
+      "original_sha256": "e80a1103a44353e60a0a9b47bfa2724b0294368aa54ec0810760568b60a5353d",
+      "features": [
+        {
+          "id": "F1",
+          "name": "사각형 외곽",
+          "criteria": "네 변을 가진 사각형에 가까운 외곽이 식별되어야 합니다. 비스듬하거나 선이 삐뚤고 비율이 달라도 인정합니다. 원형이나 삼각형처럼 명확히 다른 외곽이면 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "O",
+          "present": [
+            "F1"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Stage3_Mat/Mat_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "X",
+          "present": [],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Stage3_Mat/Mat_Wrong_XXX.png",
+          "exists": true,
+          "status": "reuse_original_all_wrong",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Stage4_Gimbap",
+      "chapter": 1,
+      "target": "김밥",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Stage4_Gimbap.asset",
+      "original": "Assets/Sprites/Stage4_Gimbap/Gimbap_Original.png",
+      "original_sha256": "1fbf72e58b92f5b106f2a6c856e07fcaff81f0f560673a68a49d603f473c90f3",
+      "features": [
+        {
+          "id": "F1",
+          "name": "둥근 테두리",
+          "criteria": "둥근 바깥 테두리가 둘러져 있어야 합니다. 살짝 찌그러지거나 선이 조금 끊겨도 전체적으로 둥근 외곽이 식별되면 인정합니다. 사각형 외곽이나 크게 열린 곡선은 인정하지 않습니다. 선의 색과 굵기, 안쪽 재료의 유무와 배치는 판정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "O",
+          "present": [
+            "F1"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Stage4_Gimbap/Gimbap_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "X",
+          "present": [],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Stage4_Gimbap/Gimbap_Wrong_XXXX.png",
+          "exists": true,
+          "status": "reuse_original_all_wrong",
+          "required_for_current_flow": true
+        }
+      ]
+    },
+    {
+      "item": "Stage5_Friend",
+      "chapter": 1,
+      "target": "친구",
+      "judged_in_current_flow": true,
+      "stage_data": "Assets/Data/Stage5_Friend.asset",
+      "original": "Assets/Sprites/Stage5_Friend/Friend_Original.png",
+      "original_sha256": "51b6d4b422c62d2b33df679d8d59d5f38f18b231d0834bdc40a488764878f9e6",
+      "features": [
+        {
+          "id": "F1",
+          "name": "양 갈래 머리",
+          "criteria": "머리 양옆으로 묶은 머리 두 갈래가 구분되어야 합니다. 단발이나 한 갈래 머리는 인정하지 않습니다."
+        }
+      ],
+      "variants": [
+        {
+          "mask": "O",
+          "present": [
+            "F1"
+          ],
+          "absent": [],
+          "file": "Assets/Sprites/Stage5_Friend/Friend_Original.png",
+          "exists": true,
+          "status": "original",
+          "required_for_current_flow": true
+        },
+        {
+          "mask": "X",
+          "present": [],
+          "absent": [
+            "F1"
+          ],
+          "file": "Assets/Sprites/Stage5_Friend/Friend_Wrong_XXXXX.png",
+          "exists": true,
+          "status": "reuse_original_all_wrong",
+          "required_for_current_flow": true
+        }
+      ]
+    }
+  ]
+}

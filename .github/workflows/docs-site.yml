@@ -12,6 +12,10 @@ on:
       - "Tools/docs/make_docs_site.py"
       - "Tools/docs/paths.py"
       - "Tools/docs/site_style.css"
+      - "Tools/art_temp/build_judge_variant_manifest.py"
+      - "Tools/art_temp/build_judge_variant_review.py"
+      - "Assets/Data/**"
+      - "Assets/Sprites/**"
       - "BACKLOG.md"
       - ".github/workflows/docs-site.yml"
   workflow_dispatch:
@@ -42,7 +46,9 @@ jobs:
 
       - name: 문서 사이트 만들기
         run: |
-          pip install markdown
+          pip install markdown Pillow PyYAML
+          python Tools/art_temp/build_judge_variant_manifest.py
+          python Tools/art_temp/build_judge_variant_review.py
           python Tools/docs/make_docs_site.py "$RUNNER_TEMP/site"
 
       - name: gh-pages 의 docs 폴더만 바꿔서 올리기

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::StageData
   stageNumber: 1
   targetName: "\uACE0\uAE54\uBAA8\uC790"
-  colorMode: 3
+  colorMode: 1
   originalSprite: {fileID: 21300000, guid: 89c764c48cb3b5c4eb618ff93b0a114b, type: 3}
   shapeOnly: 0
   serverKey: room-3-1
@@ -38,14 +38,21 @@ MonoBehaviour:
     color: 0
     area: 0
   - id: F3
-    name: "\uBE68\uAC15 \xB7 \uB178\uB791 \xB7 \uD30C\uB791 \uB760"
-    criteria: "\uB760\uC758 \uC0C9\uC774 \uC704\uC5D0\uC11C\uBD80\uD130 \uBE68\uAC15,
-      \uB178\uB791, \uD30C\uB791 \uC21C\uC11C\uB85C \uCE60\uD574\uC838 \uC788\uC5B4\uC57C
-      \uD569\uB2C8\uB2E4."
+    name: "\uBE68\uAC15 \xB7 \uB178\uB791 \xB7 \uD30C\uB791"
+    criteria: "\uBAA8\uC790\uC758 \uC704\uCABD\uC5D0\uB294 \uBE68\uAC15, \uAC00\uC6B4\uB370\uC5D0\uB294
+      \uB178\uB791, \uC544\uB798\uCABD\uC5D0\uB294 \uD30C\uB791 \uACC4\uC5F4\uB85C
+      \uCE60\uD55C \uC601\uC5ED\uC774 \uBD84\uBA85\uD788 \uC788\uC5B4\uC57C \uD569\uB2C8\uB2E4.
+      \uB760 \uBB34\uB2AC\uB098 \uACE0\uAE54 \uBAA8\uC591\uC774 \uD2C0\uB824\uB3C4
+      \uC774 \uC704\uCE58\uC758 \uC0C9\uC744 \uB3C5\uB9BD\uC801\uC73C\uB85C \uBD05\uB2C8\uB2E4.
+      \uC138 \uC704\uCE58\uAC00 \uBAA8\uB450 \uB9DE\uC544\uC57C \uCDA9\uC871\uC785\uB2C8\uB2E4."
     check: 0
     color: 0
     area: 0
   wrongSprites:
-  - {fileID: 21300000, guid: f4d3d0e0bcfe6fa4c8233abb392bd262, type: 3}
-  - {fileID: 21300000, guid: efacdcadeb18eec49a150704bd610ad3, type: 3}
-  - {fileID: 21300000, guid: 6ef6c1e28586a7b4699835a22c8d130c, type: 3}
+  - {fileID: 21300000, guid: ac432ea798393234f9d04800733b9b83, type: 3}
+  - {fileID: 21300000, guid: 55d9350a3a11b354281cb28d5a00e652, type: 3}
+  - {fileID: 21300000, guid: f4bb72667fcdcd14abce070791d2ff41, type: 3}
+  - {fileID: 21300000, guid: d17a09249d126f748b7b896beec907c6, type: 3}
+  - {fileID: 21300000, guid: 06d68368e4a67d34aba2f7aa6d013100, type: 3}
+  - {fileID: 21300000, guid: 853d8e72cf608874db6daa56250fb980, type: 3}
+  - {fileID: 21300000, guid: b52fbedebf6b30a439238c88ad2e1ed3, type: 3}

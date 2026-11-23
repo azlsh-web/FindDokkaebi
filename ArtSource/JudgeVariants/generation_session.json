@@ -1,0 +1,63 @@
+{
+  "original_revisions": [
+    {
+      "item": "Ch5_Bujeok",
+      "original": "Assets/Sprites/Chapter5/Ch5_Bujeok_Original.png",
+      "backup": "ArtSource/JudgeVariants/originals_before_revision/Ch5_Bujeok_Original.png",
+      "prompt": "Use case: precise-object-edit. Edit the referenced Korean talisman game sprite. Keep EXACTLY the original tall narrow rectangular paper silhouette, central brush symbol with a long vertical stroke and three crossing diagonal strokes, proportions, viewpoint, thick crisp dark brown outline, simple smooth children's cartoon style. Change ONLY the colors: paper must become clearly medium warm BROWN (mixed red/yellow/blue), central brush symbol must become solid CHARCOAL BLACK (mixed red/yellow/blue). No yellow paper and no red symbol. Subtle simple shading permitted. Original geometry and symbol arrangement remain unchanged. Exactly one centered full item, clean 1024x1024 square RGBA with TRUE TRANSPARENT empty background and margins. No glow, haze, cast shadow, paper texture, words, labels, watermark or border.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-f61a9eee-563a-43f6-a565-04e5e18f2bb5.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass"
+    },
+    {
+      "item": "Ch5_DakpiBowl",
+      "original": "Assets/Sprites/Chapter5/Ch5_DakpiBowl_Original.png",
+      "backup": "ArtSource/JudgeVariants/originals_before_revision/Ch5_DakpiBowl_Original.png",
+      "prompt": "Use case: precise-object-edit. Edit referenced bowl-of-chicken-blood game sprite. Keep EXACTLY original round cream ceramic bowl silhouette, oval rim, small foot, two dark brown horizontal bands on the side, viewpoint, size, proportions, crisp thick dark brown outlines, smooth simple children's cartoon style. Change ONLY the liquid: vivid red liquid must become a clearly DARK REDDISH BROWN/BURGUNDY BROWN mixture, visibly brown-tinted not pure red and not purple or black. This is a symbolic children's game sprite, no gore or realism. Keep bowl cream, stripes dark brown, liquid surface flat and opaque. One centered entire item with generous margins, 1024x1024 square RGBA, TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, words, labels or watermark.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-36541904-6f05-41b6-8871-9268cdab0814.png",
+      "tool": "built-in image_gen",
+      "visual_review": "pass"
+    }
+  ],
+  "superseded_attempts": [
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "XXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XXO. Overall bunch silhouette is an INVERTED TRIANGLE, NARROW AT TOP and WIDE AT BOTTOM, clearly reversed from original. Replace all round grape shapes with one smooth solid triangular bunch body without any internal grape circles, partitions, dots or individual berry outlines. Outer bunch shape is still as specified above. Bunch or berry bodies PURPLE, bent stem GREEN.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-6b526018-4443-423e-a385-255d68a4c503.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_revision",
+      "normalized": true,
+      "ok": true
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OXX",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXX.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXX. Overall grape bunch silhouette is TRIANGULAR, WIDE AT TOP tapering to ONE point at BOTTOM. Replace all round grape shapes with one smooth solid triangular bunch body without any internal grape circles, partitions, dots or individual berry outlines. Outer bunch shape is still as specified above. Bunch or berry bodies ORANGE, bent stem BLUE, no purple grapes or green stem.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-e2a9ab31-a0bc-42fb-97e5-79d2b97178e6.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_revision",
+      "normalized": true,
+      "ok": true
+    },
+    {
+      "item": "Ch4_Grapes",
+      "chapter": 4,
+      "mask": "OXO",
+      "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+      "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_OXO.png",
+      "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant OXO. Overall grape bunch silhouette is TRIANGULAR, WIDE AT TOP tapering to ONE point at BOTTOM. Replace all round grape shapes with one smooth solid triangular bunch body without any internal grape circles, partitions, dots or individual berry outlines. Outer bunch shape is still as specified above. Bunch or berry bodies PURPLE, bent stem GREEN.",
+      "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-0cca815f-3148-4bf6-9fb4-be4e86e4a9b3.png",
+      "tool": "built-in image_gen",
+      "visual_review": "superseded_revision",
+      "normalized": true,
+      "ok": true
+    }
+  ]
+}

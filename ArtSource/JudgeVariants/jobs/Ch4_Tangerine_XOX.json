@@ -1,0 +1,13 @@
+{
+  "item": "Ch4_Tangerine",
+  "chapter": 4,
+  "mask": "XOX",
+  "original": "Assets/Sprites/Chapter4/Ch4_Tangerine_Original.png",
+  "target": "Assets/Sprites/Chapter4/Ch4_Tangerine_Wrong_XOX.png",
+  "prompt": "Use case: precise-object-edit. Create exactly ONE final Unity item sprite by editing the attached original. Match the original's cute simple children's cartoon, crisp thick opaque DARK BROWN outlines, smooth clean fills and very subtle shading. Keep viewpoint, composition and approximate object size. Whole object centered with generous empty margins. 1024x1024 SQUARE RGBA, TRUE TRANSPARENT background. No paper grain, no glow, no halo, no soft outline, no cast shadow, no ground plane, no text, no labels, no watermark. Mask order is F1 SHAPE, F2 PATTERN/DETAIL, F3 TARGET COLORS. O=retain the correct feature; X=visibly violate that feature. Keep every O feature correct even if another feature is X. Variant XOX. Change fruit body to a clearly SQUARE cube with four straight sides and corners, not round. Keep exactly one clearly pointed oval LEAF on a short stem on top. Fruit body BLUE; leaf or replacement bead and stem PINK. No orange body or green upper detail.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-71ca2df0-5c69-4539-9e3e-a313ec1f8922.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "sha256": "b3d2f954bbbaa93b463082245244b556ba2d4f067c50c934949f425a93c2dfca"
+}

@@ -1,0 +1,14 @@
+{
+  "item": "Ch4_Grapes",
+  "chapter": 4,
+  "mask": "XXO",
+  "original": "Assets/Sprites/Chapter4/Ch4_Grapes_Original.png",
+  "target": "Assets/Sprites/Chapter4/Ch4_Grapes_Wrong_XXO.png",
+  "prompt": "Use case: precise-object-edit. Edit the referenced original grape sprite to one exact feature variant. The outer body MUST be one simple purple UPWARD-POINTING TRIANGLE (like an upright capital delta): exactly ONE pointed vertex at TOP and broad FLAT HORIZONTAL BASE at BOTTOM. This is the REVERSED WRONG grape-bunch outline, NARROW TOP and WIDE BOTTOM, F1=X. Attach green bent stem to the narrow TOP POINT. No individual berry circles, no scallops, no rounded lobes, no interior marks, just one smooth solid triangular slab, F2=X. Body PURPLE and bent stem GREEN, F3=O. CRITICAL: triangle must point UP, never down. Match original crisp thick opaque dark brown outlines and clean simple cartoon fills. Entire object centered, generous margins, 1024x1024 square RGBA with TRUE TRANSPARENT empty background. No glow, haze, cast shadow, texture, text, labels or watermark.",
+  "generated_source": "C:\\Users\\azlsh\\.codex\\generated_images\\01a20146-ee2a-7f13-9350-c33703b19612\\exec-4c37750b-1074-4f97-b256-d2046f7431fc.png",
+  "tool": "built-in image_gen",
+  "visual_review": "pass",
+  "normalized": true,
+  "revision": 2,
+  "sha256": "9fa5372a894e7c612b37321ea1680f7e27d295480699c13993c09bf601cf6e19"
+}

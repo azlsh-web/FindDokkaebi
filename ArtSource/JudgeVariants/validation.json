@@ -1,0 +1,19 @@
+{
+  "checked": 72,
+  "missing": [],
+  "errors": [],
+  "sheets": [
+    "ArtSource/JudgeVariants/qa/Ch2_Pillow.jpg",
+    "ArtSource/JudgeVariants/qa/Ch2_Socks.jpg",
+    "ArtSource/JudgeVariants/qa/Ch2_Umbrella.jpg",
+    "ArtSource/JudgeVariants/qa/Ch3_Balloons.jpg",
+    "ArtSource/JudgeVariants/qa/Ch3_GiftBox.jpg",
+    "ArtSource/JudgeVariants/qa/Ch3_PartyHat.jpg",
+    "ArtSource/JudgeVariants/qa/Ch4_Candy.jpg",
+    "ArtSource/JudgeVariants/qa/Ch4_Grapes.jpg",
+    "ArtSource/JudgeVariants/qa/Ch4_Tangerine.jpg",
+    "ArtSource/JudgeVariants/qa/Ch5_Bujeok.jpg",
+    "ArtSource/JudgeVariants/qa/Ch5_DakpiBowl.jpg",
+    "ArtSource/JudgeVariants/qa/Ch5_PatBag.jpg"
+  ]
+}

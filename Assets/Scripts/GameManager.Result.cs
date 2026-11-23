@@ -22,8 +22,8 @@ public partial class GameManager
         outcome = success ? 0 : count > 0 ? 1 : 2;
         if (!success) stageWrongs++;
 
-        // 맞으면 진짜 물건, 틀리면 n번째로 틀린 만큼 엉뚱한 물건 (물건마다 오답 3장)
-        Sprite item = success ? Stage.originalSprite : Stage.WrongSpriteFor(stageWrongs);
+        // 같은 O/X 조합이면 몇 번 다시 그렸든 같은 물건을 가져와요.
+        Sprite item = Stage.SpriteFor(present);
         resultItemImage.sprite = item;
         resultItemImage.enabled = item != null;
         itemsFound[stageIndex] = item;

@@ -259,7 +259,7 @@ static partial class MvpSelfTest
                 // 2단계 : 하나도 못 맞혀서 사탕 3개를 다 씀. 두 번째로 틀리면 무료 돋보기를 받아요
                 Add(0.3f, "2번째 물건 1번째 실패", () =>
                 {
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(1), "1번째 틀림 : 오답 그림 1번");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "1번째 틀림 : 오답 그림 1번");
                     TapResult();
                     Gm().ResultTap();
                     Gm().ResultTap();
@@ -271,7 +271,7 @@ static partial class MvpSelfTest
                 {
                     TapResult();
                     for (int k = 0; k < 3 && !IsOn("ResultPanel/ChoiceRow"); k++) Gm().ResultTap();
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(2), "2번째 틀림 : 오답 그림 2번");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "2번째 틀림 : 오답 그림 2번");
                     Check(IsOn("ResultPanel/ChoiceRow") && !IsOn("ResultPanel/GiftMagnifier"), "1챕터는 두 번째로 틀려도 돋보기를 주지 않고 다시 · 포기");
                     Gm().Retry();
                     Gm().Submit();
@@ -280,7 +280,7 @@ static partial class MvpSelfTest
                 {
                     Check(CandiesLit() == 0, "사탕 0개");
                     Check(!IsOn("ResultPanel/GiftMagnifier"), "무료 기회는 단계마다 한 번");
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(3), "3번째 틀림 : 오답 그림 3번");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "3번째 틀림 : 오답 그림 3번");
                     TapResult();
                     Check(!IsOn("ResultPanel/ChoiceRow"), "사탕이 없으면 다시 · 포기 버튼이 없다");
                     Check(Text("ResultPanel/DialogueBox/Line").Contains("사탕이 다 떨어졌어"), "사탕이 다 떨어졌다고 주인공이 말한다");
@@ -299,7 +299,7 @@ static partial class MvpSelfTest
                 // 형태 하나를 빠뜨림 → 첫 번째 오답 물건
                 Add(0.3f, $"{st.Title} 부분 성공", () =>
                 {
-                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.WrongSpriteFor(1), "틀린 물건이 왔다 (오답 그림 1번)");
+                    Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.AllWrongSprite, "틀린 물건이 왔다 (오답 그림 1번)");
                     if (s == 0) Check(Find("ResultPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_NoBat", "1단계를 틀리면 도깨비는 빈손");
                     Check(Find("ResultPanel/DialogueBox/Face").GetComponent<Image>().sprite.name == "Char_DokkaebiFace_Tease", "틀리면 도깨비는 놀리는 얼굴");
                     if (s == 0 || s == 4) Shot($"s{s + 1}_result_partial");
@@ -374,7 +374,7 @@ static partial class MvpSelfTest
         {
             Check(IsOn("EndingPanel") && !IsOn("HUD"), "이야기 종료 화면");
             Check(Find("Background").GetComponent<Image>().sprite != null, "소풍 배경");
-            Check(Find("EndingPanel/BagSlot").GetComponent<Image>().sprite == stages[1].WrongSpriteFor(3), "포기한 2번째 물건은 받은 엉뚱한 물건이 놓인다");
+            Check(Find("EndingPanel/BagSlot").GetComponent<Image>().sprite == stages[1].AllWrongSprite, "포기한 2번째 물건은 받은 엉뚱한 물건이 놓인다");
             Check(Find("EndingPanel/MatSlot").GetComponent<Image>().sprite == stages[2].originalSprite, "찾은 물건은 진짜가 놓인다");
             Check(Find("EndingPanel/Dokkaebi").GetComponent<Image>().sprite.name == "Char_Dokkaebi_Normal" && !IsOn("EndingPanel/BatSlot"),
                   "방망이를 찾았으면 도깨비 손에만 있고 돗자리 방망이 자리는 비어 있다");
@@ -411,7 +411,7 @@ static partial class MvpSelfTest
             SetPrivate(Gm(), "stageIndex", stages.Length - 1);
             Gm().NextStage();
             Check(IsOn("EndingPanel") && Shown("EndingPanel/Dokkaebi").name == NoBat, "이야기 종료에서도 빈손");
-            Check(Shown("EndingPanel/BatSlot") == stages[0].WrongSpriteFor(1), "소풍 장면에는 대파가 놓인다");
+            Check(Shown("EndingPanel/BatSlot") == stages[0].AllWrongSprite, "소풍 장면에는 대파가 놓인다");
             Check(Progress.IsCleared(1) && Progress.BatKnown && !Progress.BatFound, "빈손으로 끝나도 1챕터는 깬 것으로, 방망이는 못 찾은 것으로 저장된다");
         });
     }

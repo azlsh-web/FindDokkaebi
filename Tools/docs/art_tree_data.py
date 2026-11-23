@@ -204,6 +204,27 @@ TREE = [
     ]),
 ]
 
+
+def _judge_variant_rows():
+    """판정 O/X 조합별 오답 그림 (C-57). 목록은 ArtSource/JudgeVariants/manifest.json 에서 읽어요."""
+    import json, os
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "ArtSource", "JudgeVariants", "manifest.json")
+    if not os.path.exists(path):
+        return []
+    rows = []
+    for item in json.load(open(path, encoding="utf-8"))["items"]:
+        for v in item["variants"]:
+            name = os.path.basename(v["file"])[:-4]
+            if v.get("exists") and v.get("status") != "original" and "_Wrong_" in name:
+                folder = os.path.basename(os.path.dirname(v["file"]))
+                rows.append((f"{item['item']} 판정 {v['mask']}", f"{folder}/{name}", CODEX + " 임시 그림 (판정 조합별, C-57)"))
+    return rows
+
+
+_rows = _judge_variant_rows()
+if _rows:
+    TREE.append(("판정 조합별 오답 그림 (C-57)", "ResultPanel/ReturnedItem", _rows))
+
 STAGES = [
     ("1단계 방망이", "Stage1_Bat", "Bat", 1, "대파", TEAM),
     ("2단계 가방", "Stage2_Bag", "Bag", 2, "항아리", TEAM),

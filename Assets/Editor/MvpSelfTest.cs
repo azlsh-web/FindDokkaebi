@@ -250,7 +250,7 @@ static partial class MvpSelfTest
                 var hidden = BindingFlags.NonPublic | BindingFlags.Instance;
                 var items = (Sprite[])typeof(GameManager).GetField("itemsFound", hidden).GetValue(Gm());
                 for (int i = 0; i < stages.Length; i++)
-                    items[i] = i == 1 ? stages[i].WrongSpriteFor(3) : stages[i].originalSprite;
+                    items[i] = i == 1 ? stages[i].AllWrongSprite : stages[i].originalSprite;
                 SetPrivate(Gm(), "stageIndex", stages.Length - 1);
                 Gm().NextStage();
             }
