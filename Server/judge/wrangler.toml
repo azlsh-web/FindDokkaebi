@@ -11,6 +11,7 @@ compatibility_date = "2026-10-01"
 ALLOWED_ORIGINS = "https://azlsh-web.github.io"
 MODEL = "gpt-6-luna"           # OpenAI 를 쓸 때
 GEMINI_MODEL = "gemini-3.5-flash"   # 그림 판정에 쓰는 Gemini 모델
+GEMINI_FALLBACK = "gemini-3-flash-preview"   # 기본 모델이 붐비거나 늦을 때 대신 묻는 모델 (11/23)
 GEMINI_THINKING = "low"             # 생각 양 : low(빠름) / medium / high
 
 # 같은 IP 가 1분(60초)에 20번 넘게 보내면 거절
