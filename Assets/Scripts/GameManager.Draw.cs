@@ -58,8 +58,9 @@ public partial class GameManager
         }
 
         // 5챕터 맞설 물건 : 방해 연출 (쪽지 위에 덮기만)
+        if (IsCurse && chosenCounter)
+            jamDoodler.Phrases = GameScript.CurseJamLines(Stage.targetName, Josa(Stage.targetName, "을", "를"));
         jamOverlay.SetActive(IsCurse && chosenCounter);
-        if (jamOverlay.activeSelf) AnimateJam();
 
         UpdateSnacks();
         if (!keepDrawing) noteRoutine = StartCoroutine(WriteNote());

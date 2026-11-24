@@ -51,6 +51,7 @@ static class MvpLayoutCheck
         new[] { "EndingPanel/Confetti", "EndingPanel/" },   // 축하 꽃가루는 인물과 물건 앞으로 떨어져요
         new[] { "EndingPanel/GimbapSlot", "EndingPanel/DialogueBox" },   // 마지막에 묻는 대사가 물건 위로 올라와요
         new[] { "DrawPanel/JamOverlay/", "DrawPanel/JamOverlay/" },   // 5챕터 방해 연출 : 도깨비불과 낙서가 쪽지 위에서 겹쳐요
+        new[] { "DrawPanel/JamOverlay/", "DrawPanel/ToolBar/Palette/" },   // 5챕터 방해 : 팔레트를 열면 붉은 막 위로 올라와요 (막은 팔레트 아래)
         new[] { "DrawPanel/JamOverlay/Peek", "DrawPanel/" },   // 5챕터 방해 연출 : 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나요
         new[] { "JudgePanel/CurseJudge", "JudgePanel/" },   // 5챕터 판정 대기 : 쪽지 뒤 빛과 그 아래 도깨비
         new[] { "ResultPanel/Soul", "ResultPanel/" },   // 5챕터 하트 0 : 친구가 쓰러지고 영혼이 도깨비에게 날아가요

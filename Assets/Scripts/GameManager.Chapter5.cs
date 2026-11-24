@@ -55,31 +55,6 @@ public partial class GameManager
 
     // ───────────── 5챕터 연출 ─────────────
 
-    // 그리기 방해 : 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나 흔들거리다 사라져요 (3.2초마다 다른 자리).
-    //   낙서와 붉은 막도 일렁여요. 모두 클릭을 통과해서 그리는 데는 지장이 없어요
-    static readonly Vector2[] JamSpots = { new Vector2(820f, -240f), new Vector2(200f, -700f), new Vector2(780f, -1000f), new Vector2(240f, -230f) };
-    void AnimateJam()
-    {
-        const float Cycle = 3.2f;
-        int n = Mathf.FloorToInt(Time.time / Cycle);
-        float t = Time.time - n * Cycle;
-        float size = t < 0.35f ? Mathf.SmoothStep(0f, 1f, t / 0.35f)
-                   : t < 2.2f ? 1f
-                   : t < 2.55f ? 1f - Mathf.SmoothStep(0f, 1f, (t - 2.2f) / 0.35f) : 0f;
-        jamPeek.anchoredPosition = JamSpots[n % JamSpots.Length];
-        jamPeek.localScale = new Vector3(n % 2 == 0 ? size : -size, size, 1f);       // 번갈아 좌우를 뒤집어요
-        jamPeek.localEulerAngles = new Vector3(0f, 0f, Mathf.Sin(Time.time * 14f) * 9f * size);
-        for (int i = 0; i < jamScribbles.Length; i++)
-        {
-            Color c = jamScribbles[i].color;
-            c.a = 0.35f + 0.45f * Mathf.Abs(Mathf.Sin(Time.time * 1.7f + i * 1.3f));
-            jamScribbles[i].color = c;
-        }
-        Color tint = jamTint.color;
-        tint.a = 0.2f + 0.08f * Mathf.Sin(Time.time * 3f);
-        jamTint.color = tint;
-    }
-
     // 쪽지를 들이밀어요 : 쪽지가 도깨비에게 날아가고 도깨비가 움찔한 뒤 판정 대기로
     IEnumerator ThrustNote()
     {

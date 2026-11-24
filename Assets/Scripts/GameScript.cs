@@ -194,6 +194,16 @@ public static class GameScript
     public const string CurseNote = "도깨비야, 이걸 보고 저주를 풀어!";
     public const string CurseGiveBoy = "도깨비야, 이거 봐! 네가 무서워하는 거야!";
 
+    // 맞설 물건을 그리는 동안 도깨비가 쪽지에 빨갛게 쓰는 글씨 (기획서 문구, {0} = 그리는 물건 · 을/를)
+    static readonly string[] CurseJam =
+    {
+        "네가 {0} 그리려는 걸 다 알고 있어!",
+        "소용없으니 그만둬!",
+        "킥킥, 다 보여!",
+    };
+    public static string[] CurseJamLines(string target, string josa)
+        => System.Array.ConvertAll(CurseJam, s => string.Format(s, target + josa));
+
     // 맞설 물건 성공 : 도깨비가 "제법이군" 하고 다음 단계로 : [단계]
     static readonly string[] CurseCounterHit =
     {

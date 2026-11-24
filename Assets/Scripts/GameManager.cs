@@ -241,9 +241,7 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] Sprite forestDark;
     [SerializeField] GameObject scareOverlay;       // 점프스케어 (화면에 덮기만)
     [SerializeField] GameObject jamOverlay;         // 맞설 물건을 그릴 때 방해 연출 (쪽지 위에 덮기만. 그림 · 판정은 안 바뀌어요)
-    [SerializeField] RectTransform jamPeek;         // 방해 : 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나 흔들거려요
-    [SerializeField] Image[] jamScribbles;          // 방해 : 낙서가 진해졌다 옅어졌다
-    [SerializeField] Image jamTint;                 // 방해 : 붉은 막이 일렁여요
+    [SerializeField] JamDoodler jamDoodler;         // 방해 : 흑화 도깨비가 실시간으로 낙서 · 글씨 · 지우기, 가끔 놀래키기
     [SerializeField] GameObject judgeRoam;          // 판정 대기 : 찾아다니는 도깨비 (5챕터는 숨겨요)
     [SerializeField] GameObject judgeCurse;         // 5챕터 판정 대기 : 빛나는 쪽지 + 움찔거리는 흑화 도깨비
     [SerializeField] Image judgeGlow;
@@ -386,7 +384,7 @@ public partial class GameManager : MonoBehaviour
                 if (peekGuideStep == 4 && !magnifierPeek.Active) SayPeekRule();
                 return;
             }
-            if (jamOverlay.activeSelf) { SpinFires(jamFires, 300f, 380f); AnimateJam(); }    // 방해 연출 : 도깨비불이 맴돌고 도깨비가 불쑥
+            if (jamOverlay.activeSelf) SpinFires(jamFires, 300f, 380f);    // 방해 연출 : 도깨비불이 맴돌아요 (낙서 · 놀래키기는 JamDoodler)
             timeLeft -= Time.deltaTime;
             incense.Show(timeLeft / drawSeconds, timeLeft);         // 향이 타들어 감
             submitButton.interactable = board.HasDrawn;             // 빈 쪽지면 제출 불가

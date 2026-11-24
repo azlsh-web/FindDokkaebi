@@ -1006,6 +1006,7 @@ public static partial class MvpSceneBuilder
         // 그리기 방해 : 쪽지 위에 붉은 막 + 도깨비불 + 낙서. 전부 클릭을 통과시켜서 그리는 데 방해가 안 돼요
         var jamOverlay = NewEmpty("JamOverlay", draw);
         Put3((RectTransform)jamOverlay, 20, 370, 1040, 1222);
+        jamOverlay.SetSiblingIndex(draw.Find("ToolBar").GetSiblingIndex());   // 도구 줄 · 팔레트보다 아래 (붉은 막이 팔레트를 덮지 않게)
         var jamTint = NewImage("Tint", jamOverlay, new Color(0.55f, 0.08f, 0.08f, 0.25f));
         jamTint.raycastTarget = false;
         Stretch(jamTint.rectTransform);
@@ -1020,16 +1021,6 @@ public static partial class MvpSceneBuilder
             PIn(jamFire.rectTransform, jamFirePos[i][0] / 3f, jamFirePos[i][1] / 3f, 100f / 3f, 133f / 3f);
             jamFires[i] = jamFire.rectTransform;
         }
-        float[][] scribbles = { new float[] { 60, 300, 520, 14, -12 }, new float[] { 420, 700, 480, 12, 9 }, new float[] { 100, 1020, 560, 14, -6 }, new float[] { 520, 240, 380, 12, 18 } };    // 마지막 낙서는 쪽지 글 아래
-        foreach (float[] sc in scribbles)
-        {
-            var scribble = NewImage("Scribble", jamOverlay, new Color32(200, 40, 40, 200));
-            scribble.raycastTarget = false;
-            PIn(scribble.rectTransform, sc[0] / 3f, sc[1] / 3f, sc[2] / 3f, sc[3] / 3f);
-            scribble.rectTransform.localEulerAngles = new Vector3(0f, 0f, sc[4]);
-        }
-        var jamScribbles = jamOverlay.GetComponentsInChildren<Image>(true);
-        jamScribbles = System.Array.FindAll(jamScribbles, im => im.name == "Scribble");
         // 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나 흔들거려요 (GameManager 가 자리 · 크기를 움직여요). 클릭은 통과해요
         var jamPeek = NewImage("Peek", jamOverlay, Color.white);
         jamPeek.sprite = dokkaebiDark;
@@ -1037,8 +1028,17 @@ public static partial class MvpSceneBuilder
         jamPeek.raycastTarget = false;
         PIn(jamPeek.rectTransform, 0, 0, 100, 98);
         jamPeek.rectTransform.pivot = new Vector2(0.5f, 0.5f);
-        jamPeek.rectTransform.anchoredPosition = new Vector2(820f, -240f);     // GameManager.JamSpots 첫 자리. 처음엔 숨어 있어요
+        jamPeek.rectTransform.anchoredPosition = new Vector2(820f, -240f);     // 처음엔 숨어 있어요. JamDoodler 가 펜 끝 자리로 옮겨요
         jamPeek.rectTransform.localScale = Vector3.zero;
+        var jamDoodler = jamOverlay.gameObject.AddComponent<JamDoodler>();
+        {
+            var doodlerSo = new SerializedObject(jamDoodler);
+            doodlerSo.FindProperty("peek").objectReferenceValue = jamPeek.rectTransform;
+            doodlerSo.FindProperty("tint").objectReferenceValue = jamTint;
+            doodlerSo.FindProperty("font").objectReferenceValue = font;
+            doodlerSo.FindProperty("blob").objectReferenceValue = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            doodlerSo.ApplyModifiedPropertiesWithoutUndo();
+        }
 
         // 5챕터 판정 대기 : 찾아다니는 도깨비 대신, 빛나는 쪽지와 움찔거리는 흑화 도깨비
         var judgeCurse = NewEmpty("CurseJudge", judgeP);
@@ -1256,9 +1256,7 @@ public static partial class MvpSceneBuilder
         Set(so, "scareOverlay", scareOverlay.gameObject);
         Set(so, "jamOverlay", jamOverlay.gameObject);
         SetArray(so, "jamFires", jamFires);
-        Set(so, "jamPeek", jamPeek.rectTransform);
-        SetArray(so, "jamScribbles", jamScribbles);
-        Set(so, "jamTint", jamTint);
+        Set(so, "jamDoodler", jamDoodler);
         Set(so, "judgeRoam", dokEnterGo);
         Set(so, "judgeCurse", judgeCurse.gameObject);
         Set(so, "judgeGlow", judgeGlow);
