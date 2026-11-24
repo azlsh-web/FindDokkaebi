@@ -26,6 +26,24 @@ static partial class MvpSelfTest
                 Check(Resources.Load<AudioClip>("Sound/" + name) != null, (name.StartsWith("bgm_") ? "배경음 " : "효과음 ") + name);
             }
         });
+        Add(0f, "글꼴에 게임 글자가 다 있다", () =>
+        {
+            // 대사 · 물건 이름을 바꾸고 글꼴을 다시 굽지 않으면, 빠진 글자만 예비 글꼴(Noto)로 보여 깨져 보여요.
+            // Jua 에 있는 글자인데 구운 글꼴에 없으면 실패 → [Tools → 찾아라도깨비 → 글꼴 굽기 (Jua)]
+            var fa = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(MvpFontBake.AssetPath);
+            var ttf = AssetDatabase.LoadAssetAtPath<Font>(MvpFontBake.TtfPath);
+            Check(fa != null && ttf != null, "Jua 글꼴 파일");
+            if (fa == null || ttf == null) return;
+            UnityEngine.TextCore.LowLevel.FontEngine.LoadFontFace(ttf);
+            var baked = new HashSet<uint>();
+            foreach (var ch in fa.characterTable) baked.Add(ch.unicode);
+            string missing = "";
+            foreach (char c in MvpFontBake.CollectChars())
+                if (!baked.Contains(c) && UnityEngine.TextCore.LowLevel.FontEngine.TryGetGlyphWithUnicodeValue(c, UnityEngine.TextCore.LowLevel.GlyphLoadFlags.LOAD_NO_BITMAP, out var g) && g.index != 0)
+                    missing += c;
+            Check(missing.Length == 0, missing.Length == 0 ? "게임 글자가 모두 Jua 글꼴에 구워져 있다"
+                                                           : $"Jua 글꼴에 안 구운 글자 {missing.Length}개 : {(missing.Length > 40 ? missing.Substring(0, 40) + "…" : missing)}");
+        });
         Add(1.0f, "기본 함수", () =>
         {
             Check(GameManager.Josa("가방", "을", "를") == "을" && GameManager.Josa("방망이", "을", "를") == "를", "조사(을/를) 고르기");

@@ -19,7 +19,7 @@ using UnityEngine;
 static class MvpFontBake
 {
     const string Flag = "Temp/mvp_font.flag";
-    const string TtfPath = "Assets/Fonts/Jua-Regular.ttf";
+    public const string TtfPath = "Assets/Fonts/Jua-Regular.ttf";
     public const string AssetPath = "Assets/Fonts/Jua-Regular SDF.asset";
     const string FallbackPath = "Assets/Fonts/NotoSansKR-Regular SDF.asset";
     static double nextCheck;
@@ -72,10 +72,13 @@ static class MvpFontBake
         string line = $"글자 {chars.Length}개를 구웠어요 (아틀라스 {fa.atlasTextures.Length}장, Jua 에 없는 글자 {miss}개 → Noto 로 대신)";
         File.WriteAllText("Temp/mvp_font_result.txt", line);
         Debug.Log("[글꼴] " + line + " → " + AssetPath);
+        // 다시 구우면 글꼴 재질 · 아틀라스의 내부 번호가 바뀌어요. 씬의 글자가 옛 재질을 가리키지 않게 두 씬을 다시 조립해요
+        File.WriteAllText("Temp/mvp_rebuild.flag", "");
+        File.WriteAllText("Temp/mvp_lobby.flag", "");
     }
 
     // 게임에 나오는 글자 모으기
-    static string CollectChars()
+    public static string CollectChars()
     {
         var set = new HashSet<char>();
         void AddText(string s) { if (s != null) foreach (char c in s) set.Add(c); }
