@@ -406,7 +406,7 @@ public static class GameScript
         new[]
         {
             new Line(Face.Dokkaebi, "부적은 숨겨 둬. 보기만 해도 따끔따끔하다니까!"),
-            new Line(Face.Dokkaebi, "나도 사람일 땐 이랬지… 앗, 비 그친다! 또 봐!"),
+            new Line(Face.Dokkaebi, "앗, 비 그쳤다! 난 이만 갈게. 또 봐!"),
         },
         new[]
         {

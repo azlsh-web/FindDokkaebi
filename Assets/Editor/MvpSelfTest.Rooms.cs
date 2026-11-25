@@ -100,7 +100,7 @@ static partial class MvpSelfTest
                         });
                     });
                 });
-                Add(1.5f, "2챕터 돋보기 시범 남은 시간", () =>
+                Add(0.4f, "2챕터 돋보기 시범 남은 시간", () =>
                 {
                     var peek = Find("DrawPanel/MagnifierPeek").GetComponent<MagnifierPeek>();
                     Check(peek.Active && peek.RingFill > 0.01f && peek.RingFill < 0.85f, $"시간이 지나면 띠가 줄어든다 ({peek.RingFill:0.00})");
@@ -155,11 +155,11 @@ static partial class MvpSelfTest
                     Check((Find("DrawPanel/MagnifierPeek/Lens/Hole/View").position - view).sqrMagnitude < 0.01f, "렌즈를 움직여도 원본은 그림판 자리에 그대로");
                     Shot("c2_magnifier");
                 });
-                Add(5.0f, "2챕터 돋보기 끝", () =>
+                Add(5.0f / PeekSpeed + 0.4f, "2챕터 돋보기 끝", () =>
                 {
                     float now = GetFloat("timeLeft");
                     Check(!IsOn("DrawPanel/MagnifierPeek"), "5초 뒤 저절로 닫힌다");
-                    Check(drawTimeAtPeek - now > 4.5f, $"둘러보는 동안에도 향이 탄다 ({drawTimeAtPeek - now:0.0}초)");
+                    Check(drawTimeAtPeek - now > 5f / PeekSpeed * 0.9f, $"둘러보는 동안에도 향이 탄다 ({drawTimeAtPeek - now:0.0}초)");
                     Check(IsOn("DrawPanel") && Board().HasDrawn, "그리던 그림 그대로 그리기로 돌아온다");
                     Gm().MagnifierTap();
                     Check(!IsOn("DrawPanel/MagnifierPeek"), "다 쓰면 더 누를 수 없다");

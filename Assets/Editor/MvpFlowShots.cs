@@ -73,6 +73,7 @@ static class MvpFlowShots
         if (change != PlayModeStateChange.EnteredPlayMode || !SessionState.GetBool(RunningKey, false)) return;
         SessionState.SetBool(RunningKey, false);
         OpenAIJudge.DisableAI = true;
+        MagnifierPeek.TestSpeed = MvpSelfTest.PeekSpeed;   // 돋보기 5초를 빨리 감아요
         new GameObject("FlowShots").AddComponent<Runner>();
     }
 
@@ -105,6 +106,7 @@ static class MvpFlowShots
             finished = true;
             Application.logMessageReceived -= OnLog;
             OpenAIJudge.DisableAI = false;
+            MagnifierPeek.TestSpeed = 1f;
             LocalJudge.TestOverride = null;
             File.WriteAllLines(Path.Combine(OutDir, "manifest.tsv"), manifest);
             string summary = $"[FlowShots] 사진 {shotCount}장, 오류 {errors.Count}개";

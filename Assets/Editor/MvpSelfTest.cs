@@ -67,6 +67,7 @@ static partial class MvpSelfTest
     const string OutDir = "Temp/SelfTest";
     const string RunningKey = "MvpSelfTest.Running";
     const string GroupsKey = "MvpSelfTest.Groups";
+    internal const float PeekSpeed = 4f;     // 돋보기 시간 빨리 감기 배수 (5초 → 1.25초)
     static readonly string[] AllGroups = { "logic", "judge", "lobby", "start", "stage1", "stage2", "stage3", "stage4", "stage5", "ending", "chapter2", "chapter3", "chapter4", "chapter5" };
     const string ProgressKey = "MvpSelfTest.Progress";
 
@@ -207,6 +208,7 @@ static partial class MvpSelfTest
     static void Begin(string[] groups)
     {
         OpenAIJudge.DisableAI = true;  // 테스트에서는 AI 를 부르지 않음 (요금 X)
+        MagnifierPeek.TestSpeed = PeekSpeed;   // 돋보기 5초를 빨리 감아요 (실제 게임은 그대로)
         report.Clear();
         failCount = 0;
         shotCount = 0;
@@ -340,6 +342,7 @@ static partial class MvpSelfTest
         EditorApplication.update -= Tick;
         Application.logMessageReceived -= OnLog;
         OpenAIJudge.DisableAI = false;
+        MagnifierPeek.TestSpeed = 1f;
         LocalJudge.TestOverride = null;
         pending = null;
         RestoreProgress();

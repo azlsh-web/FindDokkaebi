@@ -75,9 +75,12 @@ public class MagnifierPeek : MonoBehaviour, IPointerDownHandler, IDragHandler
         gameObject.SetActive(false);
     }
 
+    /// <summary>자동 테스트 · 플로우 사진에서만 빠르게 감아요 (실제 게임과 녹화 영상은 1 = 5초 그대로)</summary>
+    public static float TestSpeed = 1f;
+
     void Update()
     {
-        left -= Time.deltaTime;
+        left -= Time.deltaTime * TestSpeed;
         if (left <= 0f) { Stop(); return; }
         ShowTime();
     }
