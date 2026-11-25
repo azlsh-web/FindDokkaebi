@@ -28,13 +28,13 @@ public partial class GameManager
         resultDokkaebi.sprite = DokkaebiSprite(swing: true);
         ShowPanel(resultPanel);
         resultDokkaebiAnim.Play(SimpleAnim.Kind.Swing);
-        Sfx.Play(Sfx.Fail);
-        resultBox.Say(GameScript.CurseTakeLine(stageIndex), faceDokkaebiTease);
+        resultBox.Say(GameScript.CurseTakeLine(stageIndex), faceDokkaebiTease);     // 소리는 LoseHeart 의 하트 감소
     }
 
     void LoseHeart()
     {
         hearts = Mathf.Max(0, hearts - 1);
+        Sfx.Play(Sfx.HeartLoss);
         UpdateSnacks();
         if (hearts < heartIcons.Length) StartCoroutine(HeartPunch(heartIcons[hearts].rectTransform));
     }
@@ -181,7 +181,7 @@ public partial class GameManager
             if (happy) curseEndJar.Fill(hearts);    // 남은 하트가 사탕이 되어 통에 담겨요
         }
         Progress.MarkCleared(chapter.number);
-        Sfx.Play(happy ? Sfx.Cheer : Sfx.Fail);
+        Sfx.Play(happy ? Sfx.EndingHappy : Sfx.GameOver);   // C-65
         Sfx.Bgm(happy ? Sfx.BgmPicnic : Sfx.BgmCurse);  // 해피 : 밝은 소풍 곡으로 저주가 풀려요
         ShowPanel(curseEndPanel);
         // 해피 : 정화된 도깨비가 머뭇거리다 뛰어서 도망가고 방망이만 남아요 (C6 · B5, 기획서 4쪽)

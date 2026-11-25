@@ -65,7 +65,7 @@ public partial class GameManager
     IEnumerator Scare()
     {
         scareOverlay.SetActive(true);
-        Sfx.Play(Sfx.Fail);
+        Sfx.Play(Sfx.Scare);
         yield return new WaitForSeconds(0.9f);
         scareOverlay.SetActive(false);
         scareRoutine = null;
@@ -242,7 +242,7 @@ public partial class GameManager
         }
         if (roomEndJar != null) roomEndJar.Fill(jarCandies);
         Progress.MarkCleared(chapter.number);       // 물건을 다 거치면 깬 것 → 다음 챕터가 열려요
-        Sfx.Bgm(Sfx.BgmRoom);
+        Sfx.Bgm(RoomBgm);
         Sfx.Play(Sfx.Cheer);
         ShowPanel(roomEndPanel);
     }

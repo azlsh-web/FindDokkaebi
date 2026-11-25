@@ -33,6 +33,7 @@ static partial class MvpSelfTest
                 StartChapter(2);
                 st = ChapterOf(2).items[0];
                 Check(GetChapterNumber() == 2 && Bg() == "BG_RoomRain", "2챕터는 비 오는 방에서 시작한다");
+                Check(Sfx.CurrentBgm == Sfx.BgmRoom && Sfx.CurrentAmbient == Sfx.AmbRain, "2챕터 방은 아침 곡 위에 빗소리 (C-65)");
                 Check(IsOn("DialoguePanel") && !IsOn("DialoguePanel/Dokkaebi") && !IsOn("DialogueDim") && !IsOn("HUD"), "첫 대사는 주인공 혼자 (어둡게 하지 않는다)");
                 Check(IsOn("DialoguePanel/WindowFire"), "첫 대사 때 창밖에 도깨비불이 보인다 (복선)");
                 Check(!IsOn("DialoguePanel/Opening"), "1챕터 오프닝 그림은 나오지 않는다");
@@ -251,6 +252,7 @@ static partial class MvpSelfTest
                 StartChapter(3);
                 st = ChapterOf(3).items[0];
                 Check(Bg() == "BG_RoomEvening", "3챕터는 저녁 방");
+                Check(Sfx.CurrentBgm == Sfx.BgmEvening && Sfx.CurrentAmbient == null, "3챕터 방은 저녁 곡, 빗소리는 꺼짐 (C-65)");
                 Then(() =>
                 {
                     for (int k = 0; k < 20 && !IsOn("DialoguePanel/Dokkaebi"); k++) Gm().DialogueTap();
@@ -313,6 +315,7 @@ static partial class MvpSelfTest
                 StartChapter(4);
                 st = ChapterOf(4).items[0];
                 Check(Bg() == "BG_RoomNight", "4챕터는 밤 방");
+                Check(Sfx.CurrentBgm == Sfx.BgmNight, "4챕터 방은 밤 곡 (C-65)");
                 Then(TapToObserve);
             });
             Add(3.2f, "4챕터 그리기", () =>

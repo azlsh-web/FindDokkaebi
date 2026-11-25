@@ -336,6 +336,8 @@ public partial class GameManager : MonoBehaviour
     bool IsCurse => chapter != null && chapter.rule == ChapterRule.Curse;
     bool BatItem => chapter != null && chapter.number == 1 && stageIndex == 0;    // 1챕터 첫 물건 = 도깨비 방망이
     bool RoomChapter => chapter != null && !IsCurse && chapter.number != 1;        // 2~4챕터 : 방 시작 · 끝 장면
+    // 방 대화 배경음 : 3챕터 저녁, 4챕터 밤 (C-65, 임시 곡), 나머지는 아침 방
+    string RoomBgm => chapter == null ? Sfx.BgmRoom : chapter.number == 3 ? Sfx.BgmEvening : chapter.number == 4 ? Sfx.BgmNight : Sfx.BgmRoom;
     bool PenGuide => chapter.guide == ChapterGuide.Pen;
     StageData Stage => IsCurse ? chosen : stages[stageIndex];
 

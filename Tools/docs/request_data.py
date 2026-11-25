@@ -129,21 +129,34 @@ SOUND_SPECS = [
     ("sfx_snack_in", "사탕·무료 돋보기 등장", "샤샤샥", "0.7초"),
     ("sfx_land", "소풍 물건 착지", "가벼운 톡", "0.2초"),
 ]
-NEW_SOUND = [
-    ("sfx_scare", "5챕터 점프스케어", "짧게 놀라게 하되 과도한 음량 없이", "0.5~1초", "BACKLOG B3 · 11/20 승인"),
-    ("sfx_heart_loss", "5챕터 주인공 하트 감소", "한 개 깎이는 순간을 알림", "0.5~1초", "BACKLOG C2"),
-    ("sfx_interfere", "그리기 방해", "반복해도 귀에 거슬리지 않는 장난·위협", "0.5~1초", "BACKLOG C3"),
-    ("sfx_ending_happy", "5챕터 해피 엔딩", "저주가 풀리는 안도감", "2~4초", "BACKLOG C6"),
-    ("sfx_gameover", "5챕터 게임오버", "위협·좌절, 다른 엔딩과 구별", "2~4초", "BACKLOG C6"),
-    ("amb_rain", "2챕터 비 오는 방", "대사를 가리지 않는 빗소리", "20~40초 반복", "C-55 · 11/20 승인"),
-    ("bgm_evening", "3챕터 저녁 방", "기존 악기 톤을 유지하며 불안한 복선", "30~60초 반복", "C-55 · 11/20 승인"),
-    ("bgm_night", "4챕터 밤 방", "어둡고 불편한 분위기, 5챕터로 연결", "30~60초 반복", "C-55 · 11/20 승인"),
+# 2026-11-25 (C-65) : 사운드팀 대신 Claude 가 만든 임시 소리 8개 (Tools/sound/make_temp_sound.py)
+#   예전 신규 요청 근거 : sfx_scare B3 · sfx_heart_loss C2 · sfx_interfere C3 · 엔딩 2개 C6 · 방 3개 C-55 (11/20 승인)
+SOUND_SPECS += [
+    ("sfx_scare", "5챕터 점프스케어 · 그리기 놀래키기", "짧게 놀라게 하되 과도한 음량 없이", "0.9초"),
+    ("sfx_heart_loss", "5챕터 주인공 하트 감소", "한 개 깎이는 순간을 알림", "0.7초"),
+    ("sfx_interfere", "5챕터 그리기 방해 빨간 낙서", "반복해도 귀에 거슬리지 않는 장난·위협", "0.75초"),
+    ("sfx_ending_happy", "5챕터 해피 엔딩", "저주가 풀리는 안도감", "3초"),
+    ("sfx_gameover", "5챕터 게임오버", "위협·좌절, 다른 엔딩과 구별", "3.2초"),
+    ("amb_rain", "2챕터 내내 (방 배경음 위에 겹침)", "대사를 가리지 않는 빗소리", "32초 반복"),
+    ("bgm_evening", "3챕터 저녁 방", "기존 악기 톤을 유지하며 불안한 복선", "약 100초 반복"),
+    ("bgm_night", "4챕터 밤 방", "어둡고 불편한 분위기, 5챕터로 연결", "약 115초 반복"),
 ]
+TEMP_SOUND = {
+    "bgm_curse": "Claude가 bgm_judge 를 느리고 낮게 바꿈 (ffmpeg 속도 0.87 · 고음 줄임 · 울림). 임의 제작 (D1, 11/23)",
+    "sfx_scare": "Claude 합성 : 낮은 쿵 + 반음 부딪히는 화음 + 울림 (make_temp_sound.py, C-65)",
+    "sfx_heart_loss": "Claude 합성 : 내려가는 실로폰 두 음 + 작은 깨짐 (make_temp_sound.py, C-65)",
+    "sfx_interfere": "Claude가 sfx_mark(연필)를 낮고 거칠게 바꿈 (make_temp_sound.py, C-65)",
+    "sfx_ending_happy": "Claude 합성 : 올라가는 실로폰 도미솔도 + 따뜻한 화음 (make_temp_sound.py, C-65)",
+    "sfx_gameover": "Claude 합성 : 내려가는 단조 세 음 + 낮은 울림 (make_temp_sound.py, C-65)",
+    "amb_rain": "Claude 합성 : 걸러 낸 노이즈 + 빗방울, 이음새 없이 반복 (make_temp_sound.py, C-65)",
+    "bgm_evening": "Claude가 bgm_room 을 반음 낮고 느리게 + 고음 줄임 (make_temp_sound.py, C-65)",
+    "bgm_night": "Claude가 bgm_room 을 세 반음 낮고 느리게 + 어둡게 + 울림 (make_temp_sound.py, C-65)",
+}
 
 
 def sound_inventory():
     code = (ROOT / "Assets/Scripts/Sfx.cs").read_text(encoding="utf-8")
-    constants = set(re.findall(r'const string \w+ = "((?:sfx|bgm)_\w+)"', code))
+    constants = set(re.findall(r'const string \w+ = "((?:sfx|bgm|amb)_\w+)"', code))
     documented = {s[0] for s in SOUND_SPECS}
     existing = {p.stem for p in SOUND.iterdir() if p.suffix.lower() in (".wav", ".ogg", ".mp3")}
     if constants != documented or existing != documented:
@@ -151,13 +164,10 @@ def sound_inventory():
     out = []
     for name, where, feel, length in SOUND_SPECS:
         p = next(p for p in SOUND.iterdir() if p.stem == name and p.suffix in (".wav", ".ogg", ".mp3"))
-        method = ("Claude가 bgm_judge 를 느리고 낮게 바꿈 (ffmpeg 속도 0.87 · 고음 줄임 · 울림). 임의 제작 (D1, 11/23)"
-                  if name == "bgm_curse" else "VARCO Sound (11/11 효과음, 11/12~13 배경음)")
-        out.append(Request("사운드", "기존 소리 교체", "Resources/Sound/" + p.name, "임시", method,
-                           where, feel, "교체", "C-21·C-28 · ArtSource/Sound/varco/출처.txt · Sfx.cs", length))
-    for name, where, feel, length, evidence in NEW_SOUND:
-        out.append(Request("사운드", "아직 없는 소리", f"Resources/Sound/{name}.ogg" if name.startswith(("bgm", "amb")) else f"Resources/Sound/{name}.wav",
-                           "없음", "미제작", where, feel, "신규", evidence, length + " (제안)"))
+        method = TEMP_SOUND.get(name, "VARCO Sound (11/11 효과음, 11/12~13 배경음)")
+        # 2026-11-25 (C-65) : 임시 소리는 모두 그대로 써요. 사운드팀에 다시 요청하지 않아요.
+        out.append(Request("사운드", "기존 소리", "Resources/Sound/" + p.name, "임시", method,
+                           where, feel, "유지", "C-21·C-28·C-65 · ArtSource/Sound/varco/출처.txt · Sfx.cs", length))
     return out
 
 

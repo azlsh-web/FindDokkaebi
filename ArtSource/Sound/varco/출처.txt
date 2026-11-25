@@ -36,3 +36,7 @@ bgm_judge      Cute, mischievous tiptoe music for a playful little goblin wonder
                (VARCO 결과 이름 Goblin's playful tiptoe_2, 188.1초, 2026-11-13)
 bgm_picnic     Happy, cheerful picnic music for a children's game ending. Ukulele, glockenspiel, whistling-like flute and bouncy pizzicato. Joyful and sunny but soft, not loud, gentle dynamics. Slightly upbeat tempo, seamless loop, no vocals.
                (VARCO 결과 이름 Sunny picnic celebration_1, 91.2초, 2026-11-13)
+
+VARCO 가 아닌 임시 소리 (2026-11-25, C-65) : Tools/sound/make_temp_sound.py 가 만들어요.
+  sfx_scare · sfx_heart_loss · sfx_ending_happy · sfx_gameover · amb_rain : numpy 합성
+  sfx_interfere : sfx_mark 변형 / bgm_evening · bgm_night : bgm_room 변형 (ffmpeg)

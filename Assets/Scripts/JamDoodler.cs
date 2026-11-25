@@ -91,6 +91,7 @@ public class JamDoodler : MonoBehaviour
         var line = NewMark("JamLine");
         Vector2 prev = center + Random.insideUnitCircle * reach;
         ShowPeek(prev, 0.55f);
+        Sfx.Play(Sfx.Interfere);
         int points = Random.Range(6, 10);
         float thick = size.x * 0.014f;
         for (int i = 0; i < points; i++)
@@ -179,7 +180,7 @@ public class JamDoodler : MonoBehaviour
     {
         Vector2 size = area.rect.size;
         peek.anchoredPosition = new Vector2(size.x * 0.5f, -size.y * 0.45f);
-        Sfx.Play(Sfx.Fail);         // 임시 : sfx_interfere 가 오면 바꿔요
+        Sfx.Play(Sfx.Scare);
         flash = 1f;
         for (float t = 0f; t < 0.9f; t += Time.deltaTime)
         {

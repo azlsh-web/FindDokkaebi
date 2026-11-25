@@ -23,6 +23,12 @@ public static class Sfx
     public const string Mark = "sfx_mark";
     public const string Land = "sfx_land";
     public const string Cheer = "sfx_cheer";
+    // 5챕터 (임시 : Claude 가 합성 · 변형, Tools/sound/make_temp_sound.py, C-65)
+    public const string Scare = "sfx_scare";            // 놀래키기 · 점프스케어
+    public const string HeartLoss = "sfx_heart_loss";   // 주인공 하트 -1
+    public const string Interfere = "sfx_interfere";    // 그리기 방해 빨간 낙서
+    public const string EndingHappy = "sfx_ending_happy";
+    public const string GameOver = "sfx_gameover";
 
     // 배경음
     public const string BgmRoom = "bgm_room";
@@ -30,10 +36,16 @@ public static class Sfx
     public const string BgmJudge = "bgm_judge";
     public const string BgmPicnic = "bgm_picnic";
     public const string BgmCurse = "bgm_curse";     // 5챕터 흑화 뒤 (임시 : bgm_judge 를 느리고 낮게 바꾼 곡, D1)
+    public const string BgmEvening = "bgm_evening"; // 3챕터 저녁 방 (임시 : bgm_room 을 조금 느리고 어둡게, C-65)
+    public const string BgmNight = "bgm_night";     // 4챕터 밤 방 (임시 : bgm_room 을 더 느리고 낮게, C-65)
+
+    // 환경음 : 배경음 위에 겹쳐 깔아요
+    public const string AmbRain = "amb_rain";       // 2챕터 비 오는 방 (임시 : 합성 빗소리, C-65)
 
     const string BgmKey = "volume_bgm";
     const string SfxKey = "volume_sfx";
     const float BgmBase = 0.5f;     // 배경음은 효과음보다 작게 깔아요 (볼륨 1 일 때 0.5)
+    const float AmbBase = 0.35f;    // 환경음은 배경음보다 더 작게, 대사를 가리지 않게 (배경음 볼륨을 따라가요)
 
     static float bgmVolume = -1f, sfxVolume = -1f;  // -1 = 아직 저장값을 안 읽음
 
@@ -47,6 +59,7 @@ public static class Sfx
             PlayerPrefs.SetFloat(BgmKey, bgmVolume);
             PlayerPrefs.Save();
             if (bgmSource != null) bgmSource.volume = BgmBase * bgmVolume;
+            if (ambSource != null) ambSource.volume = AmbBase * bgmVolume;
         }
     }
 
@@ -64,7 +77,8 @@ public static class Sfx
 
     static AudioSource sfxSource;
     static AudioSource bgmSource;
-    static string currentBgm;
+    static AudioSource ambSource;
+    static string currentBgm, currentAmb;
 
     static void Prepare()
     {
@@ -79,6 +93,10 @@ public static class Sfx
         bgmSource.playOnAwake = false;
         bgmSource.loop = true;
         bgmSource.volume = BgmBase * BgmVolume;
+        ambSource = go.AddComponent<AudioSource>();
+        ambSource.playOnAwake = false;
+        ambSource.loop = true;
+        ambSource.volume = AmbBase * BgmVolume;
     }
 
     public static void Play(string name)
@@ -104,5 +122,27 @@ public static class Sfx
         Prepare();
         bgmSource.clip = clip;
         bgmSource.Play();
+    }
+
+    /// <summary>지금 배경음 이름 (없으면 null)</summary>
+    public static string CurrentBgm => currentBgm;
+
+    /// <summary>지금 깔린 환경음 이름 (없으면 null)</summary>
+    public static string CurrentAmbient => currentAmb;
+
+    /// <summary>환경음 바꾸기 (배경음과 따로 겹쳐 나요). 이미 같으면 그대로, null 이면 멈춰요.</summary>
+    public static void Ambient(string name)
+    {
+        if (name == currentAmb) return;
+        currentAmb = name;
+        var clip = name != null ? Resources.Load<AudioClip>("Sound/" + name) : null;
+        if (clip == null)
+        {
+            if (ambSource != null) ambSource.Stop();
+            return;
+        }
+        Prepare();
+        ambSource.clip = clip;
+        ambSource.Play();
     }
 }

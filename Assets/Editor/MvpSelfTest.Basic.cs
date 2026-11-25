@@ -22,8 +22,8 @@ static partial class MvpSelfTest
             // Sfx 의 효과음 · 배경음 이름마다 Resources/Sound 에 파일이 있어야 해요
             foreach (FieldInfo f in typeof(Sfx).GetFields(BindingFlags.Public | BindingFlags.Static))
             {
-                if (!(f.GetValue(null) is string name) || !(name.StartsWith("sfx_") || name.StartsWith("bgm_"))) continue;
-                Check(Resources.Load<AudioClip>("Sound/" + name) != null, (name.StartsWith("bgm_") ? "배경음 " : "효과음 ") + name);
+                if (!(f.GetValue(null) is string name) || !(name.StartsWith("sfx_") || name.StartsWith("bgm_") || name.StartsWith("amb_"))) continue;
+                Check(Resources.Load<AudioClip>("Sound/" + name) != null, (name.StartsWith("bgm_") ? "배경음 " : name.StartsWith("amb_") ? "환경음 " : "효과음 ") + name);
             }
         });
         Add(0f, "글꼴에 게임 글자가 다 있다", () =>

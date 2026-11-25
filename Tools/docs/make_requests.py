@@ -36,7 +36,7 @@ def make_status(rows):
     lines = ["# 아트·사운드 요청 현황", "", f"> **상태** 최신 · **담당** 개발 · **마지막 갱신** {date.today()}", "",
              "이 파일이 요청 상태의 기준이에요. `Tools/docs/request_data.py`와 실제 파일을 대조해 자동으로 만들어요. 팀 PDF도 같은 목록에서 만들며 **교체·신규 요청만** 담아요.", "",
              "- **받음**: 아트팀 또는 기획 자료에서 받은 그림. 게임용으로 자르거나 나눈 것도 포함해요.",
-             "- **임시**: 게임에 있지만 Codex·VARCO·색 바꾸기·코드로 만든 파일. **교체**는 팀에 받을 것, **유지**는 그대로 쓸 것이에요. 2026-11-25(C-64)부터 아트 임시 그림은 모두 **유지**라서 아트팀에 더 요청할 그림이 없어요.",
+             "- **임시**: 게임에 있지만 Codex·VARCO·색 바꾸기·코드로 만든 파일. **교체**는 팀에 받을 것, **유지**는 그대로 쓸 것이에요. 2026-11-25부터 아트 임시 그림(C-64)과 임시 소리(C-65)는 모두 **유지**라서 아트팀 · 사운드팀에 더 요청할 것이 없어요.",
              "- **없음**: 별도 파일이 아직 없는 신규 요청. **개발 연결이 필요해요**.",
              "- 수량은 게임 파일 기준이에요. 촛대 원본 한 장을 막대·불꽃 두 파일로 나누기도 해요. 사용하지 않는 옛 그림은 요청에서 제외했어요.", "",
              DEADLINE, "", PLANNING, "", "## 바로 보낼 문서", "",
@@ -84,9 +84,12 @@ def make_team_pdf(team, rows):
             f"<div class='note'><b>교체 {counts['교체']}개 + 신규 {counts['신규']}개</b>. 받은 파일과 개발이 유지할 단순 UI는 요청에서 뺐어요.</div><p>{PLANNING}</p>",
             f"<p><a href='{SITE}{quote(paths.REQUESTS[:-3] + '.html')}'>받음·임시·없음 전체 현황</a> · "
             f"<a href='{SITE}{quote(paths.FLOW[:-3] + '.html')}'>게임 플로우와 화면 사진</a></p>"]
-    if not pending:     # 2026-11-25 (C-64) : 아트는 받은 그림 + 임시 그림 확정으로 요청이 0개예요
+    if not pending:     # 2026-11-25 : 아트(C-64) · 사운드(C-65) 모두 임시본 확정으로 요청이 0개예요
         body[1] = ("<div class='note'><b>더 요청할 그림이 없어요.</b> 게임에 들어간 그림은 모두 받았거나, "
-                   "codex · 색 바꾸기로 만든 임시 그림을 그대로 쓰기로 했어요 (결정 기록 C-64). 임시 그림 목록은 전체 현황에 '임시 · 유지'로 남아 있어요.</div>")
+                   "codex · 색 바꾸기로 만든 임시 그림을 그대로 쓰기로 했어요 (결정 기록 C-64). 임시 그림 목록은 전체 현황에 '임시 · 유지'로 남아 있어요.</div>"
+                   if team == "아트" else
+                   "<div class='note'><b>더 요청할 소리가 없어요.</b> 게임의 소리 26개는 VARCO Sound 임시본이거나 Claude가 합성 · 변형한 임시본이고, "
+                   "모두 그대로 쓰기로 했어요 (결정 기록 C-65). 만든 방법은 전체 현황에 '임시 · 유지'로 남아 있어요.</div>")
         html = f"<!doctype html><html lang='ko'><meta charset='utf-8'><title>{team}팀 전달사항</title><style>{CSS}</style><body>{''.join(body)}</body></html>"
         output = paths.ART_REQUEST if team == "아트" else paths.SOUND_REQUEST
         print(output, write_pdf(html, paths.doc(output)))

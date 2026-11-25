@@ -25,7 +25,8 @@ public partial class GameManager
         timerGroup.SetActive(false);
         backgroundImage.sprite = PlayBackground;
         UpdateSnacks();
-        Sfx.Bgm(IsCurse && dark ? Sfx.BgmCurse : Sfx.BgmRoom);
+        Sfx.Bgm(IsCurse && dark ? Sfx.BgmCurse : RoomBgm);
+        Sfx.Ambient(chapter != null && chapter.number == 2 ? Sfx.AmbRain : null);     // 2챕터는 내내 비가 와요 (C-65)
 
         giveNote.SetActive(false);
         giveSnackOut.gameObject.SetActive(false);

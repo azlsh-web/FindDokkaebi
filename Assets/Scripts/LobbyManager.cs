@@ -44,6 +44,7 @@ public class LobbyManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         Sfx.Bgm(Sfx.BgmRoom);
+        Sfx.Ambient(null);          // 2챕터 빗소리를 끄고 와요
         popup.SetActive(false);
         settingsPanel.SetActive(false);
         if (ChapterSelect.OpenChaptersOnLobby)
