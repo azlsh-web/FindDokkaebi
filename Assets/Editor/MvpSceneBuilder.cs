@@ -1326,6 +1326,8 @@ public static partial class MvpSceneBuilder
         SetArray(so, "roomEndItems", roomEndItems);
         Set(so, "roomEndBox", roomEndBoxComp);
         Set(so, "roomEndEyes", roomEndEyes.gameObject);
+        Set(so, "roomEndAwkward", LoadSprite("Chapter4/Char_Dokkaebi_Awkward.png"));
+        Set(so, "faceDokkaebiAwkward", LoadSprite("Chapter4/Char_DokkaebiFace_Awkward.png"));
         Set(so, "judgeDokkaebi", judgeDokkaebi);
         // 도깨비 기분 : 3챕터 주황, 4챕터 붉은 머리 불 (Tools/art_temp/make_dokkaebi_mood.py 로 만든 임시 그림)
         Sprite Mood(string name, int mood, Sprite normal) => mood == 0 ? normal : LoadSprite($"Characters/Mood/{name}_M{mood}.png") ?? normal;

@@ -354,6 +354,9 @@ static partial class MvpSelfTest
                 Check(IsOn("RoomEndPanel") && !IsOn("RoomEndPanel/RedEyes"), "방 끝 장면 (빨간 눈은 아직)");
                 Gm().EndingTap();
                 Check(Plain("RoomEndPanel/DialogueBox/Line") == GameScript.RoomEndLines(4)[0].text, "도깨비가 약속을 말한다");
+                Check(Find("RoomEndPanel/Dokkaebi").GetComponent<Image>().sprite?.name == "Char_Dokkaebi_Awkward"
+                      && Find("RoomEndPanel/DialogueBox/Face").GetComponent<Image>().sprite?.name == "Char_DokkaebiFace_Awkward",
+                      "4챕터 끝 장면 도깨비는 어색하게 웃는다 (C-64)");
                 Gm().EndingTap();
                 Gm().EndingTap();
                 Check(Plain("RoomEndPanel/DialogueBox/Line") == GameScript.RoomEndLines(4)[1].text && !IsOn("RoomEndPanel/RedEyes"),

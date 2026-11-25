@@ -232,7 +232,7 @@ public partial class GameManager
         roomEndEyes.SetActive(false);
         roomEndDokkaebi.gameObject.SetActive(true);
         roomEndDokkaebi.color = Color.white;
-        roomEndDokkaebi.sprite = DokkaebiSprite();
+        roomEndDokkaebi.sprite = chapter.endEyes && roomEndAwkward != null ? roomEndAwkward : DokkaebiSprite();   // 4챕터 : 어색한 웃음
         roomEndDokkaebiAnim.Play(SimpleAnim.Kind.Gentle);
         for (int i = 0; i < roomEndItems.Length; i++)
         {
@@ -268,6 +268,7 @@ public partial class GameManager
             roomEndEyes.SetActive(chapter.endEyes);
         }
         roomEndLine++;
-        roomEndBox.Say(line.text, FaceOf(line.face));
+        bool awkward = chapter.endEyes && line.face == GameScript.Face.Dokkaebi && faceDokkaebiAwkward != null;
+        roomEndBox.Say(line.text, awkward ? faceDokkaebiAwkward : FaceOf(line.face));
     }
 }

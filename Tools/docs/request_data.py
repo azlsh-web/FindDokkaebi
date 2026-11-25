@@ -78,10 +78,9 @@ def art_inventory():
             method = "Codex CLI가 친구 원본을 흐리게 가공 (finish_chapter5.ps1)"
         elif "Codex" in source:
             method = "Codex 임시 그림 (art_tree_data 기록)"
-        action = "완료" if received else "유지" if source.startswith("코드로") and not rel.startswith("Chapter4/") else "교체"
-        note = "현재 그림 유지. 팀에 새로 요청하지 않아요." if action == "유지" else "현재 그림과 비율·투명 영역을 맞춰 교체해 주세요."
-        if re.search(r"Ch[2345]_.*_(Original|Wrong\d)", rel):
-            note += " 원본의 판정 기준과 각 오답의 틀린 특징을 유지해 주세요. 게임 플로우의 물건 표를 함께 봐 주세요."
+        # 2026-11-25 (C-64) : 임시 그림은 모두 그대로 써요. 아트팀에 다시 요청하지 않아요.
+        action = "완료" if received else "유지"
+        note = "임시 그림으로 확정 (C-64). 아트팀에 다시 요청하지 않아요." if action == "유지" else ""
         if rel.endswith(("Dialogue_Box.png", "Draw_Paper.png", "Paper_Score.png", "Chapter_Picnic.png")):
             method, note = "아트팀 수령 (2026-11-17, C-22·C-25)", "게임 연결 완료. 재요청하지 않아요."
         if rel.endswith(("HUD_CandleGauge.png", "HUD_CandleFlame.png")):
@@ -102,19 +101,11 @@ def new_art(stem, where, note, evidence, template):
 
 
 def missing_art():
-    body = "Characters/Char_Dokkaebi_Normal.png"
-    face = "Characters/Char_DokkaebiFace_Normal.png"
-    dark = "Chapter5/Char_Dokkaebi_Dark.png"
-    specs = [
-        ("Char_Dokkaebi_Awkward", "4챕터 몸", "붉은 머리 불, 어색한 웃음. 기존 몸과 구도 맞추기.", "기획서 4장 · C-55", body),
-        ("Char_DokkaebiFace_Awkward", "4챕터 대사 얼굴", "몸과 같은 어색한 웃음·머리 불 색.", "기획서 4장 · C-55", face),
-        ("Char_Dokkaebi_DarkThink", "5챕터 판정 대기", "초록 도깨비 대신 흑화 도깨비의 판정 대기 자세.", "BACKLOG B2", dark),
-        ("Char_Dokkaebi_DarkRun", "5챕터 해피 엔딩", "도망가는 자세. 이동·퇴장은 개발이 연결해요.", "BACKLOG B5", dark),
-        ("Char_Friend_SpiritEscape", "5챕터 친구 영혼 이탈", "흐리게 만든 정지 그림은 이미 있어요. 여기서는 몸에서 빠져나가는 영혼용 별도 그림을 요청해요. 애니메이션 연결은 개발 작업.", "BACKLOG C4 · 사용자 승인 11/20", "Chapter5/Char_Friend_Spirit.png"),
-    ]
-    specs += [(f"Char_DokkaebiFace_Dark{pose}", "5챕터 흑화 대사 얼굴", "기존 흑화 전신과 같은 그림체·머리 색. 초록 얼굴을 대신해요.", "BACKLOG B1", face)
-              for pose in ("Normal", "Proud", "Tease")]
-    return [new_art(*spec) for spec in specs]
+    """아직 없는 그림. 2026-11-25 (C-64) : 4챕터 어색한 웃음 2장은 codex 로 만들었고,
+    나머지 6장은 이미 들어간 대체 그림을 그대로 써요 (흑화 얼굴 = *_Dark 색 바꿈, 판정 대기 = B2 빛나는 쪽지,
+    도망 = B5 정화 도깨비, 영혼 = Char_Friend_Spirit). 그래서 지금은 빈 목록이에요."""
+    return []
+
 
 
 # (파일 이름, 나오는 때, 느낌, 권장 길이). 기존 17개는 모두 VARCO 임시본이에요.

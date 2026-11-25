@@ -120,6 +120,8 @@ TREE = [
         ("DialoguePanel/WindowFire (2챕터 창밖 도깨비불)", "UI/Magnifier_DokkaebiFire", TEMP + ", 돋보기 시범 도깨비불을 그대로"),
         ("DrawPanel/GuideHighlight/Orbit/Fire_0~2 (1챕터 펜 · 3챕터 색 안내 도깨비불)", "UI/Magnifier_DokkaebiFire", TEMP),
         ("RoomEndPanel/RedEyes (4챕터 창 안 빨간 눈)", "Chapter4/Room_RedEyes", CODE),
+        ("RoomEndPanel/Dokkaebi (4챕터 어색한 웃음 몸)", "Chapter4/Char_Dokkaebi_Awkward", CODEX + " 임시 그림, 붉은 머리 몸을 바탕으로 (11/25, C-64)"),
+        ("RoomEndPanel/Box 얼굴 (4챕터 어색한 웃음)", "Chapter4/Char_DokkaebiFace_Awkward", CODEX + " 임시 그림, 붉은 머리 얼굴을 바탕으로 (11/25, C-64)"),
         ("RoomEndPanel/Boy", "Characters/Char_Boy_Happy", TEAM),
         ("Char_Dokkaebi_Normal (3챕터 주황 머리)", "Characters/Mood/Char_Dokkaebi_Normal_M1", TEMP + ", Char_Dokkaebi_Normal 의 노란 머리 색만 바꿈 (make_dokkaebi_mood.py)"),
         ("Char_Dokkaebi_Normal (4챕터 붉음 머리)", "Characters/Mood/Char_Dokkaebi_Normal_M2", TEMP + ", Char_Dokkaebi_Normal 의 노란 머리 색만 바꿈 (make_dokkaebi_mood.py)"),

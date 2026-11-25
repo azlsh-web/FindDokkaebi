@@ -202,6 +202,8 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] Image[] roomEndItems;
     [SerializeField] DialogueBox roomEndBox;
     [SerializeField] GameObject roomEndEyes;        // 4챕터 독백 : 창 안의 빨간 눈
+    [SerializeField] Sprite roomEndAwkward;         // 4챕터 끝 장면 : 어색하게 웃는 도깨비 몸 (codex 임시, C-64)
+    [SerializeField] Sprite faceDokkaebiAwkward;    // 4챕터 끝 장면 : 어색하게 웃는 대사 얼굴 (codex 임시, C-64)
     [SerializeField] Image judgeDokkaebi;           // 판정 대기 도깨비 (기분에 따라 그림이 달라요)
 
     [Header("도깨비 기분 (머리 불 색) : [0 보통, 1 주황, 2 붉음]")]
