@@ -45,7 +45,7 @@ arch = [
     "<tr><td class='k'>엔진</td><td>Unity 6.3 LTS (6000.3.11f1), uGUI + TextMeshPro, Input System. 씬 1개 <code>Assets/Scenes/Game.unity</code></td></tr>"
     "<tr><td class='k'>씬 만들기</td><td>씬은 손으로 만들지 않고 <code>MvpSceneBuilder</code>가 코드로 전부 만들어요 (메뉴 Tools → 찾아라도깨비 → MVP 씬 만들기). 배치를 바꾸려면 이 파일을 고치고 다시 만들기</td></tr>"
     "<tr><td class='k'>화면</td><td>패널 8개 (시작 · 대화 · 관찰 · 그리기 · 판정 · 결과 · 채점표 · 종료) 중 하나만 켜고, 그리기부터 채점표까지 위에 HUD. 화면 기준 1080×1899 = 팀 시안(2248×3952)을 줄인 크기, 시안 픽셀 좌표 그대로 배치</td></tr>"
-    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/2_제작/결정_기록.md</code>). 실패하면 사탕을 돌려주고 다시 제출</td></tr>"
+    "<tr><td class='k'>판정</td><td>멀티모달 LLM = Google Gemini (<code>gemini-3-flash-preview</code>, 무료 등급 : 한도는 AI Studio 에서 확인). 웹 · 에디터 모두 판정 중계 서버(Cloudflare Worker)를 거쳐요 (키는 서버에만). 프롬프트는 기획서 부록 B 문장 기준 (달라진 점은 <code>Docs/2_제작/결정_기록.md</code>). 실패하면 사탕을 돌려주고 다시 제출. 설정 창의 개발자 모드(<code>DevMode</code>, C-66)를 켜면 AI 를 부르지 않고 기준마다 O · X 를 골라요</td></tr>"
     "<tr><td class='k'>배포</td><td>웹 게임 = GitHub Pages (<code>gh-pages</code> 브랜치), 판정 서버 = <code>Server/judge</code> (wrangler), 코드 = <code>main</code> (보호 브랜치, PR 로 합침)</td></tr></table>",
     "<h2>2. 폴더</h2><pre>"
     "FindDokkaebi/\n"
@@ -71,6 +71,7 @@ arch = [
     "<tr><td><code>ColorMixer</code></td><td>붓 끝 색 : 색을 고르면 물방울이 붓 끝으로 날아가 첨벙하고 색이 바뀜. 4 · 5단계는 물감을 누를 때마다 넣어 섞고(넣은 횟수 표시) · 물감 빼기 (물방울이 물감으로 돌아감). 섞은 색으로 그린 뒤 물감을 누르면 새로 섞기. 넣은 비율로 계산한 색 (Mix)</td><td>섞는 규칙</td></tr>"
     "<tr><td><code>OpenAIJudge</code></td><td>AI 판정 요청 : 판정 서버 주소가 있으면 서버, 없으면 OpenAI.json 키로 OpenAI 직접. 프롬프트(BuildPrompt) = 부록 B 문장 기준 (검은색 단계 = 방망이 프롬프트, 색 단계 = 돗자리 프롬프트, 단계 이름 · 목표 대상 · 특징만 바꿔 넣음) · 응답 JSON 해석(특징별 present)</td><td>프롬프트 · 서버 주소</td></tr>"
     "<tr><td><code>LocalJudge</code></td><td>계산식 판정 (모양 · 색 계산). <b>자동 테스트 전용</b> — 실제 플레이에서는 안 씀</td><td>테스트</td></tr>"
+    "<tr><td><code>DevMode</code> · <code>DevModeToggle</code> · <code>DevJudgePanel</code></td><td>개발자 모드 (C-66) : 로비 · 게임 설정 창의 켜짐/꺼짐 버튼(PlayerPrefs <code>dev_mode</code>). 켜면 판정 화면에 기준마다 O · X 줄과 '결과 보기'가 떠서, 고른 대로 결과로 가요. 자동 테스트 · 녹화(AI 끔)는 영향 없음</td><td>팀 확인용 판정</td></tr>"
     "<tr><td><code>IncenseBurn</code></td><td>향 연출 : 줄기가 타고 불씨 위에 재가 쌓였다 떨어지며 불꽃이 재 위에 얹혀 따라 움직임, 연기, 10초 전 강조. 그림은 아트팀 원본을 <code>Tools/docs/art_pipeline/fit_incense_art.py</code>로 칸에 맞춤</td><td>향 움직임</td></tr>"
     "<tr><td><code>MagnifierPeek</code></td><td>돋보기 : 화면을 어둡게 덮고 렌즈 안에만 그림판 자리에 고정된 원본이 보여요. 렌즈는 손가락을 따라가고 5초 뒤 닫혀요. 남은 시간은 테두리 띠가 줄어들며 보여 줘요 (덮개가 누르기를 받아서 그동안 그릴 수 없음)</td><td>돋보기 연출</td></tr>"
     "<tr><td><code>SimpleAnim</code></td><td>코드로 만든 움직임 전부 : 등장 · 걷기 · 두리번 · 간식 · 물건 착지 · 채점 표시 · 꽃가루 (Kind 하나씩)</td><td>연출</td></tr></table>",
