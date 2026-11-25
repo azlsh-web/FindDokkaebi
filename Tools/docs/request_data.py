@@ -70,6 +70,8 @@ def art_inventory():
             method = "Codex CLI가 기존 아트 색 바꾸기 (finish_chapter5.ps1)"
         elif "Char_DokkaebiFace_" in rel and rel.endswith("_Dark.png"):
             method = "Claude가 아트팀 도깨비 얼굴을 흑화 몸 그림 색으로 바꿈. 임의 제작 (B1, Tools/art_temp/make_dokkaebi_dark_face.py)"
+        elif "Jam_RedFire" in rel:
+            method = "Claude가 푸른 도깨비불(Magnifier_DokkaebiFire)의 파란 부분만 붉게 바꾸고 빈자리를 자름. 임의 제작 (C-68, Tools/art_temp/make_jam_fire.py)"
         elif "Scare_Face" in rel:
             method = "Codex CLI가 흑화 얼굴(아트팀 얼굴 색 바꿈)을 바탕으로 그림. 임의 제작 (B3, 11/23)"
         elif "Char_FriendFace" in rel:

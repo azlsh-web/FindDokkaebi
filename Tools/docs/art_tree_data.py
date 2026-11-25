@@ -177,6 +177,7 @@ TREE = [
         ("DialoguePanel/Friend (영혼을 빼앗긴 친구)", "Chapter5/Char_Friend_Spirit", CODEX + ", Friend_Original 을 흐리게"),
         ("HUD/HeartGroup/Heart_0~2 (도깨비 하트)", "Chapter5/HUD_Heart", CODEX + " 임시 그림"),
         ("CurseEndPanel/Silhouette (게임오버)", "Chapter5/GameOver_Silhouette", CODEX + " 임시 그림"),
+        ("DrawPanel/JamOverlay/Fire_0~2/Flame (그리기 방해 붉은 도깨비불)", "Chapter5/Jam_RedFire", "Claude 임시 가공, 푸른 도깨비불의 파란 부분만 붉게 (C-68, 11/25)"),
         ("ScareOverlay/Face (점프스케어)", "Chapter5/Scare_Face", CODEX + ", 흑화 얼굴(아트팀 얼굴 색 바꿈)을 바탕으로 무서운 표정 (B3, 11/23)"),
         ("DialogueBox/Face (흑화 도깨비 · 보통)", "Chapter5/Char_DokkaebiFace_Normal_Dark", "Claude 임시 가공, 아트팀 얼굴 색 바꿈 (B1, 11/23)"),
         ("DialogueBox/Face (흑화 도깨비 · 뿌듯)", "Chapter5/Char_DokkaebiFace_Proud_Dark", "Claude 임시 가공, 아트팀 얼굴 색 바꿈 (B1, 11/23)"),

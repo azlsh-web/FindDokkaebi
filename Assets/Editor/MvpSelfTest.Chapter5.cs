@@ -90,7 +90,7 @@ static partial class MvpSelfTest
             Shot("c5_draw");
             Then(() =>
             {
-                Check(Find("DrawPanel/JamOverlay").GetComponent<JamDoodler>().MarkCount > 0, "방해 : 그리는 동안 도깨비가 쪽지에 낙서를 한다");
+                Check(Find("DrawPanel/JamOverlay").GetComponent<JamDoodler>().MarksMade > 0, "방해 : 그리는 동안 도깨비가 쪽지에 낙서를 한다");
                 Gm().Submit();
                 Check(Plain("DialoguePanel/DialogueBox/Line") == GameScript.CurseGiveBoy, "쪽지를 들이밀 때 주인공 대사 (사탕 없음)");
             });

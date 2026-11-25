@@ -1027,23 +1027,35 @@ public static partial class MvpSceneBuilder
         var scareFace = Img3("Face", scareOverlay, scareSprite, 0, 400, 1080, 1080);
         if (scareSprite == null) scareFace.enabled = false;
 
-        // 그리기 방해 : 쪽지 위에 붉은 막 + 도깨비불 + 낙서. 전부 클릭을 통과시켜서 그리는 데 방해가 안 돼요
+        // 그리기 방해 : 쪽지 위에 붉은 막 + 붉은 도깨비불 + 낙서 · 글씨 · 얼룩. 전부 클릭을 통과시켜서 그림 · 판정은 그대로예요
         var jamOverlay = NewEmpty("JamOverlay", draw);
         Put3((RectTransform)jamOverlay, 20, 370, 1040, 1222);
         jamOverlay.SetSiblingIndex(draw.Find("ToolBar").GetSiblingIndex());   // 도구 줄 · 팔레트보다 아래 (붉은 막이 팔레트를 덮지 않게)
         var jamTint = NewImage("Tint", jamOverlay, new Color(0.55f, 0.08f, 0.08f, 0.25f));
         jamTint.raycastTarget = false;
         Stretch(jamTint.rectTransform);
+        // 붉은 도깨비불 셋 : 빛 + 불꽃. 쪽지 안을 맴돌다 하나씩 내 그림으로 날아와요 (JamDoodler 가 움직여요)
+        //   불꽃은 푸른 도깨비불의 파란 부분만 붉게 바꾼 임시 그림 (Tools/art_temp/make_jam_fire.py). 화면 폭 1080 기준 불꽃 160 x 255
         var jamFires = new RectTransform[3];
-        float[][] jamFirePos = { new float[] { 120, 160 }, new float[] { 640, 520 }, new float[] { 300, 880 } };   // 영역 안 좌표 (1080 기준)
+        Sprite jamFireSprite = LoadSprite("Chapter5/Jam_RedFire.png");
         for (int i = 0; i < 3; i++)
         {
-            var jamFire = NewImage("Fire_" + i, jamOverlay, new Color32(255, 90, 80, 230));
-            jamFire.sprite = T("Magnifier_DokkaebiFire");
-            jamFire.preserveAspect = true;
-            jamFire.raycastTarget = false;
-            PIn(jamFire.rectTransform, jamFirePos[i][0] / 3f, jamFirePos[i][1] / 3f, 100f / 3f, 133f / 3f);
-            jamFires[i] = jamFire.rectTransform;
+            var glow = NewImage("Fire_" + i, jamOverlay, new Color32(255, 110, 40, 150));     // 불 뒤의 붉은 빛
+            glow.sprite = T("Common_SoftPuff");
+            glow.raycastTarget = false;
+            glow.rectTransform.anchorMin = glow.rectTransform.anchorMax = new Vector2(0f, 1f);
+            glow.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            glow.rectTransform.sizeDelta = new Vector2(340f, 340f);
+            glow.rectTransform.anchoredPosition = new Vector2(520f, -611f);
+            var flame = NewImage("Flame", glow.transform, Color.white);
+            flame.sprite = jamFireSprite != null ? jamFireSprite : T("Magnifier_DokkaebiFire");
+            flame.preserveAspect = true;
+            flame.raycastTarget = false;
+            flame.rectTransform.anchorMin = flame.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            flame.rectTransform.pivot = new Vector2(0.5f, 0.5f);
+            flame.rectTransform.sizeDelta = new Vector2(160f, 255f);
+            flame.rectTransform.anchoredPosition = new Vector2(0f, 20f);
+            jamFires[i] = glow.rectTransform;
         }
         // 흑화 도깨비가 쪽지 곳곳에서 불쑥 나타나 흔들거려요 (GameManager 가 자리 · 크기를 움직여요). 클릭은 통과해요
         var jamPeek = NewImage("Peek", jamOverlay, Color.white);
@@ -1061,6 +1073,10 @@ public static partial class MvpSceneBuilder
             doodlerSo.FindProperty("tint").objectReferenceValue = jamTint;
             doodlerSo.FindProperty("font").objectReferenceValue = font;
             doodlerSo.FindProperty("blob").objectReferenceValue = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            doodlerSo.FindProperty("board").objectReferenceValue = board;
+            var firesProp = doodlerSo.FindProperty("fires");
+            firesProp.arraySize = jamFires.Length;
+            for (int i = 0; i < jamFires.Length; i++) firesProp.GetArrayElementAtIndex(i).objectReferenceValue = jamFires[i];
             doodlerSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
@@ -1291,7 +1307,6 @@ public static partial class MvpSceneBuilder
         Set(so, "forestDark", forestDark);
         Set(so, "scareOverlay", scareOverlay.gameObject);
         Set(so, "jamOverlay", jamOverlay.gameObject);
-        SetArray(so, "jamFires", jamFires);
         Set(so, "jamDoodler", jamDoodler);
         Set(so, "judgeRoam", dokEnterGo);
         Set(so, "judgeCurse", judgeCurse.gameObject);

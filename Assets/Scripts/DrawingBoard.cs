@@ -54,6 +54,10 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
     /// <summary>선을 긋기 시작한 순간 (ToolBar 가 팔레트를 닫고, 섞은 색을 "쓴 색"으로 표시해요)</summary>
     public System.Action OnStrokeBegin;
 
+    /// <summary>마지막으로 그린 화면 자리와 때 (5챕터 방해가 내 그림을 노려요)</summary>
+    public Vector2 LastScreenPoint { get; private set; }
+    public float LastDrawTime { get; private set; } = -999f;
+
     /// <summary>되돌릴 수 있는지</summary>
     public bool CanUndo => undoStack.Count > 0;
 
@@ -219,6 +223,8 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         SaveUndo();
         DrawDot(p);
         lastPixel = p;
+        LastScreenPoint = eventData.position;
+        LastDrawTime = Time.time;
         ApplyPixels();
         OnStrokeBegin?.Invoke();
     }
@@ -234,6 +240,8 @@ public class DrawingBoard : MonoBehaviour, IPointerDownHandler, IDragHandler, IP
         {
             DrawLine(a, b);
             ApplyPixels();
+            LastScreenPoint = eventData.position;
+            LastDrawTime = Time.time;
         }
         lastPixel = p;
     }
