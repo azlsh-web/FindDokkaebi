@@ -758,6 +758,30 @@ public static partial class MvpSceneBuilder
         Anchor(dust.rectTransform, 0.2f, 0f, new Vector2(0, 54), new Vector2(78, 78));
         Anim(dust.gameObject, SimpleAnim.Kind.Dust, 1.2f, 0f, 24f);
 
+        // 개발자 모드 판정 창 (C-66) : 기준마다 O · X 를 누르고 "결과 보기". 개발자 모드가 꺼져 있으면 안 나와요
+        var devCard = NewCard("DevJudge", judgeP, new Vector2(0, 860), new Vector2(960, 900));
+        NewText("Title", devCard, "개발자 모드", 46, new Vector2(0, 40), new Vector2(880, 80), bold: true);
+        var devJudge = devCard.gameObject.AddComponent<DevJudgePanel>();
+        var devRows = new Image[5];
+        var devRowTexts = new TMP_Text[5];
+        for (int i = 0; i < 5; i++)
+        {
+            var row = NewButton("Row" + i, devCard, "", new Vector2(0, 150 + i * 125), new Vector2(860, 105));
+            devRows[i] = row.GetComponent<Image>();
+            devRowTexts[i] = row.transform.Find("Label").GetComponent<TMP_Text>();
+            UnityEventTools.AddIntPersistentListener(row.onClick, devJudge.RowTap, i);
+        }
+        var devConfirm = NewButton("ConfirmButton", devCard, "결과 보기", new Vector2(0, 775), new Vector2(420, 100), primary: false);
+        UnityEventTools.AddPersistentListener(devConfirm.onClick, devJudge.Confirm);
+        var devSo = new SerializedObject(devJudge);
+        SetArray(devSo, "rows", devRows);
+        SetArray(devSo, "rowTexts", devRowTexts);
+        Set(devSo, "onSprite", pillCoral);
+        Set(devSo, "offSprite", pillCream);
+        Set(devSo, "confirm", (RectTransform)devConfirm.transform);
+        devSo.ApplyModifiedPropertiesWithoutUndo();
+        devCard.gameObject.SetActive(false);
+
         // ── 6. 결과 화면 : 물건은 바닥에, 대사를 누르면 순서대로 ──
         var result = NewPanel("ResultPanel", canvas);
         var itemShadow = MImage("ItemShadow", result, T("Common_SoftPuff"), 165, 462, 160, 24);
@@ -1087,7 +1111,7 @@ public static partial class MvpSceneBuilder
         settingsDim.color = new Color(0f, 0f, 0f, 0.45f);                       // 뒤 화면을 못 누르게 덮음
         var settingsDimButton = pause.gameObject.AddComponent<Button>();     // 창 바깥을 누르면 닫혀요
         settingsDimButton.transition = Selectable.Transition.None;
-        var pauseCard = NewCard("SettingsCard", pause, new Vector2(0, 640), new Vector2(880, 520));
+        var pauseCard = NewCard("SettingsCard", pause, new Vector2(0, 640), new Vector2(880, 660));
         var settingsClose = NewRoundTool("CloseButton", pauseCard, iconClose, Color.white, 110, out GameObject settingsCloseFrame);
         Object.DestroyImmediate(settingsCloseFrame);
         Place((RectTransform)settingsClose.transform.parent, new Vector2(370, 26), new Vector2(110, 110));
@@ -1139,6 +1163,17 @@ public static partial class MvpSceneBuilder
         }
         var bgmSlider = VolumeRow("BgmSlider", "배경음", 170);
         var sfxSlider = VolumeRow("SfxSlider", "효과음", 330);
+        // 개발자 모드 (C-66) : 누를 때마다 켜짐 ↔ 꺼짐. 켜면 판정을 AI 대신 O · X 로 골라요
+        NewText("DevModeLabel", settingsMain, "개발자 모드", 52, new Vector2(-220, 470), new Vector2(340, 110), bold: true);
+        var devModeButton = NewButton("DevModeButton", settingsMain, "꺼짐", new Vector2(190, 475), new Vector2(300, 100), primary: false);
+        var devModeToggle = devModeButton.gameObject.AddComponent<DevModeToggle>();
+        UnityEventTools.AddPersistentListener(devModeButton.onClick, devModeToggle.Toggle);
+        var devModeSo = new SerializedObject(devModeToggle);
+        Set(devModeSo, "stateText", devModeButton.transform.Find("Label").GetComponent<TMP_Text>());
+        Set(devModeSo, "back", devModeButton.GetComponent<Image>());
+        Set(devModeSo, "onSprite", pillCoral);
+        Set(devModeSo, "offSprite", pillCream);
+        devModeSo.ApplyModifiedPropertiesWithoutUndo();
 
         // HUD 가 패널보다 위에 그려지도록 맨 뒤로 보내기 (Hierarchy 아래쪽일수록 앞에 그려짐). 일시정지 화면은 그보다 위
         peekGo.transform.SetAsLastSibling();    // 둘러보는 동안은 색 섞기 판까지 덮어요
@@ -1219,6 +1254,7 @@ public static partial class MvpSceneBuilder
         Set(so, "observePanel", observe.gameObject);
         Set(so, "drawPanel", draw.gameObject);
         Set(so, "judgePanel", judgeP.gameObject);
+        Set(so, "devJudge", devJudge);
         Set(so, "resultPanel", result.gameObject);
         Set(so, "comparePanel", compare.gameObject);
         Set(so, "endingPanel", ending.gameObject);

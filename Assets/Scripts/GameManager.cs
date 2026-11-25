@@ -106,6 +106,7 @@ public partial class GameManager : MonoBehaviour
     [SerializeField] GameObject observePanel;
     [SerializeField] GameObject drawPanel;
     [SerializeField] GameObject judgePanel;
+    [SerializeField] DevJudgePanel devJudge;        // 개발자 모드 : 판정 기준마다 O · X 고르기 (C-66)
     [SerializeField] GameObject resultPanel;
     [SerializeField] GameObject comparePanel;
     [SerializeField] GameObject endingPanel;

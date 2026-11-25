@@ -322,8 +322,30 @@ static partial class MvpSelfTest
                     Check(IsOn("DrawPanel") && Board().HasDrawn, "다시 그리기는 이전 그림에서 이어진다");
                     PutSketch(st, allDrawn: true);
                     Expect(st, -2);     // 이번엔 전부 그림
+                    if (s == 2) DevMode.TestOverride = true;    // 3번째 물건은 개발자 모드로 (C-66)
                     Gm().Submit();
                 });
+                if (s == 2)
+                    Add(0.3f, "개발자 모드 : 기준마다 O · X 고르기", () =>
+                    {
+                        var dev = Find("JudgePanel/DevJudge").GetComponent<DevJudgePanel>();
+                        int rows = 0;
+                        for (int k = 0; k < 5; k++) if (IsOn("JudgePanel/DevJudge/Row" + k)) rows++;
+                        Check(rows == st.features.Length, $"판정 기준 수만큼 줄이 나온다 ({rows}줄)");
+                        string Row0() => Find("JudgePanel/DevJudge/Row0/Label").GetComponent<TMP_Text>().text;
+                        Check(Row0().StartsWith("O") && Row0().Contains(st.features[0].name), "처음엔 모두 O, 기준 이름이 보인다");
+                        dev.RowTap(0);
+                        Check(Row0().StartsWith("X"), "누르면 X 로 바뀐다");
+                        dev.RowTap(0);
+                        Check(TryFind("SettingsPanel/SettingsCard/SettingsMain/DevModeButton") != null, "설정 창에 개발자 모드 버튼이 있다");
+                        Shot("dev_judge");
+                        Then(() =>
+                        {
+                            dev.Confirm();
+                            DevMode.TestOverride = null;
+                            Check(!IsOn("JudgePanel/DevJudge"), "결과 보기를 누르면 창이 닫힌다");
+                        });
+                    }, () => { PassGive(); return IsOn("JudgePanel/DevJudge"); });
                 Add(0.3f, $"{st.Title} 성공", () =>
                 {
                     Check(Find("ResultPanel/ReturnedItem").GetComponent<Image>().sprite == st.originalSprite, "진짜 물건이 왔다");

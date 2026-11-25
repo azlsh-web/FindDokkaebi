@@ -204,11 +204,28 @@ public static class LobbySceneBuilder
         settingsCard.sprite = cardSprite;
         settingsCard.type = Image.Type.Sliced;
         settingsCard.pixelsPerUnitMultiplier = 1f / K;
-        G(settingsCard.rectTransform, 60, 770, 960, 360);
+        G(settingsCard.rectTransform, 60, 770, 960, 500);
         var closeButton = NewCloseButton("CloseHolder", settingsContent, Sp("UI/Mix_CloseIcon.png"));
         G((RectTransform)closeButton.transform.parent, 890, 790, 110, 110);
         var bgmSlider = VolumeRow("BgmSlider", "배경음", settingsContent, 840);
         var sfxSlider = VolumeRow("SfxSlider", "효과음", settingsContent, 980);
+        // 개발자 모드 (C-66) : 누를 때마다 켜짐 ↔ 꺼짐. 켜면 판정을 AI 대신 O · X 로 골라요
+        var devLabel = NewText("DevModeLabel", settingsContent, "개발자 모드", 52, OutlineColor);
+        G(devLabel.rectTransform, 110, 1125, 340, 90);
+        var devBack = NewImage("DevModeButton", settingsContent, Color.white);
+        devBack.sprite = pillCream; devBack.type = Image.Type.Sliced; devBack.pixelsPerUnitMultiplier = pillCream.rect.height / 100f;
+        G(devBack.rectTransform, 560, 1120, 300, 100);
+        var devButton = devBack.gameObject.AddComponent<Button>();
+        var devState = NewText("Label", devBack.transform, "꺼짐", 40, OutlineColor);
+        Stretch(devState.rectTransform);
+        var devToggle = devBack.gameObject.AddComponent<DevModeToggle>();
+        UnityEventTools.AddPersistentListener(devButton.onClick, devToggle.Toggle);
+        var devSo = new SerializedObject(devToggle);
+        Set(devSo, "stateText", devState);
+        Set(devSo, "back", devBack);
+        Set(devSo, "onSprite", pillCoral);
+        Set(devSo, "offSprite", pillCream);
+        devSo.ApplyModifiedPropertiesWithoutUndo();
 
         // 겹치는 순서 : 톱니 < 사진 창 < 소리 설정 창
         topRt.SetAsLastSibling();

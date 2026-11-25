@@ -270,9 +270,15 @@ public partial class GameManager
         ShowPanel(judgePanel);
 
         int ticket = ++judgeTicket;
+        if (devJudge != null) devJudge.Hide();
         //   AI 판정이 안 되면(서버·키·인터넷 문제) 간식을 돌려주고 다시 제출하게 해요 (OnJudgeError).
         //   계산식 자동 판정(LocalJudge)은 자동 테스트(OpenAIJudge.DisableAI)에서만 써요.
-        if (OpenAIJudge.DisableAI)
+        //   개발자 모드(C-66)는 AI 를 부르지 않고 기준마다 O · X 를 손으로 골라요.
+        if (DevMode.JudgeByHand && devJudge != null)
+        {
+            StartCoroutine(DevJudgeRoutine(ticket));
+        }
+        else if (OpenAIJudge.DisableAI)
         {
             StartCoroutine(LocalJudgeRoutine(ticket));
         }
@@ -303,6 +309,16 @@ public partial class GameManager
         yield return new WaitForSeconds(thinkSeconds);
         if (ticket == judgeTicket && state == State.Judge)
             yield return FinishLoopThen(ticket, () => OnJudgeError("AI 판정 설정이 없어요 (키 또는 판정 서버 주소)"));
+    }
+
+    // 개발자 모드 : 도깨비가 들어온 뒤 O · X 고르기 창을 띄우고, 고른 대로 바로 결과로
+    IEnumerator DevJudgeRoutine(int ticket)
+    {
+        yield return new WaitForSeconds(judgeEnterSeconds);
+        if (ticket != judgeTicket || state != State.Judge) yield break;
+        judgeRoam.SetActive(false);     // 찾아다니는 도깨비 · 빛나는 쪽지는 숨기고 고르기 창만 (다음 판정 때 StartJudge 가 다시 켜요)
+        judgeCurse.SetActive(false);
+        devJudge.Show(Stage, v => { if (ticket == judgeTicket && state == State.Judge) OnVerdict(v); });
     }
 
     // (자동 테스트용) 고민하는 시간만큼 기다렸다가 LocalJudge 로 판정
