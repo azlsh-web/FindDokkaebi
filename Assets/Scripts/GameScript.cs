@@ -60,7 +60,7 @@ public static class GameScript
         {
             new Line(Face.BoyHappy, "아차! 김밥도 어디 뒀는지 깜빡했어!"),
             new Line(Face.Dokkaebi, "김밥? 그건 나도 먹고 싶은데! 어떻게 생겼어?"),
-            new Line(Face.BoyNormal, "까만 김이 둥글게 말려 있고, 안에 재료가 위에 둘, 아래에 하나 있어."),
+            new Line(Face.BoyNormal, "까만 김이 둥글게 말렸어. 속은 위에 둘, 아래에 하나야."),
             new Line(Face.BoyNormal, "노란 단무지랑 초록 시금치도 들어 있어!"),
             new Line(Face.Dokkaebi, "동그랗게 말린 김 테두리를 그려 주면 찾을 수 있겠어!"),
             new Line(Face.Dokkaebi, "좋아, 쪽지에 그려 줘."),
@@ -68,11 +68,11 @@ public static class GameScript
         new[]
         {
             new Line(Face.BoySurprised, "어? 방금까지 옆에 있던 친구가 없어졌어!"),
-            new Line(Face.Dokkaebi, "물건도 모자라서 이번엔 친구까지 잃어버린 거야? 정말 못 말린다."),
+            new Line(Face.Dokkaebi, "이번엔 친구야? 히히, 숨바꼭질이 따로 없네!"),
             new Line(Face.BoySurprised, "같이 소풍 가기로 했단 말이야! 꼭 찾아 줘."),
             new Line(Face.Dokkaebi, "어떻게 생긴 친구야?"),
             new Line(Face.BoyNormal, "양 갈래로 묶은 갈색 머리야."),
-            new Line(Face.BoyNormal, "파란 멜빵바지에 주황 상의를 입었고, 주머니에 천 조각이 덧대져 있어."),
+            new Line(Face.BoyNormal, "파란 멜빵바지에 주황색 옷! 주머니엔 천 조각을 덧댔어."),
             new Line(Face.Dokkaebi, "머리 양쪽에 한 갈래씩! 그 모양을 기억해 둘게."),
             new Line(Face.Dokkaebi, "걱정 마, 쪽지에 그려 주면 데려올게."),
         },
@@ -80,7 +80,7 @@ public static class GameScript
 
     // 2단계 시작 대화 맨 앞 : 1단계에서 방망이를 찾았는지에 따라 달라요
     static readonly Line BatFound = new Line(Face.Dokkaebi, "방망이도 찾았으니 이제 내 차례지! 네 물건도 찾아 줄게.");
-    static readonly Line BatLost = new Line(Face.Dokkaebi, "방망이가 없어서 힘은 안 나지만… 간식도 받았으니 네 물건을 찾아 볼게.");
+    static readonly Line BatLost = new Line(Face.Dokkaebi, "힘은 좀 없지만… 간식도 받았으니 찾아볼게!");
 
     // 쪽지 종이에 적히는 글 (대사 상자가 아니에요)
     static readonly string[] Note =
@@ -118,35 +118,35 @@ public static class GameScript
     static readonly string[][] DokkaebiPartial =
     {
         new[] { "이게 내 방망이라고? 내 방망이는 이렇게 안 생겼어!", "내 방망이를 이렇게 그리면 어떡해! 나 좀 서운해." },
-        new[] { "네가 이렇게 그렸잖아~ 난 그대로 찾아왔다고!", "쪽지대로 찾았는데? 네 그림이 그런걸~" },
-        new[] { "그림이 이랬는걸? 난 잘못 없어~", "흠, 네 쪽지에 있던 그대로야!" },
-        new[] { "네가 그린 김밥이 이렇던데? 맛은 장담 못 해~", "그림대로 찾아왔어. 먹을 수는 있겠지?" },
-        new[] { "이 친구 맞지? 네가 그린 대로인데~", "어라, 네 친구가 이렇게 생긴 거 아니야?" },
+        new[] { "네가 이렇게 그렸잖아. 히히, 그대로 찾아왔다고!", "쪽지대로 찾았는데? 네 그림이 이랬는걸!" },
+        new[] { "그림이 이랬는걸? 히히, 난 잘못 없어!", "흠, 네 쪽지에 있던 그대로야!" },
+        new[] { "네가 그린 김밥이 이렇던데? 맛은 어떨까, 히히!", "그림대로 찾아왔어. 먹을 수는 있겠지?" },
+        new[] { "이 친구 맞지? 네가 그린 대로인데, 히히!", "어라, 네 친구가 이렇게 생긴 거 아니야?" },
     };
 
     static readonly string[][] DokkaebiAllWrong =
     {
         new[] { "이게 내 방망이라고? 내 방망이는 이렇게 안 생겼어!", "내 방망이를 이렇게 그리면 어떡해! 나 좀 서운해." },
-        new[] { "이거 아니야? 네 그림엔 딱 이렇게 생겼던데?", "짠! 가방... 맞지? 히히." },
+        new[] { "이거 아니야? 네 그림엔 딱 이렇게 생겼던데?", "짠! 가방… 맞지? 히히." },
         new[] { "냄새는 좋지? 네 그림이 꼭 이렇게 생겼더라.", "돗자리보다 맛있는 걸 찾아왔어! 히히." },
         new[] { "짠! 네 그림이랑 똑같지?", "이걸 어떻게 먹냐고? 네가 그렇게 그렸는걸!" },
-        new[] { "논에 서 있길래 데려왔어! 네 그림이랑 닮았던걸?", "말이 좀 없지만... 네 친구 맞지? 히히." },
+        new[] { "논에 서 있길래 데려왔어! 네 그림이랑 닮았던걸?", "말이 좀 없지만… 네 친구 맞지? 히히." },
     };
 
     // 주인공 반응 : 1단계는 방망이, 2~4단계는 물건 공통, 5단계는 친구 (사람이라 친구에게 하는 말로)
     const string BoyBatSuccess = "다행이다! 이제 힘이 좀 나?";
-    const string BoyBatWrong = "미안해… 간식 하나 더 줄 테니까 다시 그려 볼까?";
+    const string BoyBatWrong = "미안해… 사탕 하나 더 줄게. 다시 그려 볼래!";
     const string BoySuccess = "맞아! 바로 이거야! 이번엔 안 잃어버려야지.";
-    const string BoyWrong = "어… 이게 아닌데. 간식 하나 더 줄 테니까 다시 그려 볼까?";
-    const string BoyFriendSuccess = "다행이다! 내가 놓쳐서 미안해. 이제 같이 소풍 가자!";
-    const string BoyFriendWrong = "어… 내 친구가 아니야. 간식 하나 더 줄 테니까 다시 그려 볼까?";
+    const string BoyWrong = "어… 이게 아닌데. 사탕 하나 더 줄게. 다시 그려 볼래!";
+    const string BoyFriendSuccess = "다행이다! 혼자 둬서 미안해. 이제 같이 소풍 가자!";
+    const string BoyFriendWrong = "내 친구가 아냐… 사탕 하나 더 줄게. 다시 그려 볼래!";
 
     // 돋보기 : 2챕터 첫 물건 첫 그리기 때 도깨비가 쓰는 법을 보여 줘요 (시범은 공짜)
     public const string MagnifierShow = "잘 기억 안 나지? 위에 있는 돋보기를 눌러 봐!";
     public const string MagnifierHow = "돋보기로 5초 동안 다시 볼 수 있어. 손가락으로 렌즈를 끌면 다른 곳도 보여!";
-    public const string MagnifierRule = "돋보기는 이번 방 정리 때만 딱 한 번 더 빌려줄게. 아껴 써!";
+    public const string MagnifierRule = "이 방에선 한 번 더 빌려줄게. 아껴 써!";
     // 한 단계에서 두 번째로 틀렸을 때 (단계마다 한 번, 그 단계에서만)
-    public const string MagnifierGift = "자꾸 틀리니까 딱하다. 돋보기 한 번 빌려줄게! 이번 물건 찾을 때만 쓸 수 있어.";
+    public const string MagnifierGift = "잘 안 떠올라? 이번 물건은 돋보기 한 번 더 빌려줄게!";
 
     public const string BoyOutOfSnacks = "어떡해… 사탕이 다 떨어졌어.";
     public const string JudgeError = "그림이 잘 안 보여… 간식은 돌려줄게, 다시 그려 줘.";
@@ -161,7 +161,7 @@ public static class GameScript
         new Line(Face.BoySurprised, "도깨비야! 우리를 이 숲으로 왜 불렀어?"),
         new Line(Face.Dokkaebi, "히히, 너희 얼굴이 보고 싶어서 불렀지."),
         new Line(Face.Dokkaebi, "그런데 숨겨 둔 간식은 왜 나한테 안 줬어?"),
-        new Line(Face.Dokkaebi, "괘씸하구나! 널 저주하겠어. 내가 시키는 건 다 그려 와!"),
+        new Line(Face.Dokkaebi, "약속을 어겼으니 저주다! 네 친구 영혼도 데려가겠어!"),
         new Line(Face.BoyNormal, "(도깨비가 무서워하는 걸 그리면 저주가 풀릴까…?)"),
     };
     public const int CurseDarkFrom = 2;
@@ -170,14 +170,14 @@ public static class GameScript
     //   2~4챕터 끝 장면에서 도깨비가 흘린 말(부적 · 닭피 · 팥)을 주인공이 친구에게 전해 줬어요
     static readonly Line[][] CurseStep =
     {
-        new[] { new Line(Face.Dokkaebi, "짚신을 그려 와! 한 걸음에 어디든 널 쫓아가게!"),
-                new Line(Face.Friend, "(속닥) 네가 그랬잖아. 도깨비는 부적이 질색이라고!"),
-                new Line(Face.BoyNormal, "(맞아! 황토빛 종이에 붉은 갈색 문양이었지…)") },
-        new[] { new Line(Face.Dokkaebi, "도깨비 부채를 그려 와! 한 번 부치면 널 이 숲에 가둘 거야!"),
-                new Line(Face.Friend, "(속닥) 생일 파티 때 닭피 얘기에 부르르 떨었다며?"),
-                new Line(Face.BoyNormal, "(그래, 닭피 그릇! 친구를 지켜야 해…!)") },
-        new[] { new Line(Face.Dokkaebi, "도깨비 감투를 그려 와! 아무도 날 못 보게 말이야!"),
-                new Line(Face.Friend, "(속닥) 팥은 보기만 해도 다리가 후들거린댔지?"),
+        new[] { new Line(Face.Dokkaebi, "짚신을 내놔! 한 걸음에 널 따라잡아 주지!"),
+                new Line(Face.Friend, "(속닥) 네가 말해 줬잖아. 부적을 싫어한다고!"),
+                new Line(Face.BoyNormal, "(맞아! 황토빛 종이에 붉은 갈색 무늬였지…)") },
+        new[] { new Line(Face.Dokkaebi, "도깨비 부채를 내놔! 숲길을 꽁꽁 막아 주지!"),
+                new Line(Face.Friend, "(속닥) 닭피 얘기에 떨었다며? 같이 떠올려 보자."),
+                new Line(Face.BoyNormal, "(그래, 닭피 그릇! 이번엔 내가 친구를 지킬 거야!)") },
+        new[] { new Line(Face.Dokkaebi, "도깨비 감투를 내놔! 아무도 날 못 보게 말이야!"),
+                new Line(Face.Friend, "(속닥) 팥만 봐도 다리가 떨린댔지? 힘내!"),
                 new Line(Face.BoyNormal, "(팥주머니라면… 도깨비도 꼼짝 못 할 거야!)") },
     };
 
@@ -186,7 +186,7 @@ public static class GameScript
     {
         "짚신은 내가 가져가지! 히히, 넌 이제 못 도망가!",
         "히히, 부채는 잘 쓰마! 숲길을 꽁꽁 막아 주지!",
-        "히히, 감투는 내 거다! 안 보여도 난 네 뒤에 있어!",
+        "히히, 감투는 내 거다! 이제 내 모습이 안 보일걸?",
     };
     public const string CurseBoyTaken = "(으윽… 시키는 대로 하니까 더 강해지잖아!)";
 
@@ -211,15 +211,15 @@ public static class GameScript
         "으윽… 제법이군. 그래도 아직 끝난 건 아냐!",
         "제, 제법이군… 으으, 알았어! 저주 풀고 갈게!",
     };
-    public const string CurseBoyHit = "(됐다! 도깨비의 무서운 기운이 사라지고 있어!)";
+    public const string CurseBoyHit = "(됐다! 도깨비가 움찔했어!)";
     // 맞설 물건 실패 : 점프스케어 뒤 (주인공 하트 -1)
     public const string CurseCounterWrong = "히히, 깜짝 놀랐지? 그걸로 날 막을 수 있겠어?";
     public const string CurseBoyWrong = "아야… 아직 버틸 수 있어! 다시 해 보자!";
     // 하트 0 : 친구가 쓰러지고 영혼을 빼앗겨요 → 게임오버
     public const string CurseSoulTaken = "더는 못 버티겠지? 네 친구 영혼은 내가 데려간다!";
-    public const string CurseGameOver = "내 뒤에 잠든 사람들 보이지? 너희도 함께 있어라!";
-    public const string CurseHappy = "착해져서 도망갔네… 이 방망이로 잃어버린 걸 찾아야지!";
-    public const string CurseHappyNoBat = "착해져서 도망갔네… 이제 잃어버린 건 내가 직접 찾아야지!";
+    public const string CurseGameOver = "네 친구도 내 뒤에서 잠들 거야. 히히!";
+    public const string CurseHappy = "휴, 다시 초록색이네! 이 방망이로 내가 직접 찾아야지!";
+    public const string CurseHappyNoBat = "휴, 다시 초록색이네! 이제 친구랑 직접 찾아야지!";
 
     // ───────────── 2~4챕터 · 방 (기획서 대사 + codex 초안 임시 대사, 기획자 확인 전) ─────────────
     //   [챕터 - 2] 시작 장면 : 첫 줄은 기획서, 둘째 줄(주인공이 도깨비를 부름)부터 도깨비가 나와요 (ChapterData.aloneLines = 2)
@@ -234,7 +234,7 @@ public static class GameScript
             new Line(Face.Dokkaebi, "나도 한때는 너처럼 인간이었지…"),
             new Line(Face.BoySurprised, "응? 근데 어쩌다 도깨비가 된 거야?"),
             new Line(Face.Dokkaebi, "자자, 그래서 무슨 물건을 찾아 달라고?"),
-            new Line(Face.Dokkaebi, "이번엔 모양만으론 안 돼. 무늬도 잘 기억해!"),
+            new Line(Face.Dokkaebi, "모양이랑 무늬, 둘 다 기억해 둬. 난 쪽지만 믿는다!"),
         },
         new[]
         {
@@ -243,7 +243,7 @@ public static class GameScript
             new Line(Face.Dokkaebi, "너는 왜 맨날 직접 찾아볼 생각도 안 하고 나한테만 도와 달라고 해?"),
             new Line(Face.BoySurprised, "너 모습이 왜 그래?"),
             new Line(Face.Dokkaebi, "…뭐, 단것을 주니까 이번에도 참도록 할게."),
-            new Line(Face.Dokkaebi, "이번엔 색깔도 중요해. 빨강, 노랑, 파랑이 어디에 있었는지 기억해!"),
+            new Line(Face.Dokkaebi, "빨강, 노랑, 파랑… 색도 틀림없이 기억해 둬!"),
         },
         new[]
         {
@@ -315,7 +315,7 @@ public static class GameScript
         {
             new[]
             {
-                new Line(Face.BoyNormal, "바구니에 넣을 귤이 없어. 그것도 줄게!"),
+                new Line(Face.BoyNormal, "바구니에 넣을 귤이 없어. 찾으면 네 거야!"),
                 new Line(Face.BoyNormal, "동그란 주황색 귤이야."),
                 new Line(Face.BoyNormal, "꼭대기에 초록색 잎이 하나 달려 있어."),
                 new Line(Face.Dokkaebi, "주황이랑 초록이라… 두 색씩 섞어야겠네!"),
@@ -323,7 +323,7 @@ public static class GameScript
             },
             new[]
             {
-                new Line(Face.BoySurprised, "포도송이도 없어! 그것도 네 간식인데!"),
+                new Line(Face.BoySurprised, "포도도 찾아 줘! 이것도 바구니에 담아 줄게!"),
                 new Line(Face.BoyNormal, "보라색 알이 위엔 넓게, 아래엔 좁게 모였어."),
                 new Line(Face.BoyNormal, "알들이 다닥다닥 붙고, 위엔 초록 줄기가 있어."),
                 new Line(Face.Dokkaebi, "보라랑 초록도 두 색씩 섞겠네. 맛있겠다!"),
@@ -351,15 +351,15 @@ public static class GameScript
         },
         new[]
         {
-            new[] { "모자 찾았어! 휴, 그래도 나만 한 도깨비 없지?", "여기 모자! 투덜대도 찾는 건 잘하지?" },
-            new[] { "풍선 찾아왔어! 휴, 그래도 내가 잘 찾긴 하지.", "여기 풍선! 이런 건 내 눈을 못 피하지!" },
-            new[] { "선물 찾았다! 흠, 나한테 고마워해도 돼.", "여기 선물! 힘들어도 찾는 솜씨는 여전하지?" },
+            new[] { "모자 찾았어! 휴, 그래도 나만 한 도깨비 없지?", "여기 모자! 흥, 이 정도쯤이야." },
+            new[] { "풍선 찾아왔어! 휴, 그래도 내가 잘 찾긴 하지.", "여기 풍선! 내 눈을 피하려 해도 소용없지!" },
+            new[] { "선물 찾았다! 흠, 나한테 고마워해도 돼.", "여기 선물! 흥, 약속한 간식은 잊지 마!" },
         },
         new[]
         {
-            new[] { "귤 찾았다! 내 솜씨 덕에 간식이 생겼네!", "여기 귤! 잘 찾았지? 얼른 먹고 싶다!" },
-            new[] { "포도 찾았어! 나 참 잘 찾지? 입맛 돈다!", "짠, 네 포도! 간식 찾을 땐 내가 최고야!" },
-            new[] { "사탕 찾았다! 내가 잘 찾으니 달달한 것도 생기네!", "여기 사탕! 어때, 내 솜씨? 얼른 먹고 싶어!" },
+            new[] { "귤 찾았다! 약속대로 내 바구니에 담아 둬!", "여기 귤! 히히, 한 입도 빼놓으면 안 돼!" },
+            new[] { "포도 찾았어! 나 참 잘 찾지? 입맛 돈다!", "짠, 내 포도! 약속했으니 전부 내 거야!" },
+            new[] { "사탕 찾았다! 히히, 이것도 전부 내 거야!", "여기 사탕! 내 몫은 잘 챙겨 둬!" },
         },
     };
 
@@ -373,7 +373,7 @@ public static class GameScript
         },
         new[]
         {
-            new[] { "흠, 쪽지엔 이렇게 그려 놨던데? 난 그대로야.", "흠, 네가 그린 대로인데? 나 보고 놀라지 마!" },
+            new[] { "흠, 쪽지에 이렇게 그려 놨잖아. 그대로 찾았어!", "흠, 네가 그린 대로인데? 나 보고 놀라지 마!" },
             new[] { "휴, 네가 이렇게 그렸으니 이걸 가져왔지!", "쪽지 좀 봐. 네 그림이랑 똑같잖아, 흥." },
             new[] { "흥, 내가 바꾼 거 아냐. 네가 이렇게 그렸어!", "뭐가 이상해? 네 쪽지랑 꼭 닮았는데." },
         },
@@ -388,7 +388,7 @@ public static class GameScript
     static readonly string[][] RoomBoyRight =
     {
         new[] { "내 양말 맞아! 이제 짝이 생겼네!", "맞아, 내 우산! 이제 비 와도 괜찮아!", "내 베개야! 오늘도 꼭 안고 자야지!" },
-        new[] { "이 모자야! 동생이 쓰면 신나겠다!", "맞아, 이거야! 파티가 더 신나겠어!", "찾았다! 동생이 좋아할 얼굴이 벌써 보여!" },
+        new[] { "이 모자야! 동생이 쓰면 신나겠다!", "맞아, 이거야! 파티가 더 신나겠어!", "찾았다! 동생이 웃는 얼굴이 벌써 떠올라!" },
         new[] { "맞아, 이 귤이야! 바구니에 담아 둘게!", "이 포도 맞아! 바구니에 담아 놔야지!", "맞아, 이 사탕이야! 이것도 담아 둘게!" },
     };
 
@@ -396,7 +396,7 @@ public static class GameScript
     {
         new[] { "내 게 아니야… 사탕 하나 더 줄게. 다시 그려 볼래.", "이건 아닌데… 사탕 하나 더 줄게. 다시 그려 볼래.", "내 베개가 아냐… 사탕 하나 더 줄게. 다시 그릴래." },
         new[] { "이 모자가 아냐… 사탕 하나 더 줄게. 다시 그릴래.", "찾던 게 아냐… 사탕 하나 더 줄게. 다시 그려 볼래.", "내 선물이 아냐… 사탕 하나 더 줄게. 다시 그릴래." },
-        new[] { "이건 아닌데… 사탕도 없고, 다시 그리지도 못해.", "찾던 게 아냐… 사탕도 없어. 다시 그릴 수도 없네.", "이건 아니야… 줄 사탕도 없고, 다시 그릴 수도 없어." },
+        new[] { "이건 아닌데… 빈 바구니에 이것만 남았네.", "찾던 포도가 아냐… 약속은 어떡하지?", "이 사탕이 아닌데… 도깨비가 실망하겠어." },
     };
 
     // [챕터 - 2] 끝 장면 : 도깨비 인사 (4챕터는 약속 + 주인공 속마음, 속마음은 기획서)
@@ -405,17 +405,17 @@ public static class GameScript
         // 5챕터 복선 (A3) : 2챕터 부적 · 3챕터 닭피 · 4챕터 팥을 도깨비가 싫어한다고 흘려요
         new[]
         {
-            new Line(Face.Dokkaebi, "참, 혹시 부적 있으면 숨겨 줘. 보기만 해도 따끔따끔해!"),
+            new Line(Face.Dokkaebi, "부적은 숨겨 둬. 보기만 해도 따끔따끔하다니까!"),
             new Line(Face.Dokkaebi, "나도 사람일 땐 이랬지… 앗, 비 그친다! 또 봐!"),
         },
         new[]
         {
-            new Line(Face.Dokkaebi, "빨간 건 다 좋은데… 닭피만은 싫어. 부르르!"),
+            new Line(Face.Dokkaebi, "빨간 건 좋은데… 닭피는, 으으! 얘기도 하지 마!"),
             new Line(Face.Dokkaebi, "휴, 난 좀 쉴래. 동생한테 생일 축하한다고 해!"),
         },
         new[]
         {
-            new Line(Face.Dokkaebi, "찾은 간식은 전부 내 거랬지? 히히, 기다릴게!"),
+            new Line(Face.Dokkaebi, "찾은 간식은 전부 내 거랬지? 히히, 숨겨도 다 알아!"),
             new Line(Face.Dokkaebi, "아, 팥 든 건 빼 줘! 팥만 보면 다리가 후들거려."),
             new Line(Face.BoyNormal, "(간식을 숨겨 두면 도깨비도 못 찾겠지? 다 찾고 보니 간식이 아까워ㅠ)"),
         },

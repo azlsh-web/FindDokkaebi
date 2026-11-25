@@ -110,7 +110,7 @@ static partial class MvpSelfTest
                 Add(2.0f, "2챕터 돋보기 시범 끝", () =>
                 {
                     Check(!IsOn("DrawPanel/MagnifierPeek"), "5초 뒤 저절로 닫힌다");
-                    Check(IsOn("DrawPanel/PeekGuide") && Text("DrawPanel/PeekGuide/DialogueBox/Line") == GameScript.MagnifierRule, "닫히면 도깨비가 한 번만 더 빌려준다고 말한다");
+                    Check(IsOn("DrawPanel/PeekGuide") && Plain("DrawPanel/PeekGuide/DialogueBox/Line") == GameScript.MagnifierRule, "닫히면 도깨비가 한 번만 더 빌려준다고 말한다");
                     Check(Mathf.Abs(GetFloat("timeLeft") - timeAtGuide) < 0.01f, "시범으로 둘러보는 동안에도 향이 타지 않는다");
                     Shot("c2_peek_rule");
                     Then(() =>
