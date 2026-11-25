@@ -35,7 +35,7 @@ body {
   <div id="cover">
     <h1>찾아라! 도깨비</h1>
     <div id="bar"><div id="fill"></div></div>
-    <p id="status">게임 불러오는 중… 0% (처음 한 번 약 85MB)</p>
+    <p id="status">게임 불러오는 중… 0% (처음 한 번 약 92MB)</p>
   </div>
 </div>
 <script src="Build/WebGL.loader.js?v=d351577e7334"></script>
@@ -48,7 +48,7 @@ createUnityInstance(document.getElementById('game'), {
 }, function (p) {
   var pct = Math.round(p * 100);
   fill.style.width = pct + '%';
-  status.textContent = '게임 불러오는 중… ' + pct + '% (처음 한 번 약 85MB)';
+  status.textContent = '게임 불러오는 중… ' + pct + '% (처음 한 번 약 92MB)';
 }).then(function () {
   document.getElementById('cover').hidden = true;
   document.getElementById('game').focus();
